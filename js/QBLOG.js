@@ -1,4 +1,184 @@
-// 网页标题切换功能
+// 主题设置
+const themes = {
+  dark: {
+    '--primary-color': '#388bff',
+    '--text-color': 'rgba(255, 255, 255, 1)',
+    '--text-shadow-color': 'rgba(32, 67, 80, 1)',
+    '--text-secondary-color': 'rgba(161, 161, 161, 1)',
+    '--bg-color': 'linear-gradient(180deg, rgba(10, 18, 28, 1), rgba(11, 21, 26, 1), rgba(8, 16, 24, 1), rgba(4, 7, 12, 1))',
+    '--hero-bg-color': 'rgba(8, 16, 24, 1)',
+    '--surface-color': 'linear-gradient(rgba(25, 45, 55, 0.4), transparent)',
+    '--surface-border-color': 'rgba(245, 245, 245, 0.1)',
+    '--border-color': 'rgba(245, 245, 245, 0.1)',
+    '--box-shadow-color': 'rgba(0, 0, 0, 0.4)',
+    '--divider-color': 'rgba(255, 255, 255, 0.3)',
+    '--backdrop-blur': 'blur(0.7em)',
+  },
+  light: {
+    '--primary-color': '#388bff',
+    '--text-color': 'rgba(44, 44, 44, 1)',
+    '--text-shadow-color': 'rgba(144, 144, 144, 1)',
+    '--text-secondary-color': 'rgba(85, 85, 85, 1)',
+    '--bg-color': 'linear-gradient(180deg, rgba(233, 233, 237, 1), rgba(224, 225, 228, 1), rgba(220, 220, 220, 1), rgba(215, 213, 213, 1))',
+    '--hero-bg-color': 'rgba(217, 218, 220, 1)',
+    '--surface-color': 'linear-gradient(rgba(240, 240, 240, 0.4), transparent)',
+    '--surface-border-color': 'rgba(255, 255, 255, 0.1)',
+    '--border-color': 'rgba(255, 255, 255, 0.1)',
+    '--box-shadow-color': 'rgba(0, 0, 0, 0.2)',
+    '--divider-color': 'rgba(0, 0, 0, 0.3)',
+    '--backdrop-blur': 'blur(0.7em)',
+  },
+}
+
+// 组件库
+const componentBox = `
+    <!-- -------------------- 加载动画 -------------------- -->
+
+    <div class="loading">
+        <div class="loading-icon">
+            <svg class="loading-logo" width="620" height="620" viewBox="0 0 620 620" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <circle class="qingblog-loading-icon-circle" cx="310" cy="310" r="250" />
+                <circle class="qingblog-loading-icon-circle" cx="310" cy="310" r="300" />
+                <path class="qingblog-loading-icon" d="M315 70L315 550" />
+                <line class="qingblog-loading-icon" x1="124" y1="213" x2="264" y2="213" />
+                <line class="qingblog-loading-icon" x1="104" y1="310" x2="284" y2="310" />
+                <line class="qingblog-loading-icon" x1="124" y1="407" x2="264" y2="407" />
+                <line class="qingblog-loading-icon" x1="365" y1="115" x2="365" y2="245" />
+                <line class="qingblog-loading-icon" x1="365" y1="286" x2="365" y2="386" />
+                <line class="qingblog-loading-icon" x1="365" y1="427" x2="365" y2="507" />
+                <line class="qingblog-loading-icon" x1="423" y1="490" x2="423" y2="380" />
+                <line class="qingblog-loading-icon" x1="474" y1="440" x2="474" y2="330" />
+                <line class="qingblog-loading-icon" x1="423" y1="345" x2="423" y2="255" />
+                <line class="qingblog-loading-icon" x1="423" y1="220" x2="423" y2="140" />
+                <line class="qingblog-loading-icon" x1="474" y1="285" x2="474" y2="205" />
+            </svg>
+        </div>
+
+        <div class="loading-div"></div>
+        <div class="loading-div"></div>
+    </div>
+
+    <!-- -------------------- 弹窗 -------------------- -->
+
+    <div id="alert">
+        <div id="alert-message">
+            <span></span>
+        </div>
+    </div>
+
+    <!-- -------------------- 遮罩层 -------------------- -->
+
+    <div class="overlay"></div>
+
+    <!-- -------------------- 右键菜单 -------------------- -->
+
+    <div id="context-menu" class="context-menu">
+        <ul>
+            <li onclick="contextMenu('copy')">
+                <i class="fa fa-copy"></i> 复制
+            </li>
+            <li class="divider"></li>
+            <li onclick="contextMenu('refresh')">
+                <i class="fa fa-refresh"></i>&nbsp;<span>刷新</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- -------------------- 返回顶部 -------------------- -->
+
+    <div id="back-to-top" class="glass btn-active">
+        <i class="fa fa-chevron-up"></i>
+    </div>
+
+    <!-- -------------------- 头部导航栏 -------------------- -->
+
+    <header>
+        <nav id="navbar" class="glass">
+            <svg class="loading-logo" width="35" height="35" viewBox="0 0 620 620" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <circle class="qingblog-loading-icon-circle" cx="310" cy="310" r="250" />
+                <circle class="qingblog-loading-icon-circle" cx="310" cy="310" r="300" />
+                <path class="qingblog-loading-icon" d="M315 70L315 550" />
+                <line class="qingblog-loading-icon" x1="124" y1="213" x2="264" y2="213" />
+                <line class="qingblog-loading-icon" x1="104" y1="310" x2="284" y2="310" />
+                <line class="qingblog-loading-icon" x1="124" y1="407" x2="264" y2="407" />
+                <line class="qingblog-loading-icon" x1="365" y1="115" x2="365" y2="245" />
+                <line class="qingblog-loading-icon" x1="365" y1="286" x2="365" y2="386" />
+                <line class="qingblog-loading-icon" x1="365" y1="427" x2="365" y2="507" />
+                <line class="qingblog-loading-icon" x1="423" y1="490" x2="423" y2="380" />
+                <line class="qingblog-loading-icon" x1="474" y1="440" x2="474" y2="330" />
+                <line class="qingblog-loading-icon" x1="423" y1="345" x2="423" y2="255" />
+                <line class="qingblog-loading-icon" x1="423" y1="220" x2="423" y2="140" />
+                <line class="qingblog-loading-icon" x1="474" y1="285" x2="474" y2="205" />
+            </svg>
+            <h1>QingBlog</h1>
+
+            <div class="divider" style="width: 2px; margin: 0 0.5rem 0 1rem; border-radius: 100em;"></div>
+
+            <ul>
+                <li>
+                    <a href="../index.html"><i class="fa fa-home" aria-hidden="true"></i>&nbsp;首页</a>
+                </li>
+
+                <li>
+                    <a href="../pages.html"><i class="fa fa-book" aria-hidden="true"></i>&nbsp;文章</a>
+                </li>
+
+                <li>
+                    <a target="_blank" href="https://github.com/QingXuan2000"><i class="fa fa-github-square"
+                            aria-hidden="true"></i>&nbsp;GitHub</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div id="theme-toggle" class="nav-button btn-active">
+            <i class="fa fa-sun-o"></i>
+        </div>
+
+        <div id="sidebar-toggle" class="nav-button btn-active">
+            <i class="fa fa-bars" aria-hidden="true"></i>
+        </div>
+    </header>
+
+    <!-- -------------------- 侧边栏 -------------------- -->
+
+    <div id="sidebar">
+        <div id="sidebar-close" class="nav-button btn-active">
+            <i class="fa fa-remove" aria-hidden="true"></i>
+        </div>
+
+        <div class="user-info">
+            <img src="../img/Avatar.png" alt="Avatar" />
+            <h1>QingXuanJun</h1>
+        </div>
+
+        <nav>
+            <ul class="glass">
+                <li>
+                    <a href="../index.html"><i class="fa fa-home" aria-hidden="true"></i>&nbsp;首页</a>
+                </li>
+
+                <div class="divider" style="width: 100%; height: 1px;"></div>
+
+                <li>
+                    <a href="../pages.html"><i class="fa fa-book" aria-hidden="true"></i>&nbsp;文章</a>
+                </li>
+
+                <div class="divider" style="width: 100%; height: 1px;"></div>
+
+                <li>
+                    <a target="_blank" href="https://github.com/QingXuan2000"><i class="fa fa-github-square"
+                            aria-hidden="true"></i>&nbsp;GitHub</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+`;
+
+document.querySelector('body').insertAdjacentHTML('afterbegin', componentBox);
+
+// 标题切换
 function initWebTitle() {
   const webTitleTextList = [
     "QingBlog - QingXuanJun的个人博客 💻",
@@ -122,124 +302,6 @@ function showAlert(color, message) {
 
 // -------------------------------------------------------------
 
-// 导航栏相关功能
-function initNavbar() {
-  const nav = document.getElementById('navbar');
-  if (!nav) return;
-
-  const logo = nav.querySelector('.logo');
-  const divider = nav.querySelector('.divider');
-
-  if (!logo || !divider) return;
-
-  logo.style.display = "none";
-
-  const firstLiHeight = nav.querySelector('ul li')?.offsetHeight;
-  if (firstLiHeight) {
-    logo.style.height = firstLiHeight + "px";
-    divider.style.height = (firstLiHeight - 10) + "px";
-  }
-
-  logo.style.display = "block";
-}
-
-// -------------------------------------------------------------
-
-// 搜索功能
-function find(q) {
-  if (!q) {
-    showAlert("red", "<i class=\"fa fa-exclamation-triangle\"></i>&nbsp;不能搜索空值");
-    return false;
-  }
-
-  // 清除之前的搜索结果
-  document.querySelectorAll('mark.h').forEach(m => m.replaceWith(m.textContent));
-  document.body.normalize();
-
-  // 创建正则表达式
-  const r = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-
-  // 收集所有文本节点
-  const textNodes = [];
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
-  while (walker.nextNode()) {
-    if (walker.currentNode.parentElement?.closest('mark.h,script,style,noscript,textarea')) continue;
-    textNodes.push(walker.currentNode);
-  }
-
-  let foundCount = 0;
-
-  // 遍历文本节点进行搜索
-  for (let i = textNodes.length - 1; i >= 0; i--) {
-    const node = textNodes[i];
-    if (!r.test(node.textContent)) continue;
-    r.lastIndex = 0;
-
-    const fragment = document.createDocumentFragment();
-    let lastIndex = 0;
-    node.textContent.replace(r, (match, p, offset) => {
-      fragment.append(node.textContent.slice(lastIndex, offset), document.createElement('mark'));
-      fragment.lastChild.className = 'h';
-      fragment.lastChild.textContent = match;
-      lastIndex = offset + match.length;
-      foundCount++;
-      return match;
-    });
-
-    if (lastIndex < node.textContent.length) fragment.append(node.textContent.slice(lastIndex));
-    node.parentNode.replaceChild(fragment, node);
-  }
-
-  if (foundCount > 0) {
-    showAlert("green", `<i class=\"fa fa-check-circle\"></i>&nbsp;找到 ${foundCount} 处匹配`);
-    return true;
-  } else {
-    showAlert("orange", "<i class=\"fa fa-info-circle\"></i>&nbsp;未找到匹配内容");
-    return false;
-  }
-}
-
-// -------------------------------------------------------------
-
-// 初始化搜索功能
-function initSearch() {
-  const searchInput = document.getElementById("search");
-  if (searchInput) {
-    searchInput.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") {
-        find(this.value);
-      }
-    });
-  }
-
-  // 初始化搜索容器样式
-  const searchDiv = document.getElementById("search-container");
-  if (searchDiv) {
-    const searchHeight = searchDiv.querySelector("input")?.offsetHeight;
-    const searchBtn = searchDiv.querySelector("button");
-    const headerNavHeight = document.getElementById("navbar")?.offsetHeight;
-    const barsBtn = document.getElementById("sidebar-toggle");
-    const exitBarsBtn = document.getElementById("sidebar-close");
-
-    if (searchHeight && searchBtn) {
-      searchBtn.style.height = searchHeight + "px";
-      searchBtn.style.width = searchHeight + "px";
-    }
-
-    if (headerNavHeight && barsBtn) {
-      barsBtn.style.height = headerNavHeight + "px";
-      barsBtn.style.width = headerNavHeight + "px";
-    }
-
-    if (searchHeight && exitBarsBtn) {
-      exitBarsBtn.style.height = searchHeight + "px";
-      exitBarsBtn.style.width = searchHeight + "px";
-    }
-  }
-}
-
-// -------------------------------------------------------------
-
 // 初始化返回顶部按钮
 function initBackToTop() {
   const backToTopBtn = document.getElementById("back-to-top");
@@ -322,53 +384,191 @@ function initSidebar() {
 
 // -------------------------------------------------------------
 
-// 设置导航栏高度变量
+// 设置高度变量
 function setNavHeightVar() {
   const nav = document.getElementById('navbar');
   if (nav) {
     const height = nav.offsetHeight;
     document.documentElement.style.setProperty('--nav-height', `${height}px`);
+    return height;
   }
 }
 
 // -------------------------------------------------------------
 
 function loading() {
-  const body = document.body;
-  const qingBlogIcon = document.querySelector('.loading-icon');
-  const loading = document.querySelector('.loading');
-  const loadingDivs = document.querySelectorAll('.loading-div');
+  const firstLoading = localStorage.getItem('firstLoading') || "true";
 
-  setTimeout(function () {
-    loadingDivs.forEach(function (div, index) {
-      index = ++index;
+  if (firstLoading !== "false") {
+    const body = document.body;
+    const qingBlogIcon = document.querySelector('.loading-icon');
+    const loading = document.querySelector('.loading');
+    const loadingDivs = document.querySelectorAll('.loading-div');
 
-      if (index % 2 === 0) {
-        div.style.animation = "loadingUpAnimation 1.5s forwards";
-      } else {
-        div.style.animation = "loadingDownAnimation 1.5s forwards";
-      }
-    });
+    if (loading) {
+      body.style.overflow = "hidden";
 
-    qingBlogIcon.style.animation = "hideOverlayAnimation 1.5s forwards";
-  }, 1500);
+      setTimeout(function () {
+        loadingDivs.forEach(function (div, index) {
+          index += 1;
 
-  setTimeout(function () {
-    loading.style.display = "none";
-  }, 3000);
+          if (index % 2 === 0) {
+            div.style.animation = "loadingRightAnimation 1.5s ease-out forwards";
+          } else {
+            div.style.animation = "loadingLeftAnimation 1.5s ease-out forwards";
+          };
+        });
+
+        qingBlogIcon.style.animation = "hideOverlayAnimation 0.5s ease-in-out forwards";
+      }, 1600);
+
+      setTimeout(function () {
+        loading.style.display = "none";
+        body.style.overflow = "auto";
+
+        localStorage.setItem('firstLoading', 'false');
+      }, 3000);
+    }
+  } else {
+    const loading = document.querySelector('.loading');
+    if (loading) loading.style.display = "none";
+  }
 }
 
 // -------------------------------------------------------------
 
-// 页面加载完成后初始化所有功能
+// 主题切换
+function themesToggle() {
+  const body = document.querySelector('body');
+  const toggle = document.getElementById('theme-toggle');
+  const prefersColorScheme = matchMedia('(prefers-color-scheme: dark)').matches
+
+  const root = document.documentElement;
+
+  function applyTheme(theme) {
+    const themeConfig = themes[theme];
+
+    Object.entries(themeConfig).forEach(function ([key, value]) {
+      root.style.setProperty(key, value);
+    });
+  }
+
+  if (!localStorage.getItem('theme')) {
+    applyTheme(prefersColorScheme === true ? 'dark' : 'light');
+    toggle.innerHTML = `<i class="fa fa-${prefersColorScheme === true ? 'moon' : 'sun'}-o"></i>`
+  } else {
+    applyTheme(localStorage.getItem('theme'));
+    toggle.innerHTML = `<i class="fa fa-${localStorage.getItem('theme') === 'dark' ? 'moon' : 'sun'}-o"></i>`
+  };
+
+  toggle.addEventListener('click', () => {
+    const newTheme = (localStorage.getItem('theme')) === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+
+    toggle.innerHTML = `<i class="fa fa-${newTheme === 'light' ? 'sun' : 'moon'}-o"></i>`
+    showAlert('green', `<i class="fa fa-${newTheme === 'light' ? 'sun' : 'moon'}-o"></i>&nbsp;已切换到${newTheme === 'light' ? '浅色' : '深色'}主题！`);
+  });
+}
+
+// -------------------------------------------------------------
+
+function preCopy() {
+  document.querySelectorAll('.copy-btn').forEach(function (copyBtn) {
+    copyBtn.addEventListener('click', function () {
+      const parents = this.parentElement;
+
+      const code = parents.querySelector('code').textContent;
+
+      navigator.clipboard.writeText(code);
+
+      showAlert('green', '<i class="fa fa-check-square-o" aria-hidden="true"></i>&nbsp;复制成功！');
+    })
+  })
+}
+
+// -------------------------------------------------------------
+
+function removeHeaderBackground() {
+  const heroDiv = document.getElementById('hero-div');
+
+  if (!heroDiv) return
+
+  const header = document.querySelector('header');
+
+  // 监听滚动事件
+  window.addEventListener("scroll", function () {
+    const scrollTop = window.scrollY;
+    if (scrollTop > (setNavHeightVar() + setNavHeightVar())) {
+      header.style.background = "none";
+    } else {
+      header.style.background = "var(--hero-bg-color)";
+    }
+  });
+}
+
+// -------------------------------------------------------------
+
+function contextMenu(option) {
+  const menu = document.getElementById('context-menu');
+
+  // 监听右键
+  document.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+
+    menu.classList.add('show');
+
+    const menuWidth = menu.offsetWidth;
+    const menuHeight = menu.offsetHeight;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    let x = e.clientX;
+    let y = e.clientY;
+
+    if (x + menuWidth > viewportWidth) {
+      x = viewportWidth - menuWidth - 10;
+    }
+
+    if (y + menuHeight > viewportHeight) {
+      y = viewportHeight - menuHeight - 10;
+    }
+
+    menu.style.left = x + 'px';
+    menu.style.top = y + 'px';
+    menu.style.visibility = 'visible';
+  });
+
+  menu.addEventListener('click', function (e) {
+    e.stopPropagation();
+  })
+
+  document.addEventListener('click', function () {
+    menu.classList.remove('show');
+  })
+
+  if (option === "copy") {
+    const userSelectText = window.getSelection().toString();
+    navigator.clipboard.writeText(userSelectText);
+    showAlert('green', '<i class="fa fa-check-square-o" aria-hidden="true"></i>&nbsp;复制成功！');
+  } else if (option === "refresh") {
+    location.reload(true);
+  }
+}
+
+// -------------------------------------------------------------
+
+// DOM加载完成后初始化所有功能
 window.addEventListener('DOMContentLoaded', function () {
-  initNavbar();
-  initSearch();
   initBackToTop();
   initSidebar();
   initWebTitle();
   setNavHeightVar();
+  themesToggle();
   loading();
+  preCopy();
+  removeHeaderBackground();
+  contextMenu();
 });
 
 // 监听窗口大小变化

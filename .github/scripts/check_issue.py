@@ -28,24 +28,25 @@ def add_card(file_path, title, time, content, id, labels):
         card_start = html.find(f'<a href="{card_link}">')
         card_end = html.find('</li>', card_start)
         card_end += 5
-        new_card = f'''        <li>
-            <a href="{card_link}">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>{title}</h2>
-                    </div>
-                    <div class="divider" style="height: 1px; width: 100%; margin: 1rem 0 1rem 0;"></div>
-                    <p>{content}</p>
-                    <div class="divider" style="height: 1px; width: 100%; margin: 1rem 0 1rem 0;"></div>
-                    <div class="card-footer">
-                        <div class="article-tag">
-                            {tags_html}
-                        </div>
-                        <p>发布日期：{date}</p>
-                    </div>
+        new_card = f'''
+<li>
+    <a href="{card_link}">
+        <div class="card">
+            <div class="card-header">
+                <h2>{title}</h2>
+            </div>
+            <div class="divider" style="height: 1px; width: 100%; margin: 1rem 0 1rem 0;"></div>
+            <p>{content}</p>
+            <div class="divider" style="height: 1px; width: 100%; margin: 1rem 0 1rem 0;"></div>
+            <div class="card-footer">
+                <div class="article-tag">
+                    {tags_html}
                 </div>
-            </a>
-        </li>
+                <p>发布日期：{date}</p>
+            </div>
+        </div>
+    </a>
+</li>
 '''
         html = html[:card_start] + new_card + html[card_end:]
         print(f"✅ 卡片已更新：{title}")
@@ -53,24 +54,25 @@ def add_card(file_path, title, time, content, id, labels):
         card_list_start = html.find('class="card-list"')
         ul_start = html.rfind('<ul', 0, card_list_start)
         ul_end = html.find('</ul>', ul_start)
-        card = f'''        <li>
-            <a href="../pages/{id}.html">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>{title}</h2>
-                    </div>
-                    <div class="divider" style="height: 1px; width: 100%; margin: 1rem 0 1rem 0;"></div>
-                    <p>{content}</p>
-                    <div class="divider" style="height: 1px; width: 100%; margin: 1rem 0 1rem 0;"></div>
-                    <div class="card-footer">
-                        <div class="article-tag">
-                            {tags_html}
-                        </div>
-                        <p>发布日期：{date}</p>
-                    </div>
+        card = f'''
+<li>
+    <a href="../pages/{id}.html">
+        <div class="card">
+            <div class="card-header">
+                <h2>{title}</h2>
+            </div>
+            <div class="divider" style="height: 1px; width: 100%; margin: 1rem 0 1rem 0;"></div>
+            <p>{content}</p>
+            <div class="divider" style="height: 1px; width: 100%; margin: 1rem 0 1rem 0;"></div>
+            <div class="card-footer">
+                <div class="article-tag">
+                    {tags_html}
                 </div>
-            </a>
-        </li>
+                <p>发布日期：{date}</p>
+            </div>
+        </div>
+    </a>
+</li>
 '''
         new_html = html[:ul_end] + card + html[ul_end:]
         html = new_html
@@ -82,11 +84,15 @@ def add_card(file_path, title, time, content, id, labels):
 def md_to_html(md_text: str) -> str:
     extensions = [
         "extra", "toc", "sane_lists", "codehilite",
-        "nl2br", "footnotes"
+        "nl2br", "footnotes", "fenced_code"
     ]
-    
+
     extension_configs = {
-        "codehilite": {"linenums": False, "css_class": "codehilite"}
+        "codehilite": {
+            "linenums": False,
+            "css_class": "codehilite",
+            "use_pygments": False
+        }
     }
 
     html_text = markdown.markdown(
@@ -95,6 +101,22 @@ def md_to_html(md_text: str) -> str:
         extension_configs=extension_configs,
         output_format="html5"
     )
+
+    # 为代码块添加复制按钮
+    import re
+
+    # 匹配 <pre><code>...</code></pre> 结构
+    def add_copy_button(match):
+        pre_content = match.group(0)
+        # 在 <pre> 标签后插入复制按钮
+        copy_btn = '<span class="copy-btn"><i class="fa fa-copy" aria-hidden="true"></i>&nbsp;Copy</span>'
+        # 在 <pre> 和第一个子元素之间插入按钮
+        pre_tag_end = pre_content.find('>') + 1
+        return pre_content[:pre_tag_end] + '\n                ' + copy_btn + pre_content[pre_tag_end:]
+
+    # 匹配 <pre> 标签及其内容
+    html_text = re.sub(r'<pre[^>]*>.*?</pre>', add_copy_button, html_text, flags=re.DOTALL)
+
     return html_text
 
 def generate_article_page(issue_id, title, author, publish_time, content, labels):
@@ -110,122 +132,39 @@ def generate_article_page(issue_id, title, author, publish_time, content, labels
         for label in labels[:3]:
             tags_html += f'<div class="tag"><span>{label}</span></div>'
 
-    article_template = f'''<!DOCTYPE html>
+    article_template = f'''
+<!DOCTYPE html>
 <html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QingBlog - {title}</title>
-
-    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
-
-    <link rel="stylesheet" href="../css/font-awesome.css" />
-    <link rel="stylesheet" href="../css/QBLOG.css" />
-    <link rel="stylesheet" href="../css/blogArticle.css" />
-
-    <script src="../js/QBLOG.js"></script>
+    <title></title>
 </head>
 
 <body>
-    <div class="overlay"></div>
 
-    <div id="sidebar">
-        <div id="sidebar-close">
-            <i class="fa fa-remove" aria-hidden="true"></i>
-        </div>
-
-        <div class="user-info">
-            <img src="../img/logo.png" alt="Avatar" />
-            <h1>QingXuanJun</h1>
-        </div>
-
-        <nav>
-            <ul>
-                <li>
-                    <a href="../index.html?noloading=true"><i class="fa fa-home" aria-hidden="true"></i>&nbsp;首页</a>
-                </li>
-
-                <div class="divider" style="width: 100%; height: 1px;"></div>
-
-                <li>
-                    <a href="../pages.html"><i class="fa fa-book" aria-hidden="true"></i>&nbsp;文章</a>
-                </li>
-
-                <div class="divider" style="width: 100%; height: 1px;"></div>
-
-                <li>
-                    <a target="_blank" href="https://github.com/QingXuan2000"><i class="fa fa-github-square"
-                            aria-hidden="true"></i>&nbsp;GitHub</a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-
-    <div id="alert">
-        <div id="alert-message">
-            <span></span>
-        </div>
-    </div>
-
-    <header>
-        <nav id="navbar">
-            <img src="../img/logo.png" alt="Logo" class="logo" />
-            <h1>QingBlog</h1>
-
-            <div class="divider" style="width: 2px; margin: 0 0.5rem 0 1rem; border-radius: 100em;"></div>
-
-            <ul>
-                <li>
-                    <a href="../index.html?noloading=true"><i class="fa fa-home" aria-hidden="true"></i>&nbsp;首页</a>
-                </li>
-
-                <li>
-                    <a href="../pages.html"><i class="fa fa-book" aria-hidden="true"></i>&nbsp;文章</a>
-                </li>
-
-                <li>
-                    <a target="_blank" href="https://github.com/QingXuan2000"><i class="fa fa-github-square"
-                            aria-hidden="true"></i>&nbsp;GitHub</a>
-                </li>
-            </ul>
-
-            <div id="search-container">
-                <input id="search" type="search" placeholder="" />
-                <label for="search"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;搜索</label>
-                <button onclick="find(document.getElementById('search').value)"><i class="fa fa-level-down"
-                        aria-hidden="true"></i></button>
+    <div class="card-box">
+        <div class="card">
+            <div class="card-header">
+                <h1>{title}</h1>
+                <p>作者：{author}</p>
+                <p>发布日期：{date}</p>
             </div>
-        </nav>
 
-        <div id="sidebar-toggle">
-            <i class="fa fa-bars" aria-hidden="true"></i>
-        </div>
-    </header>
+            <div class="divider" style="height: 1px; width: 100%; margin: 1rem 0 1rem 0;"></div>
 
-    <div class="card">
-        <div class="card-header">
-            <h1>{title}</h1>
-            <p>作者：{author}</p>
-            <p>发布日期：{date}</p>
-        </div>
+            <div class="card-content article-content">
+                {content_html}
+            </div>
 
-        <div class="divider" style="height: 1px; width: 100%; margin: 1rem 0 1rem 0;"></div>
-
-        <div class="card-content">
-            {content_html}
-        </div>
-
-        <div class="article-footer">
-            <div class="article-tag">
-                <span>文章标签：</span>
-                {tags_html}
+            <div class="article-footer">
+                <div class="article-tag">
+                    <span>文章标签：</span>
+                    {tags_html}
+                </div>
             </div>
         </div>
-    </div>
-
-    <div id="back-to-top">
-        <i class="fa fa-chevron-up"></i>
     </div>
 
     <footer>
@@ -234,29 +173,12 @@ def generate_article_page(issue_id, title, author, publish_time, content, labels
 
     <!-- ------------------------------------------------------------ -->
 
+    <link rel="stylesheet" href="../css/blogArticle.css">
+
     <link rel="stylesheet" href="../css/QBLOG.css" />
     <script src="../js/QBLOG.js"></script>
 
     <link rel="stylesheet" href="../css/font-awesome.min.css" />
-
-    <!-- ------------------------------------------------------------ -->
-
-    <style>
-        .card-header {{
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 10px;
-        }}
-
-        .card-header p {{
-            justify-content: center;
-        }}
-
-        .card-content {{
-            min-height: calc(100dvh - (var(--nav-height) + 26rem));
-        }}
-    </style>
 
     <!-- ------------------------------------------------------------ -->
 
