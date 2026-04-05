@@ -220,6 +220,6 @@ const themes = {
 - [Python Markdown](https://python-markdown.github.io/) - Markdown 转换库
 
 <div align="center" style="margin-top: 5rem;">
-  <span style="color: #a1a1a1; font-size: 0.8em;">本README使用了AI进行文本润色😉</span>
+  本README使用了AI进行文本润色😉
 </div>
 
