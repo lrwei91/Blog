@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, Github, Globe2, Instagram, LinkIcon, Linkedin, Mail, MapPin, Twitter, Youtube } from "lucide-react";
+import { Copy, Github, Globe2, Instagram, LinkIcon, Linkedin, Mail, MapPin, MessagesSquare, Radio, Twitter, Youtube } from "lucide-react";
 import { toast } from "sonner";
 import type { Profile, ProfileModule } from "@/types/profile";
 import { cn } from "@/lib/utils";
@@ -9,6 +9,8 @@ function Icon({ name }: { name?: string }) {
   const iconClass = "h-4 w-4";
   if (name === "github") return <Github className={iconClass} />;
   if (name === "twitter" || name === "x") return <Twitter className={iconClass} />;
+  if (name === "weibo") return <Radio className={iconClass} />;
+  if (name === "wechat") return <MessagesSquare className={iconClass} />;
   if (name === "instagram") return <Instagram className={iconClass} />;
   if (name === "linkedin") return <Linkedin className={iconClass} />;
   if (name === "youtube") return <Youtube className={iconClass} />;

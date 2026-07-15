@@ -37,12 +37,14 @@ import {
   LogOut,
   Mail,
   MapPin,
+  MessagesSquare,
   Palette,
   Pencil,
   Pin,
   Plus,
   RectangleHorizontal,
   RectangleVertical,
+  Radio,
   Save,
   Settings,
   Smartphone,
@@ -1816,12 +1818,14 @@ function InlineProfileText({
   );
 }
 
-const socialIconPresets = ["link", "github", "x", "instagram", "youtube", "linkedin", "website", "mail"] as const;
+const socialIconPresets = ["link", "github", "x", "weibo", "wechat", "instagram", "youtube", "linkedin", "website", "mail"] as const;
 
 function SocialIcon({ name }: { name?: string }) {
   const iconClass = "h-4 w-4";
   if (name === "github") return <Github className={iconClass} />;
   if (name === "twitter" || name === "x") return <Twitter className={iconClass} />;
+  if (name === "weibo") return <Radio className={iconClass} />;
+  if (name === "wechat") return <MessagesSquare className={iconClass} />;
   if (name === "instagram") return <Instagram className={iconClass} />;
   if (name === "youtube") return <Youtube className={iconClass} />;
   if (name === "linkedin") return <Linkedin className={iconClass} />;
@@ -1835,6 +1839,8 @@ function inferSocialIconFromUrl(value: string, currentIcon?: string) {
   const lowerValue = value.toLowerCase();
   if (lowerValue.includes("github.com")) return "github";
   if (lowerValue.includes("twitter.com") || lowerValue.includes("x.com")) return "x";
+  if (lowerValue.includes("weibo.com")) return "weibo";
+  if (lowerValue.includes("weixin.qq.com") || lowerValue.includes("wechat.com")) return "wechat";
   if (lowerValue.includes("instagram.com")) return "instagram";
   if (lowerValue.includes("youtube.com") || lowerValue.includes("youtu.be")) return "youtube";
   if (lowerValue.includes("linkedin.com")) return "linkedin";
@@ -1846,6 +1852,8 @@ function inferSocialLabelFromUrl(value: string) {
   const icon = inferSocialIconFromUrl(value);
   if (icon === "github") return "GitHub";
   if (icon === "twitter" || icon === "x") return "X";
+  if (icon === "weibo") return "Weibo";
+  if (icon === "wechat") return "WeChat";
   if (icon === "instagram") return "Instagram";
   if (icon === "youtube") return "YouTube";
   if (icon === "linkedin") return "LinkedIn";
@@ -1856,6 +1864,8 @@ function inferSocialLabelFromUrl(value: string) {
 function getSocialIconLabel(icon: string) {
   if (icon === "x" || icon === "twitter") return "X";
   if (icon === "github") return "GitHub";
+  if (icon === "weibo") return "Weibo";
+  if (icon === "wechat") return "WeChat";
   if (icon === "youtube") return "YouTube";
   if (icon === "linkedin") return "LinkedIn";
   if (icon === "website") return "Website";
