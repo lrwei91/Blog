@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { getCurrentSessionIsValid } from "@/lib/auth";
 import { getSiteConfig } from "@/lib/site-config";
+import { resolveEditorLanguageFromLanguageTag } from "@/components/admin/editor-i18n";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -13,6 +14,9 @@ export default async function AdminPage() {
     redirect("/admin/login");
   }
 
-  const config = await getSiteConfig((await headers()).get("accept-language"));
-  return <AdminShell initialConfig={config} />;
+  const acceptLanguage = (await headers()).get("accept-language");
+  const config = await getSiteConfig(acceptLanguage);
+  const initialLanguage = resolveEditorLanguageFromLanguageTag(acceptLanguage);
+
+  return <AdminShell initialConfig={config} initialLanguage={initialLanguage} />;
 }

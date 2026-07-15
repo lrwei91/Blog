@@ -1,18 +1,15 @@
 import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
+import { promises as fs } from "fs";
+import path from "path";
 import { getCurrentSessionIsValid } from "@/lib/auth";
 import { allowedImageTypes, getFileExtensionForType, isUploadFolder, maxUploadSize } from "@/lib/upload";
+
+const LOCAL_IMAGE_DIR = path.join(process.cwd(), "public", "images");
 
 export async function POST(request: Request) {
   if (!(await getCurrentSessionIsValid())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json(
-      { error: "Blob token is missing. Local preview works, but remote saving is disabled." },
-      { status: 400 }
-    );
   }
 
   const formData = await request.formData();
@@ -36,8 +33,20 @@ export async function POST(request: Request) {
   }
 
   const extension = getFileExtensionForType(file.type);
-  const pathname = `images/${folder}/${crypto.randomUUID()}.${extension}`;
-  const blob = await put(pathname, file, { access: "public" });
+  const filename = `${crypto.randomUUID()}.${extension}`;
 
-  return NextResponse.json({ url: blob.url });
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const pathname = `images/${folder}/${filename}`;
+    const blob = await put(pathname, file, { access: "public" });
+    return NextResponse.json({ url: blob.url });
+  }
+
+  // Local fallback: save to public/images/{folder}/
+  const dir = path.join(LOCAL_IMAGE_DIR, folder);
+  await fs.mkdir(dir, { recursive: true });
+  const filePath = path.join(dir, filename);
+  const buffer = Buffer.from(await file.arrayBuffer());
+  await fs.writeFile(filePath, buffer);
+
+  return NextResponse.json({ url: `/images/${folder}/${filename}` });
 }

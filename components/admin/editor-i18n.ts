@@ -24,6 +24,19 @@ export function isEditorLanguage(value: unknown): value is EditorLanguage {
   return value === "zh-CN" || value === "en";
 }
 
+export function subscribeToEditorLanguage(onStoreChange: () => void) {
+  function handleStorage(event: StorageEvent) {
+    if (event.key === editorLanguageStorageKey) onStoreChange();
+  }
+
+  if (typeof window !== "undefined") {
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }
+
+  return () => {};
+}
+
 export const editorCopy = {
   "zh-CN": {
     add: "添加",

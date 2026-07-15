@@ -54,7 +54,7 @@ import {
   X,
   Youtube
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
 import { toast } from "sonner";
 import type { Block, BlockSize, LayoutDevice } from "@/types/block";
@@ -108,6 +108,7 @@ import {
   editorLanguageStorageKey,
   isEditorLanguage,
   resolveInitialEditorLanguage,
+  subscribeToEditorLanguage,
   type EditorLanguage
 } from "@/components/admin/editor-i18n";
 
@@ -333,9 +334,13 @@ type EditorContentItem =
   | { id: string; type: "top-level-blocks"; blocks: Block[]; sortOrder: number }
   | { id: string; type: "text-block"; block: Block; sortOrder: number };
 
-export function AdminVisualEditor({ initialConfig }: { initialConfig: SiteConfig }) {
+export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialConfig: SiteConfig; initialLanguage: EditorLanguage }) {
   const [baseConfig, setBaseConfig] = useState(() => normalizeContentFlowConfig(initialConfig));
-  const [editorLanguage, setEditorLanguage] = useState<EditorLanguage>(() => resolveInitialEditorLanguage());
+  const editorLanguage = useSyncExternalStore(
+    subscribeToEditorLanguage,
+    resolveInitialEditorLanguage,
+    () => initialLanguage
+  );
   const [activeVariantId, setActiveVariantId] = useState(() => getMainVariantId(initialConfig));
   const [activeLocale, setActiveLocale] = useState(() => getVariantMainLocale(initialConfig, getMainVariantId(initialConfig)));
   const [modal, setModal] = useState<ModalState>(null);
@@ -497,12 +502,16 @@ export function AdminVisualEditor({ initialConfig }: { initialConfig: SiteConfig
   }, [isDirty]);
 
   useEffect(() => {
-    window.localStorage.setItem(editorLanguageStorageKey, editorLanguage);
+    const saved = window.localStorage.getItem(editorLanguageStorageKey);
+    if (saved !== editorLanguage) {
+      window.localStorage.setItem(editorLanguageStorageKey, editorLanguage);
+    }
   }, [editorLanguage]);
 
   function changeEditorLanguage(value: string) {
     if (!isEditorLanguage(value)) return;
-    setEditorLanguage(value);
+    window.localStorage.setItem(editorLanguageStorageKey, value);
+    window.dispatchEvent(new StorageEvent("storage", { key: editorLanguageStorageKey }));
   }
 
   function getCurrentDragRect(): MeasuredRect | null {

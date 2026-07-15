@@ -7,7 +7,8 @@ import { toast } from "sonner";
 import {
   type EditorLanguage,
   editorLanguageStorageKey,
-  resolveInitialEditorLanguage
+  resolveInitialEditorLanguage,
+  subscribeToEditorLanguage
 } from "@/components/admin/editor-i18n";
 import { cn } from "@/lib/utils";
 
@@ -144,13 +145,4 @@ export function AdminLoginForm({ projectName, initialLanguage }: AdminLoginFormP
       </div>
     </section>
   );
-}
-
-function subscribeToEditorLanguage(onStoreChange: () => void) {
-  function handleStorage(event: StorageEvent) {
-    if (event.key === editorLanguageStorageKey) onStoreChange();
-  }
-
-  window.addEventListener("storage", handleStorage);
-  return () => window.removeEventListener("storage", handleStorage);
 }

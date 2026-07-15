@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { BlobTokenMissingError, writeConfigToBlob } from "@/lib/blob-config";
+import { writeConfigToLocal } from "@/lib/local-config";
 import { getCurrentSessionIsValid } from "@/lib/auth";
 import { getSiteConfig } from "@/lib/site-config";
 import { normalizeContentFlowConfig } from "@/lib/utils";
@@ -31,7 +32,12 @@ export async function PUT(request: Request) {
     return NextResponse.json({ success: true, updatedAt: updatedConfig.updatedAt });
   } catch (error) {
     if (error instanceof BlobTokenMissingError) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      try {
+        await writeConfigToLocal(updatedConfig);
+        return NextResponse.json({ success: true, updatedAt: updatedConfig.updatedAt });
+      } catch {
+        return NextResponse.json({ error: "Local save failed" }, { status: 400 });
+      }
     }
 
     return NextResponse.json({ error: "Save failed" }, { status: 400 });
