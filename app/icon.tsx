@@ -1,7 +1,9 @@
 import { ImageResponse } from "next/og";
 import { getSiteConfig } from "@/lib/site-config";
 
-export const runtime = "edge";
+// The site configuration can fall back to a local file in development.
+// Keep this route on the Node.js runtime so that fallback remains supported.
+export const runtime = "nodejs";
 export const size = {
   width: 64,
   height: 64
