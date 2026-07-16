@@ -1,11 +1,14 @@
 "use client";
 
-import { Download, ExternalLink, ImageIcon } from "lucide-react";
-import { useState } from "react";
+import { ArrowUpRight, Download, ExternalLink, ImageIcon, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import type { Block } from "@/types/block";
-import { cn, isSectionTextBlock } from "@/lib/utils";
+import { cn, getSectionAnchorId, isSectionTextBlock } from "@/lib/utils";
+import type { ExperienceTimelineMeta } from "@/lib/experience-timeline";
 import { getPublicBlockPlacementStyle, getPublicBlockSizeClass } from "@/constants/block-layout";
+import { BlockIcon } from "@/components/blocks/BlockIcon";
 import { ProjectBlock } from "@/components/blocks/ProjectBlock";
 import { TextBlock } from "@/components/blocks/TextBlock";
 
@@ -17,7 +20,10 @@ export function BlockCard({
   hidePlaceholderContent = false,
   withLayout = true,
   layoutStyle,
-  className
+  className,
+  revealIndex = 0,
+  sectionNumber,
+  timelineMeta
 }: {
   block: Block;
   compact?: boolean;
@@ -27,13 +33,25 @@ export function BlockCard({
   withLayout?: boolean;
   layoutStyle?: React.CSSProperties & Record<string, string | number | undefined>;
   className?: string;
+  revealIndex?: number;
+  sectionNumber?: number;
+  timelineMeta?: ExperienceTimelineMeta;
 }) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const displayBlock = hidePlaceholderContent ? getDisplayBlock(block) : block;
 
   if (isSectionTextBlock(displayBlock)) {
-    return <SectionTextCard block={displayBlock} withLayout={withLayout} compact={compact} layoutStyle={layoutStyle} className={className} />;
+    return (
+      <SectionTextCard
+        block={displayBlock}
+        withLayout={withLayout}
+        compact={compact}
+        layoutStyle={layoutStyle}
+        className={className}
+        sectionNumber={sectionNumber}
+      />
+    );
   }
 
   function runAction() {
@@ -67,7 +85,9 @@ export function BlockCard({
   const isPlainTextCard = block.metadata?.textVariant === "plain";
   const hasHoverContent = Boolean(displayBlock.subtitle?.trim() || displayBlock.description?.trim());
   const shouldRevealCoverContent = hasCover && hasHoverContent && !disableHoverReveal;
-  const showFooter = Boolean(block.badge) || block.actionType === "link" || block.actionType === "download" || block.actionType === "image-preview";
+  const showFooter = timelineMeta ? block.actionType !== "none" : Boolean(block.badge) || block.actionType !== "none";
+  const accentIndex = getAccentIndex(block.id);
+  const contentBlock = timelineMeta ? { ...displayBlock, subtitle: timelineMeta.role } : displayBlock;
 
   return (
     <>
@@ -76,17 +96,26 @@ export function BlockCard({
         tabIndex={clickable ? 0 : undefined}
         onClick={runAction}
         onKeyDown={(event) => {
-          if (clickable && (event.key === "Enter" || event.key === " ")) runAction();
+          if (clickable && (event.key === "Enter" || event.key === " ")) {
+            event.preventDefault();
+            runAction();
+          }
         }}
         style={{
-          backgroundColor: block.backgroundColor || "var(--site-card)",
-          color: block.textColor || "var(--site-text)",
+          backgroundColor: block.backgroundColor || undefined,
+          color: block.textColor || undefined,
+          "--reveal-index": revealIndex,
           ...(withLayout && !compact ? layoutStyle ?? getPublicBlockPlacementStyle(block) : {})
-        }}
+        } as React.CSSProperties & Record<string, string | number | undefined>}
+        data-reveal
+        data-accent={accentIndex}
+        data-action={block.actionType}
+        data-plain-text={isPlainTextCard ? "true" : undefined}
+        data-timeline={timelineMeta ? "true" : undefined}
         className={cn(
-          "group relative overflow-hidden rounded-[20px] border border-[var(--site-border)] p-4 shadow-soft transition",
-          "focus:outline-none focus:ring-4 focus:ring-[#1677FF]/10",
-          clickable && "cursor-pointer hover:-translate-y-0.5 hover:border-[#1677FF]/30",
+          "public-block-card group relative overflow-hidden rounded-[20px] border border-[var(--site-border)] p-4 transition",
+          "focus:outline-none focus:ring-4 focus:ring-[var(--site-primary)]/10",
+          clickable && "cursor-pointer",
           withLayout && !compact && getPublicBlockSizeClass(),
           compact && "min-h-36",
           className
@@ -105,40 +134,49 @@ export function BlockCard({
         {hasCover ? (
           <div
             className={cn(
-              "pointer-events-none absolute inset-x-4 bottom-4 z-20 flex items-end justify-between gap-3 transition duration-200",
+              "public-cover-title pointer-events-none absolute inset-x-4 bottom-4 z-20 flex items-end justify-between gap-3 transition duration-200",
               shouldRevealCoverContent && "group-hover:opacity-0"
             )}
           >
-            <span className="line-clamp-2 max-w-full rounded-[18px] border border-[#E5E7EB] bg-white/95 px-3 py-1.5 text-sm font-semibold leading-5 text-[#111] shadow-soft">
+            <span className="line-clamp-2 max-w-full rounded-full border px-3 py-1.5 text-sm font-semibold leading-5 shadow-soft">
               {block.title}
             </span>
           </div>
         ) : null}
         <div
           className={cn(
-            "relative z-30 flex h-full flex-col gap-4 transition duration-200",
+            "public-block-card__body relative z-30 flex h-full flex-col gap-4 transition duration-200",
             isPlainTextCard ? "justify-center" : "justify-between",
             hasCover && (shouldRevealCoverContent ? "opacity-0 group-hover:opacity-100" : "opacity-0")
           )}
         >
-          <div className={cn("min-h-0", isPlainTextCard && "flex flex-1")}>{renderBlock(displayBlock, hasCover)}</div>
-          {showFooter ? <div className="flex items-center justify-between gap-3">
-            <div className="flex min-w-0 flex-wrap gap-2">
-              {block.badge ? (
-                <span className="line-clamp-2 max-w-full rounded-[18px] border border-[#E5E7EB] bg-white/95 px-3 py-1.5 text-xs font-semibold leading-5 text-[#475569] shadow-soft">
-                  {block.badge}
-                </span>
-              ) : (
-                <span />
-              )}
-            </div>
+          <div className={cn("min-h-0", isPlainTextCard && "flex flex-1")}>
+            {renderBlock(contentBlock, hasCover)}
+          </div>
+          {showFooter ? <div className={cn("public-block-card__footer flex items-center gap-3", timelineMeta ? "justify-start" : "justify-between")}>
+            {!timelineMeta ? <div className="flex min-w-0 flex-wrap gap-2">
+              {block.badge ? <span className="public-block-card__badge line-clamp-2 max-w-full rounded-full border px-3 py-1.5 text-xs font-semibold leading-5">{block.badge}</span> : <span />}
+            </div> : null}
             <div className="shrink-0">
               {block.actionType === "link" ? <ExternalLink className="h-4 w-4 text-[#64748B]" /> : null}
               {block.actionType === "download" ? <Download className="h-4 w-4 text-[#64748B]" /> : null}
               {block.actionType === "image-preview" ? <ImageIcon className="h-4 w-4 text-[#64748B]" /> : null}
+              {block.actionType === "modal" ? <span className="public-block-card__details">DETAILS <ArrowUpRight /></span> : null}
             </div>
           </div> : null}
         </div>
+        {timelineMeta ? (
+          <div className="experience-timeline__aside">
+            <span className="experience-timeline__tenure">
+              <small>在职时长</small>
+              <b>{timelineMeta.tenure}</b>
+            </span>
+            <div className="experience-timeline__art" aria-hidden="true">
+              <BlockIcon name={block.icon || "briefcase"} />
+              <i /><i /><i />
+            </div>
+          </div>
+        ) : null}
       </article>
 
       {previewOpen ? (
@@ -152,10 +190,10 @@ export function BlockCard({
       ) : null}
       {modalOpen ? (
         <Dialog onClose={() => setModalOpen(false)}>
-          <div className="grid gap-3">
-            <p className="text-sm font-medium text-[#64748B]">{displayBlock.subtitle}</p>
-            <h3 className="text-2xl font-semibold">{displayBlock.title}</h3>
-            <p className="leading-7 text-[#555]">{displayBlock.description || "No additional details yet."}</p>
+          <div className="public-dialog__content grid gap-3">
+            <p className="public-dialog__eyebrow">{getModalSubtitle(displayBlock)}</p>
+            <h3>{getModalTitle(displayBlock)}</h3>
+            <p className="public-dialog__body">{getModalBody(displayBlock)}</p>
           </div>
         </Dialog>
       ) : null}
@@ -195,13 +233,15 @@ function SectionTextCard({
   compact,
   withLayout,
   layoutStyle,
-  className
+  className,
+  sectionNumber
 }: {
   block: Block;
   compact: boolean;
   withLayout: boolean;
   layoutStyle?: React.CSSProperties & Record<string, string | number | undefined>;
   className?: string;
+  sectionNumber?: number;
 }) {
   const rawTitleSize = block.metadata?.titleSize;
   const rawTitleAlign = block.metadata?.titleAlign;
@@ -211,32 +251,85 @@ function SectionTextCard({
 
   return (
     <article
+      id={getSectionAnchorId(block)}
       style={withLayout && !compact ? layoutStyle ?? getPublicBlockPlacementStyle(block) : undefined}
+      data-reveal
       className={cn(
-        "relative min-w-0 px-1 py-1",
+        "public-section-heading relative min-w-0 px-1 py-1",
         sectionTextAlign[titleAlign],
         withLayout && !compact && getPublicBlockSizeClass(),
         className
       )}
     >
-      <h2 className={cn("font-bold leading-tight tracking-normal", sectionTitleSize[titleSize])}>
-        {block.title.trim()}
-        {block.icon ? <span className="ml-1 text-[#1479FF]">{block.icon}</span> : null}
-      </h2>
-      {subtitle ? <p className="mt-1 text-sm leading-6 text-[#64748B]">{subtitle}</p> : null}
+      <p className="public-section-heading__label">
+        <span /> {String(sectionNumber ?? block.sortOrder).padStart(2, "0")} / {subtitle || "SELECTED WORK"}
+      </p>
+      <div className="public-section-heading__title-row">
+        {block.icon ? <span className="public-section-heading__icon"><BlockIcon name={block.icon} /></span> : null}
+        <h2 className={cn("font-bold leading-tight", sectionTitleSize[titleSize])}>{block.title.trim()}</h2>
+      </div>
     </article>
   );
 }
 
 function Dialog({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
-  return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/30 p-5" onClick={onClose}>
-      <div className="max-h-[88vh] w-full max-w-2xl overflow-auto rounded-[24px] bg-white p-5 shadow-2xl" onClick={(event) => event.stopPropagation()}>
-        <button type="button" onClick={onClose} className="mb-4 rounded-full bg-[#F1F5F9] px-3 py-1 text-sm">
-          Close
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
+
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") onClose();
+    }
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div className="public-dialog fixed inset-0 z-50 grid place-items-center p-5" onClick={onClose} role="presentation">
+      <div
+        className="public-dialog__panel max-h-[88vh] w-full max-w-2xl overflow-auto rounded-[24px] p-5"
+        onClick={(event) => event.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="详情"
+      >
+        <button ref={closeButtonRef} type="button" onClick={onClose} className="public-dialog__close" aria-label="关闭详情">
+          <X />
         </button>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
+}
+
+function getModalTitle(block: Block) {
+  return typeof block.metadata?.modalTitle === "string" && block.metadata.modalTitle.trim()
+    ? block.metadata.modalTitle
+    : block.title;
+}
+
+function getModalSubtitle(block: Block) {
+  return typeof block.metadata?.modalSubtitle === "string" && block.metadata.modalSubtitle.trim()
+    ? block.metadata.modalSubtitle
+    : block.subtitle;
+}
+
+function getModalBody(block: Block) {
+  return typeof block.metadata?.modalBody === "string" && block.metadata.modalBody.trim()
+    ? block.metadata.modalBody
+    : block.description || "No additional details yet.";
+}
+
+function getAccentIndex(value: string) {
+  let hash = 0;
+  for (let index = 0; index < value.length; index += 1) hash = (hash * 31 + value.charCodeAt(index)) | 0;
+  return Math.abs(hash) % 5;
 }

@@ -15,6 +15,7 @@ function Icon({ name }: { name?: string }) {
   if (name === "linkedin") return <Linkedin className={iconClass} />;
   if (name === "youtube") return <Youtube className={iconClass} />;
   if (name === "website" || name === "globe") return <Globe2 className={iconClass} />;
+  if (name === "mail" || name === "email") return <Mail className={iconClass} />;
   return <LinkIcon className={iconClass} />;
 }
 
@@ -22,51 +23,57 @@ export function ProfileModuleRenderer({ module, profile }: { module: ProfileModu
   switch (module) {
     case "avatar":
       return (
-        <img
-          src={profile.avatarUrl || "/default-avatar.svg"}
-          alt={profile.displayName}
-          className="h-32 w-32 rounded-full border border-[#EAEAEA] object-cover shadow-soft"
-        />
+        <div className="profile-module profile-module--avatar" data-profile-module="avatar">
+          <img
+            src={profile.avatarUrl || "/default-avatar.svg"}
+            alt={profile.displayName}
+            className="profile-module__avatar"
+          />
+        </div>
       );
     case "name": {
       const username = isPlaceholderHandle(profile.username) ? "" : profile.username;
       return (
-        <div className="grid gap-1">
-          <h1 className="text-3xl font-semibold tracking-normal">{profile.displayName}</h1>
-          {username ? <p className="text-sm text-[var(--site-muted)]">@{username}</p> : null}
+        <div className="profile-module profile-module--name" data-profile-module="name">
+          <h1 id="profile-name">{profile.displayName}</h1>
+          {username ? <p>@{username}</p> : null}
         </div>
       );
     }
     case "headline":
-      return profile.headline.trim() ? <p className="whitespace-pre-wrap text-base font-medium text-[#333]">{profile.headline}</p> : null;
+      return profile.headline.trim() ? (
+        <p className="profile-module profile-module--headline whitespace-pre-wrap" data-profile-module="headline">
+          {profile.headline}
+        </p>
+      ) : null;
     case "bio":
-      return profile.bio.trim() ? <p className="whitespace-pre-wrap text-sm leading-7 text-[var(--site-muted)]">{profile.bio}</p> : null;
+      return profile.bio.trim() ? (
+        <p className="profile-module profile-module--bio whitespace-pre-wrap" data-profile-module="bio">{profile.bio}</p>
+      ) : null;
     case "tags":
       return (
-        <div className="flex flex-wrap gap-2">
+        <div className="profile-module profile-module--tags" data-profile-module="tags">
           {profile.tags.map((tag) => (
-            <span key={tag} className="rounded-full bg-[#F1F5F9] px-3 py-1 text-xs font-medium text-[#475569]">
-              {tag}
-            </span>
+            <span key={tag}>{tag}</span>
           ))}
         </div>
       );
     case "location":
       return profile.location?.trim() ? (
-        <div className="flex items-center gap-2 text-sm text-[var(--site-muted)]">
+        <div className="profile-module profile-module--location" data-profile-module="location">
           <MapPin className="h-4 w-4" />
           <span>{profile.location}</span>
         </div>
       ) : null;
     case "socialLinks":
       return (
-        <div className="flex flex-wrap gap-2">
+        <div className="profile-module profile-module--social" data-profile-module="socialLinks">
           {[...profile.socialLinks]
             .filter((link) => link.isVisible)
             .sort((a, b) => a.sortOrder - b.sortOrder)
             .map((link) => {
               const className =
-                "inline-flex items-center gap-2 rounded-full border border-[#EAEAEA] bg-white px-3 py-2 text-sm font-medium text-[#333] transition hover:border-[#1677FF]/40 hover:text-[#1677FF]";
+                "profile-module__action";
 
               if (link.actionType === "copy") {
                 return (
@@ -109,10 +116,8 @@ export function ProfileModuleRenderer({ module, profile }: { module: ProfileModu
             void navigator.clipboard.writeText(profile.email ?? "");
             toast.success("Email copied");
           }}
-          className={cn(
-            "inline-flex w-fit items-center gap-2 rounded-full border border-[#EAEAEA] bg-white px-3 py-2 text-sm font-medium text-[#333]",
-            "transition hover:border-[#1677FF]/40 hover:text-[#1677FF]"
-          )}
+          className={cn("profile-module profile-module--contact profile-module__action")}
+          data-profile-module="contact"
         >
           <Mail className="h-4 w-4" />
           {profile.email}
@@ -120,7 +125,7 @@ export function ProfileModuleRenderer({ module, profile }: { module: ProfileModu
         </button>
       ) : null;
     case "latestPosts":
-      return <p className="text-sm text-[var(--site-muted)]">Latest posts will appear here.</p>;
+      return <p className="profile-module profile-module--posts" data-profile-module="latestPosts">Latest posts will appear here.</p>;
     default:
       return null;
   }

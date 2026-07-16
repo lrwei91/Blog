@@ -12,7 +12,7 @@ export function TextBlock({ block }: { block: Block }) {
     return (
       <div
         className={cn(
-          "flex h-full min-h-0 w-full",
+          "public-text-block flex h-full min-h-0 w-full",
           verticalAlign === "top" && "items-start",
           verticalAlign === "center" && "items-center",
           verticalAlign === "bottom" && "items-end"
@@ -20,11 +20,11 @@ export function TextBlock({ block }: { block: Block }) {
       >
         <p
           className={cn(
-            "w-full whitespace-pre-wrap text-lg leading-7",
+            "w-full whitespace-pre-wrap",
             textAlign === "left" && "text-left",
             textAlign === "center" && "text-center",
             textAlign === "right" && "text-right",
-            block.metadata.textBold === true ? "font-bold" : "font-semibold",
+            block.metadata.textBold === true && "font-bold",
             block.metadata.textItalic === true && "italic",
             block.metadata.textUnderline === true && "underline"
           )}
@@ -36,9 +36,9 @@ export function TextBlock({ block }: { block: Block }) {
   }
 
   return (
-    <div className="grid gap-2">
-      {block.title ? <h3 className="text-lg font-semibold">{block.title}</h3> : null}
-      {block.description ? <p className="line-clamp-5 text-sm leading-6 text-[#555]">{block.description}</p> : null}
+    <div className="public-text-block grid gap-2">
+      {block.title ? <h3>{block.title}</h3> : null}
+      {block.description ? <p className="line-clamp-5">{block.description}</p> : null}
     </div>
   );
 }

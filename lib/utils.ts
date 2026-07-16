@@ -38,6 +38,16 @@ export function isSectionTextBlock(block: Block) {
   return block.size === "section-text";
 }
 
+export function getSectionAnchorId(block: Block) {
+  const sourceId = typeof block.metadata?.sourceSectionId === "string" ? block.metadata.sourceSectionId : block.id;
+  const safeId = sourceId
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return `section-${safeId || "content"}`;
+}
+
 export function normalizeContentFlowConfig(config: SiteConfig): SiteConfig {
   const sectionById = new Map(config.sections.map((section) => [section.id, section]));
   const existingBlockIds = new Set(config.blocks.map((block) => block.id));

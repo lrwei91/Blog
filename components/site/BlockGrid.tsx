@@ -44,10 +44,11 @@ export function BlockGrid({
       className={cn(layout === "grid" ? blockGridClass : "grid grid-cols-1", gapClasses[gap])}
       style={{ "--block-grid-gap": gapSizes[gap] } as CSSProperties & { "--block-grid-gap": string }}
     >
-      {blocks.map((block) => (
+      {blocks.map((block, index) => (
         <BlockCard
           key={block.id}
           block={block}
+          revealIndex={index}
           hidePlaceholderContent={hidePlaceholderContent}
           layoutStyle={getPublicBlockPlacementStyle(
             block,

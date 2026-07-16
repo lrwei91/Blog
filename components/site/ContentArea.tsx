@@ -3,6 +3,7 @@ import type { ContentOrderItem } from "@/lib/utils";
 import type { PublicDesktopContentColumns } from "@/lib/public-content-layout";
 import { BlockGrid } from "@/components/site/BlockGrid";
 import { BlockCard } from "@/components/blocks/BlockCard";
+import { ExperienceTimeline } from "@/components/site/ExperienceTimeline";
 
 export function ContentArea({
   topLevelBlocks = [],
@@ -22,31 +23,47 @@ export function ContentArea({
   return (
     <section
       data-desktop-content-columns={desktopContentColumns}
-      className="content-grid-container grid min-w-0 gap-6 lg:w-full lg:max-w-[var(--site-content-max-width)] lg:justify-self-center"
+      className="content-grid-container public-content min-w-0 lg:w-full lg:max-w-[var(--site-content-max-width)] lg:justify-self-center"
     >
-      {contentItems.map((item) =>
-        item.type === "top-level-blocks" ? (
-          item.blocks.length > 0 ? (
-            <BlockGrid
-              key={item.id}
-              blocks={item.blocks}
-              layout="grid"
-              gap="md"
-              desktopContentColumns={desktopContentColumns}
-              hidePlaceholderContent
-            />
-          ) : null
-        ) : (
+      {contentItems.map((item, itemIndex) => {
+        if (item.type === "top-level-blocks") {
+          if (item.blocks.length === 0) return null;
+          const previousItem = contentItems[itemIndex - 1];
+          const isExperienceGroup = previousItem?.type === "text-block" && getSourceSectionId(previousItem.block) === "experience";
+
+          return (
+            <div key={item.id} className="public-content__block-group">
+              {isExperienceGroup ? (
+                <ExperienceTimeline blocks={item.blocks} />
+              ) : (
+                <BlockGrid
+                  blocks={item.blocks}
+                  layout="grid"
+                  gap="md"
+                  desktopContentColumns={desktopContentColumns}
+                  hidePlaceholderContent
+                />
+              )}
+            </div>
+          );
+        }
+
+        return (
           <BlockCard
             key={item.id}
             block={item.block}
             disableActions
             hidePlaceholderContent
             withLayout={false}
+            sectionNumber={contentItems.slice(0, itemIndex + 1).filter((contentItem) => contentItem.type === "text-block").length}
             className="min-h-0"
           />
-        )
-      )}
+        );
+      })}
     </section>
   );
+}
+
+function getSourceSectionId(block: Block) {
+  return typeof block.metadata?.sourceSectionId === "string" ? block.metadata.sourceSectionId : "";
 }

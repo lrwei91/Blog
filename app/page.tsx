@@ -28,6 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = config.settings.seoTitle || config.settings.siteTitle;
   const description = config.settings.seoDescription || config.settings.siteDescription;
   const canonicalUrl = config.settings.seoCanonicalUrl || siteUrl;
+  const ogImage = config.settings.seoOgImage || "/og.png";
   const shouldIndex = getVariantAllowSeoIndex(baseConfig, variantId);
 
   return {
@@ -50,7 +51,13 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       url: siteUrl,
       type: "website",
-      images: config.settings.seoOgImage ? [config.settings.seoOgImage] : undefined
+      images: [{ url: ogImage, width: 1731, height: 909, alt: `${config.profile.displayName} · Quality Engineering` }]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage]
     }
   };
 }
