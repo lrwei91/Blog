@@ -21,17 +21,36 @@ function isSafeUrl(value: string) {
   }
 }
 
-const socialLinkSchema = z.object({
-  id: z.string().min(1),
-  label: z.string().min(1),
-  icon: z.string().optional(),
-  href: safeUrlSchema.refine((value) => value.length > 0, { message: "Required" }),
-  actionType: z.enum(["link", "copy"]).optional(),
-  copyText: z.string().optional(),
-  openInNewTab: z.boolean().optional(),
-  isVisible: z.boolean(),
-  sortOrder: z.number().int().nonnegative()
-});
+const socialLinkSchema = z
+  .object({
+    id: z.string().min(1),
+    label: z.string().min(1),
+    icon: z.string().optional(),
+    href: z.string().default(""),
+    actionType: z.enum(["link", "copy"]).optional(),
+    copyText: z.string().optional(),
+    openInNewTab: z.boolean().optional(),
+    isVisible: z.boolean(),
+    sortOrder: z.number().int().nonnegative()
+  })
+  .superRefine((link, ctx) => {
+    if ((link.actionType ?? "link") === "link") {
+      if (!link.href.trim()) {
+        ctx.addIssue({ code: "custom", path: ["href"], message: "Required" });
+      } else if (!isSafeUrl(link.href)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["href"],
+          message: "URL must use http, https, mailto, tel, or a relative path"
+        });
+      }
+    }
+
+    const hasLegacyCopyUrl = link.href.trim() !== "" && isSafeUrl(link.href);
+    if (link.actionType === "copy" && !link.copyText?.trim() && !hasLegacyCopyUrl) {
+      ctx.addIssue({ code: "custom", path: ["copyText"], message: "Required" });
+    }
+  });
 
 const profileSchema = z.object({
   avatarUrl: z.string(),

@@ -114,7 +114,7 @@ export function BlockCard({
         data-timeline={timelineMeta ? "true" : undefined}
         className={cn(
           "public-block-card group relative overflow-hidden rounded-[20px] border border-[var(--site-border)] p-4 transition",
-          "focus:outline-none focus:ring-4 focus:ring-[var(--site-primary)]/10",
+          "focus:outline-none",
           clickable && "cursor-pointer",
           withLayout && !compact && getPublicBlockSizeClass(),
           compact && "min-h-36",
@@ -189,12 +189,19 @@ export function BlockCard({
         </Dialog>
       ) : null}
       {modalOpen ? (
-        <Dialog onClose={() => setModalOpen(false)}>
-          <div className="public-dialog__content grid gap-3">
-            <p className="public-dialog__eyebrow">{getModalSubtitle(displayBlock)}</p>
-            <h3>{getModalTitle(displayBlock)}</h3>
-            <p className="public-dialog__body">{getModalBody(displayBlock)}</p>
-          </div>
+        <Dialog onClose={() => setModalOpen(false)} variant="content">
+          <article className="public-dialog__content">
+            <header className="public-dialog__header">
+              <p className="public-dialog__eyebrow"><i /> WORK EXPERIENCE <span>/ {getModalSubtitle(displayBlock)}</span></p>
+              <h3>{getModalTitle(displayBlock)}</h3>
+              <p className="public-dialog__lede">职责、方法与代表项目</p>
+            </header>
+            <ModalBody body={getModalBody(displayBlock)} />
+            <footer className="public-dialog__footer">
+              <span><i /> EXPERIENCE NOTE</span>
+              <span>SCROLL TO READ</span>
+            </footer>
+          </article>
         </Dialog>
       ) : null}
     </>
@@ -248,12 +255,15 @@ function SectionTextCard({
   const titleSize = rawTitleSize === "sm" || rawTitleSize === "lg" ? rawTitleSize : "md";
   const titleAlign = rawTitleAlign === "center" || rawTitleAlign === "right" ? rawTitleAlign : "left";
   const subtitle = block.subtitle || block.description;
+  const resolvedSectionNumber = sectionNumber ?? block.sortOrder;
+  const sectionAccent = ((resolvedSectionNumber - 1) % 4 + 4) % 4;
 
   return (
     <article
       id={getSectionAnchorId(block)}
       style={withLayout && !compact ? layoutStyle ?? getPublicBlockPlacementStyle(block) : undefined}
       data-reveal
+      data-accent={sectionAccent}
       className={cn(
         "public-section-heading relative min-w-0 px-1 py-1",
         sectionTextAlign[titleAlign],
@@ -262,7 +272,7 @@ function SectionTextCard({
       )}
     >
       <p className="public-section-heading__label">
-        <span /> {String(sectionNumber ?? block.sortOrder).padStart(2, "0")} / {subtitle || "SELECTED WORK"}
+        <span /> {String(resolvedSectionNumber).padStart(2, "0")} / {subtitle || "SELECTED WORK"}
       </p>
       <div className="public-section-heading__title-row">
         {block.icon ? <span className="public-section-heading__icon"><BlockIcon name={block.icon} /></span> : null}
@@ -272,7 +282,15 @@ function SectionTextCard({
   );
 }
 
-function Dialog({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
+function Dialog({
+  children,
+  onClose,
+  variant = "media"
+}: {
+  children: React.ReactNode;
+  onClose: () => void;
+  variant?: "content" | "media";
+}) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -294,7 +312,7 @@ function Dialog({ children, onClose }: { children: React.ReactNode; onClose: () 
   return createPortal(
     <div className="public-dialog fixed inset-0 z-50 grid place-items-center p-5" onClick={onClose} role="presentation">
       <div
-        className="public-dialog__panel max-h-[88vh] w-full max-w-2xl overflow-auto rounded-[24px] p-5"
+        className={cn("public-dialog__panel", `public-dialog__panel--${variant}`)}
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -307,6 +325,39 @@ function Dialog({ children, onClose }: { children: React.ReactNode; onClose: () 
       </div>
     </div>,
     document.body
+  );
+}
+
+function ModalBody({ body }: { body: string }) {
+  const sections = body.split(/\n\s*\n/).map((item) => item.trim()).filter(Boolean);
+
+  return (
+    <div className="public-dialog__body">
+      {sections.map((section, index) => {
+        const key = `${index}-${section.slice(0, 18)}`;
+        if (/^项目成果[：:]/.test(section)) {
+          const [, content = section] = section.split(/[：:](.*)/);
+          return (
+            <aside key={key} className="public-dialog__result">
+              <span>RESULT</span>
+              <p>{content.trim()}</p>
+            </aside>
+          );
+        }
+        if (!section.startsWith("•") && section.length <= 20) {
+          return <h4 key={key}><span />{section}</h4>;
+        }
+        if (section.startsWith("•")) {
+          return (
+            <p key={key} className="public-dialog__item">
+              <span aria-hidden="true" />
+              {section.replace(/^•\s*/, "")}
+            </p>
+          );
+        }
+        return <p key={key} className="public-dialog__paragraph">{section}</p>;
+      })}
+    </div>
   );
 }
 

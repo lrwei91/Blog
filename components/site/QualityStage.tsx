@@ -1,17 +1,15 @@
-import { ScanSearch, ShieldCheck, Workflow } from "lucide-react";
+import { Quote, ScanSearch, ShieldCheck, Workflow } from "lucide-react";
 
 export function QualityStage({
   avatarUrl,
-  displayName,
   showAvatar
 }: {
   avatarUrl?: string;
-  displayName: string;
   showAvatar: boolean;
 }) {
   return (
-    <div className="quality-stage" data-reveal aria-hidden="true">
-      <div className="quality-stage__orbit">
+    <div className="quality-stage" data-reveal>
+      <div className="quality-stage__orbit" aria-hidden="true">
         <span className="quality-stage__ring quality-stage__ring--outer" />
         <span className="quality-stage__ring quality-stage__ring--inner" />
         <span className="quality-stage__node quality-stage__node--one"><ScanSearch /></span>
@@ -28,10 +26,10 @@ export function QualityStage({
       </div>
 
       <div className="quality-stage__signal">
-        <span className="quality-stage__signal-icon"><ShieldCheck /></span>
+        <span className="quality-stage__signal-icon" aria-hidden="true"><Quote /></span>
         <span>
-          <b><i /> QUALITY SYSTEM · ACTIVE</b>
-          <small>{displayName} · DEFINE → VERIFY → SHIP</small>
+          <b><i /> PERSONAL MOTTO</b>
+          <small>春风若有怜花意，可否许我再少年？</small>
         </span>
       </div>
     </div>

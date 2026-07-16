@@ -1,4 +1,4 @@
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUp, ArrowUpRight } from "lucide-react";
 import type { Block } from "@/types/block";
 import type { SiteConfig, SiteLanguage } from "@/types/site-config";
 import { getSectionAnchorId, type ContentOrderItem } from "@/lib/utils";
@@ -36,6 +36,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
 
   return (
     <main
+      id="top"
       style={
         {
           "--site-bg": theme.backgroundColor,
@@ -57,7 +58,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
         <div className="public-nav__inner">
           <a href="#top" className="public-nav__brand" aria-label={`${renderModel.profile.displayName} 首页`}>
             <span className="public-nav__mark"><i /><i /><i /></span>
-            <span>{renderModel.profile.displayName}</span>
+            <span className="public-nav__brand-label">个人主页</span>
           </a>
 
           {navItems.length > 0 ? (
@@ -88,7 +89,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
         </div>
       </header>
 
-      <div id="top" className="public-site__shell">
+      <div className="public-site__shell">
         <ProfilePanel profile={renderModel.profile} />
         <ContentArea
           topLevelBlocks={renderModel.topLevelBlocks}
@@ -100,20 +101,25 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
       <footer className="public-footer" data-reveal>
         <div className="public-footer__inner">
           <p className="public-footer__statement">
-            把质量做成系统，<br />
-            <span>让每次交付都有证据。</span>
+            把喜欢的事，<br />
+            <span>慢慢做成作品。</span>
           </p>
           <div className="public-footer__meta">
-            <a href="#top" className="public-nav__brand">
+            <a href="#top" className="public-nav__brand public-footer__brand" aria-label={`${renderModel.profile.displayName} 首页`}>
               <span className="public-nav__mark"><i /><i /><i /></span>
-              <span>{renderModel.profile.displayName}</span>
             </a>
-            <p>QUALITY ENGINEERING<br />FUZHOU · CHINA</p>
-            <p>{renderModel.profile.headline}<br />BUILD · VERIFY · IMPROVE</p>
-            <p>© {new Date().getFullYear()}<br />EVIDENCE OVER ASSUMPTION</p>
+            <p className="public-footer__signature">
+              {"// Designed by "}<span>{renderModel.profile.username || "lrwei91"}</span>
+            </p>
+            <p className="public-footer__copyright">© {new Date().getFullYear()}</p>
           </div>
         </div>
       </footer>
+
+      <a className="public-back-to-top" href="#top" data-back-to-top aria-label="返回顶部">
+        <ArrowUp aria-hidden="true" />
+        <span>TOP</span>
+      </a>
     </main>
   );
 }

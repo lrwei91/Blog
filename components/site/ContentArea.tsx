@@ -4,6 +4,8 @@ import type { PublicDesktopContentColumns } from "@/lib/public-content-layout";
 import { BlockGrid } from "@/components/site/BlockGrid";
 import { BlockCard } from "@/components/blocks/BlockCard";
 import { ExperienceTimeline } from "@/components/site/ExperienceTimeline";
+import { TravelFootprint } from "@/components/site/TravelFootprint";
+import { PersonalProjects } from "@/components/site/PersonalProjects";
 
 export function ContentArea({
   topLevelBlocks = [],
@@ -29,12 +31,19 @@ export function ContentArea({
         if (item.type === "top-level-blocks") {
           if (item.blocks.length === 0) return null;
           const previousItem = contentItems[itemIndex - 1];
-          const isExperienceGroup = previousItem?.type === "text-block" && getSourceSectionId(previousItem.block) === "experience";
+          const sourceSectionId = previousItem?.type === "text-block" ? getSourceSectionId(previousItem.block) : "";
+          const isExperienceGroup = sourceSectionId === "experience";
+          const isTravelGroup = sourceSectionId === "travel";
+          const isProjectsGroup = sourceSectionId === "projects";
 
           return (
             <div key={item.id} className="public-content__block-group">
               {isExperienceGroup ? (
                 <ExperienceTimeline blocks={item.blocks} />
+              ) : isTravelGroup ? (
+                <TravelFootprint block={item.blocks[0]} />
+              ) : isProjectsGroup && previousItem?.type === "text-block" ? (
+                <PersonalProjects block={item.blocks[0]} />
               ) : (
                 <BlockGrid
                   blocks={item.blocks}

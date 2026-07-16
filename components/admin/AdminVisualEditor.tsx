@@ -3947,7 +3947,9 @@ function SocialLinksQuickForm({
                   </span>
                   <span className="grid min-w-0 gap-0.5">
                     <span className="truncate text-sm font-semibold text-[#111]">{link.label || copy.newLink}</span>
-                    <span className="truncate text-xs text-[#64748B]">{link.href || link.actionType || "link"}</span>
+                    <span className="truncate text-xs text-[#64748B]">
+                      {link.actionType === "copy" ? link.copyText || copy.blockCopyText : link.href || "link"}
+                    </span>
                   </span>
                 </div>
               <div className="flex gap-1">
@@ -3975,14 +3977,15 @@ function SocialLinksQuickForm({
                         <option value="copy">{copy.blockCopyText}</option>
                       </Select>
                     </Field>
-                    <Field label={copy.blockHref} className="md:col-span-2">
-                      <Input value={link.href} onChange={(event) => patchHref(link, event.target.value)} />
-                    </Field>
                     {link.actionType === "copy" ? (
                       <Field label={copy.blockCopyText} className="md:col-span-2">
                         <Input value={link.copyText ?? ""} onChange={(event) => updateSocial(link.id, { copyText: event.target.value })} />
                       </Field>
-                    ) : null}
+                    ) : (
+                      <Field label={copy.blockHref} className="md:col-span-2">
+                        <Input value={link.href} onChange={(event) => patchHref(link, event.target.value)} />
+                      </Field>
+                    )}
                   </div>
                   <Field label={editorLanguage === "zh-CN" ? "图标" : "Icon"}>
                     <div className="flex flex-wrap gap-2">

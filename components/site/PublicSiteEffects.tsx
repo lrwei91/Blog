@@ -6,10 +6,14 @@ export function PublicSiteEffects({ enabled }: { enabled: boolean }) {
   useEffect(() => {
     const root = document.documentElement;
     const nav = document.querySelector<HTMLElement>("[data-public-nav]");
+    const backToTop = document.querySelector<HTMLElement>("[data-back-to-top]");
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const revealItems = Array.from(document.querySelectorAll<HTMLElement>(".public-site [data-reveal]"));
 
-    const updateNav = () => nav?.classList.toggle("is-floating", window.scrollY > 18);
+    const updateScrollUi = () => {
+      nav?.classList.toggle("is-floating", window.scrollY > 18);
+      backToTop?.classList.toggle("is-visible", window.scrollY > 520);
+    };
     const scrollToAnchor = (event: MouseEvent) => {
       const link = event.target instanceof Element
         ? event.target.closest<HTMLAnchorElement>(".public-site a[href^='#']")
@@ -23,12 +27,12 @@ export function PublicSiteEffects({ enabled }: { enabled: boolean }) {
       window.history.replaceState(null, "", `#${anchorId}`);
     };
     const cleanupBaseEffects = () => {
-      window.removeEventListener("scroll", updateNav);
+      window.removeEventListener("scroll", updateScrollUi);
       document.removeEventListener("click", scrollToAnchor);
     };
 
-    updateNav();
-    window.addEventListener("scroll", updateNav, { passive: true });
+    updateScrollUi();
+    window.addEventListener("scroll", updateScrollUi, { passive: true });
     document.addEventListener("click", scrollToAnchor);
 
     if (!enabled || reduceMotion || !("IntersectionObserver" in window)) {

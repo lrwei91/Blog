@@ -331,7 +331,7 @@ export const defaultSiteConfig: SiteConfig = {
       sectionId: topLevelBlockSectionId,
       title: "福州白松果网络",
       subtitle: "测试工程师 · 2024 年 8 月 - 至今",
-      description: "负责公司多个 Web 项目前台及管理后台的功能测试、接口验证与数据核验，覆盖用户、充提、活动、任务、佣金等核心模块。作为测试团队 AI QA 全链路推进主要负责人，基于 Codex Skills 推动 AI 能力落地。基于 Playwright 搭建 Web 自动化测试体系，优化 Jenkins 构建流程。",
+      description: "负责多个 Web 项目前台及管理后台的全流程质量保障，覆盖用户、充提、活动、任务与佣金等核心模块。作为测试团队 AI QA 全链路推进主要负责人，基于 Codex Skills + Playwright 建设七阶段工作流、自动化执行与可追溯证据链，并优化 Jenkins 多项目构建流程。",
       size: "wide",
       coverImage: "",
       icon: "building",
@@ -344,7 +344,7 @@ export const defaultSiteConfig: SiteConfig = {
       metadata: {
         modalTitle: "福州白松果网络 · 测试工程师",
         modalSubtitle: "2024 年 8 月 - 至今",
-        modalBody: "• 负责公司多个 Web 项目前台及管理后台的功能测试、接口验证与数据核验，覆盖用户、充提、活动、任务、佣金等核心模块；围绕业务规则、状态流转及异常边界开展验证与版本验收。\n\n• 贯穿需求评审、测试执行、缺陷跟踪和回归验收；结合接口响应、业务日志及数据库数据定位问题，协同产品与研发推动修复闭环。\n\n• 作为测试团队 AI QA 全链路推进主要负责人，基于 Codex Skills 推动 AI 能力落地需求分析、用例生成、知识资产沉淀、自动化执行和数据验证；建设内部测试知识库。\n\n• 基于 Playwright 搭建 Web 自动化测试体系，以「录制 + 脚本」覆盖核心业务流程，并结合数据库进行二次校验。\n\n• 优化 Jenkins 构建流程及内部测试工具，整合多项目构建与部署流程。\n\n代表项目：\n\n• QA 自动化工作流（Playwright + Codex Skills）：构建面向 Web 项目的可复用 QA 工程，七阶段流程编排「需求分析 → 测试用例 → 脚本自动化 → 交付用例 → Bug 登记 → Bug 验证 → 知识库同步」。\n\n• 游戏聚合平台（类 Steam）：参与官网与后台质量保障，覆盖账号、推荐、试玩、充值、评论、排行榜、论坛等模块。\n\n• AI 翻译平台：参与内部平台测试与验收，覆盖上传 → 选语 → 翻译 → 修正 → 批量导出 → 知识库复用流程。"
+        modalBody: "• 负责公司多个 Web 项目前台及管理后台的功能测试、接口验证与数据核验，覆盖用户、充提、活动、任务、佣金等核心模块；围绕业务规则、状态流转及异常边界开展验证与版本验收。\n\n• 贯穿需求评审、测试执行、缺陷跟踪和回归验收；结合接口响应、业务日志及数据库数据定位问题，协同产品与研发推动修复闭环。\n\n• 作为测试团队 AI QA 全链路推进主要负责人，基于 Codex Skills 推动需求分析、用例生成、知识资产沉淀、自动化执行和数据验证；建设内部测试知识库，沉淀业务规则、历史缺陷及测试经验，支持团队复用与新人快速上手。\n\n• 基于 Playwright 搭建 Web 自动化测试体系，以“录制 + 脚本”覆盖核心业务流程，并结合数据库进行二次校验，提升回归效率与数据准确性。\n\n• 优化 Jenkins 构建流程及内部测试工具，整合多项目构建与部署流程，减少重复人工操作。\n\n代表项目\n\n• QA 自动化工作流（Playwright + Codex Skills）：按 agent_docs / custom-skills / scripts / references / templates / workflow-runner 分层管理规则、技能、脚本、知识资产、模板和执行器，解决流程分散、经验难复用、自动化与交付物割裂问题。\n\n• 七阶段流程：编排“需求分析 → 测试用例 → 脚本自动化 → 交付用例 → Bug 登记 → Bug 验证 → 知识库同步”，并通过 Python 状态机控制需求分析步骤和人工确认门禁。\n\n• 执行与交付：使用 Playwright 结合数据库核验，统一采集截图、日志和 HTML Report；生成并回填 Excel 测试报告与 summary.json，形成可追溯证据链。\n\n• 资产与闭环：沉淀业务规则、页面结构、模块基线、弱网及充提 / VIP 等专项能力，接入禅道 Bug 查重、登记、复测和收口。\n\n• 游戏聚合平台（类 Steam）：覆盖账号、推荐、试玩、充值、评论、排行榜、论坛等模块，围绕“注册 → 发现 → 试玩 → 充值 → 互动”主链路开展端到端验收。\n\n• AI 翻译平台：覆盖“上传 → 选语 → 翻译 → 修正 → 批量导出 → 知识库复用”流程，重点检查文件处理、术语复用、多语言结果和异常流程的一致性。"
       },
       isVisible: true,
       isFeatured: false,
@@ -355,9 +355,9 @@ export const defaultSiteConfig: SiteConfig = {
     {
       id: "job-zhuque",
       sectionId: topLevelBlockSectionId,
-      title: "福州朱雀网络",
+      title: "福州朱雀网络有限公司",
       subtitle: "测试工程师 → 系统策划 · 2017 年 6 月 - 2024 年 5 月",
-      description: "从测试工程师晋升为系统策划，7 年经历覆盖游戏测试全流程与系统策划。测试阶段负责用例设计、MySQL 数据核验、禅道缺陷闭环及 AirtestProject 自动化验证。策划阶段同步承担需求可测性分析与版本验收。",
+      description: "公司内由测试工程师晋升为系统策划。测试阶段负责计划与用例、任务拆解、MySQL 数据核验、禅道闭环及 AirtestProject 自动化；策划阶段承担需求可测性分析、UI 与配置资源校验、Unity / UGUI 问题定位和版本验收。",
       size: "wide",
       coverImage: "",
       icon: "building",
@@ -368,9 +368,9 @@ export const defaultSiteConfig: SiteConfig = {
       backgroundColor: "",
       textColor: "",
       metadata: {
-        modalTitle: "福州朱雀网络 · 测试工程师 → 系统策划",
+        modalTitle: "福州朱雀网络有限公司 · 测试工程师 → 系统策划",
         modalSubtitle: "测试工程师：2017 年 6 月 - 2021 年 4 月 ｜ 系统策划：2021 年 5 月 - 2024 年 5 月",
-        modalBody: "系统策划阶段：\n\n• 在系统策划阶段同步承担需求可测性分析与版本验收，基于玩法规则、配置表和状态流转拆解验证场景。\n\n• 负责正式版 UI 与配置资源的版本校验，经 SVN / Git 流转至工程后核对资源一致性、配置正确性和 Unity 接入表现。\n\n• 跟进客户端 / 服务端配置与功能实装，结合 UGUI 排查界面显示、交互和资源问题。\n\n测试工程师阶段：\n\n• 制定并执行游戏测试计划，覆盖用例设计、环境搭建、数据准备、结果反馈与版本验收。\n\n• 使用 MySQL 查询核对数据，经禅道反馈复查问题，并用 AirtestProject 完成自动化验证。\n\n代表项目：\n\n• 《小米超神》：负责内测至正式上线阶段的系统功能、更新后台和热更新链路验证。\n\n• 代号 M《重构·阿塔提斯》：参与解压更新、兼容性、弱网及海外版本专项测试；围绕商业化活动、热更新、生化玩法、社交/社团/战队、观战、商城/交易所、陪玩等模块。\n\n• 代号 DL：参与模拟经营、建筑、基地养成与角色/僵尸技能等模块的配置校验和功能验证。"
+        modalBody: "系统策划阶段\n\n• 同步承担需求可测性分析与版本验收，基于玩法规则、配置表和状态流转拆解验证场景，跟进客户端 / 服务端实装及问题闭环。\n\n• 负责正式版 UI 与配置资源的版本校验，经 SVN / Git 流转至工程后核对资源一致性、配置正确性和 Unity 接入表现。\n\n• 跟进客户端 / 服务端配置与功能实装，结合 UGUI 排查界面显示、交互和资源问题，协助研发定位并验证修复结果。\n\n• 完成主要界面改版、副玩法（类 CF 生化模式）及后台管理工具的功能、配置与流程验收，推动问题在上线前闭环。\n\n测试工程师阶段\n\n• 制定并执行游戏测试计划，覆盖用例设计、环境搭建、数据准备、结果反馈与版本验收。\n\n• 拆解测试任务、分配人员、跟进进度与质量把控，协助团队提升版本交付效率。\n\n• 使用 MySQL 查询核对数据，经禅道反馈复查问题，并用 AirtestProject 完成自动化验证。\n\n• 独立分析配置表定位问题归属，降低程序与策划排查成本。\n\n代表项目\n\n• 《小米超神》：负责内测至正式上线阶段的系统功能、更新后台和热更新链路验证，覆盖测试准备、缺陷跟踪、回归验收以及线上更新包测试与发布。\n\n• 代号 M《重构·阿塔提斯》：参与解压更新、兼容性、弱网及海外版本专项测试；围绕商业化活动、热更新、生化玩法、社交 / 社团 / 战队、观战、商城 / 交易所、陪玩等模块开展规则校验、配置检查、功能回归与版本验收。\n\n• 代号 DL：参与模拟经营、建筑、基地养成与角色 / 僵尸技能等模块的配置校验和功能验证，检查 Unity 行为树及模型、特效、动作、音效组合表现。"
       },
       isVisible: true,
       isFeatured: false,
@@ -381,7 +381,7 @@ export const defaultSiteConfig: SiteConfig = {
     {
       id: "job-tianshang",
       sectionId: topLevelBlockSectionId,
-      title: "福州天尚科技",
+      title: "福州天尚科技有限公司",
       subtitle: "产品策划 · 2016 年 4 月 - 2017 年 5 月",
       description: "参与 VR 内容平台《玩 VR》的需求梳理、版本体验验收与问题反馈。负责新接入游戏及内容更新的上线检查，支撑累计 600+ 款游戏内容及软件内付费购买功能稳定交付。",
       size: "wide",
@@ -394,13 +394,154 @@ export const defaultSiteConfig: SiteConfig = {
       backgroundColor: "",
       textColor: "",
       metadata: {
-        modalTitle: "福州天尚科技 · 产品策划",
+        modalTitle: "福州天尚科技有限公司 · 产品策划",
         modalSubtitle: "2016 年 4 月 - 2017 年 5 月",
         modalBody: "• 参与 VR 内容平台《玩 VR》的需求梳理、版本体验验收与问题反馈，围绕功能流程、内容展示和付费购买接入开展上线前检查。\n\n• 结合 VR 平台竞品调研与玩家反馈，补充体验问题、异常场景和重点设备验证清单，跟进功能优化结果。\n\n• 负责新接入游戏及内容更新的上线检查，核对素材、展示信息、专题活动与设备专区内容，发现问题后推动修正。\n\n项目成果：参与《玩 VR》全网上线质量保障，支撑累计 600+ 款游戏内容（正版 30+）及软件内付费购买功能稳定交付。"
       },
       isVisible: true,
       isFeatured: false,
       sortOrder: 14,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      id: "text-travel",
+      sectionId: topLevelBlockSectionId,
+      title: "旅行足迹",
+      subtitle: "Travel Footprint",
+      description: "",
+      size: "section-text",
+      responsiveSizes: {
+        desktop: "section-text",
+        mobile: "section-text"
+      },
+      coverImage: "",
+      icon: "map",
+      badge: "",
+      href: "",
+      actionType: "none",
+      openInNewTab: false,
+      backgroundColor: "",
+      textColor: "",
+      metadata: {
+        sourceSectionId: "travel",
+        titleAlign: "left",
+        titleSize: "md"
+      },
+      sortOrder: 15,
+      isVisible: true,
+      isFeatured: false,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      id: "travel-footprint",
+      sectionId: topLevelBlockSectionId,
+      title: "走过的每一个地方，都是故事",
+      subtitle: "",
+      description: "把抵达过的地方留在地图上，也把沿途的故事慢慢写下来。",
+      size: "full-wide",
+      coverImage: "",
+      icon: "map",
+      badge: "",
+      href: "",
+      actionType: "none",
+      openInNewTab: false,
+      backgroundColor: "",
+      textColor: "",
+      metadata: {
+        travelLocations: [
+          { city: "福州", province: "福建", note: "常驻地 · 有福之州", longitude: 119.3, latitude: 26.08 },
+          { city: "贵州", province: "贵州", note: "已到访", longitude: 106.71, latitude: 26.6 },
+          { city: "成都", province: "四川", note: "已到访", longitude: 104.07, latitude: 30.67 },
+          { city: "潮汕", province: "广东", note: "已到访", longitude: 116.68, latitude: 23.35 },
+          { city: "江西", province: "江西", note: "已到访", longitude: 115.86, latitude: 28.68 }
+        ]
+      },
+      sortOrder: 16,
+      isVisible: true,
+      isFeatured: false,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      id: "text-projects",
+      sectionId: topLevelBlockSectionId,
+      title: "个人项目",
+      subtitle: "Personal Projects",
+      description: "",
+      size: "section-text",
+      responsiveSizes: {
+        desktop: "section-text",
+        mobile: "section-text"
+      },
+      coverImage: "",
+      icon: "terminal",
+      badge: "",
+      href: "",
+      actionType: "none",
+      openInNewTab: false,
+      backgroundColor: "",
+      textColor: "",
+      metadata: {
+        sourceSectionId: "projects",
+        titleAlign: "left",
+        titleSize: "lg"
+      },
+      sortOrder: 17,
+      isVisible: true,
+      isFeatured: false,
+      createdAt: now,
+      updatedAt: now
+    },
+    {
+      id: "personal-projects-showcase",
+      sectionId: topLevelBlockSectionId,
+      title: "个人项目",
+      subtitle: "",
+      description: "",
+      size: "full-wide",
+      coverImage: "",
+      icon: "terminal",
+      badge: "",
+      href: "",
+      actionType: "none",
+      openInNewTab: false,
+      backgroundColor: "",
+      textColor: "",
+      metadata: {
+        projects: [
+          {
+            title: "CineScope",
+            description: "影视内容聚合展示平台，通过自动化数据管线持续更新分类、评分、票房、热度与预告片数据。",
+            eyebrow: "FILM · 01",
+            href: "https://github.com/lrwei91/CineScope",
+            liveHref: "https://lrwei91.github.io/CineScope/#tv_cn",
+            icon: "film",
+            tone: "mint"
+          },
+          {
+            title: "fund-tracker-desktop",
+            description: "Electron 桌面行情与持仓工具，集成指数、自选股、资金流、研究卡、财经快讯和独立持仓浮窗。",
+            eyebrow: "MARKET · 02",
+            href: "https://github.com/lrwei91/fund-tracker-desktop",
+            icon: "market",
+            tone: "blue"
+          },
+          {
+            title: "Lottery",
+            description: "体彩可视化分析与智能预测工具，包含历史走势、Canvas 图表、多策略回测与世界杯预测。",
+            eyebrow: "DATA · 03",
+            href: "https://github.com/lrwei91/Lottery",
+            liveHref: "https://bet.lrwei91.online/#dlt",
+            icon: "data",
+            tone: "yellow"
+          }
+        ]
+      },
+      sortOrder: 18,
+      isVisible: true,
+      isFeatured: false,
       createdAt: now,
       updatedAt: now
     },
@@ -428,7 +569,7 @@ export const defaultSiteConfig: SiteConfig = {
         titleAlign: "left",
         titleSize: "md"
       },
-      sortOrder: 15,
+      sortOrder: 19,
       isVisible: true,
       isFeatured: false,
       createdAt: now,
@@ -452,7 +593,7 @@ export const defaultSiteConfig: SiteConfig = {
       metadata: {},
       isVisible: true,
       isFeatured: false,
-      sortOrder: 16,
+      sortOrder: 20,
       createdAt: now,
       updatedAt: now
     },
@@ -480,7 +621,7 @@ export const defaultSiteConfig: SiteConfig = {
         titleAlign: "left",
         titleSize: "md"
       },
-      sortOrder: 17,
+      sortOrder: 21,
       isVisible: true,
       isFeatured: false,
       createdAt: now,
@@ -508,7 +649,7 @@ export const defaultSiteConfig: SiteConfig = {
       },
       isVisible: true,
       isFeatured: false,
-      sortOrder: 18,
+      sortOrder: 22,
       createdAt: now,
       updatedAt: now
     },
@@ -530,7 +671,7 @@ export const defaultSiteConfig: SiteConfig = {
       metadata: {},
       isVisible: true,
       isFeatured: false,
-      sortOrder: 19,
+      sortOrder: 23,
       createdAt: now,
       updatedAt: now
     }

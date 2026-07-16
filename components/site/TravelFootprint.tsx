@@ -1,0 +1,136 @@
+import type { CSSProperties } from "react";
+import { MapPin, Plane, Route } from "lucide-react";
+import { CHINA_MAP_VIEW_BOX, chinaProvincePaths } from "@/lib/china-map-paths";
+import type { Block } from "@/types/block";
+
+type TravelLocation = {
+  city: string;
+  province: string;
+  note: string;
+  longitude: number;
+  latitude: number;
+};
+
+const fallbackLocations: TravelLocation[] = [
+  { city: "福州", province: "福建", note: "常驻地 · 有福之州", longitude: 119.3, latitude: 26.08 },
+  { city: "贵州", province: "贵州", note: "已到访", longitude: 106.71, latitude: 26.6 },
+  { city: "成都", province: "四川", note: "已到访", longitude: 104.07, latitude: 30.67 },
+  { city: "潮汕", province: "广东", note: "已到访", longitude: 116.68, latitude: 23.35 },
+  { city: "江西", province: "江西", note: "已到访", longitude: 115.86, latitude: 28.68 }
+];
+
+export function TravelFootprint({ block }: { block: Block }) {
+  const locations = getTravelLocations(block);
+  const provinceCount = new Set(locations.map((location) => location.province)).size;
+
+  return (
+    <section className="travel-footprint" aria-label="旅行足迹">
+      <div className="travel-footprint__map">
+        <div className="travel-footprint__map-meta">
+          <span><Plane aria-hidden="true" /> TRAVEL LOG</span>
+          <span>{String(locations.length).padStart(2, "0")} PLACES</span>
+        </div>
+
+        <div className="travel-footprint__map-stage">
+          <svg
+            className="travel-footprint__china-map"
+            viewBox={CHINA_MAP_VIEW_BOX}
+            role="img"
+            aria-label="中国省级行政区地图"
+          >
+            <title>中国省级行政区地图</title>
+            <g>
+              {chinaProvincePaths.map((province) => (
+                <path
+                  key={province.adcode}
+                  d={province.d}
+                  data-visited={locations.some((location) => province.name.includes(location.province)) ? "true" : undefined}
+                />
+              ))}
+            </g>
+          </svg>
+
+          {locations.map((location) => {
+            const position = projectLocation(location.longitude, location.latitude);
+            return (
+              <span
+                key={`${location.province}-${location.city}`}
+                className="travel-footprint__marker"
+                style={
+                  {
+                    "--travel-x": `${position.x}%`,
+                    "--travel-y": `${position.y}%`
+                  } as CSSProperties
+                }
+              >
+                <i />
+                <b>{location.city}</b>
+              </span>
+            );
+          })}
+        </div>
+
+        <p className="travel-footprint__map-caption">
+          <MapPin aria-hidden="true" /> 从福州出发，持续记录真实抵达的城市与地区
+        </p>
+      </div>
+
+      <aside className="travel-footprint__log">
+        <div className="travel-footprint__log-icon"><Route aria-hidden="true" /></div>
+        <p className="travel-footprint__stat">VISITED · {provinceCount} 省 {locations.length} 站</p>
+        <h3>{block.title || "走过的每一个地方，都是故事"}</h3>
+        <p className="travel-footprint__intro">
+          {block.description || "把抵达过的地方留在地图上，也把沿途的故事慢慢写下来。"}
+        </p>
+
+        <ol className="travel-footprint__places">
+          {locations.map((location, index) => (
+            <li key={`${location.province}-${location.city}`}>
+              <span className="travel-footprint__place-pin"><MapPin aria-hidden="true" /></span>
+              <span>
+                <b>{location.city}</b>
+                <small>{location.province} · {location.note}</small>
+              </span>
+              <em>{String(index + 1).padStart(2, "0")}</em>
+            </li>
+          ))}
+        </ol>
+
+        <p className="travel-footprint__more"><i /> 更多城市，持续记录中</p>
+      </aside>
+    </section>
+  );
+}
+
+function getTravelLocations(block: Block) {
+  const locations = block.metadata?.travelLocations;
+  if (!Array.isArray(locations)) return fallbackLocations;
+
+  const validLocations = locations.flatMap((location) => {
+    if (!location || typeof location !== "object") return [];
+    const entry = location as Record<string, unknown>;
+    if (
+      typeof entry.city !== "string" ||
+      typeof entry.province !== "string" ||
+      typeof entry.note !== "string" ||
+      typeof entry.longitude !== "number" ||
+      typeof entry.latitude !== "number"
+    ) return [];
+
+    return [{
+      city: entry.city,
+      province: entry.province,
+      note: entry.note,
+      longitude: Math.min(135, Math.max(73, entry.longitude)),
+      latitude: Math.min(54, Math.max(17, entry.latitude))
+    }];
+  });
+
+  return validLocations.length > 0 ? validLocations : fallbackLocations;
+}
+
+function projectLocation(longitude: number, latitude: number) {
+  const x = 30 + ((longitude - 73) / (135 - 73)) * 940;
+  const y = 10 + ((54 - latitude) / (54 - 17)) * 680;
+  return { x: x / 10, y: y / 7 };
+}
