@@ -158,9 +158,9 @@ export function BlockCard({
               {block.badge ? <span className="public-block-card__badge line-clamp-2 max-w-full rounded-full border px-3 py-1.5 text-xs font-semibold leading-5">{block.badge}</span> : <span />}
             </div> : null}
             <div className="shrink-0">
-              {block.actionType === "link" ? <ExternalLink className="h-4 w-4 text-[#64748B]" /> : null}
-              {block.actionType === "download" ? <Download className="h-4 w-4 text-[#64748B]" /> : null}
-              {block.actionType === "image-preview" ? <ImageIcon className="h-4 w-4 text-[#64748B]" /> : null}
+              {block.actionType === "link" ? <ExternalLink className="h-4 w-4 text-[var(--ink-2)]" /> : null}
+              {block.actionType === "download" ? <Download className="h-4 w-4 text-[var(--ink-2)]" /> : null}
+              {block.actionType === "image-preview" ? <ImageIcon className="h-4 w-4 text-[var(--ink-2)]" /> : null}
               {block.actionType === "modal" ? <span className="public-block-card__details">DETAILS <ArrowUpRight /></span> : null}
             </div>
           </div> : null}

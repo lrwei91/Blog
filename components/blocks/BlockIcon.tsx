@@ -56,7 +56,7 @@ export const blockIconPresets = [
 export type BlockIconName = (typeof blockIconPresets)[number];
 
 export function getBlockIconColor(value: unknown) {
-  return typeof value === "string" && /^#[0-9a-fA-F]{6}$/.test(value) ? value : "#1677FF";
+  return typeof value === "string" && /^#[0-9a-fA-F]{6}$/.test(value) ? value : "#21B95B";
 }
 
 export function BlockIcon({ name, className = "h-6 w-6", style }: { name?: string; className?: string; style?: CSSProperties }) {

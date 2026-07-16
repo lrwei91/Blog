@@ -89,7 +89,7 @@ export function PublicLanguageSwitcher({
         aria-label="选择语言"
         title="选择语言"
         className={cn(
-          "inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--site-border)] bg-white/90 text-[var(--site-text)] shadow-soft transition hover:border-[var(--site-primary)] hover:text-[var(--site-primary)]",
+          "public-language-switcher__button inline-flex h-10 w-10 items-center justify-center rounded-full border transition",
           buttonClassName
         )}
       >
@@ -98,7 +98,7 @@ export function PublicLanguageSwitcher({
 
       <div
         className={cn(
-          "absolute left-0 top-full mt-2 w-[220px] origin-top-left rounded-[18px] border border-[#E5EAF2] bg-white/96 p-2 text-[#111827] shadow-[0_18px_54px_rgba(15,23,42,0.18)] backdrop-blur transition duration-200",
+          "public-language-switcher__menu absolute left-0 top-full mt-2 w-[220px] origin-top-left rounded-[18px] border p-2 backdrop-blur transition duration-200",
           isOpen ? "pointer-events-auto translate-y-0 scale-100 opacity-100" : "pointer-events-none -translate-y-2 scale-95 opacity-0"
         )}
       >
@@ -111,15 +111,13 @@ export function PublicLanguageSwitcher({
                 type="button"
                 onClick={() => selectLanguage(language.code)}
                 disabled={Boolean(preparingTransition)}
+                data-active={isActive ? "true" : undefined}
                 className={cn(
-                  "flex items-center justify-between rounded-2xl border px-3 py-2 text-left text-sm font-medium transition",
-                  isActive
-                    ? "border-[#B7D8FF] bg-[#EFF6FF] text-[#1D4ED8]"
-                    : "border-transparent bg-white text-[#334155] hover:border-[#BFDBFE] hover:bg-[#F8FBFF]"
+                  "public-language-switcher__option flex items-center justify-between rounded-2xl border px-3 py-2 text-left text-sm font-medium transition"
                 )}
               >
                 <span>{language.label}</span>
-                <span className={cn("text-xs", isActive ? "text-[#2563EB]" : "text-[#94A3B8]")}>{language.code}</span>
+                <span className="text-xs">{language.code}</span>
               </button>
             );
           })}
@@ -129,7 +127,7 @@ export function PublicLanguageSwitcher({
       {preparingTransition ? (
         <div
           className={cn(
-            "fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white/95 text-[#111827] backdrop-blur-[2px] transition-[opacity,backdrop-filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+            "public-language-switcher__overlay fixed inset-0 z-[100] flex flex-col items-center justify-center backdrop-blur-[2px] transition-[opacity,backdrop-filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
             initialPreparingLocale ? "" : "animate-in fade-in duration-300",
             preparingTransition.isExiting ? "pointer-events-none opacity-0 backdrop-blur-0" : "opacity-100"
           )}
@@ -143,8 +141,8 @@ export function PublicLanguageSwitcher({
               preparingTransition.isExiting ? "translate-y-1 scale-[0.98] opacity-0" : "translate-y-0 scale-100 opacity-100"
             )}
           >
-            <span className="h-7 w-7 animate-spin rounded-full border-2 border-[#D1D5DB] border-t-[#111827]" aria-hidden="true" />
-            <span className="mt-4 text-[13px] font-medium tracking-[0.08em] text-[#6B7280]">
+            <span className="public-language-switcher__spinner h-7 w-7 animate-spin rounded-full border-2" aria-hidden="true" />
+            <span className="public-language-switcher__message mt-4 text-[13px] font-medium tracking-[0.08em]">
               {getPreparingMessage(preparingTransition.locale)}
             </span>
           </div>

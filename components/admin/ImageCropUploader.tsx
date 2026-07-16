@@ -253,8 +253,8 @@ export function ImageCropUploader({
               }
             }}
             className={cn(
-              "group relative grid aspect-square w-full cursor-pointer place-items-center overflow-hidden rounded-[28px] border border-dashed border-[#C7D2E4] bg-[#F8FAFC] text-center outline-none transition",
-              "hover:border-[#1677FF]/60 hover:bg-[#F3F8FF] focus:border-[#1677FF] focus:ring-4 focus:ring-[#1677FF]/10",
+              "group relative grid aspect-square w-full cursor-pointer place-items-center overflow-hidden rounded-[28px] border border-dashed border-[#C8C2B5] bg-[#F3F0E7] text-center outline-none transition",
+              "hover:border-[#21B95B]/60 hover:bg-[#EDF8EA] focus:border-[#21B95B] focus:ring-4 focus:ring-[#5EDB88]/15",
               previewClassName
             )}
           >
@@ -264,14 +264,14 @@ export function ImageCropUploader({
             {value ? <div className="absolute inset-0 bg-white/70 opacity-0 transition group-hover:opacity-100 group-focus:opacity-100" /> : null}
             <div
               className={cn(
-                "relative z-10 grid justify-items-center gap-2 px-5 text-[#5B7896] transition",
+                "relative z-10 grid justify-items-center gap-2 px-5 text-[#5A7564] transition",
                 value ? "opacity-0 group-hover:opacity-100 group-focus:opacity-100" : "opacity-100"
               )}
             >
-              <span className="grid h-12 w-12 place-items-center rounded-2xl border border-[#D8E9FF] bg-white text-[#1677FF] shadow-soft">
+              <span className="grid h-12 w-12 place-items-center rounded-2xl border border-[#BFE7C9] bg-white text-[#21B95B] shadow-soft">
                 <ImageUp className="h-6 w-6" />
               </span>
-              <span className="text-sm font-semibold text-[#1E3A5F]">点击选择，或直接在此区域粘贴图片</span>
+              <span className="text-sm font-semibold text-[#176B39]">点击选择，或直接在此区域粘贴图片</span>
             </div>
           </div>
         ) : value ? (
@@ -319,15 +319,15 @@ export function ImageCropUploader({
       {objectUrl && typeof document !== "undefined"
         ? createPortal(
             <div className="fixed inset-0 z-[9999] grid place-items-center bg-black/35 p-4 backdrop-blur-sm">
-              <div className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-[22px] bg-white text-[#111] shadow-2xl">
-                <div className="flex items-center justify-between border-b border-[#EEF2F7] px-5 py-4">
+              <div className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-[28px] border border-[#D5D0C4] bg-[#F8F6EF] text-[#111] shadow-2xl">
+                <div className="flex items-center justify-between border-b border-[#D5D0C4] px-5 py-4">
                   <h3 className="text-base font-bold">裁剪图片 / crop</h3>
                   <button type="button" onClick={() => chooseFile(null)} className="grid h-8 w-8 place-items-center rounded-full hover:bg-[#F1F5F9]">
                     <X className="h-4 w-4" />
                   </button>
                 </div>
                 <div className="grid gap-5 overflow-auto p-5">
-                  <div className="relative overflow-hidden rounded-[20px] border border-[#E5E7EB] bg-[#F8FAFC]">
+                  <div className="relative overflow-hidden rounded-[20px] border border-[#D5D0C4] bg-[#F3F0E7]">
                     <div ref={stageRef} className="relative mx-auto h-[42vh] min-h-72 max-h-[440px] w-full select-none touch-none">
                       <img
                         ref={imageRef}
@@ -367,7 +367,7 @@ export function ImageCropUploader({
                               aria-label={`resize ${handle}`}
                               onPointerDown={(event) => startCropDrag(event, handle)}
                               className={cn(
-                                "absolute h-6 w-6 touch-none rounded-full border-2 border-white bg-[#1677FF] shadow-soft",
+                                "absolute h-6 w-6 touch-none rounded-full border-2 border-white bg-[#21B95B] shadow-soft",
                                 handle === "nw" && "-left-3 -top-3 cursor-nwse-resize",
                                 handle === "ne" && "-right-3 -top-3 cursor-nesw-resize",
                                 handle === "sw" && "-bottom-3 -left-3 cursor-nesw-resize",
@@ -397,7 +397,7 @@ export function ImageCropUploader({
                                 onClick={() => updateRatio(item)}
                                 className={cn(
                                   "rounded-full border px-3 py-1.5 text-sm font-medium transition",
-                                  activeRatio === item ? "border-[#1677FF] bg-[#1677FF] text-white" : "border-[#E5E7EB] bg-white text-[#475569] hover:border-[#1677FF]/40"
+                                  activeRatio === item ? "border-[#21B95B] bg-[#5EDB88] text-[#101619]" : "border-[#E5E7EB] bg-white text-[#475569] hover:border-[#21B95B]/40"
                                 )}
                               >
                                 {item === "custom" ? "自定义" : item}
@@ -421,7 +421,7 @@ export function ImageCropUploader({
                     </div>
                   </div>
                 </div>
-                <div className="flex justify-end gap-2 border-t border-[#EEF2F7] px-5 py-4">
+                <div className="flex justify-end gap-2 border-t border-[#D5D0C4] bg-[#F0ECDF] px-5 py-4">
                   <Button type="button" variant="ghost" onClick={() => chooseFile(null)}>
                     取消
                   </Button>

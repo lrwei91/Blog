@@ -38,9 +38,12 @@ export function BlockForm({
     download: copy.download
   };
   const copyText = typeof block.metadata?.copyText === "string" ? block.metadata.copyText : "";
+  const modalTitle = typeof block.metadata?.modalTitle === "string" ? block.metadata.modalTitle : "";
+  const modalSubtitle = typeof block.metadata?.modalSubtitle === "string" ? block.metadata.modalSubtitle : "";
+  const modalBody = typeof block.metadata?.modalBody === "string" ? block.metadata.modalBody : "";
   const isSectionBlock = isSectionTextBlock(block);
   const isPlainTextBlock = block.metadata?.textVariant === "plain";
-  const iconColorValue = typeof block.metadata?.iconColor === "string" ? block.metadata.iconColor : "#1677FF";
+  const iconColorValue = typeof block.metadata?.iconColor === "string" ? block.metadata.iconColor : "#21B95B";
   const iconPreviewColor = getBlockIconColor(iconColorValue);
 
   function patchHref(value: string) {
@@ -161,7 +164,7 @@ export function BlockForm({
                 onClick={() => onPatch({ icon: "" })}
                 className={cn(
                   "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-full border px-3 text-sm transition",
-                  !block.icon ? "border-[#1479FF] bg-[#1479FF] text-white" : "border-[#EAEAEA] bg-white text-[#475569] hover:border-[#1479FF]/40"
+                  !block.icon ? "border-[#21B95B] bg-[#5EDB88] text-[#101619]" : "border-[#D5D0C4] bg-white text-[#475569] hover:border-[#21B95B]/40"
                 )}
               >
                 <Minus className="h-4 w-4" />
@@ -175,7 +178,7 @@ export function BlockForm({
                   onClick={() => onPatch({ icon })}
                   className={cn(
                     "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-full border px-3 text-sm transition",
-                    block.icon === icon ? "border-[#1479FF] bg-[#1479FF] text-white" : "border-[#EAEAEA] bg-white text-[#475569] hover:border-[#1479FF]/40"
+                    block.icon === icon ? "border-[#21B95B] bg-[#5EDB88] text-[#101619]" : "border-[#D5D0C4] bg-white text-[#475569] hover:border-[#21B95B]/40"
                   )}
                 >
                   <BlockIcon name={icon} className="h-4 w-4" style={{ color: block.icon === icon ? undefined : iconPreviewColor }} />
@@ -201,7 +204,7 @@ export function BlockForm({
                 <Input
                   value={iconColorValue}
                   onChange={(event) => patchMetadata({ iconColor: event.target.value })}
-                  placeholder="#1677FF"
+                  placeholder="#21B95B"
                   maxLength={7}
                   spellCheck={false}
                   className="w-32 font-mono uppercase"
@@ -218,6 +221,25 @@ export function BlockForm({
                 onChange={(event) => onPatch({ metadata: { ...(block.metadata ?? {}), copyText: event.target.value } })}
               />
             </Field>
+          ) : null}
+          {block.actionType === "modal" ? (
+            <div className="grid gap-3 rounded-2xl border border-[#E6EDF7] bg-[#F8FAFD] p-4 md:col-span-2">
+              <div>
+                <h4 className="font-bold text-[#111]">{editorLanguage === "zh-CN" ? "详情弹窗内容" : "Detail modal content"}</h4>
+                <p className="mt-1 text-xs text-[#7A8190]">
+                  {editorLanguage === "zh-CN" ? "用于工作经历等卡片的 Details 弹窗。正文支持多行文本。" : "Used by Details modals such as work experience cards."}
+                </p>
+              </div>
+              <Field label={editorLanguage === "zh-CN" ? "弹窗标题" : "Modal title"}>
+                <Input value={modalTitle} onChange={(event) => patchMetadata({ modalTitle: event.target.value })} />
+              </Field>
+              <Field label={editorLanguage === "zh-CN" ? "弹窗副标题" : "Modal subtitle"}>
+                <Input value={modalSubtitle} onChange={(event) => patchMetadata({ modalSubtitle: event.target.value })} />
+              </Field>
+              <Field label={editorLanguage === "zh-CN" ? "详细内容" : "Modal body"}>
+                <Textarea value={modalBody} onChange={(event) => patchMetadata({ modalBody: event.target.value })} className="min-h-56" />
+              </Field>
+            </div>
           ) : null}
         </div>
         )}
@@ -396,7 +418,7 @@ function ToggleButton({
       onClick={onClick}
       className={cn(
         "grid h-12 w-12 place-items-center rounded-full border text-[#475569] transition",
-        active ? "border-[#1479FF] bg-[#1479FF] text-white" : "border-[#D9DEE8] bg-white hover:border-[#1479FF]/40"
+        active ? "border-[#21B95B] bg-[#5EDB88] text-[#101619]" : "border-[#D9DEE8] bg-white hover:border-[#21B95B]/40"
       )}
     >
       {children}

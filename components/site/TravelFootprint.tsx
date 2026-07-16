@@ -50,11 +50,11 @@ export function TravelFootprint({ block }: { block: Block }) {
             </g>
           </svg>
 
-          {locations.map((location) => {
+          {locations.map((location, index) => {
             const position = projectLocation(location.longitude, location.latitude);
             return (
               <span
-                key={`${location.province}-${location.city}`}
+                key={`${index}-${location.province}-${location.city}`}
                 className="travel-footprint__marker"
                 style={
                   {
@@ -71,7 +71,7 @@ export function TravelFootprint({ block }: { block: Block }) {
         </div>
 
         <p className="travel-footprint__map-caption">
-          <MapPin aria-hidden="true" /> 从福州出发，持续记录真实抵达的城市与地区
+          <MapPin aria-hidden="true" /> {locations[0] ? `从${locations[0].city}出发，持续记录真实抵达的城市与地区` : "等待记录下一次真实抵达"}
         </p>
       </div>
 
@@ -85,7 +85,7 @@ export function TravelFootprint({ block }: { block: Block }) {
 
         <ol className="travel-footprint__places">
           {locations.map((location, index) => (
-            <li key={`${location.province}-${location.city}`}>
+            <li key={`${index}-${location.province}-${location.city}`}>
               <span className="travel-footprint__place-pin"><MapPin aria-hidden="true" /></span>
               <span>
                 <b>{location.city}</b>
@@ -126,7 +126,7 @@ function getTravelLocations(block: Block) {
     }];
   });
 
-  return validLocations.length > 0 ? validLocations : fallbackLocations;
+  return validLocations;
 }
 
 function projectLocation(longitude: number, latitude: number) {

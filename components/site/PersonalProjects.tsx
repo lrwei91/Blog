@@ -52,11 +52,11 @@ export function PersonalProjects({ block }: { block: Block }) {
   return (
     <section className="personal-projects" aria-label="个人项目列表">
       <div className="personal-projects__grid">
-        {projects.map((project) => {
+        {projects.map((project, index) => {
           const ProjectIcon = projectIcons[project.icon];
           return (
             <article
-              key={project.title}
+              key={`${index}-${project.title}`}
               className="personal-projects__card"
               data-tone={project.tone}
             >
@@ -112,5 +112,5 @@ function getProjects(block: Block): ProjectItem[] {
     }];
   });
 
-  return validProjects.length > 0 ? validProjects : fallbackProjects;
+  return validProjects;
 }

@@ -9,6 +9,9 @@ const profileModuleSchema = z.enum(profileModules as [string, ...string[]]);
 const safeUrlSchema = z.string().refine((value) => value === "" || isSafeUrl(value), {
   message: "URL must use http, https, mailto, tel, or a relative path"
 });
+const requiredSafeUrlSchema = z.string().min(1, "Required").refine(isSafeUrl, {
+  message: "URL must use http, https, mailto, tel, or a relative path"
+});
 
 function isSafeUrl(value: string) {
   if (value.startsWith("/")) return true;
@@ -81,6 +84,24 @@ const sectionSchema = z.object({
   updatedAt: z.string()
 });
 
+const travelLocationSchema = z.object({
+  city: z.string().trim().min(1, "Required"),
+  province: z.string().trim().min(1, "Required"),
+  note: z.string().trim().min(1, "Required"),
+  longitude: z.number().finite().min(73).max(135),
+  latitude: z.number().finite().min(17).max(54)
+});
+
+const personalProjectSchema = z.object({
+  title: z.string().trim().min(1, "Required"),
+  description: z.string().trim().min(1, "Required"),
+  eyebrow: z.string().trim().min(1, "Required"),
+  href: requiredSafeUrlSchema,
+  liveHref: safeUrlSchema.optional(),
+  icon: z.enum(["film", "market", "data"]),
+  tone: z.enum(["mint", "blue", "yellow"])
+});
+
 const blockSchema = z.object({
   id: z.string().min(1),
   sectionId: z.string().min(1),
@@ -124,7 +145,28 @@ const blockSchema = z.object({
   sortOrder: z.number().int().nonnegative(),
   createdAt: z.string(),
   updatedAt: z.string()
+}).superRefine((block, ctx) => {
+  const travelLocations = block.metadata?.travelLocations;
+  if (travelLocations !== undefined) {
+    addNestedSchemaIssues(z.array(travelLocationSchema).safeParse(travelLocations), ctx, ["metadata", "travelLocations"]);
+  }
+
+  const projects = block.metadata?.projects;
+  if (projects !== undefined) {
+    addNestedSchemaIssues(z.array(personalProjectSchema).safeParse(projects), ctx, ["metadata", "projects"]);
+  }
 });
+
+function addNestedSchemaIssues(
+  result: ReturnType<z.ZodTypeAny["safeParse"]>,
+  ctx: z.RefinementCtx,
+  path: (string | number)[]
+) {
+  if (result.success) return;
+  for (const issue of result.error.issues) {
+    ctx.addIssue({ code: "custom", path: [...path, ...issue.path], message: issue.message });
+  }
+}
 
 const themeSchema = z.object({
   primaryColor: z.string(),

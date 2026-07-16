@@ -82,15 +82,19 @@ export function AdminLoginForm({ projectName, initialLanguage }: AdminLoginFormP
   }
 
   return (
-    <section lang={language} className="w-full max-w-[400px]">
-      <div className="mb-10">
-        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#1479FF]">{copy.eyebrow}</p>
-        <h1 className="text-[30px] font-semibold leading-[1.12] tracking-[-0.035em] text-[#111111]">{projectName}</h1>
-        <p className="mt-3 max-w-[360px] text-[15px] leading-6 text-[#64748B]">{copy.description}</p>
+    <section lang={language} className="admin-login__panel w-full max-w-[440px]">
+      <div className="mb-8">
+        <div className="mb-8 flex items-center justify-between gap-4">
+          <span className="admin-login__mark" aria-hidden="true"><i /><i /><i /></span>
+          <span className="admin-login__secure"><ShieldCheck className="h-3.5 w-3.5" /> {copy.secure}</span>
+        </div>
+        <p className="admin-login__eyebrow mb-3">01 / {copy.eyebrow}</p>
+        <h1 className="text-[38px] font-black leading-[1.02] tracking-[-0.055em] text-[#101619]">{projectName}</h1>
+        <p className="mt-4 max-w-[360px] text-[15px] leading-7 text-[#5F625D]">{copy.description}</p>
       </div>
 
       <form onSubmit={submit} className="grid gap-5">
-        <label className="grid gap-2 text-[13px] font-medium text-[#334155]" htmlFor="admin-password">
+        <label className="grid gap-2 text-[13px] font-bold text-[#343834]" htmlFor="admin-password">
           <span>{copy.password}</span>
           <input
             id="admin-password"
@@ -106,10 +110,10 @@ export function AdminLoginForm({ projectName, initialLanguage }: AdminLoginFormP
             aria-invalid={hasError}
             aria-describedby={hasError ? "admin-login-error" : undefined}
             className={cn(
-              "h-12 w-full rounded-[14px] border bg-white px-4 text-[15px] text-[#111111] outline-none transition duration-200 placeholder:text-[#94A3B8] focus:ring-4",
+              "h-12 w-full rounded-[14px] border bg-white px-4 text-[15px] text-[#111111] outline-none transition duration-200 placeholder:text-[#9C988E] focus:ring-4",
               hasError
                 ? "border-[#D85C5C] focus:border-[#C94343] focus:ring-[#D85C5C]/10"
-                : "border-[#D9E6F8] hover:border-[#AFCDF4] focus:border-[#1479FF] focus:ring-[#1479FF]/10"
+                : "border-[#D5D0C4] hover:border-[#A9A397] focus:border-[#21B95B] focus:ring-[#5EDB88]/15"
             )}
           />
         </label>
@@ -123,7 +127,7 @@ export function AdminLoginForm({ projectName, initialLanguage }: AdminLoginFormP
         <button
           type="submit"
           disabled={isLoading || !password}
-          className="group inline-flex h-12 items-center justify-center gap-2 rounded-[14px] border border-[#1479FF] bg-[#1479FF] px-4 text-sm font-medium text-white transition duration-200 hover:border-[#0F67D9] hover:bg-[#0F67D9] disabled:cursor-not-allowed disabled:border-[#B7D6FA] disabled:bg-[#B7D6FA]"
+          className="admin-login__submit group inline-flex h-12 items-center justify-center gap-2 rounded-[14px] px-4 text-sm font-bold transition duration-200 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isLoading ? (
             <>
@@ -139,9 +143,9 @@ export function AdminLoginForm({ projectName, initialLanguage }: AdminLoginFormP
         </button>
       </form>
 
-      <div className="mt-8 flex items-center gap-2 border-t border-[#EAF0F8] pt-5 text-[12px] text-[#94A3B8]">
-        <ShieldCheck className="h-3.5 w-3.5 text-[#1479FF]" strokeWidth={1.8} />
-        <span>{copy.secure}</span>
+      <div className="admin-login__footer mt-8 flex items-center justify-between gap-3 border-t pt-5">
+        <span>CONTENT STUDIO</span>
+        <span>{"// DESIGNED BY LRWEI91"}</span>
       </div>
     </section>
   );

@@ -100,6 +100,7 @@ import {
 import { BlockCard } from "@/components/blocks/BlockCard";
 import { BlockIcon, getBlockIconColor } from "@/components/blocks/BlockIcon";
 import { BlockForm } from "@/components/admin/BlockForm";
+import { getSpecialModuleType, SpecialModuleForm, SpecialModulePreview } from "@/components/admin/SpecialModuleForm";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
 import { MediaUploader } from "@/components/admin/MediaUploader";
@@ -152,6 +153,7 @@ type BlockTemplate = {
   defaultHref?: string;
   defaultActionType?: Block["actionType"];
   defaultMetadata?: Record<string, unknown>;
+  moduleType?: "travel" | "projects";
 };
 
 const blockTemplates: {
@@ -187,8 +189,42 @@ const blockTemplates: {
     items: [
       { label: "高光时刻", description: "状态/动态", size: "wide", icon: <Palette /> },
       { label: "教育经历", description: "教育卡片", size: "large-square", icon: <BookOpen /> },
-      { label: "工作经历", description: "经历卡片", size: "large-square", icon: <BriefcaseBusiness /> },
+      {
+        label: "工作经历",
+        description: "经历卡片",
+        size: "large-square",
+        icon: <BriefcaseBusiness />,
+        defaultTitle: "公司名称",
+        defaultSubtitle: "职位 · 2024 年 1 月 - 至今",
+        defaultDescription: "补充这段工作经历的职责与成果摘要。",
+        defaultIcon: "briefcase",
+        defaultActionType: "modal",
+        defaultMetadata: {
+          modalTitle: "公司名称 · 职位",
+          modalSubtitle: "2024 年 1 月 - 至今",
+          modalBody: "补充详细的工作职责、项目经历与成果。"
+        }
+      },
       { label: "获奖记录", description: "奖项/荣誉", size: "wide", icon: <Award />, defaultIcon: "award", defaultBadge: "Award" }
+    ]
+  },
+  {
+    group: "主页模块",
+    items: [
+      {
+        label: "旅行足迹",
+        description: "中国地图与足迹列表",
+        size: "full-wide",
+        icon: <MapPin />,
+        moduleType: "travel"
+      },
+      {
+        label: "个人项目",
+        description: "项目卡片与双链接",
+        size: "full-wide",
+        icon: <Laptop />,
+        moduleType: "projects"
+      }
     ]
   },
   {
@@ -210,6 +246,7 @@ const localizedTemplateText: Record<
 > = {
   常用: { group: { "zh-CN": "常用", en: "Common" } },
   经历: { group: { "zh-CN": "经历", en: "Experience" } },
+  主页模块: { group: { "zh-CN": "主页模块", en: "Homepage modules" } },
   社交媒体: { group: { "zh-CN": "社交媒体", en: "Social" } },
   标题: { label: { "zh-CN": "标题", en: "Heading" }, description: { "zh-CN": "整行标题或说明", en: "Full-width heading or note" } },
   文本: { label: { "zh-CN": "文本", en: "Text" }, description: { "zh-CN": "文字区块", en: "Text block" } },
@@ -218,7 +255,9 @@ const localizedTemplateText: Record<
   高光时刻: { label: { "zh-CN": "高光时刻", en: "Highlight" }, description: { "zh-CN": "状态或动态", en: "Status or update" } },
   教育经历: { label: { "zh-CN": "教育经历", en: "Education" }, description: { "zh-CN": "教育卡片", en: "Education card" } },
   工作经历: { label: { "zh-CN": "工作经历", en: "Work" }, description: { "zh-CN": "经历卡片", en: "Experience card" } },
-  获奖记录: { label: { "zh-CN": "获奖记录", en: "Award" }, description: { "zh-CN": "奖项或荣誉", en: "Award or honor" } }
+  获奖记录: { label: { "zh-CN": "获奖记录", en: "Award" }, description: { "zh-CN": "奖项或荣誉", en: "Award or honor" } },
+  旅行足迹: { label: { "zh-CN": "旅行足迹", en: "Travel footprint" }, description: { "zh-CN": "中国地图与足迹列表", en: "China map and travel log" } },
+  个人项目: { label: { "zh-CN": "个人项目", en: "Personal projects" }, description: { "zh-CN": "项目卡片与双链接", en: "Project cards and links" } }
 };
 
 function getLocalizedTemplateGroup(group: string, language: EditorLanguage) {
@@ -265,7 +304,7 @@ const editorCanvasWidth: Record<LayoutDevice, number> = {
 };
 
 const desktopBreakpoint = 768;
-const adminEditorVersion = "1.0.0";
+const adminEditorVersion = "1.1.0";
 const reservedVariantAccessCodes = new Set(["admin", "api", "icon", "_next", "favicon.ico", "reset"]);
 type ResizeMetrics = {
   left: number;
@@ -645,11 +684,17 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
   }
 
   function patchBlock(blockId: string, patch: Partial<Block>) {
+    const linkedModuleIds = patch.isVisible === undefined ? new Set([blockId]) : getSpecialModuleDeleteIds(config.blocks, blockId);
+    const now = new Date().toISOString();
     update({
       ...config,
       blocks: normalizeBlocks(
         config.blocks.map((block) =>
-          block.id === blockId ? { ...block, ...patch, sectionId: topLevelBlockSectionId, updatedAt: new Date().toISOString() } : block
+          block.id === blockId
+            ? { ...block, ...patch, sectionId: topLevelBlockSectionId, updatedAt: now }
+            : linkedModuleIds.has(block.id) && patch.isVisible !== undefined
+              ? { ...block, isVisible: patch.isVisible, updatedAt: now }
+              : block
         )
       )
     });
@@ -820,12 +865,52 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
   }
 
   function deleteBlock(blockId: string) {
-    if (!window.confirm(copy.deleteBlockConfirm)) return;
-    update({ ...config, blocks: normalizeBlocks(config.blocks.filter((block) => block.id !== blockId)) });
+    const blockIds = getSpecialModuleDeleteIds(config.blocks, blockId);
+    const isSpecialModule = blockIds.size > 1;
+    const confirmMessage = isSpecialModule
+      ? editorLanguage === "zh-CN"
+        ? "确认删除整个模块？模块标题和内容会一起移除。"
+        : "Delete the entire module? Its heading and content will both be removed."
+      : copy.deleteBlockConfirm;
+    if (!window.confirm(confirmMessage)) return;
+    update({ ...config, blocks: normalizeBlocks(config.blocks.filter((block) => !blockIds.has(block.id))) });
     setModal(null);
   }
 
+  function getSpecialModuleDeleteIds(blocks: Block[], blockId: string) {
+    const ids = new Set([blockId]);
+    const ordered = [...blocks].filter((block) => block.sectionId === topLevelBlockSectionId).sort(bySortOrder);
+    const targetIndex = ordered.findIndex((block) => block.id === blockId);
+    if (targetIndex < 0) return ids;
+
+    const target = ordered[targetIndex];
+    const targetModuleType = getSpecialModuleType(target);
+    if (targetModuleType) {
+      for (let index = targetIndex - 1; index >= 0; index -= 1) {
+        const candidate = ordered[index];
+        if (!isSectionTextBlock(candidate)) continue;
+        if (candidate.metadata?.sourceSectionId === targetModuleType) ids.add(candidate.id);
+        break;
+      }
+      return ids;
+    }
+
+    const sourceSectionId = target.metadata?.sourceSectionId;
+    if (!isSectionTextBlock(target) || (sourceSectionId !== "travel" && sourceSectionId !== "projects")) return ids;
+    for (let index = targetIndex + 1; index < ordered.length; index += 1) {
+      const candidate = ordered[index];
+      if (isSectionTextBlock(candidate)) break;
+      if (getSpecialModuleType(candidate) === sourceSectionId) ids.add(candidate.id);
+    }
+    return ids;
+  }
+
   function addBlock(template: BlockTemplate) {
+    if (template.moduleType) {
+      addSpecialModule(template.moduleType);
+      return;
+    }
+
     const now = new Date().toISOString();
     const isTextSection = template.size === "section-text";
     const isPlainTextBlock = template.defaultMetadata?.textVariant === "plain";
@@ -866,6 +951,101 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
     };
     update({ ...config, blocks: [...config.blocks, newBlock] });
     setModal({ type: "block", blockId: newBlock.id });
+  }
+
+  function addSpecialModule(moduleType: "travel" | "projects") {
+    const now = new Date().toISOString();
+    const firstSortOrder = getNextContentSortOrder(config);
+    const isTravel = moduleType === "travel";
+    const headingId = crypto.randomUUID();
+    const contentId = crypto.randomUUID();
+    const heading: Block = {
+      id: headingId,
+      sectionId: topLevelBlockSectionId,
+      title: isTravel ? (editorLanguage === "zh-CN" ? "旅行足迹" : "Travel Footprint") : editorLanguage === "zh-CN" ? "个人项目" : "Personal Projects",
+      subtitle: isTravel ? "Travel Footprint" : "Personal Projects",
+      description: "",
+      size: "section-text",
+      responsiveSizes: { desktop: "section-text", mobile: "section-text" },
+      coverImage: "",
+      icon: isTravel ? "map" : "terminal",
+      badge: "",
+      href: "",
+      actionType: "none",
+      openInNewTab: false,
+      backgroundColor: "",
+      textColor: "",
+      metadata: {
+        sourceSectionId: moduleType,
+        titleAlign: "left",
+        titleSize: isTravel ? "md" : "lg"
+      },
+      isVisible: true,
+      isFeatured: false,
+      sortOrder: firstSortOrder,
+      createdAt: now,
+      updatedAt: now
+    };
+    const content: Block = {
+      id: contentId,
+      sectionId: topLevelBlockSectionId,
+      title: isTravel
+        ? editorLanguage === "zh-CN"
+          ? "走过的每一个地方，都是故事"
+          : "Every place becomes part of the story"
+        : editorLanguage === "zh-CN"
+          ? "个人项目"
+          : "Personal Projects",
+      subtitle: "",
+      description: isTravel
+        ? editorLanguage === "zh-CN"
+          ? "把抵达过的地方留在地图上，也把沿途的故事慢慢写下来。"
+          : "Pin the places you have reached and keep their stories close."
+        : "",
+      size: "full-wide",
+      responsiveSizes: { desktop: "full-wide", mobile: "full-wide" },
+      coverImage: "",
+      icon: isTravel ? "map" : "terminal",
+      badge: "",
+      href: "",
+      actionType: "none",
+      openInNewTab: false,
+      backgroundColor: "",
+      textColor: "",
+      metadata: isTravel
+        ? {
+            travelLocations: [
+              {
+                city: editorLanguage === "zh-CN" ? "福州" : "Fuzhou",
+                province: editorLanguage === "zh-CN" ? "福建" : "Fujian",
+                note: editorLanguage === "zh-CN" ? "常驻地" : "Home base",
+                longitude: 119.3,
+                latitude: 26.08
+              }
+            ]
+          }
+        : {
+            projects: [
+              {
+                title: editorLanguage === "zh-CN" ? "新项目" : "New project",
+                description: editorLanguage === "zh-CN" ? "补充项目简介" : "Add a short project description",
+                eyebrow: "PROJECT · 01",
+                href: "https://github.com/",
+                liveHref: "",
+                icon: "data",
+                tone: "mint"
+              }
+            ]
+          },
+      isVisible: true,
+      isFeatured: false,
+      sortOrder: firstSortOrder + 1,
+      createdAt: now,
+      updatedAt: now
+    };
+
+    update({ ...config, blocks: normalizeBlocks([...config.blocks, heading, content]) });
+    setModal({ type: "block", blockId: contentId });
   }
 
   function addSection() {
@@ -1223,25 +1403,26 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
   }
 
   return (
-    <main className="min-h-screen bg-white text-[#101010]">
-      <header className="sticky top-0 z-40 border-b border-[#EAF0F8] bg-white">
+    <main className="admin-studio min-h-screen text-[#101010]">
+      <header className="admin-studio__topbar sticky top-0 z-40">
         <div className="mx-auto grid max-w-[1180px] gap-2 px-5 py-3 md:flex md:items-center md:justify-between">
           <div className="flex items-center justify-between gap-3 md:contents">
             <div className="flex min-w-0 items-center gap-3 md:order-1">
+              <span className="admin-studio__mark" aria-hidden="true"><i /><i /><i /></span>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold">{baseConfig.settings.projectName}</p>
-                <p className="text-xs text-[#6B7280]">{isDirty ? copy.unsaved : copy.saved}</p>
+                <p className="admin-studio__eyebrow">CONTENT STUDIO</p>
+                <p className="truncate text-sm font-bold">{baseConfig.settings.projectName}</p>
               </div>
-              <span className="shrink-0 rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-                {copy.editorVersion} v{adminEditorVersion}
+              <span className="admin-studio__status shrink-0">
+                <i /> {isDirty ? copy.unsaved : copy.saved} · v{adminEditorVersion}
               </span>
             </div>
             <div className="flex items-center justify-end gap-2 md:order-3">
-              <Button variant="secondary" size="sm" onClick={() => setModal({ type: "project-settings" })}>
+              <Button variant="secondary" size="sm" className="admin-studio__secondary-action" onClick={() => setModal({ type: "project-settings" })}>
                 <Settings className="h-4 w-4" />
                 {copy.projectSettings}
               </Button>
-              <Button size="sm" onClick={save} disabled={isSaving || !validation.success}>
+              <Button size="sm" className="admin-studio__save-action" onClick={save} disabled={isSaving || !validation.success}>
                 <Save className="h-4 w-4" />
                 {isSaving ? copy.saving : copy.save}
               </Button>
@@ -1255,7 +1436,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
                   variant="secondary"
                   size="sm"
                   onClick={openTopBarOverrideDialog}
-                  className="h-9 rounded-full border-[#BFDBFE] bg-[#EFF6FF] px-3 text-xs text-[#1E3A5F] hover:bg-[#DBEAFE]"
+                  className="h-9 rounded-full border-[#BFE7C9] bg-[#E2F5DF] px-3 text-xs text-[#176B39] hover:bg-[#D4F0D8]"
                 >
                   {copy.variantOverride}
                 </Button>
@@ -1303,7 +1484,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
             onDragEnd={onDragEnd}
             onDragCancel={onDragCancel}
           >
-            <div className="flex justify-center overflow-x-hidden px-3">
+            <div className="admin-studio__stage flex justify-center overflow-x-hidden px-3">
               <div
                 style={
                   {
@@ -1318,7 +1499,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
                   } as React.CSSProperties & { zoom: number }
                 }
                 className={cn(
-                  "grid gap-8 px-5 pb-28 pt-10 md:px-8 md:pt-14",
+                  "admin-studio__canvas grid gap-8 px-5 pb-28 pt-10 md:px-8 md:pt-14",
                   editorDevice === "desktop" ? "grid-cols-[320px_minmax(0,1fr)] gap-12" : "grid-cols-1"
                 )}
               >
@@ -1660,8 +1841,8 @@ function EditableProfile({
 }) {
   const copy = editorCopy[editorLanguage];
   return (
-    <aside className={cn(device === "desktop" && "sticky top-24 self-start")}>
-      <div className="grid w-full gap-5 rounded-[28px] bg-white p-6 text-left">
+    <aside className={cn("admin-profile-panel", device === "desktop" && "sticky top-24 self-start")}>
+      <div className="admin-profile-panel__card grid w-full gap-5 rounded-[28px] p-6 text-left">
         <span className="group/avatar relative w-fit">
           <img src={profile.avatarUrl || "/default-avatar.svg"} alt="" className="h-36 w-36 rounded-full object-cover" />
           <div className="absolute right-1 top-1 opacity-0 transition group-hover/avatar:opacity-100">
@@ -1680,14 +1861,14 @@ function EditableProfile({
         <div className="grid gap-3">
           <InlineProfileText
             value={profile.displayName}
-            className="rounded-xl px-1 text-3xl font-bold leading-tight tracking-normal hover:bg-[#F1F5F9]"
+            className="rounded-xl px-1 text-3xl font-black leading-tight tracking-[-0.04em] hover:bg-[#EDE8DA]"
             inputClassName="text-3xl font-bold"
             onChange={(displayName) => onPatch({ displayName })}
           />
           <InlineProfileText
             value={profile.headline}
             multiline
-            className="rounded-xl px-1 text-base font-medium leading-6 hover:bg-[#F1F5F9]"
+            className="rounded-xl px-1 text-base font-bold leading-6 hover:bg-[#EDE8DA]"
             inputClassName="min-h-20 text-base font-medium leading-6"
             onChange={(headline) => onPatch({ headline })}
           />
@@ -1695,25 +1876,25 @@ function EditableProfile({
             <InlineProfileText
               value={profile.bio}
               multiline
-              className="rounded-xl px-1 text-sm leading-7 text-[#64748B] hover:bg-[#F1F5F9]"
+              className="rounded-xl px-1 text-sm leading-7 text-[#5F625D] hover:bg-[#EDE8DA]"
               onChange={(bio) => onPatch({ bio })}
             />
           </div>
           <InlineProfileText
             value={profile.location ?? ""}
             placeholder={editorLanguage === "zh-CN" ? "添加位置" : "Add location"}
-            className="inline-flex w-fit rounded-xl px-1 text-sm text-[#64748B] hover:bg-[#F1F5F9]"
+            className="inline-flex w-fit rounded-xl px-1 text-sm text-[#5F625D] hover:bg-[#EDE8DA]"
             onChange={(location) => onPatch({ location })}
             prefix={<MapPin className="h-4 w-4" />}
           />
           <div className="flex flex-wrap gap-2">
             {profile.tags.map((tag) => (
-              <span key={tag} className="rounded-full border border-[#EAF0F8] bg-white px-3 py-1.5 text-sm shadow-sm">
+              <span key={tag} className="admin-profile-panel__chip rounded-full px-3 py-1.5 text-sm">
                 {tag}
               </span>
             ))}
           </div>
-          <button type="button" onClick={onEditTags} className="w-fit rounded-full border border-dashed border-[#D9E6F8] px-3 py-1.5 text-sm font-medium text-[#1479FF]">
+          <button type="button" onClick={onEditTags} className="admin-profile-panel__add w-fit rounded-full border border-dashed px-3 py-1.5 text-sm font-bold">
             <Pencil className="mr-1 inline h-3.5 w-3.5" />
             {editorLanguage === "zh-CN" ? `修改或添加${copy.tag}` : `Edit or Add ${copy.tag}`}
           </button>
@@ -1726,13 +1907,13 @@ function EditableProfile({
                   key={link.id}
                   type="button"
                   onClick={onEditSocial}
-                  className="inline-flex items-center gap-2 rounded-full border border-[#EAEAEA] bg-white px-3 py-2 text-sm font-medium shadow-sm transition hover:border-[#1479FF]/40 hover:text-[#1479FF]"
+                  className="admin-profile-panel__social inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-bold transition"
                 >
                   <SocialIcon name={link.icon} />
                   {link.label}
                 </button>
               ))}
-            <button type="button" onClick={onEditSocial} className="inline-flex items-center gap-2 rounded-full border border-dashed border-[#D9E6F8] px-3 py-2 text-sm font-medium text-[#1479FF]">
+            <button type="button" onClick={onEditSocial} className="admin-profile-panel__add inline-flex items-center gap-2 rounded-full border border-dashed px-3 py-2 text-sm font-bold">
               <Plus className="h-3.5 w-3.5" />
               {editorLanguage === "zh-CN" ? "社交按钮" : "Social Buttons"}
             </button>
@@ -1937,7 +2118,7 @@ function DragOverlayBlockPreview({ block, width, height }: { block: Block; width
 
   return (
     <div
-      className="relative box-border overflow-hidden rounded-[20px] border border-[#111] bg-white p-4 ring-2 ring-[#1479FF]/25"
+      className="relative box-border overflow-hidden rounded-[20px] border border-[#111] bg-white p-4 ring-2 ring-[#21B95B]/25"
       style={{ width, height }}
     >
       {block.coverImage ? (
@@ -1979,7 +2160,7 @@ function DragOverlayTextBlockPreview({ block, width, height }: { block: Block; w
   return (
     <div
       className={cn(
-        "flex box-border h-full w-full flex-col justify-center overflow-hidden rounded-[20px] border border-[#111] bg-white px-3.5 py-2.5 ring-2 ring-[#1479FF]/25",
+        "flex box-border h-full w-full flex-col justify-center overflow-hidden rounded-[20px] border border-[#111] bg-white px-3.5 py-2.5 ring-2 ring-[#21B95B]/25",
         titleAlign === "center" && "items-center text-center",
         titleAlign === "right" && "items-end text-right",
         titleAlign === "left" && "items-start text-left"
@@ -1988,7 +2169,7 @@ function DragOverlayTextBlockPreview({ block, width, height }: { block: Block; w
     >
       <h3 className={cn("max-w-full truncate font-bold leading-tight tracking-normal text-[#111]", titleClass)}>
         {block.title.trim()}
-        {block.icon ? <span className="ml-1 text-[#1479FF]">{block.icon}</span> : null}
+        {block.icon ? <span className="ml-1 text-[#21B95B]">{block.icon}</span> : null}
       </h3>
       {subtitle ? <p className="mt-1 max-w-full truncate text-sm leading-5 text-[#64748B]">{subtitle}</p> : null}
     </div>
@@ -3081,7 +3262,7 @@ function EditableSection({
             <button type="button" onClick={onEditSection} className="min-w-0 rounded-xl px-1 text-left">
               <h2 className="text-2xl font-bold tracking-normal">
                 {section.title}
-                {section.emoji ? <span className="ml-1 text-[#1479FF]">{section.emoji}</span> : null}
+                {section.emoji ? <span className="ml-1 text-[#21B95B]">{section.emoji}</span> : null}
               </h2>
               {section.description ? <p className="mt-1 text-sm text-[#64748B]">{section.description}</p> : null}
             </button>
@@ -3186,11 +3367,11 @@ function BlockDropPreview({
     <div
       style={placementStyle}
       className={cn(
-        "pointer-events-none rounded-[20px] border-2 border-dashed border-[#1479FF]/55 bg-[#EDF6FF]/75 shadow-[inset_0_0_0_1px_rgba(20,121,255,0.12)]",
+        "pointer-events-none rounded-[20px] border-2 border-dashed border-[#21b95b]/55 bg-[#e2f5df]/75 shadow-[inset_0_0_0_1px_rgba(33,185,91,0.12)]",
         blockSizeClassByDevice[device][displaySize]
       )}
     >
-      <div className="grid h-full w-full place-items-center rounded-[18px] bg-white/35 text-xs font-semibold text-[#1479FF]">
+      <div className="grid h-full w-full place-items-center rounded-[18px] bg-white/35 text-xs font-bold text-[#168c46]">
         放到这里
       </div>
     </div>
@@ -3199,7 +3380,7 @@ function BlockDropPreview({
 
 function TextBlockDropPreview({ block }: { block: Block }) {
   return (
-    <div className="pointer-events-none rounded-[20px] border-2 border-dashed border-[#1479FF]/45 bg-[#EDF6FF]/65 px-2 py-2">
+    <div className="pointer-events-none rounded-[20px] border-2 border-dashed border-[#21b95b]/45 bg-[#e2f5df]/65 px-2 py-2">
       <BlockCard block={block} disableActions withLayout={false} className="min-h-0 opacity-50" />
     </div>
   );
@@ -3253,7 +3434,7 @@ function SortableTextBlock({
       {...attributes}
       {...listeners}
     >
-      <div className="rounded-[20px] p-2 transition-all duration-200 ease-out group-hover:bg-[#F3F4F6]">
+      <div className="rounded-[20px] p-2 transition-all duration-200 ease-out group-hover:bg-[#EDE8DA]/70">
         <div className="transition-transform duration-200 ease-out group-hover:scale-[0.97]">
           <BlockCard block={block} disableActions withLayout={false} className="min-h-0" />
         </div>
@@ -3431,7 +3612,11 @@ function SortableBlock({
       {...listeners}
     >
       <div data-admin-block-surface="true" className="h-full w-full overflow-hidden rounded-[20px]">
-        <BlockCard block={block} disableActions withLayout={false} className="h-full w-full select-none ring-0 group-hover:ring-2 group-hover:ring-[#1479FF]/20" />
+        {getSpecialModuleType(block) ? (
+          <SpecialModulePreview block={block} />
+        ) : (
+          <BlockCard block={block} disableActions withLayout={false} className="h-full w-full select-none ring-0 group-hover:ring-2 group-hover:ring-[#21B95B]/20" />
+        )}
       </div>
       <div className={cn("pointer-events-none absolute inset-0 z-30 transition", device === "mobile" ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
         <button
@@ -3683,17 +3868,17 @@ function FloatingToolbar({
 }) {
   const copy = editorCopy[editorLanguage];
   return (
-    <div className="fixed bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-[24px] border border-[#EAF0F8] bg-white p-2 shadow-[0_14px_44px_rgba(15,23,42,0.14)]">
-      <div className="flex rounded-[18px] bg-[#F1F5F9] p-1">
+    <div className="admin-floating-toolbar fixed bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-[24px] p-2">
+      <div className="admin-floating-toolbar__devices flex rounded-[18px] p-1">
         <button
           type="button"
           disabled={!canEditDesktop}
           onClick={() => onDeviceChange("desktop")}
           className={`grid h-10 w-10 place-items-center rounded-[14px] transition ${
             device === "desktop"
-              ? "bg-black text-white shadow-soft"
+              ? "admin-floating-toolbar__device--active"
               : canEditDesktop
-                ? "text-[#64748B] hover:bg-white"
+                ? "text-[#5F625D] hover:bg-white/70"
                 : "cursor-not-allowed text-[#CBD5E1]"
           }`}
           title={canEditDesktop ? copy.desktop : copy.desktopDisabled}
@@ -3704,14 +3889,14 @@ function FloatingToolbar({
           type="button"
           onClick={() => onDeviceChange("mobile")}
           className={`grid h-10 w-10 place-items-center rounded-[14px] transition ${
-            device === "mobile" ? "bg-black text-white shadow-soft" : "text-[#64748B] hover:bg-white"
+            device === "mobile" ? "admin-floating-toolbar__device--active" : "text-[#5F625D] hover:bg-white/70"
           }`}
           title={copy.mobile}
         >
           <Smartphone className="h-4 w-4" />
         </button>
       </div>
-      <Button onClick={onAddBlock} className="h-10 whitespace-nowrap px-3">
+      <Button onClick={onAddBlock} className="admin-floating-toolbar__add h-10 whitespace-nowrap px-3">
         <Plus className="h-4 w-4" />
         {copy.addBlock}
       </Button>
@@ -3721,15 +3906,15 @@ function FloatingToolbar({
 
 function ResizePreview({ activeSize, editorLanguage }: { activeSize: BlockSize; editorLanguage: EditorLanguage }) {
   return (
-    <div className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-4 rounded-[28px] border border-[#EAF0F8] bg-white/96 px-6 py-3 shadow-[0_18px_60px_rgba(15,23,42,0.18)] backdrop-blur">
+    <div className="admin-resize-preview fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-4 rounded-[28px] px-6 py-3 backdrop-blur">
       {blockSizePresets.map((preset) => (
         <div
           key={preset.size}
           title={getLocalizedBlockSizeLabel(preset.size, editorLanguage)}
           className={`grid h-11 w-11 place-items-center rounded-xl border transition [&>span>svg]:h-6 [&>span>svg]:w-6 ${
             activeSize === preset.size
-              ? "border-[#1479FF] bg-[#1479FF] text-white"
-              : "border-transparent bg-white text-[#9CA3AF]"
+              ? "border-[#21b95b] bg-[#5edb88] text-[#101619]"
+              : "border-transparent bg-white/70 text-[#8A887F]"
           }`}
         >
           <span>{preset.icon}</span>
@@ -3763,22 +3948,22 @@ function EditorModal({
   const isDark = tone === "dark";
   const copy = editorCopy[editorLanguage];
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/30 p-4 backdrop-blur-sm" onMouseDown={onClose}>
+    <div className="admin-editor-modal fixed inset-0 z-50 grid place-items-center p-4" onMouseDown={onClose}>
       <div
         className={cn(
-          "flex max-h-[86vh] w-full max-w-3xl flex-col overflow-hidden rounded-[18px] shadow-2xl",
+          "admin-editor-modal__panel flex max-h-[86vh] w-full max-w-3xl flex-col overflow-hidden",
           isDark ? "bg-[#1C1C1C] text-white" : "bg-white text-[#111]"
         )}
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <div className={cn("flex items-center justify-between border-b px-5 py-4", isDark ? "border-white/10" : "border-[#EEF2F7]")}>
-          <h3 className="text-base font-bold">{title}</h3>
-          <button type="button" onClick={onClose} className={cn("grid h-8 w-8 place-items-center rounded-full", isDark ? "hover:bg-white/10" : "hover:bg-[#F1F5F9]")}>
+        <div className={cn("admin-editor-modal__header flex items-center justify-between border-b px-6 py-5", isDark ? "border-white/10" : "border-[#D8D2C4]")}>
+          <div><p>EDIT CONTENT</p><h3 className="text-xl font-black tracking-[-0.03em]">{title}</h3></div>
+          <button type="button" onClick={onClose} className={cn("admin-editor-modal__close grid h-9 w-9 place-items-center rounded-full", isDark ? "hover:bg-white/10" : "hover:bg-[#EDE8DA]")}>
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="overflow-auto p-5">{children}</div>
-        <div className={cn("flex items-center justify-between gap-3 border-t px-5 py-4", isDark ? "border-white/10" : "border-[#EEF2F7]")}>
+        <div className="admin-editor-modal__body overflow-auto p-6">{children}</div>
+        <div className={cn("admin-editor-modal__footer flex items-center justify-between gap-3 border-t px-6 py-4", isDark ? "border-white/10" : "border-[#D8D2C4]")}>
           <div>{footerStart}</div>
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={onClose} className={cn(isDark && "text-white hover:bg-white/10")}>{copy.cancel}</Button>
@@ -3788,7 +3973,7 @@ function EditorModal({
                 onClose();
               }}
               disabled={isSaving || !canSave}
-              className={cn(isDark ? "rounded-full bg-white text-black hover:bg-white/90" : "bg-black hover:bg-black/90")}
+              className={cn(isDark ? "rounded-full bg-white text-black hover:bg-white/90" : "admin-editor-modal__save")}
             >
               {isSaving ? copy.saving : copy.save}
             </Button>
@@ -3936,13 +4121,13 @@ function SocialLinksQuickForm({
                       return next;
                     })
                   }
-                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#F8FAFC] text-[#64748B] transition hover:bg-[#EFF6FF] hover:text-[#1E3A5F]"
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#F8F6EF] text-[#64748B] transition hover:bg-[#E2F5DF] hover:text-[#176B39]"
                   aria-label={isExpanded ? (editorLanguage === "zh-CN" ? "折叠社交媒体标签" : "Collapse social link") : (editorLanguage === "zh-CN" ? "展开社交媒体标签" : "Expand social link")}
                 >
                   <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isExpanded && "rotate-180")} />
                 </button>
                 <div className="inline-flex min-w-0 flex-1 items-center gap-2 rounded-xl text-left">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#F1F5F9] text-[#1479FF]">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#E2F5DF] text-[#21B95B]">
                     <SocialIcon name={link.icon} />
                   </span>
                   <span className="grid min-w-0 gap-0.5">
@@ -4000,8 +4185,8 @@ function SocialLinksQuickForm({
                           className={cn(
                             "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-full border px-3 text-sm transition",
                             link.icon === icon
-                              ? "border-[#1479FF] bg-[#1479FF] text-white"
-                              : "border-[#EAEAEA] bg-white text-[#475569] hover:border-[#1479FF]/40"
+                              ? "border-[#21B95B] bg-[#5EDB88] text-[#101619]"
+                              : "border-[#D5D0C4] bg-white text-[#475569] hover:border-[#21B95B]/40"
                           )}
                         >
                           <SocialIcon name={icon} />
@@ -4069,7 +4254,11 @@ function BlockModalBody({
   editorLanguage: EditorLanguage;
 }) {
   if (!block) return null;
-  return <BlockForm block={block} onPatch={onPatch} editorLanguage={editorLanguage} />;
+  return getSpecialModuleType(block) ? (
+    <SpecialModuleForm block={block} onPatch={onPatch} editorLanguage={editorLanguage} />
+  ) : (
+    <BlockForm block={block} onPatch={onPatch} editorLanguage={editorLanguage} />
+  );
 }
 
 function AddBlockDialog({ onAdd, editorLanguage }: { onAdd: (template: BlockTemplate) => void; editorLanguage: EditorLanguage }) {
@@ -4085,7 +4274,7 @@ function AddBlockDialog({ onAdd, editorLanguage }: { onAdd: (template: BlockTemp
           <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
             {group.items.map((item) => (
               <button key={`${group.group}-${item.label}`} type="button" onClick={() => onAdd(item)} className="grid justify-items-center gap-2 rounded-2xl p-3 text-center hover:bg-[#F8FBFF]">
-                <span className="grid h-12 w-12 place-items-center rounded-xl border border-[#EAF0F8] bg-white text-[#1479FF] [&>svg]:h-6 [&>svg]:w-6">
+                <span className="grid h-12 w-12 place-items-center rounded-xl border border-[#D5D0C4] bg-white text-[#21B95B] [&>svg]:h-6 [&>svg]:w-6">
                   {item.icon}
                 </span>
                 <span className="text-xs font-medium">{getLocalizedTemplateLabel(item, editorLanguage)}</span>
@@ -4490,7 +4679,7 @@ function ProjectSettingsForm({
             className={cn(
               "grid gap-0.5 rounded-xl border px-3 py-2 text-left transition",
               activePanel === panel.id
-                ? "border-[#BFDBFE] bg-[#EFF6FF] text-[#1E3A5F]"
+                ? "border-[#BFE7C9] bg-[#E2F5DF] text-[#176B39]"
                 : "border-transparent text-[#475569] hover:bg-[#F8FAFC] hover:text-[#111]"
             )}
           >
@@ -4627,7 +4816,7 @@ function ProjectSettingsForm({
                       <button
                         type="button"
                         onClick={() => toggleVariantCollapsed(variant.id)}
-                        className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#F8FAFC] text-[#64748B] transition hover:bg-[#EFF6FF] hover:text-[#1E3A5F]"
+                        className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#F8F6EF] text-[#64748B] transition hover:bg-[#E2F5DF] hover:text-[#176B39]"
                         aria-label={isCollapsed ? copy.variantExpand : copy.variantCollapse}
                       >
                         <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", !isCollapsed && "rotate-180")} />
@@ -4702,7 +4891,7 @@ function ProjectSettingsForm({
                                       key={`${variant.id}:${language.code}`}
                                       className={cn(
                                         "inline-flex w-fit max-w-full items-center gap-2 rounded-full border px-3 py-1.5 text-xs",
-                                        isEnabled ? "border-[#BFDBFE] bg-[#EFF6FF] text-[#1E3A5F]" : "border-[#EAEAEA] bg-[#F8FAFC] text-[#64748B]"
+                                        isEnabled ? "border-[#BFE7C9] bg-[#E2F5DF] text-[#176B39]" : "border-[#D5D0C4] bg-[#F8F6EF] text-[#64748B]"
                                       )}
                                     >
                                       <Checkbox
@@ -4719,12 +4908,12 @@ function ProjectSettingsForm({
                                       <span className="select-none rounded-full bg-white/80 px-2 py-0.5 text-[11px] font-semibold text-[#64748B]">
                                         {language.code}
                                       </span>
-                                      {isMainLocale ? <span className="rounded-full bg-white px-2 py-0.5 text-[11px] text-[#1E3A5F]">{copy.mainLanguage}</span> : null}
+                                      {isMainLocale ? <span className="rounded-full bg-white px-2 py-0.5 text-[11px] text-[#176B39]">{copy.mainLanguage}</span> : null}
                                       {!isMainLocale ? (
                                         <button
                                           type="button"
                                           onClick={() => setVariantMainLanguage(variant.id, language.code)}
-                                          className="text-[#5B7896] hover:text-[#1E3A5F]"
+                                          className="text-[#5A7564] hover:text-[#176B39]"
                                           aria-label={copy.setMainLanguage.replace("{language}", language.label)}
                                         >
                                           <Pin className="h-3 w-3" />
@@ -4895,7 +5084,7 @@ function AddLanguageDialog({
   return (
     <div className="fixed inset-0 z-[70] grid place-items-center bg-black/20 p-4" onMouseDown={onClose}>
       <div
-        className="grid w-full max-w-sm gap-4 rounded-2xl border border-[#EAF0F8] bg-white p-4 text-[#111] shadow-2xl"
+        className="grid w-full max-w-sm gap-4 rounded-[24px] border border-[#D5D0C4] bg-[#F8F6EF] p-5 text-[#111] shadow-2xl"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-3">
@@ -4976,7 +5165,7 @@ function VariantOverrideDialog({
   return (
     <div className="fixed inset-0 z-[70] grid place-items-center bg-black/20 p-4" onMouseDown={onClose}>
       <div
-        className="grid w-full max-w-md gap-4 rounded-2xl border border-[#EAF0F8] bg-white p-4 text-[#111] shadow-2xl"
+        className="grid w-full max-w-md gap-4 rounded-[24px] border border-[#D5D0C4] bg-[#F8F6EF] p-5 text-[#111] shadow-2xl"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-3">
@@ -4991,10 +5180,10 @@ function VariantOverrideDialog({
 
         <div className="rounded-xl border border-[#EAEAEA] bg-[#FAFAFA] px-3 py-2 text-xs text-[#64748B]">
           {copy.variantOverrideTarget}
-          <span className="ml-2 rounded-full border border-[#BFDBFE] bg-[#EFF6FF] px-2 py-0.5 font-semibold text-[#1E3A5F]">
+          <span className="ml-2 rounded-full border border-[#BFE7C9] bg-[#E2F5DF] px-2 py-0.5 font-semibold text-[#176B39]">
             {targetVariant?.name || draft.targetVariantId}
           </span>
-          <span className="ml-2 rounded-full border border-[#D8E9FF] bg-white px-2 py-0.5 font-semibold text-[#1E3A5F]">
+          <span className="ml-2 rounded-full border border-[#BFE7C9] bg-white px-2 py-0.5 font-semibold text-[#176B39]">
             {targetLanguage?.label || draft.targetLocale}
           </span>
         </div>
@@ -5053,8 +5242,8 @@ function ScopeBadges({ variantName, languageName, editorLanguage }: { variantNam
   return (
     <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[#EAEAEA] bg-[#FAFAFA] px-3 py-2 text-xs text-[#64748B]">
       <span>{copy.currentScope}</span>
-      <span className="rounded-full border border-[#BFDBFE] bg-[#EFF6FF] px-2.5 py-1 font-semibold text-[#1E3A5F]">{variantName}</span>
-      <span className="rounded-full border border-[#D8E9FF] bg-white px-2.5 py-1 font-semibold text-[#1E3A5F]">{languageName}</span>
+      <span className="rounded-full border border-[#BFE7C9] bg-[#E2F5DF] px-2.5 py-1 font-semibold text-[#176B39]">{variantName}</span>
+      <span className="rounded-full border border-[#BFE7C9] bg-white px-2.5 py-1 font-semibold text-[#176B39]">{languageName}</span>
     </div>
   );
 }

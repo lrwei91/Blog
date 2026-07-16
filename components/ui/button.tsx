@@ -9,6 +9,8 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 export function Button({ className, variant = "primary", size = "md", ...props }: ButtonProps) {
   return (
     <button
+      data-variant={variant}
+      data-size={size}
       className={cn(
         "inline-flex items-center justify-center gap-2 rounded-xl border font-medium transition disabled:cursor-not-allowed disabled:opacity-50",
         size === "sm" && "h-9 px-3 text-sm",
