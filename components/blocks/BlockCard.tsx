@@ -192,15 +192,13 @@ export function BlockCard({
         <Dialog onClose={() => setModalOpen(false)} variant="content">
           <article className="public-dialog__content">
             <header className="public-dialog__header">
-              <p className="public-dialog__eyebrow"><i /> WORK EXPERIENCE <span>/ {getModalSubtitle(displayBlock)}</span></p>
-              <h3>{getModalTitle(displayBlock)}</h3>
-              <p className="public-dialog__lede">职责、方法与代表项目</p>
+              <p className="public-dialog__eyebrow">工作经历 <span>WORK EXPERIENCE</span></p>
+              <div className="public-dialog__resume-heading">
+                <h3>{getModalTitle(displayBlock)}</h3>
+                <p className="public-dialog__period">{getModalSubtitle(displayBlock)}</p>
+              </div>
             </header>
             <ModalBody body={getModalBody(displayBlock)} />
-            <footer className="public-dialog__footer">
-              <span><i /> EXPERIENCE NOTE</span>
-              <span>SCROLL TO READ</span>
-            </footer>
           </article>
         </Dialog>
       ) : null}
