@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 type PublicLanguageSwitcherProps = {
   currentLocale: string;
   languages: SiteLanguage[];
-  accessCode: string;
   initialPreparingLocale?: string;
   className?: string;
   buttonClassName?: string;
@@ -23,7 +22,6 @@ type PreparingTransition = {
 export function PublicLanguageSwitcher({
   currentLocale,
   languages,
-  accessCode,
   initialPreparingLocale,
   className,
   buttonClassName
@@ -74,11 +72,15 @@ export function PublicLanguageSwitcher({
 
     setPreparingTransition({ locale, isExiting: false });
     setIsOpen(false);
-    const encodedLocale = encodeURIComponent(locale);
-    const languagePath = accessCode
-      ? `/${encodeURIComponent(accessCode)}/${encodedLocale}`
-      : `/${encodedLocale}`;
-    window.setTimeout(() => window.location.assign(languagePath), 180);
+    // 2026-07-17 P0: 语言切换通过 POST /api/public/locale 设 Cookie 后刷新首页
+    // 不再使用 accessCode URL 路径（accessCode 不再暴露给客户端）
+    fetch("/api/public/locale", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ locale })
+    }).finally(() => {
+      window.setTimeout(() => window.location.assign("/"), 180);
+    });
   }
 
   return (

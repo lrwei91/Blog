@@ -211,6 +211,7 @@ const variantSettingsSchema = z
           id: z.string().min(1),
           name: z.string().min(1),
           accessCode: z.string(),
+          accessCodeHash: z.string().optional(),
           isEnabled: z.boolean(),
           allowSeoIndex: z.boolean().optional(),
           sortOrder: z.number().int().nonnegative(),
@@ -245,6 +246,7 @@ const settingsSchema = z.object({
   seoDescription: z.string().optional().default(""),
   seoCanonicalUrl: z.string().optional().default(""),
   seoOgImage: z.string().optional().default(""),
+  seoOgImageAlt: z.string().optional().default(""),
   enableImagePreview: z.boolean(),
   enableAnimation: z.boolean(),
   enablePublicShare: z.boolean(),
@@ -275,7 +277,8 @@ export const siteConfigSchema = z
     theme: themeSchema,
     settings: settingsSchema,
     contentVariants: z.record(contentSnapshotSchema).optional().default({}),
-    updatedAt: z.string()
+    updatedAt: z.string(),
+    revision: z.number().int().nonnegative().optional()
   })
   .superRefine((config, ctx) => {
     const languageCodes = new Set<string>();

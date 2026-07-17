@@ -20,7 +20,6 @@ type SiteLayoutProps = {
   languageSwitcher?: {
     currentLocale: string;
     languages: SiteLanguage[];
-    accessCode: string;
     initialPreparingLocale?: string;
   };
 };
@@ -74,7 +73,6 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
               <PublicLanguageSwitcher
                 currentLocale={languageSwitcher.currentLocale}
                 languages={languageSwitcher.languages}
-                accessCode={languageSwitcher.accessCode}
                 initialPreparingLocale={languageSwitcher.initialPreparingLocale}
                 className="public-language-switcher"
               />

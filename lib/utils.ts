@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import type { Block } from "@/types/block";
 import type { Section } from "@/types/section";
 import type { SiteConfig, SiteContentSnapshot, SiteLanguage, SiteVariant } from "@/types/site-config";
+import { matchAccessCode } from "@/lib/variant-auth";
 
 export const topLevelBlockSectionId = "__top_level__";
 
@@ -258,7 +259,8 @@ export function findVariantByAccessCode(config: SiteConfig, accessCode: string) 
   if (!config.settings.variants.isEnabled) return null;
   const normalizedAccessCode = accessCode.trim().toLowerCase();
   if (!normalizedAccessCode || reservedAccessCodes.has(normalizedAccessCode)) return null;
-  return getEnabledVariants(config).find((variant) => variant.accessCode.trim().toLowerCase() === normalizedAccessCode) ?? null;
+  // 2026-07-17 P0: 优先用哈希比对，向后兼容明文 accessCode
+  return getEnabledVariants(config).find((variant) => matchAccessCode(accessCode, { accessCode: variant.accessCode, accessCodeHash: variant.accessCodeHash })) ?? null;
 }
 
 export function resolveLocaleFromAcceptLanguage(config: SiteConfig, acceptLanguage: string | null, variantId = getMainVariantId(config)) {

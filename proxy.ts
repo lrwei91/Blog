@@ -2,9 +2,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import {
   publicLanguageTransitionCookieName,
   publicLocaleCookieName,
-  publicVariantCookieName,
-  publicVariantRemainingCookieName
+  publicVariantCookieName
 } from "@/lib/public-variant-cookies";
+import { signVariantCookie, verifyVariantCookie, getVariantCookieMaxAge } from "@/lib/variant-auth";
 
 export function proxy(request: NextRequest) {
   if (request.nextUrl.pathname !== "/") {
@@ -18,29 +18,35 @@ export function proxy(request: NextRequest) {
     response.cookies.delete(publicLanguageTransitionCookieName);
     response.cookies.delete(publicLocaleCookieName);
     response.cookies.delete(publicVariantCookieName);
-    response.cookies.delete(publicVariantRemainingCookieName);
     return response;
   }
 
-  const variantId = request.cookies.get(publicVariantCookieName)?.value;
-  const remaining = Number(request.cookies.get(publicVariantRemainingCookieName)?.value ?? "0");
+  const cookieValue = request.cookies.get(publicVariantCookieName)?.value;
+  const verified = verifyVariantCookie(cookieValue);
   const response = NextResponse.next();
 
-  if (!variantId) {
+  if (!verified) {
+    // 验签失败或无 Cookie：清除残留，回主版本
+    if (cookieValue) {
+      response.cookies.delete(publicVariantCookieName);
+    }
     return response;
   }
 
-  if (!Number.isFinite(remaining) || remaining <= 1) {
+  // 签名有效但 remaining 已耗尽
+  if (verified.remaining <= 1) {
     response.cookies.delete(publicVariantCookieName);
-    response.cookies.delete(publicVariantRemainingCookieName);
     return response;
   }
 
-  response.cookies.set(publicVariantRemainingCookieName, String(remaining - 1), {
+  // remaining - 1 并重新签名（保持原 expiresAt）
+  const newRemaining = verified.remaining - 1;
+  const renewedCookie = signVariantCookie(verified.variantId, newRemaining, verified.expiresAt);
+  response.cookies.set(publicVariantCookieName, renewedCookie, {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 30
+    maxAge: getVariantCookieMaxAge()
   });
 
   return response;

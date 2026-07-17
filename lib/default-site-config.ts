@@ -696,6 +696,7 @@ export const defaultSiteConfig: SiteConfig = {
     seoDescription: "",
     seoCanonicalUrl: "",
     seoOgImage: "",
+    seoOgImageAlt: "",
     enableImagePreview: true,
     enableAnimation: true,
     enablePublicShare: true,
@@ -725,7 +726,8 @@ export const defaultSiteConfig: SiteConfig = {
     }
   },
   contentVariants: {},
-  updatedAt: now
+  updatedAt: now,
+  revision: 1
 };
 
 export function getDefaultSiteConfig(languageTag?: string | null): SiteConfig {

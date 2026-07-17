@@ -3,11 +3,10 @@ import { getSiteConfig } from "@/lib/site-config";
 import {
   publicLanguageTransitionCookieName,
   publicLocaleCookieName,
-  publicVariantCookieName,
-  publicVariantRemainingCookieName,
-  publicVariantViewLimit
+  publicVariantCookieName
 } from "@/lib/public-variant-cookies";
 import { findAvailableLocaleForVariant, findVariantByAccessCode } from "@/lib/utils";
+import { signVariantCookie, getVariantCookieExpiresAt, getVariantCookieMaxAge } from "@/lib/variant-auth";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -30,18 +29,17 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  // 2026-07-17 P0: variant Cookie 使用 HMAC 签名
+  const expiresAt = getVariantCookieExpiresAt();
+  const remaining = 10;
+  const signedCookie = signVariantCookie(variant.id, remaining, expiresAt);
+
   const response = NextResponse.redirect(new URL("/", request.url));
-  response.cookies.set(publicVariantCookieName, variant.id, {
+  response.cookies.set(publicVariantCookieName, signedCookie, {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 30
-  });
-  response.cookies.set(publicVariantRemainingCookieName, String(publicVariantViewLimit), {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30
+    maxAge: getVariantCookieMaxAge()
   });
   response.cookies.set(publicLocaleCookieName, matchedLocale, {
     sameSite: "lax",

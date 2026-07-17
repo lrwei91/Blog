@@ -3,9 +3,7 @@ import { getSiteConfig } from "@/lib/site-config";
 import {
   publicLanguageTransitionCookieName,
   publicLocaleCookieName,
-  publicVariantCookieName,
-  publicVariantRemainingCookieName,
-  publicVariantViewLimit
+  publicVariantCookieName
 } from "@/lib/public-variant-cookies";
 import {
   findAvailableLocaleForVariant,
@@ -13,6 +11,7 @@ import {
   getMainVariantId,
   getVariantMainLocale
 } from "@/lib/utils";
+import { signVariantCookie, getVariantCookieExpiresAt, getVariantCookieMaxAge } from "@/lib/variant-auth";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -25,7 +24,6 @@ export async function GET(request: Request, context: { params: Promise<{ accessC
     response.cookies.delete(publicLanguageTransitionCookieName);
     response.cookies.delete(publicLocaleCookieName);
     response.cookies.delete(publicVariantCookieName);
-    response.cookies.delete(publicVariantRemainingCookieName);
     return response;
   }
 
@@ -36,7 +34,6 @@ export async function GET(request: Request, context: { params: Promise<{ accessC
   if (mainVariantLocale) {
     const response = NextResponse.redirect(new URL("/", request.url));
     response.cookies.delete(publicVariantCookieName);
-    response.cookies.delete(publicVariantRemainingCookieName);
     setLocaleCookie(response, mainVariantLocale);
     setLanguageTransitionCookie(response, mainVariantLocale);
     return response;
@@ -48,18 +45,17 @@ export async function GET(request: Request, context: { params: Promise<{ accessC
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  // 2026-07-17 P0: variant Cookie 使用 HMAC 签名，不再明文存储 variantId/remaining
+  const expiresAt = getVariantCookieExpiresAt();
+  const remaining = 10; // publicVariantViewLimit
+  const signedCookie = signVariantCookie(variant.id, remaining, expiresAt);
+
   const response = NextResponse.redirect(new URL("/", request.url));
-  response.cookies.set(publicVariantCookieName, variant.id, {
+  response.cookies.set(publicVariantCookieName, signedCookie, {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 30
-  });
-  response.cookies.set(publicVariantRemainingCookieName, String(publicVariantViewLimit), {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30
+    maxAge: getVariantCookieMaxAge()
   });
   setLocaleCookie(response, getVariantMainLocale(config, variant.id));
 

@@ -6,6 +6,7 @@ import {
   publicLocaleCookieName,
   publicVariantCookieName
 } from "@/lib/public-variant-cookies";
+import { verifyVariantCookie } from "@/lib/variant-auth";
 import {
   buildRenderModel,
   getAvailableLanguagesForVariant,
@@ -35,23 +36,43 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase,
     title,
     description,
-    robots: {
-      index: shouldIndex,
-      follow: shouldIndex,
-      googleBot: {
-        index: shouldIndex,
-        follow: shouldIndex
-      }
-    },
+    robots: shouldIndex
+      ? {
+          index: true,
+          follow: true,
+          googleBot: {
+            index: true,
+            follow: true
+          }
+        }
+      : {
+          index: false,
+          follow: false,
+          noarchive: true,
+          googleBot: {
+            index: false,
+            follow: false
+          }
+        },
     alternates: {
-      canonical: canonicalUrl
+      canonical: canonicalUrl,
+      languages: config.settings.languages.isEnabled
+        ? { "zh-CN": canonicalUrl, en: canonicalUrl }
+        : undefined
     },
     openGraph: {
       title,
       description,
-      url: siteUrl,
+      url: canonicalUrl,
       type: "website",
-      images: [{ url: ogImage, width: 1731, height: 909, alt: `${config.profile.displayName} · Quality Engineering` }]
+      images: [
+        {
+          url: ogImage,
+          width: 1731,
+          height: 909,
+          alt: config.settings.seoOgImageAlt || `${config.profile.displayName} · ${config.settings.siteTitle}`
+        }
+      ]
     },
     twitter: {
       card: "summary_large_image",
@@ -72,10 +93,6 @@ export default async function HomePage() {
       languageSwitcher={{
         currentLocale: locale,
         languages: getAvailableLanguagesForVariant(baseConfig, variantId),
-        accessCode:
-          variantId === getMainVariantId(baseConfig)
-            ? ""
-            : baseConfig.settings.variants.variants.find((variant) => variant.id === variantId)?.accessCode ?? "",
         initialPreparingLocale
       }}
     />
@@ -86,7 +103,11 @@ async function getPublicSiteContext() {
   const cookieStore = await cookies();
   const requestHeaders = await headers();
   const config = await getSiteConfig(requestHeaders.get("accept-language"));
-  const variantId = resolvePublicVariantId(config, cookieStore.get(publicVariantCookieName)?.value);
+  // 2026-07-17 P0: variantId 只从已签名的 Cookie 中提取，不再信任明文 Cookie
+  const verified = verifyVariantCookie(cookieStore.get(publicVariantCookieName)?.value);
+  const variantId = verified
+    ? resolvePublicVariantId(config, verified.variantId)
+    : getMainVariantId(config);
   const locale = resolvePublicLocale(config, cookieStore.get(publicLocaleCookieName)?.value, requestHeaders.get("accept-language"), variantId);
   const transitionLocale = cookieStore.get(publicLanguageTransitionCookieName)?.value;
   const initialPreparingLocale = transitionLocale?.toLowerCase() === locale.toLowerCase() ? locale : undefined;

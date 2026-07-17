@@ -20,6 +20,7 @@ export type SiteVariant = {
   id: string;
   name: string;
   accessCode: string;
+  accessCodeHash?: string;
   isEnabled: boolean;
   allowSeoIndex?: boolean;
   sortOrder: number;
@@ -43,6 +44,7 @@ export type SiteSettings = {
   seoDescription?: string;
   seoCanonicalUrl?: string;
   seoOgImage?: string;
+  seoOgImageAlt?: string;
   enableImagePreview: boolean;
   enableAnimation: boolean;
   enablePublicShare: boolean;
@@ -73,4 +75,5 @@ export type SiteConfig = {
   settings: SiteSettings;
   contentVariants?: Record<string, SiteContentSnapshot>;
   updatedAt: string;
+  revision?: number;
 };
