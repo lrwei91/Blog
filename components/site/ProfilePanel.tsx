@@ -14,8 +14,6 @@ export function ProfilePanel({ profile }: { profile: Profile }) {
             <ProfileModuleRenderer key={module} module={module} profile={profile} />
           ))}
         </div>
-
-        <p className="profile-hero__note">EVIDENCE FIRST · SYSTEMS THINKING · CONTINUOUS DELIVERY</p>
       </div>
 
       <QualityStage

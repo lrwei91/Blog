@@ -23,7 +23,7 @@ export function SectionGroup({ section }: { section: Section }) {
         <div className={cn("grid gap-1 px-1", align[section.titleAlign])}>
           <h2 className={cn("font-bold tracking-normal", titleSize[section.titleSize])}>
             {section.title.trim()}
-            {section.emoji ? <span className="ml-1 text-[var(--mint-deep)]">{section.emoji}</span> : null}
+            {section.emoji ? <span className="ml-1 text-[var(--seal-deep)]">{section.emoji}</span> : null}
           </h2>
           {section.description ? <p className="text-sm leading-6 text-[var(--ink-2)]">{section.description}</p> : null}
         </div>

@@ -50,7 +50,9 @@ export function PhotoStories({ block, enablePreview }: { block: Block; enablePre
                   <b><Images aria-hidden="true" /> {story.photos.length}</b>
                 </div>
                 <div className="photo-stories__body">
-                  <p>{[story.date, story.location].filter(Boolean).join(" · ") || "PHOTO STORY"}</p>
+                  {[story.date, story.location].filter(Boolean).length > 0 ? (
+                    <p>{[story.date, story.location].filter(Boolean).join(" · ")}</p>
+                  ) : null}
                   <h3>{story.title}</h3>
                   {story.summary ? <span>{story.summary}</span> : null}
                   {story.location ? <small><MapPin aria-hidden="true" /> {story.location}</small> : null}
