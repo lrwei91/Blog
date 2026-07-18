@@ -6,6 +6,7 @@ import { ContentArea } from "@/components/site/ContentArea";
 import { ProfilePanel } from "@/components/site/ProfilePanel";
 import { PublicLanguageSwitcher } from "@/components/site/PublicLanguageSwitcher";
 import { PublicSiteEffects } from "@/components/site/PublicSiteEffects";
+import { PublicIntro } from "@/components/site/PublicIntro";
 import { getPublicDesktopContentColumns, getPublicDesktopContentWidth } from "@/lib/public-content-layout";
 import { PublicFloatingTools } from "@/components/site/PublicFloatingTools";
 
@@ -54,6 +55,12 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
       className="public-site min-h-screen text-[var(--site-text)]"
     >
       <PublicSiteEffects enabled={config.settings.enableAnimation} />
+      {config.settings.enableAnimation ? (
+        <PublicIntro
+          displayName={renderModel.profile.displayName}
+          tagline={renderModel.profile.headline.trim() || undefined}
+        />
+      ) : null}
       <div className="public-site__wash" aria-hidden="true" />
 
       <header className="public-nav" data-public-nav>
