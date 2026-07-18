@@ -1,704 +1,333 @@
-<div align="center">
+# Personal Site Studio
 
-<h1>Bio Blocks Studio · 拼搭式个人主页模板 🧩</h1>
+一个面向个人主页的模块化内容系统：前台展示个人介绍、工作经历、旅行足迹、个人项目与生活内容，后台负责内容维护、页面排序、图片上传和多版本管理。
 
-<p>像搭积木一样，用模块拼出不同版本的个人主页。</p>
+[![CI](https://github.com/lrwei91/Blog/actions/workflows/ci.yml/badge.svg)](https://github.com/lrwei91/Blog/actions/workflows/ci.yml)
+![Next.js](https://img.shields.io/badge/Next.js-16-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-<p>左侧展示个人信息，右侧自由拖拽项目、图片、视频、文本和链接模块。支持隐藏版本、多语言内容和 Vercel 一键部署。</p>
+本仓库基于 [Bio Blocks Studio](https://github.com/JiahaoTang-Alvin/bio-blocks-studio) 深度定制。当前版本已经从通用积木主页扩展为一套单管理员、自托管的个人内容工作台。
 
-<p>
-  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
-  <a href="https://nextjs.org/"><img alt="Next.js" src="https://img.shields.io/badge/Next.js-App%20Router-black.svg"></a>
-  <a href="https://www.typescriptlang.org/"><img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-blue.svg"></a>
-  <a href="https://vercel.com/"><img alt="Vercel" src="https://img.shields.io/badge/Deploy-Vercel-black.svg"></a>
-  <a href="https://vercel.com/docs/storage/vercel-blob"><img alt="Vercel Blob" src="https://img.shields.io/badge/Storage-Vercel%20Blob-black.svg"></a>
-</p>
+## 项目定位
 
-<p><a href="README.en.md">English</a> | 中文</p>
+Personal Site Studio 适合希望长期维护个人主页、又不想为每次内容更新修改代码的人。
 
-</div>
+- 主页内容由后台统一维护。
+- 页面模块可以显示、隐藏、排序和预览。
+- 生产环境使用 Vercel Blob 持久化配置与图片。
+- 本地开发不依赖云存储，可直接写入仓库内的本地数据目录。
+- 支持不同访问版本和多语言内容，但不提供公开注册或访客写入。
 
----
+它不是完整 CMS，也不包含账号体系、评论、点赞、访问统计或多人协作权限。
 
-## ✨ 这是什么
+## 当前功能
 
-**Bio Blocks Studio** 是一个开源的模块化个人主页模板。
+### 公开主页
 
-它是拼搭式个人主页项目：你不需要每次改代码，也不需要上复杂 CMS，只要进入 `/admin` 后台，就可以像整理卡片、搭积木、拼图案一样，把自己的个人信息、项目、作品、图片、视频、社交链接和状态模块组合成一个可公开访问的个人主页。
+- 个人介绍：头像、姓名、职业定位、简介、标签、所在地和社交链接。
+- 核心技能：用统一卡片展示能力领域和说明。
+- 工作经历：时间轴、公司信息、职位、摘要和详情弹窗。
+- 旅行足迹：基于真实中国地图轮廓展示城市、路线和地点说明。
+- 个人项目：展示 GitHub 仓库、线上地址和项目简介。
+- 此刻 NOW：记录近期状态、关注事项、心情、地点、标签和更新时间。
+- 最近在看 / 玩 / 听：支持电影、书籍、游戏、音乐及其他分类。
+- 照片故事：支持多图、图片说明、排序和灯箱预览。
+- 导航：展示前五个已发布模块，其余内容收进“更多”。
+- 页面工具：返回顶部、系统分享与复制链接降级。
+- 动效、图片预览和公开分享均可通过后台设置独立开关。
 
-页面结构很直接：
+### Admin 后台
 
-- **左侧**：头像、姓名、简介、标签、社交链接、联系入口等个人信息。
-- **右侧**：可拖拽、可调整尺寸的内容模块，例如项目卡片、图片、视频、文本、链接、社交卡片和状态卡片。
-- **后台**：通过密码登录后编辑内容、调整布局、上传图片、切换主题、管理多语言和隐藏版本。
-- **存储**：无需传统数据库，生产内容通过 Vercel Blob 保存。
+- 密码登录与签名会话。
+- 个人资料、SEO、主题、功能开关和社交链接编辑。
+- 通用卡片的新增、编辑、删除、显示、排序和尺寸调整。
+- 工作经历、旅行、项目、NOW、媒体和照片故事的专用表单。
+- 图片上传、图片预览和已有图片地址复用。
+- 配置导入、导出与保存前预览。
+- 保存时进行 Zod 校验和 revision 并发冲突检查。
 
----
+后台的“页面结构”面板用于管理模块级顺序：
 
-## 🧩 核心特性
+- 搜索并筛选已发布或隐藏模块。
+- 点击模块定位到画布，或直接打开编辑表单。
+- 支持拖拽、键盘排序、上移、下移、置顶和置底。
+- 标题与其内容会作为完整模块移动，特殊模块不会被拆散。
+- 每次排序可撤销一次；搜索或筛选生效时会暂停拖拽。
 
-- **模块化搭建主页**  
-  通过卡片模块搭建个人主页。项目、图片、视频、文本、链接、状态和社交卡片都可以作为独立模块自由排列。
-  
-  <img width="828" height="480" alt="Export-1783504403991" src="https://github.com/user-attachments/assets/c956df7d-89ef-4f86-a561-18f1b7ecc670" />
+画布仍负责内容预览、普通子卡片排序、二维排版和尺寸调整。
 
-- **拖拽式编辑体验**  
-  在后台直接拖拽排序、调整卡片尺寸，不需要每次改代码。
-  
-  <img width="828" height="480" alt="Export-1783504515592" src="https://github.com/user-attachments/assets/c48d027e-4ce5-4f43-a2f6-2d247d2a4723" />
+### 多版本与多语言
 
-- **左右分区展示**  
-  左侧固定展示个人身份信息，右侧用于展示作品、项目、视觉内容和扩展模块，适合个人品牌和作品集展示。
+站点支持一份主版本和多个独立内容版本。每个版本可以有自己的：
 
-- **桌面端 / 移动端分别适配**  
-  同一套内容可以分别调整桌面端和移动端布局，避免手机端展示变形。
-  
-  <img width="828" height="480" alt="Export-1783504602389" src="https://github.com/user-attachments/assets/db6aacc6-3413-40bc-939b-48abd5939661" />
+- 个人资料与主题。
+- 页面模块和排序。
+- 可选访问码。
+- 语言配置。
 
+访问码会以 SHA-256 摘要保存，不保留明文。通过访问码进入版本后，服务端会写入签名 Cookie，默认允许后续 10 次访问。此功能用于隐藏入口和内容分流，不等同于严格的权限系统。
 
-- **隐藏版本访问**  
-  可以为不同受众创建不同主页版本，例如求职版、社交版、活动版、合作版。每个版本都可以拥有独立内容和独立布局。
-  
-  <img width="792" height="480" alt="Export-1783504935862" src="https://github.com/user-attachments/assets/f07673af-bf8d-46ee-837a-f1bc3ac4a0c8" />
+## 技术栈
 
-- **版本下支持多语言**  
-  不只是“一个网站多语言”，而是“不同版本下也可以配置不同语言”。  
-  例如你可以有一个 `resume` 简历版，并在这个版本下分别配置中文和英文内容；也可以有一个 `social` 社交版，在这个版本下配置更轻松的中文介绍。
+| 层级 | 实现 |
+| --- | --- |
+| 应用框架 | Next.js 16 App Router |
+| UI | React 18、Tailwind CSS 3、Lucide React |
+| 语言 | TypeScript 5 |
+| 配置校验 | Zod |
+| 交互与排序 | dnd-kit、CSS / Web Animations API |
+| 生产存储 | Vercel Blob |
+| 本地存储 | JSON 文件与本地图片目录 |
+| 测试 | Vitest |
+| 持续集成 | GitHub Actions |
 
-  <img width="792" height="480" alt="Export-1783505206381" src="https://github.com/user-attachments/assets/ba8a5c19-caf3-4e25-bdf3-3f4d34a0fb65" />
+## 工作原理
 
-- **图片上传和裁剪**  
-  支持上传头像、项目图、图片模块、二维码等素材，并保存到 Vercel Blob。
-
-- **项目级设置**  
-  后台可设置公开站点标题、描述、站点 URL、SEO 信息、主题、外观、语言和版本。
-
-- **配置导入导出**  
-  可以从后台导出完整 JSON，用于备份、迁移或复用结构。
-
-- **无需传统数据库**  
-  生产配置和上传素材保存到 Vercel Blob，适合轻量个人站点。
-
----
-
-## 🎯 适合什么场景
-
-适合：
-
-- 个人主页
-- 作品集网站
-- 独立开发者主页
-- 学生求职主页
-- 设计师 / 创作者展示页
-- 自由职业者介绍页
-- 项目合集页
-- 链接聚合页
-- 给不同受众展示不同版本主页的场景
-
-典型例子：
-
-| 场景 | 可以怎么用 |
-|---|---|
-| 💼 求职版 | 创建一个隐藏版本，只展示简历、项目、技能和联系方式 |
-| 🤝 企业活动版 | 面向活动、展会或企业交流，突出身份、项目、合作方向和联系方式 |
-| 🍸 社交 / 酒馆版 | 展示更轻松的个人形象、兴趣、社交账号和近期状态 |
-| 🚀 创业 / 产品版 | 展示正在做的产品、Demo、链接、媒体资料和联系入口 |
-| 🎓 学生作品集 | 展示课程项目、软件技能、个人经历和作品截图 |
-| 🎨 创作者主页 | 展示视频、社交账号、代表作品和合作方式 |
-
-不适合：
-
-- 复杂 CMS
-- 多用户协作后台
-- 严格权限系统
-- 存储私密数据的站点
-- 需要订单、评论、会员、支付等业务系统的站点
-- 纯 GitHub Pages 静态部署
-
----
-
-## 🕶️ 隐藏版本是什么
-
-隐藏版本是这个项目最重要的功能之一。
-
-你可以在后台创建多个特定版本，例如：
-
-```text
-resume
-job
-social
-bar
-event
-partner
-v1
+```mermaid
+flowchart LR
+  Visitor["访客"] --> Public["公开主页"]
+  Admin["管理员"] --> Login["/admin/login"]
+  Login --> Editor["可视化后台"]
+  Editor --> API["Admin API"]
+  API --> Guard["Zod 校验 + revision 检查"]
+  Guard --> Blob["Vercel Blob（生产）"]
+  Guard --> Local["本地 JSON / 图片（开发）"]
+  Blob --> Public
+  Local --> Public
 ```
 
-每个版本都可以单独配置：
+配置读取顺序如下：
 
-- 展示哪些个人信息
-- 展示哪些模块
-- 使用什么简介
-- 使用什么头像或视觉风格
-- 项目卡片怎么排序
-- 哪些内容隐藏
-- 哪些内容更适合当前访问者
+1. 已配置 Blob 时，读取 `config/site-config.json`。
+2. 本地无 Blob 时，读取 `local-data/site-config.json`。
+3. 尚未保存任何配置时，使用 `lib/default-site-config.ts`。
 
-例如：
+## 快速开始
 
-| 版本 | 适合对象 | 展示重点 |
-|---|---|---|
-| `resume` | 招聘方、HR、面试官 | 学历、技能、项目、简历、联系方式 |
-| `social` | 新朋友、线下社交对象 | 兴趣、社交账号、轻松介绍、个人状态 |
-| `bar` | 酒馆、活动、轻社交场景 | 更生活化的形象、兴趣、照片、社交入口 |
-| `event` | 企业活动、Meetup、展会 | 当前身份、项目、Demo、合作方向 |
-| `partner` | 潜在合作方 | 商业项目、案例、能力介绍、联系入口 |
+### 环境要求
 
-访问方式示例：
+- Node.js 20 或更高版本
+- npm
 
-```text
-https://your-site.com/resume
-```
-
-用户第一次通过这个后缀进入后，系统会把该版本写入 HTTP-only cookie。之后用户会自动回到无后缀地址：
-
-```text
-https://your-site.com
-```
-
-但接下来一定次数访问中，仍会看到这个隐藏版本的内容。
-
-这适合非常定向的展示场景：你不用把所有信息都公开给所有人，也不用维护多个网站。
-
-> 注意：隐藏版本不是严格权限系统。它适合做定向展示，不适合保存秘密、证件、私密资料或任何敏感信息。
-
----
-
-## 🌐 版本和语言的关系
-
-Bio Blocks Studio 的内容结构不是简单的“全站切换语言”，而是：
-
-```text
-版本 Variant
-└── 语言 Locale
-    └── 当前版本 + 当前语言下的独立内容
-```
-
-也就是说，同一个版本下面可以继续配置不同语言。
-
-例如：
-
-```text
-resume:zh-Hans
-resume:en
-social:zh-Hans
-event:zh-Hans
-event:en
-partner:en
-```
-
-这样你可以实现：
-
-- 简历版有中文和英文
-- 社交版只保留中文
-- 企业活动版同时准备中文和英文
-- 合作版只准备英文
-- 每个版本的内容、语气、模块和重点都不一样
-
-这比普通多语言网站更灵活，因为它不是单纯翻译同一份内容，而是允许你为不同受众准备不同表达。
-
----
-
-## 🧱 页面模块
-
-当前支持的主要内容块包括：
-
-- 项目卡片
-- 链接卡片
-- 图片卡片
-- 文本卡片
-- 视频卡片
-- 社交卡片
-- 状态卡片
-- 全宽章节文本块
-
-全宽章节文本块只是内容块，不是容器。它可以用于分隔不同区域，例如：
-
-```text
-Selected Projects
-About Me
-Contact
-Recent Work
-```
-
-所有模块共享同一个排序系统，所以你可以把文本块放在卡片上方、下方或中间。
-
----
-
-## 🛠️ 技术栈
-
-- Next.js App Router
-- TypeScript
-- Tailwind CSS
-- dnd-kit
-- Vercel Blob
-- bcryptjs
-- Zod
-- Lucide React
-- Sonner
-
----
-
-## 🚀 快速部署上线
-
-推荐部署到 Vercel。
-
-完整应用不支持纯 GitHub Pages / 静态 HTML 部署。原因是项目使用了动态 Next.js 路由、cookie、后台 API routes、登录 session，以及 Vercel Blob 写入。
-
-GitHub 适合用来托管源码，Vercel 适合用来运行应用。
-
----
-
-### 🤖 方式一：让 AI Agent 帮你部署
-
-如果你使用 Codex、Claude Code、Cursor、Workbuddy 或其他代码 Agent，可以把下面这段提示词交给 AI，让它帮你完成部署。
-
-复制下面完整提示词给 AI Agent：
-
-```text
-将 GitHub 项目 https://github.com/JiahaoTang-Alvin/bio-blocks-studio 部署到我的 Vercel。管理端密码设置为：[这里填写你想要的密码]。
-请先分析该项目的结构和技术栈，确认是否需要额外的配置（如环境变量、构建命令、输出目录等）。这个仓库内有部署流程文档及部署skills，可以尝试先安装skills作为参考。确保部署后应用可以正常访问和使用。
-```
-
-> 不要把后台密码写进公开仓库、README、Issue、公开聊天记录或前端代码。以后想换密码，去 Vercel 后台更新 `ADMIN_PASSWORD`，然后重新部署生产环境即可。
-
----
-
-### 🧭 方式二：手动部署到 Vercel
-
-<details>
-<summary>展开完整手动部署步骤</summary>
-
-#### 1. 打开 Vercel 并新建项目
-
-打开 [Vercel](https://vercel.com/)，点击右上角：
-
-```text
-Add New... -> Project
-```
-
-<img width="720" alt="Vercel add new project" src="https://github.com/user-attachments/assets/2e8a7495-5d1d-43a1-a8c2-fbdb76bee8d0" />
-
----
-
-#### 2. 导入 GitHub 仓库
-
-在导入框中输入：
-
-```text
-https://github.com/JiahaoTang-Alvin/bio-blocks-studio
-```
-
-<img width="720" alt="Import GitHub repository" src="https://github.com/user-attachments/assets/bbdabceb-1b23-46c0-8609-033ed04c7d04" />
-
----
-
-#### 3. 保持默认项目设置
-
-在 New Project 页面保持默认设置：
-
-```text
-Framework Preset: Next.js
-Root Directory: ./
-```
-
-<img width="720" alt="Vercel project settings" src="https://github.com/user-attachments/assets/5706e98b-edaa-4a04-b7f4-ba09b54fc936" />
-
----
-
-#### 4. 添加管理员密码
-
-展开 **Environment Variables**，添加：
-
-```env
-ADMIN_PASSWORD=你想要登录后台用的密码
-```
-
-`ADMIN_PASSWORD` 的 Value 填你想用的后台登录密码。建议使用一段自己能记住、但别人不容易猜到的短语。
-
-<img width="720" alt="Add ADMIN_PASSWORD env" src="https://github.com/user-attachments/assets/f622bf09-ab32-488e-8f4b-8f297593a0d7" />
-
----
-
-#### 5. 首次部署
-
-点击 **Deploy**，等待第一次部署完成。
-
-<img width="720" alt="Deploy project" src="https://github.com/user-attachments/assets/8aceebcc-b071-4428-8add-b75f10c8c440" />
-
-> 第一次部署后，公开页面通常可以打开，但后台保存和图片上传还需要配置 Vercel Blob。
-
----
-
-#### 6. 进入 Storage
-
-进入刚部署好的 Vercel 项目，左侧点击 **Storage**。
-
-<img width="720" alt="Open Storage" src="https://github.com/user-attachments/assets/0d5fdceb-7359-4dd8-8c5e-2567970586c6" />
-
----
-
-#### 7. 创建 Blob Store
-
-点击 **Create Database**，选择 **Blob**。
-
-<img width="720" alt="Create Database" src="https://github.com/user-attachments/assets/0c8733ca-aac0-4772-8d4d-d066b7c4c8eb" />
-
-<img width="720" alt="Choose Blob" src="https://github.com/user-attachments/assets/db95a23d-09bf-4956-bbc7-ef0c8622c3c3" />
-
----
-
-#### 8. 设置 Blob Store
-
-填写 Blob Store 名称，例如：
-
-```text
-personal-site-studio-blob
-```
-
-Region 建议选择离主要访问用户最近的区域。  
-如果主要给中国、新加坡或东南亚用户访问，可以优先选择香港或新加坡，如果列表里有。
-
-Access 选择：
-
-```text
-Public
-```
-
-然后点击 **Create**。
-
-<img width="720" alt="Create public Blob store" src="https://github.com/user-attachments/assets/c95b133d-b32e-4b9f-a22d-98464d5f42ee" />
-
----
-
-#### 9. 检查项目连接
-
-创建后如果弹出连接项目的窗口，可以先关闭。Vercel 可能已经自动把 Blob 连接到了当前项目，重复点击 Connect 可能会提示已经连接。
-
-回到左侧 **Storage**，点击刚创建的 Blob Store。
-
-<img width="720" alt="Open Blob store" src="https://github.com/user-attachments/assets/44937894-e745-4576-b028-f22c024eda85" />
-
----
-
-#### 10. 进入 Projects
-
-进入 Blob Store 后，左侧点击 **Projects**。
-
-<img width="720" alt="Blob projects" src="https://github.com/user-attachments/assets/d15918a9-0f5a-497d-bd37-47769ac540db" />
-
----
-
-#### 11. 更新项目连接
-
-在 Projects 列表里找到你的项目。刚开始 Info 里通常只有：
-
-```text
-BLOB_STORE_ID
-BLOB_WEBHOOK_PUBLIC_KEY
-```
-
-点击这一行右侧的三个点 **...**，选择 **Update Project Connection**。
-
-<img width="720" alt="Update project connection" src="https://github.com/user-attachments/assets/311aa46b-648d-4433-a7fb-b7ef1d683d1e" />
-
----
-
-#### 12. 添加 read-write token
-
-勾选：
-
-```text
-Add read-write token env var to this connection
-```
-
-<img width="720" alt="Add read-write token" src="https://github.com/user-attachments/assets/62a3f6f0-ade3-43e1-a0b8-c62ffde608dd" />
-
-点击 **Save Changes**。
-
-保存后 Info 里应该能看到：
-
-```text
-BLOB_READ_WRITE_TOKEN
-BLOB_STORE_ID
-BLOB_WEBHOOK_PUBLIC_KEY
-```
-
-<img width="720" alt="Blob env vars ready" src="https://github.com/user-attachments/assets/5ccf416e-8148-45bd-aac7-5cb27b30a4e3" />
-
----
-
-#### 13. 重新部署 Production
-
-回到项目左侧 **Deployments**。
-
-找到最新的一条 Deployment，点击右侧三个点 **...**。
-
-<img width="720" alt="Open deployments menu" src="https://github.com/user-attachments/assets/eca8b90b-7a85-4c99-a57c-2e72e9f56345" />
-
-选择 **Redeploy**，等待状态变成 Ready。
-
----
-
-#### 14. 登录后台
-
-打开：
-
-```text
-https://你的域名/admin/login
-```
-
-使用 `ADMIN_PASSWORD` 里的密码登录。
-
-<img width="720" alt="Admin login" src="https://github.com/user-attachments/assets/78d522b2-8ba8-4734-998f-b9e216101822" />
-
----
-
-#### 15. 初始化站点配置
-
-登录后打开「项目设置」，设置：
-
-- 项目名称
-- 公开站点标题
-- 站点描述
-- 站点 URL
-- SEO 信息
-- 语言
-- 版本
-- 主题和外观
-
-然后点击保存一次，把生产配置写入 Vercel Blob。
-
-<img width="720" alt="Admin project settings" src="https://github.com/user-attachments/assets/be23c48d-2175-491b-891b-8656f8578dfb" />
-
----
-
-#### 16. 后续修改后台密码
-
-如果后续要改后台密码，到 Vercel 项目的：
-
-```text
-Settings -> Environment Variables
-```
-
-更新：
-
-```env
-ADMIN_PASSWORD=新的后台密码
-```
-
-然后重新部署生产环境。
-
-`SESSION_SECRET` 不是登录密码。只有在你想让所有旧登录立刻失效时，才需要同时更新它。
-
-<img width="720" alt="Update env vars" src="https://github.com/user-attachments/assets/51074966-f0d2-4b4e-bf38-42c1ab824c34" />
-
-</details>
-
----
-
-## 💻 本地开发
+### 安装与启动
 
 ```bash
-npm install
+git clone https://github.com/lrwei91/Blog.git
+cd Blog
+npm ci
+cp .env.example .env.local
+```
+
+至少配置一个后台登录凭据：
+
+```dotenv
+ADMIN_PASSWORD=replace-with-a-strong-password
+SESSION_SECRET=replace-with-at-least-32-random-characters
+```
+
+启动开发服务器：
+
+```bash
 npm run dev
 ```
 
 打开：
 
-```text
-http://localhost:3000
+- 主页：<http://localhost:3000>
+- 后台：<http://localhost:3000/admin>
+- 登录：<http://localhost:3000/admin/login>
+
+本地开发不配置 `BLOB_READ_WRITE_TOKEN` 也可以保存内容和上传图片。配置会写入 `local-data/site-config.json`，图片会写入 `public/images/` 下的对应目录。
+
+### 使用密码哈希
+
+生产环境建议使用 `ADMIN_PASSWORD_HASH`，它的优先级高于明文密码：
+
+```bash
+node -e "require('bcryptjs').hash(process.argv[1], 12).then(console.log)" "your-password"
 ```
 
-公开页面在没有 Vercel Blob 的情况下也能运行，会回退到 `lib/default-site-config.ts` 的默认内容。
+把输出值写入：
 
-如果要本地测试后台登录、保存和上传，请配置 `.env.local`。
-
----
-
-## 🔐 环境变量
-
-从 `.env.example` 创建 `.env.local`：
-
-```env
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-BLOB_READ_WRITE_TOKEN=
-ADMIN_PASSWORD=
+```dotenv
+ADMIN_PASSWORD_HASH=$2b$12$...
 ```
 
-最基本需要：
+## 环境变量
 
-| 变量 | 说明 |
-|---|---|
-| `NEXT_PUBLIC_SITE_URL` | 公开站点 URL。可以暴露给浏览器 |
-| `ADMIN_PASSWORD` | 后台登录密码 |
-| `BLOB_READ_WRITE_TOKEN` | Vercel Blob read/write token，用于保存配置和上传图片 |
+| 变量 | 是否必需 | 说明 |
+| --- | --- | --- |
+| `ADMIN_PASSWORD` | 二选一 | 后台明文密码，适合本地开发 |
+| `ADMIN_PASSWORD_HASH` | 二选一 | bcrypt 密码摘要；设置后优先使用 |
+| `SESSION_SECRET` | 生产必需 | 签名后台会话和版本 Cookie，建议至少 32 个随机字符 |
+| `BLOB_READ_WRITE_TOKEN` | 生产必需 | Vercel Blob 读写令牌 |
+| `NEXT_PUBLIC_SITE_URL` | 推荐 | 站点公开地址，用于 SEO 和分享元数据 |
 
-可选增强项：
+完整示例见 [`.env.example`](.env.example)。
 
-| 变量 | 说明 |
-|---|---|
-| `ADMIN_PASSWORD_HASH` | 后台密码的 bcrypt hash。设置后会优先使用 hash，并忽略 `ADMIN_PASSWORD` |
-| `SESSION_SECRET` | 用于签名后台登录 session 的随机密钥，建议至少 32 个字符 |
+## 后台使用流程
 
-不要把下面这些变量加上 `NEXT_PUBLIC_` 前缀：
+1. 进入 `/admin/login` 并登录。
+2. 编辑个人资料、主题、SEO 和功能开关。
+3. 在“页面结构”中调整模块顺序和发布状态。
+4. 在画布或模块编辑入口维护具体内容。
+5. 使用预览检查前台效果。
+6. 保存配置；若远端 revision 已变化，后台会阻止覆盖并提示重新加载。
 
-```text
-BLOB_READ_WRITE_TOKEN
-ADMIN_PASSWORD
-ADMIN_PASSWORD_HASH
-SESSION_SECRET
-```
+新建的 NOW、媒体和照片故事模块默认可以保持隐藏，补齐真实内容后再发布。
 
-它们必须只存在服务端。只有 `NEXT_PUBLIC_SITE_URL` 可以暴露给浏览器。
+### 通用内容块
 
----
+后台仍支持适合自由排版的通用卡片：
 
-## 🧭 路由
+- 文本
+- 图片
+- 视频
+- 链接
+- 项目
+- 社交卡片
+- 状态卡片
 
-| 路由 | 说明 |
-|---|---|
-| `/` | 公开个人主页 |
-| `/[locale]` | 主版本指定语言入口，例如 `/en`、`/zh-CN` |
+### 特殊主页模块
+
+特殊模块拥有独立数据结构和编辑器：
+
+| 模块 | 主要数据 |
+| --- | --- |
+| 工作经历 | 公司、职位、任职时间、摘要、详情 |
+| 旅行足迹 | 城市、省份、经纬度、说明、路线 |
+| 个人项目 | 名称、简介、GitHub、线上地址 |
+| 此刻 NOW | 状态、心情、地点、标签、更新时间 |
+| 最近在看 / 玩 / 听 | 分类、封面、状态、评分、短评、外链 |
+| 照片故事 | 标题、日期、地点、简介、多张照片与说明 |
+
+## 数据与图片
+
+### 生产环境
+
+- 配置文件：Vercel Blob 中的 `config/site-config.json`
+- 图片：通过后台上传到 Vercel Blob
+- 单张图片上限：5 MB
+- 支持格式：JPEG、PNG、WebP、GIF
+
+### 本地开发
+
+- 配置文件：`local-data/site-config.json`
+- 图片目录：
+  - `public/images/avatar/`
+  - `public/images/blocks/`
+  - `public/images/gallery/`
+  - `public/images/qrcode/`
+
+`local-data/` 用于本地运行数据，不应被当作多用户数据库。部署到无持久磁盘的运行环境时必须使用 Blob。
+
+### URL 安全
+
+后台只接受以下链接：
+
+- `http://`
+- `https://`
+- `mailto:`
+- `tel:`
+- 站内相对路径
+
+其他协议会被配置校验拒绝。
+
+## 路由
+
+| 路由 | 用途 |
+| --- | --- |
+| `/` | 主版本主页 |
+| `/[locale]` | 主版本的语言页面 |
+| `/[accessCode]` | 通过访问码进入指定版本 |
+| `/[accessCode]/[locale]` | 指定版本的语言页面 |
+| `/reset` 或 `/?reset` | 清除版本选择状态并返回主版本 |
+| `/admin` | 后台编辑器 |
 | `/admin/login` | 后台登录 |
-| `/admin` | 可视化后台编辑器 |
-| `/api/admin/config` | 登录后读取和保存配置 |
-| `/api/admin/upload` | 登录后上传图片 |
-| `/[accessCode]` | 隐藏版本访问入口，例如 `/resume`、`/event`、`/social` |
-| `/[accessCode]/[locale]` | 隐藏版本指定语言入口，例如 `/resume/en` |
 
----
+## 安全边界
 
-## 🗂️ 数据模型
+- 后台会话使用签名的 HTTP-only Cookie，有效期 7 天。
+- 生产环境 Cookie 会启用 `Secure`。
+- 保存接口要求有效后台会话。
+- 配置保存前会执行结构、评分范围和 URL 协议校验。
+- revision 用于避免两个编辑会话静默覆盖彼此的配置。
+- 访问码版本是内容隐藏机制，不应承载敏感或机密数据。
+- 仓库不应提交真实密码、Blob Token 或 `SESSION_SECRET`。
 
-站点由一个经过校验的 `SiteConfig` 驱动。
+## 部署
 
-主要字段：
+推荐部署到 Vercel。
 
-| 字段 | 说明 |
-|---|---|
-| `profile` | 头像、名称、简介、标签、社交链接和个人信息模块显示状态 |
-| `sections` | 历史兼容字段；当前编辑器保持为空 |
-| `blocks` | 项目、链接、图片、文本、社交、视频、状态卡片，以及全宽 `section` 文本块 |
-| `theme` | 颜色、圆角、阴影和字体设置 |
-| `settings` | 项目名称、公开标题、描述、URL、SEO、多语言、多版本和功能开关 |
-| `contentVariants` | 可选的版本 / 语言内容快照，键名格式为 `variantId:locale` |
+1. 将仓库导入 Vercel。
+2. 创建 Blob Store，并把 `BLOB_READ_WRITE_TOKEN` 注入项目环境变量。
+3. 配置 `ADMIN_PASSWORD_HASH`、`SESSION_SECRET` 和 `NEXT_PUBLIC_SITE_URL`。
+4. 执行生产部署。
+5. 首次进入 `/admin` 保存配置，确认 Blob 中已经生成 `config/site-config.json`。
 
-生产配置保存到 Vercel Blob：
+生产运行时缺少 `BLOB_READ_WRITE_TOKEN` 会直接报错，避免把内容误写到不可持久化的临时磁盘。
+
+## 开发命令
+
+| 命令 | 说明 |
+| --- | --- |
+| `npm run dev` | 启动本地开发服务器 |
+| `npm run lint` | 运行 ESLint |
+| `npm run typecheck` | 运行 TypeScript 类型检查 |
+| `npm test` | 运行 Vitest 测试 |
+| `npm run build` | 创建生产构建 |
+| `npm start` | 启动生产服务器 |
+
+GitHub Actions 会在推送到 `main` 或创建 Pull Request 时依次执行：
+
+1. `npm ci`
+2. `npm run lint`
+3. `npm run typecheck`
+4. `npm test`
+5. `npm run build`
+
+## 目录结构
 
 ```text
-config/site-config.json
+app/
+  admin/                  后台页面
+  api/admin/              登录、配置与上传接口
+  [accessCode]/           版本和语言路由
+components/
+  admin/                  后台画布、结构面板与编辑表单
+  site/                   公开主页与特殊模块
+  blocks/                 通用内容卡片
+lib/
+  default-site-config.ts  默认站点配置
+  local-config.ts         本地配置读写
+  site-config.ts          配置加载与生产存储
+  validators.ts           Zod 与 URL 校验
+types/                    TypeScript 数据类型
+public/images/            本地图片
+tests/                    单元测试
 ```
 
-上传图片保存到：
+## 开发约定
 
-```text
-images/avatar
-images/blocks
-images/gallery
-images/qrcode
-```
+- 新增配置字段时，同步更新 TypeScript 类型、默认配置和 Zod Schema。
+- 新增特殊模块时，同步接入前台渲染、后台编辑、页面结构分组和导航可见性。
+- 排序继续写回现有 `sortOrder`，不要依赖数组当前位置。
+- 所有外链进入配置前必须经过安全 URL 校验。
+- 修改后台保存逻辑时保留 revision 并发控制。
+- 用户可见功能变更需要同时检查默认配置和 README。
 
-Blob 中的配置和图片是公开可读的。不要在配置里保存密钥、私人笔记、未公开凭证或敏感个人数据。
-
----
-
-## 📦 配置导入导出
-
-后台「项目设置」支持导出完整 `SiteConfig` JSON。
-
-你可以用它来：
-
-- 备份当前站点
-- 迁移到新的 Vercel 项目
-- 在多个站点之间复用结构
-- 本地调试后同步到生产环境
-- 为不同人快速复制一套主页模板
-
-导入 JSON 后只会替换当前编辑草稿。检查无误后点击「保存」，才会写入 Vercel Blob。
-
----
-
-## ✅ 验证
+提交前建议运行：
 
 ```bash
 npm run lint
 npm run typecheck
+npm test
 npm run build
-npm audit --audit-level=moderate
 ```
-
----
-
-## 📚 文档
-
-- [Admin editor notes](docs/admin-editor-notes.md)
-- [Project background for AI agents](docs/project-background.md)
-- [Security and deployment notes](docs/security-and-deployment.md)
-
----
-
-## 🧠 设计原则
-
-- **像搭积木一样做主页**  
-  用户应该通过拖拽和配置完成大部分内容维护，而不是每次改代码。
-
-- **内容优先**  
-  第一屏应该直接展示身份、重点项目和联系入口。
-
-- **模块独立**  
-  每个内容块都应该能独立移动、调整、隐藏和复用。
-
-- **版本先于语言**  
-  不同受众应该可以看到不同版本；每个版本下再按需要配置不同语言。
-
-- **公开页只读，后台写入**  
-  公开页面只负责展示，保存配置和上传图片必须通过登录后台完成。
-
-- **隐藏版本用于定向展示**  
-  隐藏版本适合给不同受众展示不同内容，但不应该被当作严格权限系统。
-
-- **少依赖，易部署**  
-  不引入传统数据库，让个人用户更容易部署、迁移和维护。
-
-- **配置边界清晰**  
-  Vercel Blob 适合保存公开展示内容，不适合保存任何秘密信息。
-
----
-
-## 🚧 模板状态
-
-这是一个仍在演进的可用模板。当前重点是：
-
-- 个人主页展示
-- 可视化编辑后台
-- 模块化卡片布局
-- 桌面端 / 移动端布局适配
-- 多语言内容
-- 隐藏版本
-- Vercel Blob 持久化
-
-后续可能会继续完善：
-
-- 更完整的版本历史
-- 更细的布局控制
-- 更多模块类型
-- 更好的模板市场 / 预设布局
-- 更完善的迁移工具
-- 登录限流
-- 更复杂的权限系统
-
----
 
 ## License
 
-MIT
+本项目使用 [MIT License](LICENSE)。
+
+原始项目版权归 Jiahao Tang 所有；本仓库保留原许可，并在其基础上进行个人化功能与界面改造。
