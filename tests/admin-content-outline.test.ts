@@ -11,6 +11,10 @@ import {
 describe("admin content outline", () => {
   it("groups a heading with every block until the next heading", () => {
     const groups = buildContentOutlineGroups(defaultSiteConfig.blocks);
+    const experience = groups.find((group) => group.moduleType === "experience");
+    expect(experience?.blockIds).toEqual(["text-experience", "job-baismgs", "job-zhuque", "job-tianshang"]);
+    expect(experience?.primaryEditBlockId).toBe("job-baismgs");
+
     const travel = groups.find((group) => group.moduleType === "travel");
     expect(travel?.blockIds).toEqual(["text-travel", "travel-footprint"]);
     expect(travel?.primaryEditBlockId).toBe("travel-footprint");

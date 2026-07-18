@@ -304,6 +304,7 @@ function MoveButton({ icon, label, disabled, onClick }: { icon: React.ReactNode;
 
 function getModuleTypeLabel(type: OutlineSpecialModuleType | null, language: EditorLanguage) {
   const isZh = language === "zh-CN";
+  if (type === "experience") return isZh ? "经历" : "EXPERIENCE";
   if (type === "travel") return isZh ? "旅行" : "TRAVEL";
   if (type === "projects") return isZh ? "项目" : "PROJECTS";
   if (type === "now") return "NOW";

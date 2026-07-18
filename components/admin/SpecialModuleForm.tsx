@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowDown, ArrowUp, BookOpen, Camera, ChevronDown, ChevronRight, FolderKanban, MapPin, MapPinned, Plus, Sparkles, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, BookOpen, BriefcaseBusiness, Camera, ChevronDown, ChevronRight, FolderKanban, MapPin, MapPinned, Plus, Sparkles, Trash2 } from "lucide-react";
 import { useState } from "react";
 import type { Block } from "@/types/block";
 import type { LifeModuleType, MediaItem, NowStatus, PhotoStory } from "@/types/life-modules";
@@ -29,9 +29,9 @@ export type PersonalProjectEditorItem = {
   tone: "mint" | "blue" | "yellow";
 };
 
-export type SpecialModuleType = "travel" | "projects" | LifeModuleType;
+export type SpecialModuleType = "experience" | "travel" | "projects" | LifeModuleType;
 
-export function getSpecialModuleType(block: Block): SpecialModuleType | null {
+export function getSpecialModuleType(block: Block): Exclude<SpecialModuleType, "experience"> | null {
   if (Array.isArray(block.metadata?.travelLocations)) return "travel";
   if (Array.isArray(block.metadata?.projects)) return "projects";
   if (block.metadata?.nowStatus && typeof block.metadata.nowStatus === "object") return "now";
@@ -244,6 +244,7 @@ export function SpecialModulePreview({ block }: { block: Block }) {
 }
 
 function SpecialModuleIcon({ type }: { type: SpecialModuleType }) {
+  if (type === "experience") return <BriefcaseBusiness className="h-5 w-5" />;
   if (type === "travel") return <MapPinned className="h-5 w-5" />;
   if (type === "projects") return <FolderKanban className="h-5 w-5" />;
   if (type === "now") return <Sparkles className="h-5 w-5" />;
@@ -253,6 +254,7 @@ function SpecialModuleIcon({ type }: { type: SpecialModuleType }) {
 
 function getModuleTitle(type: SpecialModuleType, language: EditorLanguage) {
   const isZh = language === "zh-CN";
+  if (type === "experience") return isZh ? "工作经历设置" : "Work experience";
   if (type === "travel") return isZh ? "旅行足迹设置" : "Travel footprint";
   if (type === "projects") return isZh ? "个人项目设置" : "Personal projects";
   if (type === "now") return isZh ? "此刻 NOW 设置" : "Now status";

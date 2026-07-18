@@ -1,7 +1,7 @@
 import type { Block } from "@/types/block";
 import { bySortOrder, isSectionTextBlock, topLevelBlockSectionId } from "@/lib/utils";
 
-export type OutlineSpecialModuleType = "travel" | "projects" | "now" | "media" | "photos";
+export type OutlineSpecialModuleType = "experience" | "travel" | "projects" | "now" | "media" | "photos";
 
 export type ContentOutlineGroup = {
   id: string;
@@ -16,7 +16,7 @@ export type ContentOutlineGroup = {
   visibleCount: number;
 };
 
-const specialModuleTypes = new Set<OutlineSpecialModuleType>(["travel", "projects", "now", "media", "photos"]);
+const specialModuleTypes = new Set<OutlineSpecialModuleType>(["experience", "travel", "projects", "now", "media", "photos"]);
 
 export function isOutlineSpecialModuleType(value: unknown): value is OutlineSpecialModuleType {
   return typeof value === "string" && specialModuleTypes.has(value as OutlineSpecialModuleType);
@@ -57,7 +57,9 @@ export function buildContentOutlineGroups(blocks: Block[]): ContentOutlineGroup[
     const heading = isSectionTextBlock(groupBlocks[0]) ? groupBlocks[0] : undefined;
     const moduleType = groupBlocks.map(getOutlineSpecialModuleType).find(Boolean) ?? null;
     const specialContent = moduleType
-      ? groupBlocks.find((block) => !isSectionTextBlock(block) && getOutlineSpecialModuleType(block) === moduleType)
+      ? groupBlocks.find((block) =>
+          !isSectionTextBlock(block) && (moduleType === "experience" || getOutlineSpecialModuleType(block) === moduleType)
+        )
       : undefined;
     const primary = specialContent ?? heading ?? groupBlocks[0];
     const visibleCount = groupBlocks.filter((block) => block.isVisible).length;

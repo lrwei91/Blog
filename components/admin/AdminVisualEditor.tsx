@@ -104,6 +104,7 @@ import { BlockCard } from "@/components/blocks/BlockCard";
 import { BlockIcon, getBlockIconColor } from "@/components/blocks/BlockIcon";
 import { BlockForm } from "@/components/admin/BlockForm";
 import { getSpecialModuleType, SpecialModuleForm, SpecialModulePreview, type SpecialModuleType } from "@/components/admin/SpecialModuleForm";
+import { ExperienceModuleForm, ExperienceModulePreview } from "@/components/admin/ExperienceModuleForm";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
 import { MediaUploader } from "@/components/admin/MediaUploader";
@@ -203,28 +204,19 @@ const blockTemplates: {
     items: [
       { label: "高光时刻", description: "状态/动态", size: "wide", icon: <Palette /> },
       { label: "教育经历", description: "教育卡片", size: "large-square", icon: <BookOpen /> },
-      {
-        label: "工作经历",
-        description: "经历卡片",
-        size: "large-square",
-        icon: <BriefcaseBusiness />,
-        defaultTitle: "公司名称",
-        defaultSubtitle: "职位 · 2024 年 1 月 - 至今",
-        defaultDescription: "补充这段工作经历的职责与成果摘要。",
-        defaultIcon: "briefcase",
-        defaultActionType: "modal",
-        defaultMetadata: {
-          modalTitle: "公司名称 · 职位",
-          modalSubtitle: "2024 年 1 月 - 至今",
-          modalBody: "补充详细的工作职责、项目经历与成果。"
-        }
-      },
       { label: "获奖记录", description: "奖项/荣誉", size: "wide", icon: <Award />, defaultIcon: "award", defaultBadge: "Award" }
     ]
   },
   {
     group: "主页模块",
     items: [
+      {
+        label: "工作经历",
+        description: "时间轴与经历详情",
+        size: "full-wide",
+        icon: <BriefcaseBusiness />,
+        moduleType: "experience"
+      },
       {
         label: "旅行足迹",
         description: "中国地图与足迹列表",
@@ -289,7 +281,7 @@ const localizedTemplateText: Record<
   链接: { label: { "zh-CN": "链接", en: "Link" }, description: { "zh-CN": "外部链接", en: "External link" } },
   高光时刻: { label: { "zh-CN": "高光时刻", en: "Highlight" }, description: { "zh-CN": "状态或动态", en: "Status or update" } },
   教育经历: { label: { "zh-CN": "教育经历", en: "Education" }, description: { "zh-CN": "教育卡片", en: "Education card" } },
-  工作经历: { label: { "zh-CN": "工作经历", en: "Work" }, description: { "zh-CN": "经历卡片", en: "Experience card" } },
+  工作经历: { label: { "zh-CN": "工作经历", en: "Work experience" }, description: { "zh-CN": "时间轴与经历详情", en: "Timeline and experience details" } },
   获奖记录: { label: { "zh-CN": "获奖记录", en: "Award" }, description: { "zh-CN": "奖项或荣誉", en: "Award or honor" } },
   旅行足迹: { label: { "zh-CN": "旅行足迹", en: "Travel footprint" }, description: { "zh-CN": "中国地图与足迹列表", en: "China map and travel log" } },
   个人项目: { label: { "zh-CN": "个人项目", en: "Personal projects" }, description: { "zh-CN": "项目卡片与双链接", en: "Project cards and links" } },
@@ -793,6 +785,48 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
     });
   }
 
+  function patchExperienceBlock(blockId: string, patch: Partial<Block>) {
+    const now = new Date().toISOString();
+    update({
+      ...config,
+      blocks: normalizeBlocks(
+        config.blocks.map((block) =>
+          block.id === blockId ? { ...block, ...patch, sectionId: topLevelBlockSectionId, updatedAt: now } : block
+        )
+      )
+    });
+  }
+
+  function replaceExperienceGroupEntries(groupId: string, nextEntries: Block[]) {
+    const group = buildContentOutlineGroups(config.blocks).find((item) => item.id === groupId);
+    if (!group || group.moduleType !== "experience" || !group.headingId) return;
+
+    const entryIds = new Set(group.blocks.filter((block) => !isSectionTextBlock(block)).map((block) => block.id));
+    const ordered = [...config.blocks].sort(bySortOrder).filter((block) => !entryIds.has(block.id));
+    const headingIndex = ordered.findIndex((block) => block.id === group.headingId);
+    if (headingIndex < 0) return;
+
+    const now = new Date().toISOString();
+    ordered.splice(
+      headingIndex + 1,
+      0,
+      ...nextEntries.map((block) => ({
+        ...block,
+        sectionId: topLevelBlockSectionId,
+        size: "wide" as const,
+        responsiveSizes: { ...block.responsiveSizes, desktop: "wide" as const, mobile: "full-wide" as const },
+        actionType: "modal" as const,
+        openInNewTab: false,
+        updatedAt: now
+      }))
+    );
+
+    update({
+      ...config,
+      blocks: ordered.map((block, index) => ({ ...block, sortOrder: index + 1 }))
+    });
+  }
+
   function patchBlockSizeForDevice(blockId: string, size: BlockSize) {
     setConfig((current) =>
       normalizeContentFlowConfig({
@@ -972,6 +1006,9 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
 
   function getSpecialModuleDeleteIds(blocks: Block[], blockId: string) {
     const ids = new Set([blockId]);
+    const outlineGroup = buildContentOutlineGroups(blocks).find((group) => group.blockIds.includes(blockId));
+    if (outlineGroup?.moduleType) return new Set(outlineGroup.blockIds);
+
     const ordered = [...blocks].filter((block) => block.sectionId === topLevelBlockSectionId).sort(bySortOrder);
     const targetIndex = ordered.findIndex((block) => block.id === blockId);
     if (targetIndex < 0) return ids;
@@ -1083,15 +1120,19 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
       id: contentId,
       sectionId: topLevelBlockSectionId,
       title: moduleDefaults.contentTitle,
-      subtitle: "",
+      subtitle: moduleType === "experience"
+        ? (editorLanguage === "zh-CN" ? "职位名称 · 2026 年 1 月 - 至今" : "Role · Jan 2026 - Present")
+        : "",
       description: moduleDefaults.description,
-      size: "full-wide",
-      responsiveSizes: { desktop: "full-wide", mobile: "full-wide" },
+      size: moduleType === "experience" ? "wide" : "full-wide",
+      responsiveSizes: moduleType === "experience"
+        ? { desktop: "wide", mobile: "full-wide" }
+        : { desktop: "full-wide", mobile: "full-wide" },
       coverImage: "",
-      icon: moduleDefaults.icon,
+      icon: moduleType === "experience" ? "building" : moduleDefaults.icon,
       badge: "",
       href: "",
-      actionType: "none",
+      actionType: moduleType === "experience" ? "modal" : "none",
       openInNewTab: false,
       backgroundColor: "",
       textColor: "",
@@ -1689,6 +1730,24 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
 
                         if (item.type === "top-level-blocks") {
                           const contentBlocks = item.blocks.filter((block) => block.id !== activeDragBlockId);
+                          const experienceGroup = outlineGroups.find(
+                            (group) => group.moduleType === "experience" && item.blocks.some((block) => group.blockIds.includes(block.id))
+                          );
+                          if (experienceGroup) {
+                            nodes.push(
+                              <EditableExperienceModule
+                                key={item.id}
+                                group={experienceGroup}
+                                blocks={item.blocks}
+                                selected={experienceGroup.blockIds.includes(selectedBlockId ?? "")}
+                                onEdit={() => editOutlineGroup(experienceGroup)}
+                                onDelete={() => deleteBlock(experienceGroup.primaryEditBlockId)}
+                                onSelect={() => setSelectedBlockId(experienceGroup.primaryEditBlockId)}
+                              />
+                            );
+                            contentCursor += contentBlocks.length;
+                            continue;
+                          }
                           const textPreviewBlock =
                             activeDragBlock !== null && isSectionTextBlock(activeDragBlock) ? activeDragBlock : null;
                           const orderedContentBlocksForTextPreview =
@@ -1781,7 +1840,11 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
                             removeFromFlowDuringDrag={
                               activeTextPreviewContentIndex !== undefined && activeDragBlockId === item.block.id
                             }
-                            onEdit={() => setModal({ type: "block", blockId: item.block.id })}
+                            onEdit={() => {
+                              const group = outlineGroups.find((group) => group.blockIds.includes(item.block.id));
+                              if (group?.moduleType) editOutlineGroup(group);
+                              else setModal({ type: "block", blockId: item.block.id });
+                            }}
                             onDelete={() => deleteBlock(item.block.id)}
                             onSelect={() => setSelectedBlockId(item.block.id)}
                             selected={selectedBlockId === item.block.id}
@@ -1889,6 +1952,11 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
             <SpecialModuleModalBody
               group={outlineGroups.find((group) => group.id === modal.groupId)}
               onPatchBlock={patchBlock}
+              onPatchExperienceBlock={patchExperienceBlock}
+              onReplaceExperienceEntries={replaceExperienceGroupEntries}
+              onSetGroupVisibility={(groupId, isVisible) =>
+                update({ ...config, blocks: setContentOutlineGroupVisibility(config.blocks, groupId, isVisible) })
+              }
               editorLanguage={editorLanguage}
             />
           ) : null}
@@ -3243,6 +3311,61 @@ function getInsertionIndexFromBlockRects(targetBlocks: Block[], pointer: Point) 
   return targetBlocks.length;
 }
 
+function EditableExperienceModule({
+  group,
+  blocks,
+  selected,
+  onEdit,
+  onDelete,
+  onSelect
+}: {
+  group: ContentOutlineGroup;
+  blocks: Block[];
+  selected: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
+  onSelect: () => void;
+}) {
+  return (
+    <section
+      data-admin-block="true"
+      data-admin-block-id={group.primaryEditBlockId}
+      className={cn(
+        "group relative rounded-[24px] p-2 transition",
+        selected && "ring-4 ring-[#5EDB88]/20",
+        !group.isVisible && "opacity-55 grayscale-[0.18]"
+      )}
+      onClick={onSelect}
+    >
+      <ExperienceModulePreview blocks={blocks} />
+      <div className="pointer-events-none absolute inset-0 z-30 opacity-0 transition group-hover:opacity-100">
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onDelete();
+          }}
+          className="pointer-events-auto absolute -left-1 -top-1 grid h-9 w-9 place-items-center rounded-full border-2 border-white bg-white shadow-[0_12px_30px_rgba(15,23,42,0.18)] transition hover:border-red-100 hover:bg-red-50"
+          aria-label="删除工作经历模块"
+        >
+          <Trash2 className="h-4 w-4 text-red-500" />
+        </button>
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onEdit();
+          }}
+          className="pointer-events-auto absolute -right-1 -top-1 grid h-9 w-9 place-items-center rounded-full border-2 border-white bg-white shadow-[0_12px_30px_rgba(15,23,42,0.18)] transition hover:border-[#D8E9FF] hover:bg-[#F2F8FF]"
+          aria-label="编辑工作经历模块"
+        >
+          <Pencil className="h-4 w-4" />
+        </button>
+      </div>
+    </section>
+  );
+}
+
 function EditableSection({
   section,
   contentGroupId,
@@ -4396,14 +4519,36 @@ function BlockModalBody({
 function SpecialModuleModalBody({
   group,
   onPatchBlock,
+  onPatchExperienceBlock,
+  onReplaceExperienceEntries,
+  onSetGroupVisibility,
   editorLanguage
 }: {
   group?: ContentOutlineGroup;
   onPatchBlock: (blockId: string, patch: Partial<Block>) => void;
+  onPatchExperienceBlock: (blockId: string, patch: Partial<Block>) => void;
+  onReplaceExperienceEntries: (groupId: string, blocks: Block[]) => void;
+  onSetGroupVisibility: (groupId: string, isVisible: boolean) => void;
   editorLanguage: EditorLanguage;
 }) {
   if (!group) return null;
   const heading = group.headingId ? group.blocks.find((block) => block.id === group.headingId) : undefined;
+  if (group.moduleType === "experience") {
+    if (!heading) return null;
+    const experiences = group.blocks.filter((block) => !isSectionTextBlock(block));
+    return (
+      <ExperienceModuleForm
+        heading={heading}
+        experiences={experiences}
+        onPatchHeading={(patch) => onPatchBlock(heading.id, patch)}
+        onPatchExperience={onPatchExperienceBlock}
+        onReplaceExperiences={(blocks) => onReplaceExperienceEntries(group.id, blocks)}
+        onSetVisibility={(isVisible) => onSetGroupVisibility(group.id, isVisible)}
+        editorLanguage={editorLanguage}
+      />
+    );
+  }
+
   const content = group.blocks.find((block) => getSpecialModuleType(block));
   if (!content) return null;
 
@@ -5196,11 +5341,25 @@ function ProjectSettingsForm({
 }
 
 function isSpecialModuleSourceId(value: unknown): value is SpecialModuleType {
-  return value === "travel" || value === "projects" || value === "now" || value === "media" || value === "photos";
+  return value === "experience" || value === "travel" || value === "projects" || value === "now" || value === "media" || value === "photos";
 }
 
 function getSpecialModuleDefaults(moduleType: SpecialModuleType, editorLanguage: EditorLanguage) {
   const isZh = editorLanguage === "zh-CN";
+  if (moduleType === "experience") return {
+    headingTitle: isZh ? "工作经历" : "Work Experience",
+    headingSubtitle: "Work Experience",
+    contentTitle: isZh ? "公司名称" : "Company",
+    description: isZh ? "补充这段工作经历的职责、成果与代表项目。" : "Add responsibilities, outcomes and representative projects.",
+    icon: "briefcase",
+    titleSize: "md" as const,
+    visible: true,
+    metadata: {
+      modalTitle: isZh ? "公司名称 · 职位名称" : "Company · Role",
+      modalSubtitle: isZh ? "2026 年 1 月 - 至今" : "Jan 2026 - Present",
+      modalBody: isZh ? "补充详细的工作职责、项目经历与成果。" : "Add detailed responsibilities, projects and outcomes."
+    }
+  };
   if (moduleType === "travel") return {
     headingTitle: isZh ? "旅行足迹" : "Travel Footprint",
     headingSubtitle: "Travel Footprint",
