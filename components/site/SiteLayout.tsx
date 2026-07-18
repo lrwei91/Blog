@@ -59,7 +59,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
       <header className="public-nav" data-public-nav>
         <div className="public-nav__inner">
           <a href="#top" className="public-nav__brand" aria-label={`${renderModel.profile.displayName} 首页`}>
-            <span className="public-nav__mark"><i /><i /><i /></span>
+            <span className="public-nav__mark" aria-hidden="true">{renderModel.profile.displayName.trim().charAt(0) || "印"}</span>
             <span className="public-nav__brand-label">个人主页</span>
           </a>
 
@@ -118,7 +118,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
           </p>
           <div className="public-footer__meta">
             <a href="#top" className="public-nav__brand public-footer__brand" aria-label={`${renderModel.profile.displayName} 首页`}>
-              <span className="public-nav__mark"><i /><i /><i /></span>
+              <span className="public-nav__mark" aria-hidden="true">{renderModel.profile.displayName.trim().charAt(0) || "印"}</span>
             </a>
             <p className="public-footer__signature">
               {"// Designed by "}<span>{renderModel.profile.username || "lrwei91"}</span>

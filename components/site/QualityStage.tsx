@@ -1,4 +1,4 @@
-import { Quote, ScanSearch, ShieldCheck, Workflow } from "lucide-react";
+import { Quote } from "lucide-react";
 
 export function QualityStage({
   avatarUrl,
@@ -10,11 +10,7 @@ export function QualityStage({
   return (
     <div className="quality-stage" data-reveal>
       <div className="quality-stage__orbit" aria-hidden="true">
-        <span className="quality-stage__ring quality-stage__ring--outer" />
-        <span className="quality-stage__ring quality-stage__ring--inner" />
-        <span className="quality-stage__node quality-stage__node--one"><ScanSearch /></span>
-        <span className="quality-stage__node quality-stage__node--two"><Workflow /></span>
-        <span className="quality-stage__node quality-stage__node--three"><ShieldCheck /></span>
+        <span className="quality-stage__ring" />
         <div className="quality-stage__portrait">
           {showAvatar ? (
             <img src={avatarUrl || "/default-avatar.svg"} alt="" />
