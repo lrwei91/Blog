@@ -67,6 +67,53 @@ describe("validateSiteConfig", () => {
       expect(result.error).toMatch(/Unknown sectionId/);
     }
   });
+
+  it("accepts hidden empty life modules in the default config", () => {
+    const result = validateSiteConfig(defaultSiteConfig);
+    expect(result.success).toBe(true);
+    expect(defaultSiteConfig.blocks.find((block) => block.id === "now-status")?.isVisible).toBe(false);
+    expect(defaultSiteConfig.blocks.find((block) => block.id === "media-shelf")?.isVisible).toBe(false);
+    expect(defaultSiteConfig.blocks.find((block) => block.id === "photo-stories")?.isVisible).toBe(false);
+  });
+
+  it("validates media ratings and safe external URLs", () => {
+    const bad = structuredClone(defaultSiteConfig);
+    const media = bad.blocks.find((block) => block.id === "media-shelf");
+    if (!media) throw new Error("media module missing");
+    media.metadata = {
+      mediaItems: [{
+        id: "media-1",
+        category: "movie",
+        title: "Example",
+        status: "Watching",
+        rating: 6,
+        href: "javascript:alert(1)"
+      }]
+    };
+    const result = validateSiteConfig(bad);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error).toMatch(/rating|href/);
+    }
+  });
+
+  it("requires safe photo URLs and accessible alt text", () => {
+    const bad = structuredClone(defaultSiteConfig);
+    const photos = bad.blocks.find((block) => block.id === "photo-stories");
+    if (!photos) throw new Error("photo module missing");
+    photos.metadata = {
+      photoStories: [{
+        id: "story-1",
+        title: "Trip",
+        photos: [{ id: "photo-1", url: "data:text/html,bad", alt: "" }]
+      }]
+    };
+    const result = validateSiteConfig(bad);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error).toMatch(/url|alt/);
+    }
+  });
 });
 
 const now = defaultSiteConfig.updatedAt;

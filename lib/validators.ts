@@ -102,6 +102,43 @@ const personalProjectSchema = z.object({
   tone: z.enum(["mint", "blue", "yellow"])
 });
 
+const nowStatusSchema = z.object({
+  headline: z.string(),
+  body: z.string(),
+  mood: z.string().optional(),
+  location: z.string().optional(),
+  tags: z.array(z.string()),
+  updatedAt: z.string()
+});
+
+const mediaItemSchema = z.object({
+  id: z.string().trim().min(1, "Required"),
+  category: z.enum(["movie", "book", "game", "music", "other"]),
+  title: z.string().trim().min(1, "Required"),
+  creator: z.string().optional(),
+  coverImage: safeUrlSchema.optional(),
+  status: z.string().trim().min(1, "Required"),
+  rating: z.number().finite().min(0).max(5).optional(),
+  note: z.string().optional(),
+  href: safeUrlSchema.optional()
+});
+
+const photoStoryImageSchema = z.object({
+  id: z.string().trim().min(1, "Required"),
+  url: requiredSafeUrlSchema,
+  alt: z.string().trim().min(1, "Required"),
+  caption: z.string().optional()
+});
+
+const photoStorySchema = z.object({
+  id: z.string().trim().min(1, "Required"),
+  title: z.string().trim().min(1, "Required"),
+  date: z.string().optional(),
+  location: z.string().optional(),
+  summary: z.string().optional(),
+  photos: z.array(photoStoryImageSchema)
+});
+
 const blockSchema = z.object({
   id: z.string().min(1),
   sectionId: z.string().min(1),
@@ -154,6 +191,21 @@ const blockSchema = z.object({
   const projects = block.metadata?.projects;
   if (projects !== undefined) {
     addNestedSchemaIssues(z.array(personalProjectSchema).safeParse(projects), ctx, ["metadata", "projects"]);
+  }
+
+  const nowStatus = block.metadata?.nowStatus;
+  if (nowStatus !== undefined) {
+    addNestedSchemaIssues(nowStatusSchema.safeParse(nowStatus), ctx, ["metadata", "nowStatus"]);
+  }
+
+  const mediaItems = block.metadata?.mediaItems;
+  if (mediaItems !== undefined) {
+    addNestedSchemaIssues(z.array(mediaItemSchema).safeParse(mediaItems), ctx, ["metadata", "mediaItems"]);
+  }
+
+  const photoStories = block.metadata?.photoStories;
+  if (photoStories !== undefined) {
+    addNestedSchemaIssues(z.array(photoStorySchema).safeParse(photoStories), ctx, ["metadata", "photoStories"]);
   }
 });
 

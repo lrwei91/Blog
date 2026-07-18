@@ -22,6 +22,7 @@ import {
   AppWindow,
   BookOpen,
   BriefcaseBusiness,
+  Camera,
   ChevronDown,
   Copy,
   Download,
@@ -48,6 +49,7 @@ import {
   Save,
   Settings,
   Smartphone,
+  Sparkles,
   Square,
   Trash2,
   Twitter,
@@ -100,7 +102,7 @@ import {
 import { BlockCard } from "@/components/blocks/BlockCard";
 import { BlockIcon, getBlockIconColor } from "@/components/blocks/BlockIcon";
 import { BlockForm } from "@/components/admin/BlockForm";
-import { getSpecialModuleType, SpecialModuleForm, SpecialModulePreview } from "@/components/admin/SpecialModuleForm";
+import { getSpecialModuleType, SpecialModuleForm, SpecialModulePreview, type SpecialModuleType } from "@/components/admin/SpecialModuleForm";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
 import { MediaUploader } from "@/components/admin/MediaUploader";
@@ -153,7 +155,7 @@ type BlockTemplate = {
   defaultHref?: string;
   defaultActionType?: Block["actionType"];
   defaultMetadata?: Record<string, unknown>;
-  moduleType?: "travel" | "projects";
+  moduleType?: SpecialModuleType;
 };
 
 const blockTemplates: {
@@ -224,6 +226,27 @@ const blockTemplates: {
         size: "full-wide",
         icon: <Laptop />,
         moduleType: "projects"
+      },
+      {
+        label: "此刻 NOW",
+        description: "近期状态与生活关键词",
+        size: "full-wide",
+        icon: <Sparkles />,
+        moduleType: "now"
+      },
+      {
+        label: "最近在看 / 玩 / 听",
+        description: "书影音与游戏清单",
+        size: "full-wide",
+        icon: <BookOpen />,
+        moduleType: "media"
+      },
+      {
+        label: "照片故事",
+        description: "多图故事与灯箱预览",
+        size: "full-wide",
+        icon: <Camera />,
+        moduleType: "photos"
       }
     ]
   },
@@ -257,7 +280,10 @@ const localizedTemplateText: Record<
   工作经历: { label: { "zh-CN": "工作经历", en: "Work" }, description: { "zh-CN": "经历卡片", en: "Experience card" } },
   获奖记录: { label: { "zh-CN": "获奖记录", en: "Award" }, description: { "zh-CN": "奖项或荣誉", en: "Award or honor" } },
   旅行足迹: { label: { "zh-CN": "旅行足迹", en: "Travel footprint" }, description: { "zh-CN": "中国地图与足迹列表", en: "China map and travel log" } },
-  个人项目: { label: { "zh-CN": "个人项目", en: "Personal projects" }, description: { "zh-CN": "项目卡片与双链接", en: "Project cards and links" } }
+  个人项目: { label: { "zh-CN": "个人项目", en: "Personal projects" }, description: { "zh-CN": "项目卡片与双链接", en: "Project cards and links" } },
+  "此刻 NOW": { label: { "zh-CN": "此刻 NOW", en: "Now" }, description: { "zh-CN": "近期状态与生活关键词", en: "Current status and life keywords" } },
+  "最近在看 / 玩 / 听": { label: { "zh-CN": "最近在看 / 玩 / 听", en: "Media shelf" }, description: { "zh-CN": "书影音与游戏清单", en: "Movies, books, games and music" } },
+  照片故事: { label: { "zh-CN": "照片故事", en: "Photo stories" }, description: { "zh-CN": "多图故事与灯箱预览", en: "Photo stories and lightbox" } }
 };
 
 function getLocalizedTemplateGroup(group: string, language: EditorLanguage) {
@@ -438,7 +464,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
   );
   const shouldShowLanguagePicker = availableLanguages.length > 1;
   const shouldShowVariantPicker = baseConfig.settings.variants.isEnabled && enabledVariants.length > 1;
-  const renderModel = useMemo(() => buildRenderModel(config), [config]);
+  const renderModel = useMemo(() => buildRenderModel(config, { includeHidden: true }), [config]);
   const blockSectionById = useMemo(() => {
     return new Map(config.blocks.map((block) => [block.id, block.sectionId]));
   }, [config.blocks]);
@@ -769,7 +795,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
     if (!activeBlock) return config;
 
     const now = new Date().toISOString();
-    const renderModel = buildRenderModel(config);
+    const renderModel = buildRenderModel(config, { includeHidden: true });
     const originalContentIndex = getContentIndexForBlock(renderModel, blockId);
     const flowItems = getContentFlowForBlockMove(renderModel, blockId, isSectionTextBlock(activeBlock));
     const nextItems: ContentFlowItem[] = [...flowItems];
@@ -896,7 +922,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
     }
 
     const sourceSectionId = target.metadata?.sourceSectionId;
-    if (!isSectionTextBlock(target) || (sourceSectionId !== "travel" && sourceSectionId !== "projects")) return ids;
+    if (!isSectionTextBlock(target) || !isSpecialModuleSourceId(sourceSectionId)) return ids;
     for (let index = targetIndex + 1; index < ordered.length; index += 1) {
       const candidate = ordered[index];
       if (isSectionTextBlock(candidate)) break;
@@ -953,22 +979,22 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
     setModal({ type: "block", blockId: newBlock.id });
   }
 
-  function addSpecialModule(moduleType: "travel" | "projects") {
+  function addSpecialModule(moduleType: SpecialModuleType) {
     const now = new Date().toISOString();
     const firstSortOrder = getNextContentSortOrder(config);
-    const isTravel = moduleType === "travel";
+    const moduleDefaults = getSpecialModuleDefaults(moduleType, editorLanguage);
     const headingId = crypto.randomUUID();
     const contentId = crypto.randomUUID();
     const heading: Block = {
       id: headingId,
       sectionId: topLevelBlockSectionId,
-      title: isTravel ? (editorLanguage === "zh-CN" ? "旅行足迹" : "Travel Footprint") : editorLanguage === "zh-CN" ? "个人项目" : "Personal Projects",
-      subtitle: isTravel ? "Travel Footprint" : "Personal Projects",
+      title: moduleDefaults.headingTitle,
+      subtitle: moduleDefaults.headingSubtitle,
       description: "",
       size: "section-text",
       responsiveSizes: { desktop: "section-text", mobile: "section-text" },
       coverImage: "",
-      icon: isTravel ? "map" : "terminal",
+      icon: moduleDefaults.icon,
       badge: "",
       href: "",
       actionType: "none",
@@ -978,9 +1004,9 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
       metadata: {
         sourceSectionId: moduleType,
         titleAlign: "left",
-        titleSize: isTravel ? "md" : "lg"
+        titleSize: moduleDefaults.titleSize
       },
-      isVisible: true,
+      isVisible: moduleDefaults.visible,
       isFeatured: false,
       sortOrder: firstSortOrder,
       createdAt: now,
@@ -989,55 +1015,21 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
     const content: Block = {
       id: contentId,
       sectionId: topLevelBlockSectionId,
-      title: isTravel
-        ? editorLanguage === "zh-CN"
-          ? "走过的每一个地方，都是故事"
-          : "Every place becomes part of the story"
-        : editorLanguage === "zh-CN"
-          ? "个人项目"
-          : "Personal Projects",
+      title: moduleDefaults.contentTitle,
       subtitle: "",
-      description: isTravel
-        ? editorLanguage === "zh-CN"
-          ? "把抵达过的地方留在地图上，也把沿途的故事慢慢写下来。"
-          : "Pin the places you have reached and keep their stories close."
-        : "",
+      description: moduleDefaults.description,
       size: "full-wide",
       responsiveSizes: { desktop: "full-wide", mobile: "full-wide" },
       coverImage: "",
-      icon: isTravel ? "map" : "terminal",
+      icon: moduleDefaults.icon,
       badge: "",
       href: "",
       actionType: "none",
       openInNewTab: false,
       backgroundColor: "",
       textColor: "",
-      metadata: isTravel
-        ? {
-            travelLocations: [
-              {
-                city: editorLanguage === "zh-CN" ? "福州" : "Fuzhou",
-                province: editorLanguage === "zh-CN" ? "福建" : "Fujian",
-                note: editorLanguage === "zh-CN" ? "常驻地" : "Home base",
-                longitude: 119.3,
-                latitude: 26.08
-              }
-            ]
-          }
-        : {
-            projects: [
-              {
-                title: editorLanguage === "zh-CN" ? "新项目" : "New project",
-                description: editorLanguage === "zh-CN" ? "补充项目简介" : "Add a short project description",
-                eyebrow: "PROJECT · 01",
-                href: "https://github.com/",
-                liveHref: "",
-                icon: "data",
-                tone: "mint"
-              }
-            ]
-          },
-      isVisible: true,
+      metadata: moduleDefaults.metadata,
+      isVisible: moduleDefaults.visible,
       isFeatured: false,
       sortOrder: firstSortOrder + 1,
       createdAt: now,
@@ -2301,7 +2293,7 @@ function getBlockDragPreviewPlacement({
 
   if (isSectionTextBlock(activeBlock)) {
     const fallbackIndex = getContentTargetIndexFromPointer(
-      getContentFlowForBlockMove(buildRenderModel(config), activeBlock.id, true),
+      getContentFlowForBlockMove(buildRenderModel(config, { includeHidden: true }), activeBlock.id, true),
       pointer ?? getDragCenterPoint(dragRect)
     );
 
@@ -2347,7 +2339,7 @@ function getTopLevelContentTargetFromDrag(
   if (!intentPoint) return null;
 
   const isTextDrag = isSectionTextBlock(activeBlock);
-  const flowItems = getContentFlowForBlockMove(buildRenderModel(config), activeBlock.id, isTextDrag);
+  const flowItems = getContentFlowForBlockMove(buildRenderModel(config, { includeHidden: true }), activeBlock.id, isTextDrag);
   if (isTextDrag) {
     const directTextTarget = getTextBlockContentTargetFromPointer(flowItems, intentPoint, true);
     if (directTextTarget) return directTextTarget;
@@ -2460,7 +2452,7 @@ type ContentGroupTarget = {
 };
 
 function getTopLevelContentGroupTargets(config: SiteConfig, activeBlockId: string, preferVisualBlockOrder = false): ContentGroupTarget[] {
-  const renderModel = buildRenderModel(config);
+  const renderModel = buildRenderModel(config, { includeHidden: true });
   const groups: ContentGroupTarget[] = [];
   let flowIndex = 0;
 
@@ -3428,7 +3420,8 @@ function SortableTextBlock({
       style={{ transform: visualTransform, transition: visualTransition, ...removeFromFlowStyle }}
       className={cn(
         "admin-draggable group relative cursor-grab rounded-[20px] px-0 py-1 transition-all duration-200 ease-out active:cursor-grabbing",
-        isDragging || isDragOverlayActive ? "z-20 opacity-20" : ""
+        isDragging || isDragOverlayActive ? "z-20 opacity-20" : "",
+        !block.isVisible ? "opacity-55 grayscale-[0.18]" : ""
       )}
       onClick={onSelect}
       {...attributes}
@@ -3605,7 +3598,8 @@ function SortableBlock({
         blockSizeClassByDevice[device][activeDisplaySize],
         removeFromFlowDuringDrag ? "absolute left-0 top-0 z-20 h-px w-px overflow-hidden opacity-0" : "",
         hideOriginalDuringDrag ? "opacity-0" : isDragging || isDragOverlayActive ? "z-20 opacity-20" : "",
-        isResizing ? "z-30" : ""
+        isResizing ? "z-30" : "",
+        !block.isVisible ? "opacity-55 grayscale-[0.18]" : ""
       )}
       onClick={onSelect}
       {...attributes}
@@ -5036,6 +5030,64 @@ function ProjectSettingsForm({
       ) : null}
     </div>
   );
+}
+
+function isSpecialModuleSourceId(value: unknown): value is SpecialModuleType {
+  return value === "travel" || value === "projects" || value === "now" || value === "media" || value === "photos";
+}
+
+function getSpecialModuleDefaults(moduleType: SpecialModuleType, editorLanguage: EditorLanguage) {
+  const isZh = editorLanguage === "zh-CN";
+  if (moduleType === "travel") return {
+    headingTitle: isZh ? "旅行足迹" : "Travel Footprint",
+    headingSubtitle: "Travel Footprint",
+    contentTitle: isZh ? "走过的每一个地方，都是故事" : "Every place becomes part of the story",
+    description: isZh ? "把抵达过的地方留在地图上，也把沿途的故事慢慢写下来。" : "Pin the places you have reached and keep their stories close.",
+    icon: "map",
+    titleSize: "md" as const,
+    visible: true,
+    metadata: { travelLocations: [{ city: isZh ? "福州" : "Fuzhou", province: isZh ? "福建" : "Fujian", note: isZh ? "常驻地" : "Home base", longitude: 119.3, latitude: 26.08 }] }
+  };
+  if (moduleType === "projects") return {
+    headingTitle: isZh ? "个人项目" : "Personal Projects",
+    headingSubtitle: "Personal Projects",
+    contentTitle: isZh ? "个人项目" : "Personal Projects",
+    description: "",
+    icon: "terminal",
+    titleSize: "lg" as const,
+    visible: true,
+    metadata: { projects: [{ title: isZh ? "新项目" : "New project", description: isZh ? "补充项目简介" : "Add a short project description", eyebrow: "PROJECT · 01", href: "https://github.com/", liveHref: "", icon: "data", tone: "mint" }] }
+  };
+  if (moduleType === "now") return {
+    headingTitle: isZh ? "此刻" : "Now",
+    headingSubtitle: "Now",
+    contentTitle: isZh ? "此刻 NOW" : "Now",
+    description: "",
+    icon: "sparkle",
+    titleSize: "md" as const,
+    visible: false,
+    metadata: { nowStatus: { headline: "", body: "", mood: "", location: "", tags: [], updatedAt: new Date().toISOString().slice(0, 10) } }
+  };
+  if (moduleType === "media") return {
+    headingTitle: isZh ? "最近在看 / 玩 / 听" : "Media Shelf",
+    headingSubtitle: "Media Shelf",
+    contentTitle: isZh ? "最近在看 / 玩 / 听" : "Media Shelf",
+    description: "",
+    icon: "book-open",
+    titleSize: "md" as const,
+    visible: false,
+    metadata: { mediaItems: [] }
+  };
+  return {
+    headingTitle: isZh ? "照片故事" : "Photo Stories",
+    headingSubtitle: "Photo Stories",
+    contentTitle: isZh ? "照片故事" : "Photo Stories",
+    description: "",
+    icon: "image",
+    titleSize: "md" as const,
+    visible: false,
+    metadata: { photoStories: [] }
+  };
 }
 
 function normalizeBlocks(blocks: Block[]) {

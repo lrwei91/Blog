@@ -1,10 +1,13 @@
 "use client";
 
-import { ArrowDown, ArrowUp, FolderKanban, MapPinned, Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, BookOpen, Camera, FolderKanban, MapPinned, Plus, Sparkles, Trash2 } from "lucide-react";
 import type { Block } from "@/types/block";
+import type { LifeModuleType, MediaItem, NowStatus, PhotoStory } from "@/types/life-modules";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
 import type { EditorLanguage } from "@/components/admin/editor-i18n";
+import { MediaUploader } from "@/components/admin/MediaUploader";
+import { readMediaItems, readNowStatus, readPhotoStories } from "@/lib/life-modules";
 
 export type TravelLocationEditorItem = {
   city: string;
@@ -24,9 +27,14 @@ export type PersonalProjectEditorItem = {
   tone: "mint" | "blue" | "yellow";
 };
 
-export function getSpecialModuleType(block: Block): "travel" | "projects" | null {
+export type SpecialModuleType = "travel" | "projects" | LifeModuleType;
+
+export function getSpecialModuleType(block: Block): SpecialModuleType | null {
   if (Array.isArray(block.metadata?.travelLocations)) return "travel";
   if (Array.isArray(block.metadata?.projects)) return "projects";
+  if (block.metadata?.nowStatus && typeof block.metadata.nowStatus === "object") return "now";
+  if (Array.isArray(block.metadata?.mediaItems)) return "media";
+  if (Array.isArray(block.metadata?.photoStories)) return "photos";
   return null;
 }
 
@@ -51,11 +59,11 @@ export function SpecialModuleForm({
       <section className="grid gap-4 rounded-2xl border border-[#E6EDF7] bg-[#F8FAFD] p-4">
         <div className="flex items-center gap-3">
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-white text-[#21B95B] shadow-sm">
-            {moduleType === "travel" ? <MapPinned className="h-5 w-5" /> : <FolderKanban className="h-5 w-5" />}
+            <SpecialModuleIcon type={moduleType} />
           </span>
           <div>
             <h3 className="font-bold text-[#111]">
-              {moduleType === "travel" ? (isZh ? "旅行足迹设置" : "Travel footprint") : isZh ? "个人项目设置" : "Personal projects"}
+              {getModuleTitle(moduleType, editorLanguage)}
             </h3>
             <p className="text-xs text-[#7A8190]">
               {isZh ? "这里的修改会直接同步到主页对应模块。" : "Changes here are reflected in the matching homepage module."}
@@ -86,10 +94,28 @@ export function SpecialModuleForm({
           onChange={(travelLocations) => patchMetadata({ travelLocations })}
           editorLanguage={editorLanguage}
         />
-      ) : (
+      ) : moduleType === "projects" ? (
         <PersonalProjectsEditor
           projects={readPersonalProjects(block.metadata?.projects)}
           onChange={(projects) => patchMetadata({ projects })}
+          editorLanguage={editorLanguage}
+        />
+      ) : moduleType === "now" ? (
+        <NowStatusEditor
+          status={readNowStatus(block.metadata?.nowStatus)}
+          onChange={(nowStatus) => patchMetadata({ nowStatus })}
+          editorLanguage={editorLanguage}
+        />
+      ) : moduleType === "media" ? (
+        <MediaItemsEditor
+          items={readMediaItems(block.metadata?.mediaItems)}
+          onChange={(mediaItems) => patchMetadata({ mediaItems })}
+          editorLanguage={editorLanguage}
+        />
+      ) : (
+        <PhotoStoriesEditor
+          stories={readPhotoStories(block.metadata?.photoStories)}
+          onChange={(photoStories) => patchMetadata({ photoStories })}
           editorLanguage={editorLanguage}
         />
       )}
@@ -143,7 +169,60 @@ export function SpecialModulePreview({ block }: { block: Block }) {
     );
   }
 
+  if (moduleType === "now") {
+    const status = readNowStatus(block.metadata?.nowStatus);
+    return (
+      <div className="min-h-48 rounded-[20px] border border-emerald-200 bg-[#F0F8EF] p-6">
+        <span className="flex items-center gap-2 font-mono text-xs tracking-[0.16em] text-emerald-700"><Sparkles className="h-4 w-4" /> NOW · 此刻</span>
+        <h3 className="mt-8 text-2xl font-black text-[#111]">{status.headline || "尚未填写近况"}</h3>
+        <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#64748B]">{status.body || "填写后再发布到主页。"}</p>
+        <div className="mt-5 flex flex-wrap gap-2">{status.tags.map((tag) => <span key={tag} className="rounded-full bg-white px-3 py-1 text-xs"># {tag}</span>)}</div>
+      </div>
+    );
+  }
+
+  if (moduleType === "media") {
+    const items = readMediaItems(block.metadata?.mediaItems);
+    return (
+      <div className="min-h-48 rounded-[20px] border border-sky-200 bg-[#EFF7FA] p-5">
+        <span className="flex items-center gap-2 font-mono text-xs tracking-[0.16em] text-sky-700"><BookOpen className="h-4 w-4" /> MEDIA SHELF · {items.length}</span>
+        <div className="mt-5 grid gap-3 md:grid-cols-3">
+          {items.length ? items.slice(0, 3).map((item) => <div key={item.id} className="rounded-2xl bg-white/80 p-4"><p className="text-xs text-sky-700">{item.status}</p><h3 className="mt-3 font-black text-[#111]">{item.title}</h3></div>) : <EmptyState text="暂无书影音条目" />}
+        </div>
+      </div>
+    );
+  }
+
+  if (moduleType === "photos") {
+    const stories = readPhotoStories(block.metadata?.photoStories);
+    return (
+      <div className="min-h-48 rounded-[20px] border border-rose-200 bg-[#FFF6F2] p-5">
+        <span className="flex items-center gap-2 font-mono text-xs tracking-[0.16em] text-rose-700"><Camera className="h-4 w-4" /> PHOTO STORIES · {stories.length}</span>
+        <div className="mt-5 grid gap-3 md:grid-cols-2">
+          {stories.length ? stories.slice(0, 2).map((story) => <div key={story.id} className="rounded-2xl bg-white/80 p-4"><p className="text-xs text-rose-700">{story.date || "未填写日期"}</p><h3 className="mt-3 font-black text-[#111]">{story.title}</h3><p className="mt-2 text-xs text-[#64748B]">{story.photos.length} 张照片</p></div>) : <EmptyState text="暂无照片故事" />}
+        </div>
+      </div>
+    );
+  }
+
   return null;
+}
+
+function SpecialModuleIcon({ type }: { type: SpecialModuleType }) {
+  if (type === "travel") return <MapPinned className="h-5 w-5" />;
+  if (type === "projects") return <FolderKanban className="h-5 w-5" />;
+  if (type === "now") return <Sparkles className="h-5 w-5" />;
+  if (type === "media") return <BookOpen className="h-5 w-5" />;
+  return <Camera className="h-5 w-5" />;
+}
+
+function getModuleTitle(type: SpecialModuleType, language: EditorLanguage) {
+  const isZh = language === "zh-CN";
+  if (type === "travel") return isZh ? "旅行足迹设置" : "Travel footprint";
+  if (type === "projects") return isZh ? "个人项目设置" : "Personal projects";
+  if (type === "now") return isZh ? "此刻 NOW 设置" : "Now status";
+  if (type === "media") return isZh ? "最近在看 / 玩 / 听" : "Media shelf";
+  return isZh ? "照片故事设置" : "Photo stories";
 }
 
 function TravelLocationsEditor({
@@ -308,6 +387,140 @@ function PersonalProjectsEditor({
       ))}
     </section>
   );
+}
+
+function NowStatusEditor({
+  status,
+  onChange,
+  editorLanguage
+}: {
+  status: NowStatus;
+  onChange: (status: NowStatus) => void;
+  editorLanguage: EditorLanguage;
+}) {
+  const isZh = editorLanguage === "zh-CN";
+  const patch = (next: Partial<NowStatus>) => onChange({ ...status, ...next });
+  return (
+    <section className="grid gap-4 rounded-2xl border border-[#E6EDF7] bg-white p-4 shadow-sm">
+      <div>
+        <h3 className="font-bold text-[#111]">{isZh ? "近况内容" : "Current status"}</h3>
+        <p className="text-xs text-[#7A8190]">{isZh ? "适合记录近期状态、关注事项和生活关键词。" : "Share a concise current update."}</p>
+      </div>
+      <div className="grid gap-3 md:grid-cols-2">
+        <Field label={isZh ? "近况标题" : "Headline"} className="md:col-span-2">
+          <Input value={status.headline} onChange={(event) => patch({ headline: event.target.value })} placeholder={isZh ? "填写真实的近期状态" : "What is happening now?"} />
+        </Field>
+        <Field label={isZh ? "详细说明" : "Details"} className="md:col-span-2">
+          <Textarea value={status.body} onChange={(event) => patch({ body: event.target.value })} className="min-h-28" />
+        </Field>
+        <Field label={isZh ? "心情（可选）" : "Mood (optional)"}>
+          <Input value={status.mood ?? ""} onChange={(event) => patch({ mood: event.target.value })} />
+        </Field>
+        <Field label={isZh ? "所在地（可选）" : "Location (optional)"}>
+          <Input value={status.location ?? ""} onChange={(event) => patch({ location: event.target.value })} />
+        </Field>
+        <Field label={isZh ? "标签（使用逗号分隔）" : "Tags (comma separated)"}>
+          <Input value={status.tags.join(", ")} onChange={(event) => patch({ tags: event.target.value.split(/[,，]/).map((tag) => tag.trim()).filter(Boolean) })} />
+        </Field>
+        <Field label={isZh ? "更新时间" : "Updated at"}>
+          <Input type="date" value={toDateInputValue(status.updatedAt)} onChange={(event) => patch({ updatedAt: event.target.value })} />
+        </Field>
+      </div>
+    </section>
+  );
+}
+
+function MediaItemsEditor({
+  items,
+  onChange,
+  editorLanguage
+}: {
+  items: MediaItem[];
+  onChange: (items: MediaItem[]) => void;
+  editorLanguage: EditorLanguage;
+}) {
+  const isZh = editorLanguage === "zh-CN";
+  const updateItem = (index: number, patch: Partial<MediaItem>) => onChange(items.map((item, itemIndex) => itemIndex === index ? { ...item, ...patch } : item));
+  return (
+    <section className="grid gap-4">
+      <div className="flex items-center justify-between gap-3">
+        <div><h3 className="font-bold text-[#111]">{isZh ? "书影音与游戏" : "Media items"}</h3><p className="text-xs text-[#7A8190]">{isZh ? "封面和外部链接均可选，评分范围为 0–5。" : "Cover and URL are optional. Rating is 0–5."}</p></div>
+        <Button type="button" variant="secondary" size="sm" onClick={() => onChange([...items, { id: crypto.randomUUID(), category: "movie", title: isZh ? "新条目" : "New item", status: isZh ? "进行中" : "In progress" }])}><Plus className="h-4 w-4" /> {isZh ? "添加条目" : "Add item"}</Button>
+      </div>
+      {items.length === 0 ? <EmptyState text={isZh ? "暂无内容，添加后可在主页展示。" : "No media items yet."} /> : null}
+      {items.map((item, index) => (
+        <article key={item.id} className="grid gap-4 rounded-2xl border border-[#E6EDF7] bg-white p-4 shadow-sm">
+          <ItemToolbar label={`${String(index + 1).padStart(2, "0")} · ${item.title}`} index={index} length={items.length} onMove={(direction) => onChange(moveItem(items, index, direction))} onDelete={() => onChange(items.filter((candidate) => candidate.id !== item.id))} editorLanguage={editorLanguage} />
+          <div className="grid gap-3 md:grid-cols-2">
+            <Field label={isZh ? "分类" : "Category"}>
+              <Select value={item.category} onChange={(event) => updateItem(index, { category: event.target.value as MediaItem["category"] })}>
+                <option value="movie">{isZh ? "电影 / 剧集" : "Movie / TV"}</option><option value="book">{isZh ? "书籍" : "Book"}</option><option value="game">{isZh ? "游戏" : "Game"}</option><option value="music">{isZh ? "音乐" : "Music"}</option><option value="other">{isZh ? "其他" : "Other"}</option>
+              </Select>
+            </Field>
+            <Field label={isZh ? "状态" : "Status"}><Input value={item.status} onChange={(event) => updateItem(index, { status: event.target.value })} placeholder={isZh ? "例如：正在看" : "Watching"} /></Field>
+            <Field label={isZh ? "名称" : "Title"}><Input value={item.title} onChange={(event) => updateItem(index, { title: event.target.value })} /></Field>
+            <Field label={isZh ? "作者 / 主创（可选）" : "Creator (optional)"}><Input value={item.creator ?? ""} onChange={(event) => updateItem(index, { creator: event.target.value })} /></Field>
+            <Field label={isZh ? "评分（0–5，可选）" : "Rating (0–5, optional)"}><Input type="number" min="0" max="5" step="0.1" value={item.rating ?? ""} onChange={(event) => updateItem(index, { rating: event.target.value === "" ? undefined : Number(event.target.value) })} /></Field>
+            <Field label={isZh ? "外部链接（可选）" : "External URL (optional)"}><Input type="url" value={item.href ?? ""} onChange={(event) => updateItem(index, { href: event.target.value })} placeholder="https://..." /></Field>
+            <Field label={isZh ? "短评（可选）" : "Note (optional)"} className="md:col-span-2"><Textarea value={item.note ?? ""} onChange={(event) => updateItem(index, { note: event.target.value })} /></Field>
+            <Field label={isZh ? "封面地址（可选）" : "Cover URL (optional)"} className="md:col-span-2"><Input value={item.coverImage ?? ""} onChange={(event) => updateItem(index, { coverImage: event.target.value })} placeholder="https://..." /></Field>
+            <div className="md:col-span-2"><MediaUploader folder="gallery" onUploaded={(url) => updateItem(index, { coverImage: url })} /></div>
+          </div>
+        </article>
+      ))}
+    </section>
+  );
+}
+
+function PhotoStoriesEditor({
+  stories,
+  onChange,
+  editorLanguage
+}: {
+  stories: PhotoStory[];
+  onChange: (stories: PhotoStory[]) => void;
+  editorLanguage: EditorLanguage;
+}) {
+  const isZh = editorLanguage === "zh-CN";
+  const updateStory = (index: number, patch: Partial<PhotoStory>) => onChange(stories.map((story, itemIndex) => itemIndex === index ? { ...story, ...patch } : story));
+  return (
+    <section className="grid gap-4">
+      <div className="flex items-center justify-between gap-3">
+        <div><h3 className="font-bold text-[#111]">{isZh ? "故事列表" : "Stories"}</h3><p className="text-xs text-[#7A8190]">{isZh ? "每个故事可以上传多张图片并单独填写说明。" : "Each story can contain multiple captioned photos."}</p></div>
+        <Button type="button" variant="secondary" size="sm" onClick={() => onChange([...stories, { id: crypto.randomUUID(), title: isZh ? "新照片故事" : "New photo story", photos: [] }])}><Plus className="h-4 w-4" /> {isZh ? "添加故事" : "Add story"}</Button>
+      </div>
+      {stories.length === 0 ? <EmptyState text={isZh ? "暂无照片故事，添加后再上传真实照片。" : "No stories yet."} /> : null}
+      {stories.map((story, storyIndex) => (
+        <article key={story.id} className="grid gap-4 rounded-2xl border border-[#E6EDF7] bg-white p-4 shadow-sm">
+          <ItemToolbar label={`${String(storyIndex + 1).padStart(2, "0")} · ${story.title}`} index={storyIndex} length={stories.length} onMove={(direction) => onChange(moveItem(stories, storyIndex, direction))} onDelete={() => onChange(stories.filter((candidate) => candidate.id !== story.id))} editorLanguage={editorLanguage} />
+          <div className="grid gap-3 md:grid-cols-2">
+            <Field label={isZh ? "故事标题" : "Story title"}><Input value={story.title} onChange={(event) => updateStory(storyIndex, { title: event.target.value })} /></Field>
+            <Field label={isZh ? "日期（可选）" : "Date (optional)"}><Input type="date" value={story.date ?? ""} onChange={(event) => updateStory(storyIndex, { date: event.target.value })} /></Field>
+            <Field label={isZh ? "地点（可选）" : "Location (optional)"}><Input value={story.location ?? ""} onChange={(event) => updateStory(storyIndex, { location: event.target.value })} /></Field>
+            <Field label={isZh ? "简介（可选）" : "Summary (optional)"} className="md:col-span-2"><Textarea value={story.summary ?? ""} onChange={(event) => updateStory(storyIndex, { summary: event.target.value })} /></Field>
+          </div>
+          <div className="grid gap-3 rounded-2xl bg-[#F8FAFD] p-4">
+            <div className="flex items-center justify-between"><div><h4 className="font-bold text-[#111]">{isZh ? "照片" : "Photos"}</h4><p className="text-xs text-[#7A8190]">{story.photos.length} {isZh ? "张" : "photos"}</p></div></div>
+            <MediaUploader folder="gallery" onUploaded={(url) => updateStory(storyIndex, { photos: [...story.photos, { id: crypto.randomUUID(), url, alt: story.title || (isZh ? "照片" : "Photo"), caption: "" }] })} />
+            {story.photos.map((photo, photoIndex) => (
+              <div key={photo.id} className="grid gap-3 rounded-xl border border-[#E6EDF7] bg-white p-3 md:grid-cols-[88px_1fr]">
+                <img src={photo.url} alt="" className="h-[88px] w-[88px] rounded-xl object-cover" />
+                <div className="grid gap-2">
+                  <ItemToolbar label={`${isZh ? "照片" : "Photo"} ${photoIndex + 1}`} index={photoIndex} length={story.photos.length} onMove={(direction) => updateStory(storyIndex, { photos: moveItem(story.photos, photoIndex, direction) })} onDelete={() => updateStory(storyIndex, { photos: story.photos.filter((candidate) => candidate.id !== photo.id) })} editorLanguage={editorLanguage} />
+                  <div className="grid gap-2 md:grid-cols-2"><Field label={isZh ? "替代文本" : "Alt text"}><Input value={photo.alt} onChange={(event) => updateStory(storyIndex, { photos: story.photos.map((candidate) => candidate.id === photo.id ? { ...candidate, alt: event.target.value } : candidate) })} /></Field><Field label={isZh ? "图片说明（可选）" : "Caption (optional)"}><Input value={photo.caption ?? ""} onChange={(event) => updateStory(storyIndex, { photos: story.photos.map((candidate) => candidate.id === photo.id ? { ...candidate, caption: event.target.value } : candidate) })} /></Field></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </article>
+      ))}
+    </section>
+  );
+}
+
+function toDateInputValue(value: string) {
+  if (!value) return "";
+  return value.slice(0, 10);
 }
 
 function ItemToolbar({

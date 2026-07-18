@@ -312,14 +312,16 @@ export function resolvePublicVariantId(config: SiteConfig, cookieVariantId?: str
   return getEnabledVariants(config).some((variant) => variant.id === cookieVariantId) ? cookieVariantId : mainVariantId;
 }
 
-export function buildRenderModel(config: SiteConfig): {
+export function buildRenderModel(config: SiteConfig, options: { includeHidden?: boolean } = {}): {
   profile: SiteConfig["profile"];
   orderedSections: Section[];
   topLevelBlocks: Block[];
   orderedContentItems: ContentOrderItem[];
 } {
   const normalizedConfig = normalizeContentFlowConfig(config);
-  const orderedVisibleBlocks = [...normalizedConfig.blocks].filter((block) => block.isVisible).sort(bySortOrder);
+  const orderedVisibleBlocks = [...normalizedConfig.blocks]
+    .filter((block) => options.includeHidden || block.isVisible)
+    .sort(bySortOrder);
   const orderedContentItems: ContentOrderItem[] = [];
   let pendingTopLevelBlocks: Block[] = [];
 

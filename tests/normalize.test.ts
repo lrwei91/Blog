@@ -3,6 +3,7 @@ import {
   getMainLocale,
   getMainVariantId,
   getVariantAllowSeoIndex,
+  buildRenderModel,
   normalizeContentFlowConfig
 } from "@/lib/utils";
 import { defaultSiteConfig } from "@/lib/default-site-config";
@@ -33,6 +34,31 @@ describe("normalizeContentFlowConfig", () => {
     config.settings.topLevelBlocksSortOrder = 5;
     const normalized = normalizeContentFlowConfig(config);
     expect(normalized.settings.topLevelBlocksSortOrder).toBeUndefined();
+  });
+});
+
+describe("buildRenderModel life modules", () => {
+  it("keeps hidden life modules out of public content and navigation headings", () => {
+    const model = buildRenderModel(defaultSiteConfig);
+    const ids = model.orderedContentItems.map((item) => item.id);
+    expect(ids).not.toContain("text-now");
+    expect(ids).not.toContain("text-media");
+    expect(ids).not.toContain("text-photos");
+  });
+
+  it("groups a visible life module directly after its heading", () => {
+    const config = structuredClone(defaultSiteConfig);
+    for (const block of config.blocks) {
+      if (block.id === "text-now" || block.id === "now-status") block.isVisible = true;
+    }
+    const model = buildRenderModel(config);
+    const headingIndex = model.orderedContentItems.findIndex((item) => item.id === "text-now");
+    expect(headingIndex).toBeGreaterThanOrEqual(0);
+    const content = model.orderedContentItems[headingIndex + 1];
+    expect(content?.type).toBe("top-level-blocks");
+    if (content?.type === "top-level-blocks") {
+      expect(content.blocks.map((block) => block.id)).toContain("now-status");
+    }
   });
 });
 

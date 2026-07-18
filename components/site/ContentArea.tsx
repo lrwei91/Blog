@@ -6,15 +6,20 @@ import { BlockCard } from "@/components/blocks/BlockCard";
 import { ExperienceTimeline } from "@/components/site/ExperienceTimeline";
 import { TravelFootprint } from "@/components/site/TravelFootprint";
 import { PersonalProjects } from "@/components/site/PersonalProjects";
+import { NowStatus } from "@/components/site/NowStatus";
+import { MediaShelf } from "@/components/site/MediaShelf";
+import { PhotoStories } from "@/components/site/PhotoStories";
 
 export function ContentArea({
   topLevelBlocks = [],
   orderedContentItems,
-  desktopContentColumns = 3
+  desktopContentColumns = 3,
+  enableImagePreview = true
 }: {
   topLevelBlocks?: Block[];
   orderedContentItems?: ContentOrderItem[];
   desktopContentColumns?: PublicDesktopContentColumns;
+  enableImagePreview?: boolean;
 }) {
   const contentItems =
     orderedContentItems ??
@@ -35,6 +40,9 @@ export function ContentArea({
           const isExperienceGroup = sourceSectionId === "experience";
           const isTravelGroup = sourceSectionId === "travel";
           const isProjectsGroup = sourceSectionId === "projects";
+          const isNowGroup = sourceSectionId === "now";
+          const isMediaGroup = sourceSectionId === "media";
+          const isPhotosGroup = sourceSectionId === "photos";
 
           return (
             <div key={item.id} className="public-content__block-group">
@@ -44,6 +52,12 @@ export function ContentArea({
                 <TravelFootprint block={item.blocks[0]} />
               ) : isProjectsGroup && previousItem?.type === "text-block" ? (
                 <PersonalProjects block={item.blocks[0]} />
+              ) : isNowGroup ? (
+                <NowStatus block={item.blocks[0]} />
+              ) : isMediaGroup ? (
+                <MediaShelf block={item.blocks[0]} />
+              ) : isPhotosGroup ? (
+                <PhotoStories block={item.blocks[0]} enablePreview={enableImagePreview} />
               ) : (
                 <BlockGrid
                   blocks={item.blocks}

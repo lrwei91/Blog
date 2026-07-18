@@ -1,4 +1,4 @@
-import { ArrowUp, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
 import type { Block } from "@/types/block";
 import type { SiteConfig, SiteLanguage } from "@/types/site-config";
 import { getSectionAnchorId, type ContentOrderItem } from "@/lib/utils";
@@ -7,6 +7,7 @@ import { ProfilePanel } from "@/components/site/ProfilePanel";
 import { PublicLanguageSwitcher } from "@/components/site/PublicLanguageSwitcher";
 import { PublicSiteEffects } from "@/components/site/PublicSiteEffects";
 import { getPublicDesktopContentColumns, getPublicDesktopContentWidth } from "@/lib/public-content-layout";
+import { PublicFloatingTools } from "@/components/site/PublicFloatingTools";
 
 type RenderModel = {
   profile: SiteConfig["profile"];
@@ -30,7 +31,9 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
   const desktopContentWidth = getPublicDesktopContentWidth(desktopContentColumns);
   const navItems = renderModel.orderedContentItems
     .filter((item): item is Extract<ContentOrderItem, { type: "text-block" }> => item.type === "text-block")
-    .slice(0, 4);
+    .filter((item) => item.block.title.trim());
+  const primaryNavItems = navItems.slice(0, 5);
+  const overflowNavItems = navItems.slice(5);
   const email = renderModel.profile.visibleModules.contact ? renderModel.profile.email : "";
 
   return (
@@ -62,9 +65,19 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
 
           {navItems.length > 0 ? (
             <nav className="public-nav__links" aria-label="页面导航">
-              {navItems.map((item) => (
+              {primaryNavItems.map((item) => (
                 <a key={item.id} href={`#${getSectionAnchorId(item.block)}`}>{item.block.title.trim()}</a>
               ))}
+              {overflowNavItems.length > 0 ? (
+                <details className="public-nav__more">
+                  <summary>更多 <ChevronDown aria-hidden="true" /></summary>
+                  <div>
+                    {overflowNavItems.map((item) => (
+                      <a key={item.id} href={`#${getSectionAnchorId(item.block)}`}>{item.block.title.trim()}</a>
+                    ))}
+                  </div>
+                </details>
+              ) : null}
             </nav>
           ) : null}
 
@@ -93,6 +106,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
           topLevelBlocks={renderModel.topLevelBlocks}
           orderedContentItems={renderModel.orderedContentItems}
           desktopContentColumns={desktopContentColumns}
+          enableImagePreview={config.settings.enableImagePreview}
         />
       </div>
 
@@ -114,10 +128,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
         </div>
       </footer>
 
-      <a className="public-back-to-top" href="#top" data-back-to-top aria-label="返回顶部">
-        <ArrowUp aria-hidden="true" />
-        <span>TOP</span>
-      </a>
+      <PublicFloatingTools enableShare={config.settings.enablePublicShare} title={config.settings.siteTitle} />
     </main>
   );
 }
