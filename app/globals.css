@@ -256,6 +256,15 @@ select {
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--mint) 16%, transparent) !important;
 }
 
+.admin-studio .admin-structure-panel__search-input,
+.admin-studio .admin-structure-panel__search-input:focus {
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none;
+}
+
 .admin-studio__stage { min-height: calc(100vh - 4.5rem); padding-top: clamp(1rem, 2.5vw, 2rem); padding-bottom: 6rem; }
 .admin-studio__canvas {
   position: relative;

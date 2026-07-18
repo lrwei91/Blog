@@ -40,6 +40,7 @@ import {
   MapPin,
   MessagesSquare,
   Palette,
+  PanelLeft,
   Pencil,
   Pin,
   Plus,
@@ -107,6 +108,16 @@ import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
 import { MediaUploader } from "@/components/admin/MediaUploader";
 import { ImageCropUploader } from "@/components/admin/ImageCropUploader";
+import { PageStructurePanel } from "@/components/admin/PageStructurePanel";
+import {
+  applyContentOutlineGroupOrder,
+  buildContentOutlineGroups,
+  isOutlineSpecialModuleType,
+  moveContentOutlineGroup,
+  reorderContentOutlineGroups,
+  setContentOutlineGroupVisibility,
+  type ContentOutlineGroup
+} from "@/lib/admin-content-outline";
 import {
   editorCopy,
   editorLanguageOptions,
@@ -121,6 +132,7 @@ type ModalState =
   | { type: "tags" }
   | { type: "social" }
   | { type: "block"; blockId: string }
+  | { type: "special-module"; groupId: string }
   | { type: "add-block" }
   | { type: "project-settings" }
   | null;
@@ -417,6 +429,12 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+  const [isStructureOpen, setIsStructureOpen] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const saved = window.localStorage.getItem("personal-site-studio:structure-open");
+    return saved === null ? window.innerWidth >= 1440 : saved === "true";
+  });
+  const [lastOutlineGroupOrder, setLastOutlineGroupOrder] = useState<string[] | null>(null);
   const [resizePreviewSize, setResizePreviewSize] = useState<BlockSize | null>(null);
   const [resizeDrafts, setResizeDrafts] = useState<Record<string, BlockResizeDraft>>({});
   const [activeDragBlockId, setActiveDragBlockId] = useState<string | null>(null);
@@ -465,6 +483,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
   const shouldShowLanguagePicker = availableLanguages.length > 1;
   const shouldShowVariantPicker = baseConfig.settings.variants.isEnabled && enabledVariants.length > 1;
   const renderModel = useMemo(() => buildRenderModel(config, { includeHidden: true }), [config]);
+  const outlineGroups = useMemo(() => buildContentOutlineGroups(config.blocks), [config.blocks]);
   const blockSectionById = useMemo(() => {
     return new Map(config.blocks.map((block) => [block.id, block.sectionId]));
   }, [config.blocks]);
@@ -490,7 +509,11 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
   const hostDevice: LayoutDevice = viewportWidth !== null && viewportWidth < desktopBreakpoint ? "mobile" : "desktop";
   const canEditDesktop = hostDevice === "desktop";
   const canvasWidth = editorCanvasWidth[editorDevice];
-  const canvasScale = viewportWidth === null ? 1 : Math.min(1, Math.max(0.32, (viewportWidth - 24) / canvasWidth));
+  const isStructureDocked = viewportWidth !== null && viewportWidth >= 1440;
+  const availableCanvasWidth = viewportWidth === null
+    ? canvasWidth
+    : viewportWidth - (isStructureOpen && isStructureDocked ? 344 : 24);
+  const canvasScale = viewportWidth === null ? 1 : Math.min(1, Math.max(0.32, availableCanvasWidth / canvasWidth));
   const activeDragBlock = useMemo(
     () => (activeDragBlockId ? config.blocks.find((block) => block.id === activeDragBlockId) ?? null : null),
     [activeDragBlockId, config.blocks]
@@ -620,6 +643,50 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
   function update(next: SiteConfig) {
     setConfig(normalizeContentFlowConfig(next));
     setIsDirty(true);
+  }
+
+  function setStructureOpen(next: boolean) {
+    setIsStructureOpen(next);
+    window.localStorage.setItem("personal-site-studio:structure-open", String(next));
+  }
+
+  function selectOutlineGroup(group: ContentOutlineGroup) {
+    setSelectedBlockId(group.primaryEditBlockId);
+    window.requestAnimationFrame(() => {
+      document.querySelector<HTMLElement>(`[data-admin-block-id="${group.primaryEditBlockId}"]`)?.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    });
+  }
+
+  function editOutlineGroup(group: ContentOutlineGroup) {
+    setSelectedBlockId(group.primaryEditBlockId);
+    setModal(group.moduleType ? { type: "special-module", groupId: group.id } : { type: "block", blockId: group.primaryEditBlockId });
+  }
+
+  function captureOutlineOrder() {
+    setLastOutlineGroupOrder(outlineGroups.map((group) => group.id));
+  }
+
+  function reorderOutlineGroups(activeGroupId: string, overGroupId: string) {
+    captureOutlineOrder();
+    update({ ...config, blocks: reorderContentOutlineGroups(config.blocks, activeGroupId, overGroupId) });
+  }
+
+  function moveOutlineGroup(groupId: string, targetIndex: number) {
+    captureOutlineOrder();
+    update({ ...config, blocks: moveContentOutlineGroup(config.blocks, groupId, targetIndex) });
+  }
+
+  function undoOutlineOrder() {
+    if (!lastOutlineGroupOrder) return;
+    update({ ...config, blocks: applyContentOutlineGroupOrder(config.blocks, lastOutlineGroupOrder) });
+    setLastOutlineGroupOrder(null);
+  }
+
+  function toggleOutlineGroupVisibility(group: ContentOutlineGroup) {
+    update({ ...config, blocks: setContentOutlineGroupVisibility(config.blocks, group.id, !group.isVisible) });
   }
 
   function updateBaseConfig(next: SiteConfig) {
@@ -1037,7 +1104,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
     };
 
     update({ ...config, blocks: normalizeBlocks([...config.blocks, heading, content]) });
-    setModal({ type: "block", blockId: contentId });
+    setModal({ type: "special-module", groupId: headingId });
   }
 
   function addSection() {
@@ -1466,6 +1533,23 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
 
       {hasMounted ? (
         <>
+          {isStructureOpen ? (
+            <PageStructurePanel
+              groups={outlineGroups}
+              selectedBlockId={selectedBlockId}
+              isDocked={isStructureDocked}
+              canUndo={lastOutlineGroupOrder !== null}
+              editorLanguage={editorLanguage}
+              onClose={() => setStructureOpen(false)}
+              onSelect={selectOutlineGroup}
+              onEdit={editOutlineGroup}
+              onEditBlock={(blockId) => setModal({ type: "block", blockId })}
+              onToggleVisibility={toggleOutlineGroupVisibility}
+              onReorder={reorderOutlineGroups}
+              onMove={moveOutlineGroup}
+              onUndo={undoOutlineOrder}
+            />
+          ) : null}
           <DndContext
             id="admin-visual-editor-dnd"
             sensors={sensors}
@@ -1476,7 +1560,10 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
             onDragEnd={onDragEnd}
             onDragCancel={onDragCancel}
           >
-            <div className="admin-studio__stage flex justify-center overflow-x-hidden px-3">
+            <div
+              className="admin-studio__stage flex justify-center overflow-x-hidden px-3 transition-[padding] duration-200"
+              style={{ paddingLeft: isStructureOpen && isStructureDocked ? 328 : undefined }}
+            >
               <div
                 style={
                   {
@@ -1564,9 +1651,14 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
                             blocks={blocks}
                             onEditSection={() => undefined}
                             onDeleteSection={() => undefined}
-                            onEditBlock={(blockId) => setModal({ type: "block", blockId })}
+                            onEditBlock={(blockId) => {
+                              const group = outlineGroups.find((item) => item.blockIds.includes(blockId));
+                              if (group?.moduleType) editOutlineGroup(group);
+                              else setModal({ type: "block", blockId });
+                            }}
                             onDeleteBlock={deleteBlock}
                             onSelectBlock={setSelectedBlockId}
+                            selectedBlockId={selectedBlockId}
                             device={editorDevice}
                             activeDragBlockId={activeDragBlockId}
                             dragPreviewBlock={activeDragBlock}
@@ -1692,6 +1784,8 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
                             onEdit={() => setModal({ type: "block", blockId: item.block.id })}
                             onDelete={() => deleteBlock(item.block.id)}
                             onSelect={() => setSelectedBlockId(item.block.id)}
+                            selected={selectedBlockId === item.block.id}
+                            disableDrag={isOutlineSpecialModuleType(item.block.metadata?.sourceSectionId)}
                           />
                         );
                         if (item.block.id !== activeDragBlockId) {
@@ -1740,12 +1834,14 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
             device={editorDevice}
             canEditDesktop={canEditDesktop}
             editorLanguage={editorLanguage}
+            isStructureOpen={isStructureOpen}
             onDeviceChange={(device) => {
               if (device === "desktop" && !canEditDesktop) return;
               setResizeDrafts({});
               setResizePreviewSize(null);
               setEditorDevice(device);
             }}
+            onToggleStructure={() => setStructureOpen(!isStructureOpen)}
             onAddBlock={() => setModal({ type: "add-block" })}
           />
           {resizePreviewSize ? <ResizePreview activeSize={resizePreviewSize} editorLanguage={editorLanguage} /> : null}
@@ -1761,12 +1857,17 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
           editorLanguage={editorLanguage}
           canSave={modal.type !== "project-settings" || validation.success}
           footerStart={
-            modal.type === "block" ? (
+            modal.type === "block" || modal.type === "special-module" ? (
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={() => deleteBlock(modal.blockId)}
+                onClick={() => {
+                  const blockId = modal.type === "block"
+                    ? modal.blockId
+                    : outlineGroups.find((group) => group.id === modal.groupId)?.primaryEditBlockId;
+                  if (blockId) deleteBlock(blockId);
+                }}
                 className="text-red-600 hover:bg-red-50 hover:text-red-700"
               >
                 <Trash2 className="h-4 w-4" />
@@ -1781,6 +1882,13 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
             <BlockModalBody
               block={config.blocks.find((block) => block.id === modal.blockId)}
               onPatch={(patch) => patchBlock(modal.blockId, patch)}
+              editorLanguage={editorLanguage}
+            />
+          ) : null}
+          {modal.type === "special-module" ? (
+            <SpecialModuleModalBody
+              group={outlineGroups.find((group) => group.id === modal.groupId)}
+              onPatchBlock={patchBlock}
               editorLanguage={editorLanguage}
             />
           ) : null}
@@ -3145,6 +3253,7 @@ function EditableSection({
   onEditBlock,
   onDeleteBlock,
   onSelectBlock,
+  selectedBlockId,
   activeDragBlockId,
   dragPreviewBlock,
   dragPreviewPlacement,
@@ -3167,6 +3276,7 @@ function EditableSection({
   onEditBlock: (blockId: string) => void;
   onDeleteBlock: (blockId: string) => void;
   onSelectBlock: (blockId: string) => void;
+  selectedBlockId: string | null;
   activeDragBlockId: string | null;
   dragPreviewBlock: Block | null;
   dragPreviewPlacement: DragPreviewPlacement | null;
@@ -3300,6 +3410,7 @@ function EditableSection({
                 onEdit={() => onEditBlock(block.id)}
                 onDelete={() => onDeleteBlock(block.id)}
                 onSelect={() => onSelectBlock(block.id)}
+                selected={selectedBlockId === block.id}
                 onResize={(size) => onResizeBlock(block.id, size)}
                 onResizePreview={onResizePreview}
                 onResizeDraft={(size) => onResizeDraft(block.id, size)}
@@ -3394,7 +3505,9 @@ function SortableTextBlock({
   removeFromFlowDuringDrag,
   onEdit,
   onDelete,
-  onSelect
+  onSelect,
+  selected,
+  disableDrag
 }: {
   block: Block;
   device: LayoutDevice;
@@ -3404,8 +3517,10 @@ function SortableTextBlock({
   onEdit: () => void;
   onDelete: () => void;
   onSelect: () => void;
+  selected: boolean;
+  disableDrag: boolean;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id, disabled: disableDrag });
   const visualTransform = disableSortableTransform || isDragOverlayActive ? undefined : CSS.Translate.toString(transform);
   const visualTransition = disableSortableTransform ? undefined : transition;
   const removeFromFlowStyle: React.CSSProperties | undefined = removeFromFlowDuringDrag
@@ -3419,7 +3534,9 @@ function SortableTextBlock({
       data-admin-block-id={block.id}
       style={{ transform: visualTransform, transition: visualTransition, ...removeFromFlowStyle }}
       className={cn(
-        "admin-draggable group relative cursor-grab rounded-[20px] px-0 py-1 transition-all duration-200 ease-out active:cursor-grabbing",
+        "admin-draggable group relative rounded-[20px] px-0 py-1 transition-all duration-200 ease-out",
+        disableDrag ? "cursor-default" : "cursor-grab active:cursor-grabbing",
+        selected ? "ring-4 ring-[#5EDB88]/20" : "",
         isDragging || isDragOverlayActive ? "z-20 opacity-20" : "",
         !block.isVisible ? "opacity-55 grayscale-[0.18]" : ""
       )}
@@ -3478,6 +3595,7 @@ function SortableBlock({
   onEdit,
   onDelete,
   onSelect,
+  selected,
   onResize,
   onResizePreview,
   onResizeDraft
@@ -3493,11 +3611,13 @@ function SortableBlock({
   onEdit: () => void;
   onDelete: () => void;
   onSelect: () => void;
+  selected: boolean;
   onResize: (size: BlockSize) => void;
   onResizePreview: (size: BlockSize | null) => void;
   onResizeDraft: (draft: BlockResizeDraft | null) => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id });
+  const isSpecialModule = Boolean(getSpecialModuleType(block));
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id, disabled: isSpecialModule });
   const blockNodeRef = useRef<HTMLDivElement | null>(null);
   const [isResizing, setIsResizing] = useState(false);
   const [localResizeDraft, setLocalResizeDraft] = useState<BlockResizeDraft | null>(null);
@@ -3594,7 +3714,9 @@ function SortableBlock({
       data-admin-block-id={block.id}
       style={{ transform: visualTransform, transition: visualTransition, ...resizeStyle }}
       className={cn(
-        "admin-draggable group relative cursor-grab will-change-transform active:cursor-grabbing transition-all duration-200 ease-out",
+        "admin-draggable group relative will-change-transform transition-all duration-200 ease-out",
+        isSpecialModule ? "cursor-default" : "cursor-grab active:cursor-grabbing",
+        selected ? "rounded-[20px] ring-4 ring-[#5EDB88]/20" : "",
         blockSizeClassByDevice[device][activeDisplaySize],
         removeFromFlowDuringDrag ? "absolute left-0 top-0 z-20 h-px w-px overflow-hidden opacity-0" : "",
         hideOriginalDuringDrag ? "opacity-0" : isDragging || isDragOverlayActive ? "z-20 opacity-20" : "",
@@ -3851,18 +3973,34 @@ function FloatingToolbar({
   device,
   canEditDesktop,
   editorLanguage,
+  isStructureOpen,
   onDeviceChange,
+  onToggleStructure,
   onAddBlock
 }: {
   device: LayoutDevice;
   canEditDesktop: boolean;
   editorLanguage: EditorLanguage;
+  isStructureOpen: boolean;
   onDeviceChange: (device: LayoutDevice) => void;
+  onToggleStructure: () => void;
   onAddBlock: () => void;
 }) {
   const copy = editorCopy[editorLanguage];
   return (
     <div className="admin-floating-toolbar fixed bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-[24px] p-2">
+      <button
+        type="button"
+        onClick={onToggleStructure}
+        className={cn(
+          "flex h-10 items-center gap-2 rounded-[14px] px-3 text-xs font-bold transition",
+          isStructureOpen ? "admin-floating-toolbar__device--active" : "text-[#5F625D] hover:bg-white/70"
+        )}
+        title={editorLanguage === "zh-CN" ? "页面结构" : "Page structure"}
+      >
+        <PanelLeft className="h-4 w-4" />
+        {editorLanguage === "zh-CN" ? "结构" : "Structure"}
+      </button>
       <div className="admin-floating-toolbar__devices flex rounded-[18px] p-1">
         <button
           type="button"
@@ -4252,6 +4390,31 @@ function BlockModalBody({
     <SpecialModuleForm block={block} onPatch={onPatch} editorLanguage={editorLanguage} />
   ) : (
     <BlockForm block={block} onPatch={onPatch} editorLanguage={editorLanguage} />
+  );
+}
+
+function SpecialModuleModalBody({
+  group,
+  onPatchBlock,
+  editorLanguage
+}: {
+  group?: ContentOutlineGroup;
+  onPatchBlock: (blockId: string, patch: Partial<Block>) => void;
+  editorLanguage: EditorLanguage;
+}) {
+  if (!group) return null;
+  const heading = group.headingId ? group.blocks.find((block) => block.id === group.headingId) : undefined;
+  const content = group.blocks.find((block) => getSpecialModuleType(block));
+  if (!content) return null;
+
+  return (
+    <SpecialModuleForm
+      block={content}
+      heading={heading}
+      onPatch={(patch) => onPatchBlock(content.id, patch)}
+      onPatchHeading={heading ? (patch) => onPatchBlock(heading.id, patch) : undefined}
+      editorLanguage={editorLanguage}
+    />
   );
 }
 
@@ -5305,6 +5468,7 @@ function modalTitle(modal: NonNullable<ModalState>, editorLanguage: EditorLangua
   if (modal.type === "tags") return copy.tagsEdit;
   if (modal.type === "social") return copy.socialEdit;
   if (modal.type === "block") return copy.blockEdit;
+  if (modal.type === "special-module") return editorLanguage === "zh-CN" ? "编辑模块" : "Edit module";
   if (modal.type === "add-block") return copy.addBlock;
   return copy.projectSettings;
 }

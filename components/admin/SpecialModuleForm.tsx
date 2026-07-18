@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowDown, ArrowUp, BookOpen, Camera, FolderKanban, MapPinned, Plus, Sparkles, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, BookOpen, Camera, ChevronDown, ChevronRight, FolderKanban, MapPin, MapPinned, Plus, Sparkles, Trash2 } from "lucide-react";
+import { useState } from "react";
 import type { Block } from "@/types/block";
 import type { LifeModuleType, MediaItem, NowStatus, PhotoStory } from "@/types/life-modules";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field"
 import type { EditorLanguage } from "@/components/admin/editor-i18n";
 import { MediaUploader } from "@/components/admin/MediaUploader";
 import { readMediaItems, readNowStatus, readPhotoStories } from "@/lib/life-modules";
+import { CHINA_MAP_VIEW_BOX, chinaProvincePaths } from "@/lib/china-map-paths";
 
 export type TravelLocationEditorItem = {
   city: string;
@@ -40,11 +42,15 @@ export function getSpecialModuleType(block: Block): SpecialModuleType | null {
 
 export function SpecialModuleForm({
   block,
+  heading,
   onPatch,
+  onPatchHeading,
   editorLanguage
 }: {
   block: Block;
+  heading?: Block;
   onPatch: (patch: Partial<Block>) => void;
+  onPatchHeading?: (patch: Partial<Block>) => void;
   editorLanguage: EditorLanguage;
 }) {
   const moduleType = getSpecialModuleType(block);
@@ -71,12 +77,23 @@ export function SpecialModuleForm({
           </div>
         </div>
 
+        {heading && onPatchHeading ? (
+          <div className="grid gap-3 rounded-2xl border border-[#E6E2D8] bg-white p-4 md:grid-cols-2">
+            <Field label={isZh ? "主页模块标题" : "Homepage module title"}>
+              <Input value={heading.title} onChange={(event) => onPatchHeading({ title: event.target.value })} />
+            </Field>
+            <Field label={isZh ? "英文眉题" : "Eyebrow"}>
+              <Input value={heading.subtitle ?? ""} onChange={(event) => onPatchHeading({ subtitle: event.target.value })} />
+            </Field>
+          </div>
+        ) : null}
+
         {moduleType === "travel" ? (
           <>
-            <Field label={isZh ? "模块引导标题" : "Module headline"}>
+            <Field label={isZh ? "地图说明标题" : "Map headline"}>
               <Input value={block.title} onChange={(event) => onPatch({ title: event.target.value })} />
             </Field>
-            <Field label={isZh ? "模块说明" : "Module description"}>
+            <Field label={isZh ? "地图说明" : "Map description"}>
               <Textarea value={block.description ?? ""} onChange={(event) => onPatch({ description: event.target.value })} />
             </Field>
           </>
@@ -128,21 +145,39 @@ export function SpecialModulePreview({ block }: { block: Block }) {
   if (moduleType === "travel") {
     const locations = readTravelLocations(block.metadata?.travelLocations);
     return (
-      <div className="flex h-full min-h-48 flex-col justify-between overflow-hidden rounded-[20px] border border-emerald-200 bg-[#10201d] p-6 text-white">
-        <div className="flex items-center justify-between font-mono text-xs tracking-[0.18em] text-emerald-300">
-          <span className="flex items-center gap-2"><MapPinned className="h-4 w-4" /> TRAVEL LOG</span>
-          <span>{String(locations.length).padStart(2, "0")} PLACES</span>
+      <div className="relative flex h-full min-h-48 overflow-hidden rounded-[20px] border border-[#CFE1D2] bg-[#F4F7EF] p-5 text-[#111] shadow-[0_14px_35px_rgba(40,70,50,0.08)]">
+        <div className="relative z-10 flex min-w-0 flex-1 flex-col justify-between pr-4">
+          <div className="flex items-center justify-between font-mono text-[10px] font-bold tracking-[0.16em] text-[#208B49]">
+            <span className="flex items-center gap-2"><MapPinned className="h-4 w-4" /> TRAVEL FOOTPRINT</span>
+            <span className="rounded-full border border-[#CDE4D1] bg-white/80 px-2.5 py-1">{String(locations.length).padStart(2, "0")} PLACES</span>
+          </div>
+          <div>
+            <h3 className="mt-5 line-clamp-2 text-2xl font-black tracking-[-0.03em]">{block.title}</h3>
+            <p className="mt-2 line-clamp-2 max-w-xl text-sm leading-6 text-[#657067]">{block.description}</p>
+          </div>
+          <div className="mt-5 flex flex-wrap gap-1.5">
+            {locations.length > 0 ? locations.slice(0, 5).map((location, index) => (
+              <span key={`${index}-${location.city}`} className="rounded-full border border-[#D6E4D5] bg-white/85 px-2.5 py-1 text-[10px] font-bold text-[#47604D]">
+                {location.city} · {location.province}
+              </span>
+            )) : <span className="text-sm text-[#929991]">暂无地点</span>}
+          </div>
         </div>
-        <div>
-          <h3 className="mt-8 text-2xl font-black">{block.title}</h3>
-          <p className="mt-2 max-w-2xl text-sm text-white/65">{block.description}</p>
-        </div>
-        <div className="mt-6 flex flex-wrap gap-2">
-          {locations.length > 0 ? locations.map((location, index) => (
-            <span key={`${index}-${location.city}`} className="rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1.5 text-xs font-semibold text-emerald-100">
-              {location.city} · {location.province}
-            </span>
-          )) : <span className="text-sm text-white/45">暂无地点</span>}
+        <div className="relative hidden w-[34%] min-w-[180px] items-center justify-center overflow-hidden rounded-2xl border border-[#DCE8DA] bg-white/65 md:flex">
+          <div className="absolute inset-0 opacity-45 [background-image:linear-gradient(#B8D8BE_1px,transparent_1px),linear-gradient(90deg,#B8D8BE_1px,transparent_1px)] [background-size:22px_22px]" />
+          <svg viewBox={CHINA_MAP_VIEW_BOX} className="relative z-10 w-[88%] drop-shadow-sm" aria-hidden="true">
+            <g>
+              {chinaProvincePaths.map((province) => (
+                <path
+                  key={province.adcode}
+                  d={province.d}
+                  fill={locations.some((location) => province.name.includes(location.province)) ? "#5EDB88" : "#DDEDDD"}
+                  stroke="#6AA77A"
+                  strokeWidth="1.2"
+                />
+              ))}
+            </g>
+          </svg>
         </div>
       </div>
     );
@@ -265,35 +300,81 @@ function TravelLocationsEditor({
       ) : null}
 
       {locations.map((location, index) => (
-        <article key={`${index}-${location.city}`} className="grid gap-4 rounded-2xl border border-[#E6EDF7] bg-white p-4 shadow-sm">
-          <ItemToolbar
-            label={`${String(index + 1).padStart(2, "0")} · ${location.city || (isZh ? "未命名地点" : "Untitled location")}`}
-            index={index}
-            length={locations.length}
-            onMove={(direction) => onChange(moveItem(locations, index, direction))}
-            onDelete={() => onChange(locations.filter((_, itemIndex) => itemIndex !== index))}
-            editorLanguage={editorLanguage}
-          />
-          <div className="grid gap-3 md:grid-cols-2">
-            <Field label={isZh ? "城市 / 地区" : "City / Area"}>
-              <Input value={location.city} onChange={(event) => updateLocation(index, { city: event.target.value })} />
-            </Field>
-            <Field label={isZh ? "省份" : "Province"}>
-              <Input value={location.province} onChange={(event) => updateLocation(index, { province: event.target.value })} />
-            </Field>
-            <Field label={isZh ? "足迹说明" : "Note"} className="md:col-span-2">
-              <Input value={location.note} onChange={(event) => updateLocation(index, { note: event.target.value })} />
-            </Field>
-            <Field label={isZh ? "经度（73–135）" : "Longitude (73–135)"}>
-              <Input type="number" min="73" max="135" step="0.01" value={location.longitude} onChange={(event) => updateLocation(index, { longitude: Number(event.target.value) })} />
-            </Field>
-            <Field label={isZh ? "纬度（17–54）" : "Latitude (17–54)"}>
-              <Input type="number" min="17" max="54" step="0.01" value={location.latitude} onChange={(event) => updateLocation(index, { latitude: Number(event.target.value) })} />
-            </Field>
-          </div>
-        </article>
+        <TravelLocationCard
+          key={`${index}-${location.city}`}
+          location={location}
+          index={index}
+          length={locations.length}
+          editorLanguage={editorLanguage}
+          onChange={(patch) => updateLocation(index, patch)}
+          onMove={(direction) => onChange(moveItem(locations, index, direction))}
+          onDelete={() => onChange(locations.filter((_, itemIndex) => itemIndex !== index))}
+        />
       ))}
     </section>
+  );
+}
+
+function TravelLocationCard({
+  location,
+  index,
+  length,
+  editorLanguage,
+  onChange,
+  onMove,
+  onDelete
+}: {
+  location: TravelLocationEditorItem;
+  index: number;
+  length: number;
+  editorLanguage: EditorLanguage;
+  onChange: (patch: Partial<TravelLocationEditorItem>) => void;
+  onMove: (direction: -1 | 1) => void;
+  onDelete: () => void;
+}) {
+  const isZh = editorLanguage === "zh-CN";
+  const [expanded, setExpanded] = useState(index === 0);
+
+  return (
+    <article className="overflow-hidden rounded-2xl border border-[#DFDDD4] bg-[#FBFAF5] shadow-sm">
+      <div className="flex items-center gap-3 p-3">
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[#D5E7D7] bg-[#E8F7E9] text-[#21A655]">
+          <MapPin className="h-4 w-4" />
+        </span>
+        <button type="button" onClick={() => setExpanded((current) => !current)} className="min-w-0 flex-1 text-left">
+          <p className="truncate text-sm font-bold text-[#171714]">{String(index + 1).padStart(2, "0")} · {location.city || (isZh ? "未命名地点" : "Untitled location")}</p>
+          <p className="mt-0.5 truncate text-xs text-[#7A786F]">{location.province}{location.note ? ` · ${location.note}` : ""}</p>
+        </button>
+        <div className="flex items-center gap-1">
+          <button type="button" disabled={index === 0} onClick={() => onMove(-1)} className="grid h-8 w-8 place-items-center rounded-lg text-[#77746C] hover:bg-white disabled:opacity-25" title={isZh ? "上移" : "Move up"}><ArrowUp className="h-3.5 w-3.5" /></button>
+          <button type="button" disabled={index === length - 1} onClick={() => onMove(1)} className="grid h-8 w-8 place-items-center rounded-lg text-[#77746C] hover:bg-white disabled:opacity-25" title={isZh ? "下移" : "Move down"}><ArrowDown className="h-3.5 w-3.5" /></button>
+          <button type="button" onClick={onDelete} className="grid h-8 w-8 place-items-center rounded-lg text-red-500 hover:bg-red-50" title={isZh ? "删除地点" : "Delete location"}><Trash2 className="h-3.5 w-3.5" /></button>
+          <button type="button" onClick={() => setExpanded((current) => !current)} className="grid h-8 w-8 place-items-center rounded-lg text-[#77746C] hover:bg-white" aria-label={expanded ? (isZh ? "收起地点" : "Collapse location") : (isZh ? "展开地点" : "Expand location")}>
+            {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          </button>
+        </div>
+      </div>
+
+      {expanded ? (
+        <div className="grid gap-3 border-t border-[#E6E3DA] bg-white p-4 md:grid-cols-2">
+          <Field label={isZh ? "城市 / 地区" : "City / Area"}>
+            <Input value={location.city} onChange={(event) => onChange({ city: event.target.value })} />
+          </Field>
+          <Field label={isZh ? "省份" : "Province"}>
+            <Input value={location.province} onChange={(event) => onChange({ province: event.target.value })} />
+          </Field>
+          <Field label={isZh ? "足迹说明" : "Note"} className="md:col-span-2">
+            <Input value={location.note} onChange={(event) => onChange({ note: event.target.value })} />
+          </Field>
+          <Field label={isZh ? "经度（73–135）" : "Longitude (73–135)"}>
+            <Input type="number" min="73" max="135" step="0.01" value={location.longitude} onChange={(event) => onChange({ longitude: Number(event.target.value) })} />
+          </Field>
+          <Field label={isZh ? "纬度（17–54）" : "Latitude (17–54)"}>
+            <Input type="number" min="17" max="54" step="0.01" value={location.latitude} onChange={(event) => onChange({ latitude: Number(event.target.value) })} />
+          </Field>
+        </div>
+      ) : null}
+    </article>
   );
 }
 
