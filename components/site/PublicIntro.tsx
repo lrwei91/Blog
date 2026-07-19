@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 const LOADING_MS = 950;
-const EXIT_MS = 560;
+const EXIT_MS = 640;
 
 type Phase = "loading" | "welcome" | "exit" | "done";
 
@@ -45,13 +45,21 @@ export function PublicIntro() {
     root.classList.remove("public-intro-active");
     document.body.style.overflow = "";
     setPhase("exit");
-    timersRef.current.push(window.setTimeout(() => setPhase("done"), EXIT_MS + 80));
+    timersRef.current.push(window.setTimeout(() => setPhase("done"), EXIT_MS + 120));
   };
 
   if (phase === "done") return null;
 
   return (
     <div className="public-intro" data-phase={phase} role="dialog" aria-modal="true" aria-label="欢迎页">
+      <div className="public-intro__glow" aria-hidden="true" />
+      <div className="public-intro__ring" aria-hidden="true" />
+      <div className="public-intro__marquee" aria-hidden="true">
+        <div className="public-intro__marquee-track">
+          <span>把复杂的事理清 · 把喜欢的事做久 · Testing · AI · Games · Life ·&nbsp;</span>
+          <span>把复杂的事理清 · 把喜欢的事做久 · Testing · AI · Games · Life ·&nbsp;</span>
+        </div>
+      </div>
       <div className="public-intro__inner">
         <header className="public-intro__masthead">
           <span className="public-intro__mark" aria-hidden="true">
@@ -67,9 +75,8 @@ export function PublicIntro() {
 
         <div className="public-intro__welcome">
           <h1 className="public-intro__statement">
-            把复杂的事理清，
-            <br />
-            把喜欢的事做久。
+            <span className="public-intro__line"><span>把复杂的事理清，</span></span>
+            <span className="public-intro__line"><span>把喜欢的事做久。</span></span>
           </h1>
           <p className="public-intro__topics">Testing · AI · Games · Life</p>
           <button type="button" className="public-intro__enter" onClick={enter}>
