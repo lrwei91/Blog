@@ -1784,13 +1784,15 @@ html.site-motion-ready .public-site [data-reveal].is-visible { opacity: 1; trans
   padding-bottom: 1.25rem;
   border-bottom: 1px solid rgba(232, 227, 216, 0.16);
 }
-.public-intro__monogram {
-  color: var(--intro-ink);
-  font-family: var(--font-display), sans-serif;
-  font-size: 0.86rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+.public-intro__mark {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 3px;
 }
+.public-intro__mark img { width: 100%; height: 100%; display: block; object-fit: contain; }
 
 .public-intro__loading {
   position: absolute;
@@ -1831,19 +1833,9 @@ html.site-motion-ready .public-site [data-reveal].is-visible { opacity: 1; trans
   display: grid;
   justify-items: start;
 }
-.public-intro__kicker,
 .public-intro__statement,
 .public-intro__topics { margin: 0; }
-.public-intro__kicker {
-  color: var(--intro-accent);
-  font-family: var(--font-label), monospace;
-  font-size: 0.58rem;
-  letter-spacing: 0.2em;
-  opacity: 0;
-  transform: translateY(10px);
-}
 .public-intro__statement {
-  margin-top: clamp(1.3rem, 3vh, 2.2rem);
   color: var(--intro-ink);
   font-family: var(--font-serif);
   font-size: clamp(2.7rem, 7vw, 6.4rem);
@@ -1862,16 +1854,12 @@ html.site-motion-ready .public-site [data-reveal].is-visible { opacity: 1; trans
   opacity: 0;
   transform: translateY(8px);
 }
-.public-intro[data-phase="welcome"] .public-intro__kicker {
-  animation: public-intro-rise 540ms cubic-bezier(0.22, 1, 0.36, 1) 80ms both;
-}
 .public-intro[data-phase="welcome"] .public-intro__statement {
-  animation: public-intro-rise 700ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
+  animation: public-intro-rise 700ms cubic-bezier(0.22, 1, 0.36, 1) 100ms both;
 }
 .public-intro[data-phase="welcome"] .public-intro__topics {
-  animation: public-intro-rise 540ms cubic-bezier(0.22, 1, 0.36, 1) 420ms both;
+  animation: public-intro-rise 540ms cubic-bezier(0.22, 1, 0.36, 1) 340ms both;
 }
-.public-intro[data-phase="exit"] .public-intro__kicker,
 .public-intro[data-phase="exit"] .public-intro__statement,
 .public-intro[data-phase="exit"] .public-intro__topics { opacity: 1; transform: none; }
 

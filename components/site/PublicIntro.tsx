@@ -8,11 +8,7 @@ const EXIT_MS = 560;
 
 type Phase = "loading" | "welcome" | "exit" | "done";
 
-export function PublicIntro({
-  displayName
-}: {
-  displayName: string;
-}) {
+export function PublicIntro() {
   const [phase, setPhase] = useState<Phase>("loading");
   const timersRef = useRef<number[]>([]);
 
@@ -58,7 +54,9 @@ export function PublicIntro({
     <div className="public-intro" data-phase={phase} role="dialog" aria-modal="true" aria-label="欢迎页">
       <div className="public-intro__inner">
         <header className="public-intro__masthead">
-          <span className="public-intro__monogram">LRW.</span>
+          <span className="public-intro__mark" aria-hidden="true">
+            <img src="/brand-seal.png" alt="" />
+          </span>
           <span>EST. 2026</span>
         </header>
 
@@ -68,7 +66,6 @@ export function PublicIntro({
         </div>
 
         <div className="public-intro__welcome">
-          <p className="public-intro__kicker">A PERSONAL ARCHIVE · 01</p>
           <h1 className="public-intro__statement">
             把复杂的事理清，
             <br />
@@ -82,7 +79,7 @@ export function PublicIntro({
         </div>
 
         <footer className="public-intro__footer">
-          <span>{displayName} · PERSONAL ARCHIVE</span>
+          <span>PERSONAL ARCHIVE</span>
           <span>FUZHOU · CN</span>
         </footer>
       </div>
