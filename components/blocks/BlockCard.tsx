@@ -269,7 +269,7 @@ function SectionTextCard({
  )}
  >
  <p className="public-section-heading__label">
- <span /> {String(resolvedSectionNumber).padStart(2, "0")} / {subtitle || "SELECTED WORK"}
+ <span /> <span className="min-w-0 truncate">{String(resolvedSectionNumber).padStart(2, "0")} / {subtitle || "SELECTED WORK"}</span>
  </p>
  <div className="public-section-heading__title-row">
  {block.icon ? <span className="public-section-heading__icon"><BlockIcon name={block.icon} /></span> : null}

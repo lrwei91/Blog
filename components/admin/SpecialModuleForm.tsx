@@ -147,9 +147,9 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  return (
  <div className="relative flex h-full min-h-48 overflow-hidden rounded-[8px] border border-[#EDE8DB] bg-[#EDE8DB] p-5 text-[#201D18]">
  <div className="relative z-10 flex min-w-0 flex-1 flex-col justify-between pr-4">
- <div className="flex items-center justify-between text-[10px] font-bold tracking-[0.16em] text-[#B23C22]">
- <span className="flex items-center gap-2"><MapPinned className="h-4 w-4" /> TRAVEL FOOTPRINT</span>
- <span className="rounded-[4px] border border-[#F4EBE6] bg-[#FCFAF5]/80 px-2.5 py-1">{String(locations.length).padStart(2, "0")} PLACES</span>
+ <div className="flex items-center justify-between gap-3 text-[10px] font-bold tracking-[0.16em] text-[#B23C22]">
+ <span className="flex min-w-0 items-center gap-2"><MapPinned className="h-4 w-4 shrink-0" /> <span className="truncate">TRAVEL FOOTPRINT</span></span>
+ <span className="shrink-0 whitespace-nowrap rounded-[4px] border border-[#F4EBE6] bg-[#FCFAF5]/80 px-2.5 py-1">{String(locations.length).padStart(2, "0")} PLACES</span>
  </div>
  <div>
  <h3 className="mt-5 line-clamp-2 text-2xl font-bold tracking-[-0.03em]">{block.title}</h3>
@@ -157,7 +157,7 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  </div>
  <div className="mt-5 flex flex-wrap gap-1.5">
  {locations.length > 0 ? locations.slice(0, 5).map((location, index) => (
- <span key={`${index}-${location.city}`} className="rounded-[4px] border border-[#EDE8DB] bg-[#FCFAF5]/85 px-2.5 py-1 text-[10px] font-bold text-[#6F6A5E]">
+ <span key={`${index}-${location.city}`} className="whitespace-nowrap rounded-[4px] border border-[#EDE8DB] bg-[#FCFAF5]/85 px-2.5 py-1 text-[10px] font-bold text-[#6F6A5E]">
  {location.city} · {location.province}
  </span>
  )) : <span className="text-sm text-[#6F6A5E]">暂无地点</span>}
@@ -187,9 +187,9 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  const projects = readPersonalProjects(block.metadata?.projects);
  return (
  <div className="h-full min-h-48 rounded-[8px] border border-[#F4EBE6] bg-[#F6F3EC] p-5">
- <div className="flex items-center justify-between">
- <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[#6F6A5E]"><FolderKanban className="h-4 w-4" /> PERSONAL PROJECTS</span>
- <span className="rounded-[4px] bg-[#FCFAF5] px-3 py-1 text-xs font-bold text-[#6F6A5E]">{projects.length} 项</span>
+ <div className="flex items-center justify-between gap-3">
+ <span className="flex min-w-0 items-center gap-2 text-xs tracking-[0.16em] text-[#6F6A5E]"><FolderKanban className="h-4 w-4 shrink-0" /> <span className="truncate">PERSONAL PROJECTS</span></span>
+ <span className="shrink-0 whitespace-nowrap rounded-[4px] bg-[#FCFAF5] px-3 py-1 text-xs font-bold text-[#6F6A5E]">{projects.length} 项</span>
  </div>
  <div className="mt-5 grid gap-3 md:grid-cols-3">
  {projects.length > 0 ? projects.map((project, index) => (
@@ -208,7 +208,7 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  const status = readNowStatus(block.metadata?.nowStatus);
  return (
  <div className="min-h-48 rounded-[8px] border border-[#DDD6C8] bg-[#F4EBE6] p-6">
- <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[#B23C22]"><Sparkles className="h-4 w-4" /> NOW · 此刻</span>
+ <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[#B23C22]"><Sparkles className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">NOW · 此刻</span></span>
  <h3 className="mt-8 text-2xl font-bold text-[#201D18]">{status.headline || "尚未填写近况"}</h3>
  <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#6F6A5E]">{status.body || "填写后再发布到主页。"}</p>
  <div className="mt-5 flex flex-wrap gap-2">{status.tags.map((tag) => <span key={tag} className="rounded-[4px] bg-[#FCFAF5] px-3 py-1 text-xs"># {tag}</span>)}</div>
@@ -220,7 +220,7 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  const items = readMediaItems(block.metadata?.mediaItems);
  return (
  <div className="min-h-48 rounded-[8px] border border-[#DDD6C8] bg-[#F4EBE6] p-5">
- <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[#B23C22]"><BookOpen className="h-4 w-4" /> MEDIA SHELF · {items.length}</span>
+ <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[#B23C22]"><BookOpen className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">MEDIA SHELF · {items.length}</span></span>
  <div className="mt-5 grid gap-3 md:grid-cols-3">
  {items.length ? items.slice(0, 3).map((item) => <div key={item.id} className="rounded-[6px] bg-[#FCFAF5]/80 p-4"><p className="text-xs text-[#B23C22]">{item.status}</p><h3 className="mt-3 font-bold text-[#201D18]">{item.title}</h3></div>) : <EmptyState text="暂无书影音条目" />}
  </div>
@@ -232,7 +232,7 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  const stories = readPhotoStories(block.metadata?.photoStories);
  return (
  <div className="min-h-48 rounded-[8px] border border-[#DDD6C8] bg-[#F4EBE6] p-5">
- <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[#B23C22]"><Camera className="h-4 w-4" /> PHOTO STORIES · {stories.length}</span>
+ <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[#B23C22]"><Camera className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">PHOTO STORIES · {stories.length}</span></span>
  <div className="mt-5 grid gap-3 md:grid-cols-2">
  {stories.length ? stories.slice(0, 2).map((story) => <div key={story.id} className="rounded-[6px] bg-[#FCFAF5]/80 p-4"><p className="text-xs text-[#B23C22]">{story.date || "未填写日期"}</p><h3 className="mt-3 font-bold text-[#201D18]">{story.title}</h3><p className="mt-2 text-xs text-[#6F6A5E]">{story.photos.length} 张照片</p></div>) : <EmptyState text="暂无照片故事" />}
  </div>

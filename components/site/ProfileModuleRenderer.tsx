@@ -87,7 +87,7 @@ export function ProfileModuleRenderer({ module, profile }: { module: ProfileModu
                     className={className}
                   >
                     <Icon name={link.icon} />
-                    {link.label}
+                    <span className="truncate">{link.label}</span>
                     <Copy className="h-3.5 w-3.5" />
                   </button>
                 );
@@ -102,7 +102,7 @@ export function ProfileModuleRenderer({ module, profile }: { module: ProfileModu
                   className={className}
                 >
                   <Icon name={link.icon} />
-                  {link.label}
+                  <span className="truncate">{link.label}</span>
                 </a>
               );
             })}
@@ -120,7 +120,7 @@ export function ProfileModuleRenderer({ module, profile }: { module: ProfileModu
           data-profile-module="contact"
         >
           <Mail className="h-4 w-4" />
-          {profile.email}
+          <span className="truncate">{profile.email}</span>
           <Copy className="h-3.5 w-3.5" />
         </button>
       ) : null;

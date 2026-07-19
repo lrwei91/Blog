@@ -159,9 +159,9 @@ export function ExperienceModulePreview({ blocks }: { blocks: Block[] }) {
 
  return (
  <div className="grid gap-3 rounded-[8px] border border-[#DDD6C8] bg-[#F6F3EC] p-4">
- <div className="flex items-center justify-between px-1 text-[10px] font-bold tracking-[0.14em] text-[#6F6A5E]">
- <span className="flex items-center gap-2"><BriefcaseBusiness className="h-4 w-4 text-[#B23C22]" /> WORK EXPERIENCE</span>
- <span className="rounded-[4px] border border-[#DDD6C8] bg-[#FCFAF5]/85 px-2.5 py-1">{String(blocks.length).padStart(2, "0")} ROLES</span>
+ <div className="flex items-center justify-between gap-3 px-1 text-[10px] font-bold tracking-[0.14em] text-[#6F6A5E]">
+ <span className="flex min-w-0 items-center gap-2"><BriefcaseBusiness className="h-4 w-4 shrink-0 text-[#B23C22]" /> <span className="truncate">WORK EXPERIENCE</span></span>
+ <span className="shrink-0 whitespace-nowrap rounded-[4px] border border-[#DDD6C8] bg-[#FCFAF5]/85 px-2.5 py-1">{String(blocks.length).padStart(2, "0")} ROLES</span>
  </div>
  <div className="grid gap-3">
  {blocks.map((block, index) => <ExperiencePreviewRow key={block.id} block={block} index={index} />)}
@@ -280,7 +280,7 @@ function ExperiencePreviewRow({ block, index }: { block: Block; index: number })
  <h3 className="truncate text-xl font-bold tracking-[-0.035em] text-[#201D18]">{block.title}</h3>
  <p className="mt-1 text-xs font-bold" style={{ color: tone.deep }}>{timeline.role}</p>
  <p className="mt-4 line-clamp-3 text-xs leading-5 text-[#6F6A5E]">{block.description}</p>
- <span className="mt-4 inline-flex rounded-[4px] px-3 py-1 text-[9px] font-bold tracking-[0.12em]" style={{ backgroundColor: tone.tint, color: tone.deep }}>DETAILS ↗</span>
+ <span className="mt-4 inline-flex whitespace-nowrap rounded-[4px] px-3 py-1 text-[9px] font-bold tracking-[0.12em]" style={{ backgroundColor: tone.tint, color: tone.deep }}>DETAILS ↗</span>
  </div>
  <div className="flex flex-col items-end justify-between">
  <span className="rounded-[4px] border px-2.5 py-1 text-[10px] font-bold text-[#6F6A5E]" style={{ borderColor: tone.tone, backgroundColor: tone.tint }}>{timeline.tenure}</span>

@@ -118,8 +118,8 @@ export function PageStructurePanel({
  <header className="border-b border-[#EDE8DB] p-4">
  <div className="flex items-start justify-between gap-3">
  <div>
- <p className="flex items-center gap-2 text-[10px] font-bold tracking-[0.14em] text-[#B23C22]">
- <Layers3 className="h-4 w-4" /> {isZh ? "页面结构" : "PAGE STRUCTURE"}
+ <p className="flex items-center gap-2 whitespace-nowrap text-[10px] font-bold tracking-[0.14em] text-[#B23C22]">
+ <Layers3 className="h-4 w-4 shrink-0" /> {isZh ? "页面结构" : "PAGE STRUCTURE"}
  </p>
  <p className="mt-1 text-xs text-[#6F6A5E]">{isZh ? `${groups.length} 个模块 · 个人资料固定在顶部` : `${groups.length} modules · Profile stays first`}</p>
  </div>
@@ -155,8 +155,8 @@ export function PageStructurePanel({
  {isZh ? "全部收起" : "Collapse all"}
  </button>
  </div>
- <button type="button" disabled={!canUndo} onClick={onUndo} className="flex items-center gap-1 rounded-[5px] px-2 py-1 text-[11px] font-semibold text-[#B23C22] hover:bg-[#F4EBE6] disabled:cursor-not-allowed disabled:opacity-35">
- <RotateCcw className="h-3.5 w-3.5" /> {isZh ? "撤销排序" : "Undo"}
+ <button type="button" disabled={!canUndo} onClick={onUndo} className="flex items-center gap-1 whitespace-nowrap rounded-[5px] px-2 py-1 text-[11px] font-semibold text-[#B23C22] hover:bg-[#F4EBE6] disabled:cursor-not-allowed disabled:opacity-35">
+ <RotateCcw className="h-3.5 w-3.5 shrink-0" /> {isZh ? "撤销排序" : "Undo"}
  </button>
  </div>
  {isFiltered ? <p className="mt-2 text-[10px] leading-4 text-[#7E2A16]">{isZh ? "筛选中仅支持定位和编辑；清除筛选后可排序。" : "Clear filters to reorder modules."}</p> : null}

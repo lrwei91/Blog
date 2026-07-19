@@ -12,7 +12,7 @@ export function Button({ className, variant = "primary", size = "md", ...props }
  data-variant={variant}
  data-size={size}
  className={cn(
- "inline-flex items-center justify-center gap-2 rounded-[5px] border font-medium transition disabled:cursor-not-allowed disabled:opacity-50",
+ "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[5px] border font-medium transition disabled:cursor-not-allowed disabled:opacity-50 [&>svg]:shrink-0",
  size === "sm" && "h-9 px-3 text-sm",
  size === "md" && "h-10 px-4 text-sm",
  size === "icon" && "h-10 w-10",

@@ -2057,7 +2057,7 @@ function EditableProfile({
  />
  <div className="flex flex-wrap gap-2">
  {profile.tags.map((tag) => (
- <span key={tag} className="admin-profile-panel__chip rounded-[4px] px-3 py-1.5 text-sm">
+ <span key={tag} className="admin-profile-panel__chip whitespace-nowrap rounded-[4px] px-3 py-1.5 text-sm">
  {tag}
  </span>
  ))}
@@ -2075,13 +2075,13 @@ function EditableProfile({
  key={link.id}
  type="button"
  onClick={onEditSocial}
- className="admin-profile-panel__social inline-flex items-center gap-2 rounded-[4px] border px-3 py-2 text-sm font-bold transition"
+ className="admin-profile-panel__social inline-flex items-center gap-2 whitespace-nowrap rounded-[4px] border px-3 py-2 text-sm font-bold transition"
  >
  <SocialIcon name={link.icon} />
  {link.label}
  </button>
  ))}
- <button type="button" onClick={onEditSocial} className="admin-profile-panel__add inline-flex items-center gap-2 rounded-[4px] border border-dashed px-3 py-2 text-sm font-bold">
+ <button type="button" onClick={onEditSocial} className="admin-profile-panel__add inline-flex items-center gap-2 whitespace-nowrap rounded-[4px] border border-dashed px-3 py-2 text-sm font-bold">
  <Plus className="h-3.5 w-3.5" />
  {editorLanguage === "zh-CN" ? "社交按钮" : "Social Buttons"}
  </button>
@@ -4219,7 +4219,7 @@ function EditorModal({
  </div>
  <div className="admin-editor-modal__body overflow-auto p-6">{children}</div>
  <div className={cn("admin-editor-modal__footer flex items-center justify-between gap-3 border-t px-6 py-4", isDark ? "border-white/10" : "border-[#DDD6C8]")}>
- <div>{footerStart}</div>
+ <div className="min-w-0">{footerStart}</div>
  <div className="flex justify-end gap-2">
  <Button variant="ghost" onClick={onClose} className={cn(isDark && "text-white hover:bg-[#FCFAF5]/10")}>{copy.cancel}</Button>
  <Button
@@ -5554,10 +5554,10 @@ function VariantOverrideDialog({
 
  <div className="rounded-[5px] border border-[#DDD6C8] bg-[#FCFAF5] px-3 py-2 text-xs text-[#6F6A5E]">
  {copy.variantOverrideTarget}
- <span className="ml-2 rounded-[4px] border border-[#E3CFC5] bg-[#F4EBE6] px-2 py-0.5 font-semibold text-[#7E2A16]">
+ <span className="ml-2 whitespace-nowrap rounded-[4px] border border-[#E3CFC5] bg-[#F4EBE6] px-2 py-0.5 font-semibold text-[#7E2A16]">
  {targetVariant?.name || draft.targetVariantId}
  </span>
- <span className="ml-2 rounded-[4px] border border-[#E3CFC5] bg-[#FCFAF5] px-2 py-0.5 font-semibold text-[#7E2A16]">
+ <span className="ml-2 whitespace-nowrap rounded-[4px] border border-[#E3CFC5] bg-[#FCFAF5] px-2 py-0.5 font-semibold text-[#7E2A16]">
  {targetLanguage?.label || draft.targetLocale}
  </span>
  </div>
@@ -5616,8 +5616,8 @@ function ScopeBadges({ variantName, languageName, editorLanguage }: { variantNam
  return (
  <div className="flex flex-wrap items-center gap-2 rounded-[5px] border border-[#DDD6C8] bg-[#FCFAF5] px-3 py-2 text-xs text-[#6F6A5E]">
  <span>{copy.currentScope}</span>
- <span className="rounded-[4px] border border-[#E3CFC5] bg-[#F4EBE6] px-2.5 py-1 font-semibold text-[#7E2A16]">{variantName}</span>
- <span className="rounded-[4px] border border-[#E3CFC5] bg-[#FCFAF5] px-2.5 py-1 font-semibold text-[#7E2A16]">{languageName}</span>
+ <span className="whitespace-nowrap rounded-[4px] border border-[#E3CFC5] bg-[#F4EBE6] px-2.5 py-1 font-semibold text-[#7E2A16]">{variantName}</span>
+ <span className="whitespace-nowrap rounded-[4px] border border-[#E3CFC5] bg-[#FCFAF5] px-2.5 py-1 font-semibold text-[#7E2A16]">{languageName}</span>
  </div>
  );
 }
