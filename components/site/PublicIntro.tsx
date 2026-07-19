@@ -54,12 +54,6 @@ export function PublicIntro() {
     <div className="public-intro" data-phase={phase} role="dialog" aria-modal="true" aria-label="欢迎页">
       <div className="public-intro__glow" aria-hidden="true" />
       <div className="public-intro__ring" aria-hidden="true" />
-      <div className="public-intro__marquee" aria-hidden="true">
-        <div className="public-intro__marquee-track">
-          <span>把复杂的事理清 · 把喜欢的事做久 · Testing · AI · Games · Life ·&nbsp;</span>
-          <span>把复杂的事理清 · 把喜欢的事做久 · Testing · AI · Games · Life ·&nbsp;</span>
-        </div>
-      </div>
       <div className="public-intro__inner">
         <header className="public-intro__masthead">
           <span className="public-intro__mark" aria-hidden="true">
