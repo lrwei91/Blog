@@ -1,63 +1,63 @@
 "use client";
 
 import {
-  closestCenter,
-  type CollisionDetection,
-  DragOverlay,
-  DndContext,
-  MouseSensor,
-  TouchSensor,
-  type DragEndEvent,
-  type DragMoveEvent,
-  type DragOverEvent,
-  type DragStartEvent,
-  useDroppable,
-  useSensor,
-  useSensors
+ closestCenter,
+ type CollisionDetection,
+ DragOverlay,
+ DndContext,
+ MouseSensor,
+ TouchSensor,
+ type DragEndEvent,
+ type DragMoveEvent,
+ type DragOverEvent,
+ type DragStartEvent,
+ useDroppable,
+ useSensor,
+ useSensors
 } from "@dnd-kit/core";
 import { rectSortingStrategy, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
-  Award,
-  AppWindow,
-  BookOpen,
-  BriefcaseBusiness,
-  Camera,
-  ChevronDown,
-  Copy,
-  Download,
-  FileText,
-  Globe2,
-  Github,
-  GripVertical,
-  ImagePlus,
-  Instagram,
-  LinkIcon,
-  Linkedin,
-  Laptop,
-  LogOut,
-  Mail,
-  MapPin,
-  MessagesSquare,
-  Palette,
-  PanelLeft,
-  Pencil,
-  Pin,
-  Plus,
-  RectangleHorizontal,
-  RectangleVertical,
-  Radio,
-  Save,
-  Settings,
-  Smartphone,
-  Sparkles,
-  Square,
-  Trash2,
-  Twitter,
-  Type,
-  Upload,
-  X,
-  Youtube
+ Award,
+ AppWindow,
+ BookOpen,
+ BriefcaseBusiness,
+ Camera,
+ ChevronDown,
+ Copy,
+ Download,
+ FileText,
+ Globe2,
+ Github,
+ GripVertical,
+ ImagePlus,
+ Instagram,
+ LinkIcon,
+ Linkedin,
+ Laptop,
+ LogOut,
+ Mail,
+ MapPin,
+ MessagesSquare,
+ Palette,
+ PanelLeft,
+ Pencil,
+ Pin,
+ Plus,
+ RectangleHorizontal,
+ RectangleVertical,
+ Radio,
+ Save,
+ Settings,
+ Smartphone,
+ Sparkles,
+ Square,
+ Trash2,
+ Twitter,
+ Type,
+ Upload,
+ X,
+ Youtube
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
@@ -68,37 +68,37 @@ import type { Section } from "@/types/section";
 import type { SiteConfig, SiteLanguage } from "@/types/site-config";
 import { validateSiteConfig } from "@/lib/validators";
 import {
-  bySortOrder,
-  buildRenderModel,
-  getAvailableLanguagesForVariant,
-  getContentVariantKey,
-  getEnabledVariants,
-  getMainVariantId,
-  getVariantLanguages,
-  getVariantAllowSeoIndex,
-  getVariantMainLocale,
-  getSiteContentSnapshot,
-  getNextContentSortOrder,
-  isSectionTextBlock,
-  materializeSiteConfig,
-  normalizeContentFlowConfig,
-  normalizeSortOrder,
-  cn,
-  topLevelBlockSectionId,
-  writeSiteContentSnapshot
+ bySortOrder,
+ buildRenderModel,
+ getAvailableLanguagesForVariant,
+ getContentVariantKey,
+ getEnabledVariants,
+ getMainVariantId,
+ getVariantLanguages,
+ getVariantAllowSeoIndex,
+ getVariantMainLocale,
+ getSiteContentSnapshot,
+ getNextContentSortOrder,
+ isSectionTextBlock,
+ materializeSiteConfig,
+ normalizeContentFlowConfig,
+ normalizeSortOrder,
+ cn,
+ topLevelBlockSectionId,
+ writeSiteContentSnapshot
 } from "@/lib/utils";
 import {
-  blockGridClassByDevice,
-  blockSizeClassByDevice,
-  getCompactedBlockGridStyles,
-  getAdminBlockGridStyle,
-  getBlockColumnStart,
-  getBlockRowStart,
-  getBlockSize,
-  getDefaultGridSpan,
-  getDefaultRowSpan,
-  getLogicalColumnCount,
-  getLogicalColumnSpan
+ blockGridClassByDevice,
+ blockSizeClassByDevice,
+ getCompactedBlockGridStyles,
+ getAdminBlockGridStyle,
+ getBlockColumnStart,
+ getBlockRowStart,
+ getBlockSize,
+ getDefaultGridSpan,
+ getDefaultRowSpan,
+ getLogicalColumnCount,
+ getLogicalColumnSpan
 } from "@/constants/block-layout";
 import { BlockCard } from "@/components/blocks/BlockCard";
 import { BlockIcon, getBlockIconColor } from "@/components/blocks/BlockIcon";
@@ -111,264 +111,264 @@ import { MediaUploader } from "@/components/admin/MediaUploader";
 import { ImageCropUploader } from "@/components/admin/ImageCropUploader";
 import { PageStructurePanel } from "@/components/admin/PageStructurePanel";
 import {
-  applyContentOutlineGroupOrder,
-  buildContentOutlineGroups,
-  isOutlineSpecialModuleType,
-  moveContentOutlineGroup,
-  reorderContentOutlineGroups,
-  setContentOutlineGroupVisibility,
-  type ContentOutlineGroup
+ applyContentOutlineGroupOrder,
+ buildContentOutlineGroups,
+ isOutlineSpecialModuleType,
+ moveContentOutlineGroup,
+ reorderContentOutlineGroups,
+ setContentOutlineGroupVisibility,
+ type ContentOutlineGroup
 } from "@/lib/admin-content-outline";
 import {
-  editorCopy,
-  editorLanguageOptions,
-  editorLanguageStorageKey,
-  isEditorLanguage,
-  resolveInitialEditorLanguage,
-  subscribeToEditorLanguage,
-  type EditorLanguage
+ editorCopy,
+ editorLanguageOptions,
+ editorLanguageStorageKey,
+ isEditorLanguage,
+ resolveInitialEditorLanguage,
+ subscribeToEditorLanguage,
+ type EditorLanguage
 } from "@/components/admin/editor-i18n";
 
 type ModalState =
-  | { type: "tags" }
-  | { type: "social" }
-  | { type: "block"; blockId: string }
-  | { type: "special-module"; groupId: string }
-  | { type: "add-block" }
-  | { type: "project-settings" }
-  | null;
+ | { type: "tags" }
+ | { type: "social" }
+ | { type: "block"; blockId: string }
+ | { type: "special-module"; groupId: string }
+ | { type: "add-block" }
+ | { type: "project-settings" }
+ | null;
 
 type ProjectSettingsPanel = "basic" | "web" | "seo" | "audiences" | "appearance" | "config";
 
 const languageOptions: { code: string; label: string; defaultNote: string }[] = [
-  { code: "zh-CN", label: "简体中文", defaultNote: "中文" },
-  { code: "zh-TW", label: "繁體中文", defaultNote: "繁體中文" },
-  { code: "en", label: "English", defaultNote: "English" },
-  { code: "en-US", label: "English (US)", defaultNote: "English US" },
-  { code: "en-GB", label: "English (UK)", defaultNote: "English UK" },
-  { code: "ja", label: "日本語", defaultNote: "日本語" },
-  { code: "ko", label: "한국어", defaultNote: "한국어" },
-  { code: "fr", label: "Français", defaultNote: "Français" },
-  { code: "de", label: "Deutsch", defaultNote: "Deutsch" },
-  { code: "es", label: "Español", defaultNote: "Español" },
-  { code: "it", label: "Italiano", defaultNote: "Italiano" },
-  { code: "pt", label: "Português", defaultNote: "Português" }
+ { code: "zh-CN", label: "简体中文", defaultNote: "中文" },
+ { code: "zh-TW", label: "繁體中文", defaultNote: "繁體中文" },
+ { code: "en", label: "English", defaultNote: "English" },
+ { code: "en-US", label: "English (US)", defaultNote: "English US" },
+ { code: "en-GB", label: "English (UK)", defaultNote: "English UK" },
+ { code: "ja", label: "日本語", defaultNote: "日本語" },
+ { code: "ko", label: "한국어", defaultNote: "한국어" },
+ { code: "fr", label: "Français", defaultNote: "Français" },
+ { code: "de", label: "Deutsch", defaultNote: "Deutsch" },
+ { code: "es", label: "Español", defaultNote: "Español" },
+ { code: "it", label: "Italiano", defaultNote: "Italiano" },
+ { code: "pt", label: "Português", defaultNote: "Português" }
 ];
 
 type BlockTemplate = {
-  label: string;
-  description: string;
-  size: BlockSize;
-  icon: React.ReactNode;
-  defaultTitle?: string;
-  defaultSubtitle?: string;
-  defaultDescription?: string;
-  defaultIcon?: string;
-  defaultBadge?: string;
-  defaultHref?: string;
-  defaultActionType?: Block["actionType"];
-  defaultMetadata?: Record<string, unknown>;
-  moduleType?: SpecialModuleType;
+ label: string;
+ description: string;
+ size: BlockSize;
+ icon: React.ReactNode;
+ defaultTitle?: string;
+ defaultSubtitle?: string;
+ defaultDescription?: string;
+ defaultIcon?: string;
+ defaultBadge?: string;
+ defaultHref?: string;
+ defaultActionType?: Block["actionType"];
+ defaultMetadata?: Record<string, unknown>;
+ moduleType?: SpecialModuleType;
 };
 
 const blockTemplates: {
-  group: string;
-  items: BlockTemplate[];
+ group: string;
+ items: BlockTemplate[];
 }[] = [
-  {
-    group: "常用",
-    items: [
-      { label: "标题", description: "整行标题/说明", size: "section-text", icon: <Type /> },
-      {
-        label: "文本",
-        description: "文字方块",
-        size: "wide",
-        icon: <FileText />,
-        defaultTitle: "这是一个文本block",
-        defaultDescription: "这是一个文本block",
-        defaultMetadata: {
-          textVariant: "plain",
-          textAlign: "center",
-          verticalAlign: "center",
-          textBold: false,
-          textItalic: false,
-          textUnderline: false
-        }
-      },
-      { label: "图片", description: "上传图片", size: "wide", icon: <ImagePlus />, defaultActionType: "image-preview" },
-      { label: "链接", description: "外部链接", size: "small-square", icon: <LinkIcon />, defaultTitle: "New Link", defaultIcon: "link" }
-    ]
-  },
-  {
-    group: "经历",
-    items: [
-      { label: "高光时刻", description: "状态/动态", size: "wide", icon: <Palette /> },
-      { label: "教育经历", description: "教育卡片", size: "large-square", icon: <BookOpen /> },
-      { label: "获奖记录", description: "奖项/荣誉", size: "wide", icon: <Award />, defaultIcon: "award", defaultBadge: "Award" }
-    ]
-  },
-  {
-    group: "主页模块",
-    items: [
-      {
-        label: "工作经历",
-        description: "时间轴与经历详情",
-        size: "full-wide",
-        icon: <BriefcaseBusiness />,
-        moduleType: "experience"
-      },
-      {
-        label: "旅行足迹",
-        description: "中国地图与足迹列表",
-        size: "full-wide",
-        icon: <MapPin />,
-        moduleType: "travel"
-      },
-      {
-        label: "个人项目",
-        description: "项目卡片与双链接",
-        size: "full-wide",
-        icon: <Laptop />,
-        moduleType: "projects"
-      },
-      {
-        label: "此刻 NOW",
-        description: "近期状态与生活关键词",
-        size: "full-wide",
-        icon: <Sparkles />,
-        moduleType: "now"
-      },
-      {
-        label: "最近在看 / 玩 / 听",
-        description: "书影音与游戏清单",
-        size: "full-wide",
-        icon: <BookOpen />,
-        moduleType: "media"
-      },
-      {
-        label: "照片故事",
-        description: "多图故事与灯箱预览",
-        size: "full-wide",
-        icon: <Camera />,
-        moduleType: "photos"
-      }
-    ]
-  },
-  {
-    group: "社交媒体",
-    items: [
-      { label: "GitHub", description: "GitHub 链接", size: "small-square", icon: <Github />, defaultIcon: "github", defaultActionType: "link" },
-    { label: "X", description: "X / Twitter", size: "small-square", icon: <Twitter />, defaultIcon: "x", defaultActionType: "link" },
-      { label: "Instagram", description: "Instagram", size: "small-square", icon: <Instagram />, defaultIcon: "instagram", defaultActionType: "link" },
-      { label: "YouTube", description: "YouTube", size: "small-square", icon: <Youtube />, defaultIcon: "youtube", defaultActionType: "link" },
-      { label: "LinkedIn", description: "LinkedIn", size: "small-square", icon: <Linkedin />, defaultIcon: "linkedin", defaultActionType: "link" },
-      { label: "Website", description: "个人网站", size: "small-square", icon: <Globe2 />, defaultIcon: "website", defaultActionType: "link" }
-    ]
-  }
+ {
+ group: "常用",
+ items: [
+ { label: "标题", description: "整行标题/说明", size: "section-text", icon: <Type /> },
+ {
+ label: "文本",
+ description: "文字方块",
+ size: "wide",
+ icon: <FileText />,
+ defaultTitle: "这是一个文本block",
+ defaultDescription: "这是一个文本block",
+ defaultMetadata: {
+ textVariant: "plain",
+ textAlign: "center",
+ verticalAlign: "center",
+ textBold: false,
+ textItalic: false,
+ textUnderline: false
+ }
+ },
+ { label: "图片", description: "上传图片", size: "wide", icon: <ImagePlus />, defaultActionType: "image-preview" },
+ { label: "链接", description: "外部链接", size: "small-square", icon: <LinkIcon />, defaultTitle: "New Link", defaultIcon: "link" }
+ ]
+ },
+ {
+ group: "经历",
+ items: [
+ { label: "高光时刻", description: "状态/动态", size: "wide", icon: <Palette /> },
+ { label: "教育经历", description: "教育卡片", size: "large-square", icon: <BookOpen /> },
+ { label: "获奖记录", description: "奖项/荣誉", size: "wide", icon: <Award />, defaultIcon: "award", defaultBadge: "Award" }
+ ]
+ },
+ {
+ group: "主页模块",
+ items: [
+ {
+ label: "工作经历",
+ description: "时间轴与经历详情",
+ size: "full-wide",
+ icon: <BriefcaseBusiness />,
+ moduleType: "experience"
+ },
+ {
+ label: "旅行足迹",
+ description: "中国地图与足迹列表",
+ size: "full-wide",
+ icon: <MapPin />,
+ moduleType: "travel"
+ },
+ {
+ label: "个人项目",
+ description: "项目卡片与双链接",
+ size: "full-wide",
+ icon: <Laptop />,
+ moduleType: "projects"
+ },
+ {
+ label: "此刻 NOW",
+ description: "近期状态与生活关键词",
+ size: "full-wide",
+ icon: <Sparkles />,
+ moduleType: "now"
+ },
+ {
+ label: "最近在看 / 玩 / 听",
+ description: "书影音与游戏清单",
+ size: "full-wide",
+ icon: <BookOpen />,
+ moduleType: "media"
+ },
+ {
+ label: "照片故事",
+ description: "多图故事与灯箱预览",
+ size: "full-wide",
+ icon: <Camera />,
+ moduleType: "photos"
+ }
+ ]
+ },
+ {
+ group: "社交媒体",
+ items: [
+ { label: "GitHub", description: "GitHub 链接", size: "small-square", icon: <Github />, defaultIcon: "github", defaultActionType: "link" },
+ { label: "X", description: "X / Twitter", size: "small-square", icon: <Twitter />, defaultIcon: "x", defaultActionType: "link" },
+ { label: "Instagram", description: "Instagram", size: "small-square", icon: <Instagram />, defaultIcon: "instagram", defaultActionType: "link" },
+ { label: "YouTube", description: "YouTube", size: "small-square", icon: <Youtube />, defaultIcon: "youtube", defaultActionType: "link" },
+ { label: "LinkedIn", description: "LinkedIn", size: "small-square", icon: <Linkedin />, defaultIcon: "linkedin", defaultActionType: "link" },
+ { label: "Website", description: "个人网站", size: "small-square", icon: <Globe2 />, defaultIcon: "website", defaultActionType: "link" }
+ ]
+ }
 ];
 
 const localizedTemplateText: Record<
-  string,
-  { group?: Partial<Record<EditorLanguage, string>>; label?: Partial<Record<EditorLanguage, string>>; description?: Partial<Record<EditorLanguage, string>> }
+ string,
+ { group?: Partial<Record<EditorLanguage, string>>; label?: Partial<Record<EditorLanguage, string>>; description?: Partial<Record<EditorLanguage, string>> }
 > = {
-  常用: { group: { "zh-CN": "常用", en: "Common" } },
-  经历: { group: { "zh-CN": "经历", en: "Experience" } },
-  主页模块: { group: { "zh-CN": "主页模块", en: "Homepage modules" } },
-  社交媒体: { group: { "zh-CN": "社交媒体", en: "Social" } },
-  标题: { label: { "zh-CN": "标题", en: "Heading" }, description: { "zh-CN": "整行标题或说明", en: "Full-width heading or note" } },
-  文本: { label: { "zh-CN": "文本", en: "Text" }, description: { "zh-CN": "文字区块", en: "Text block" } },
-  图片: { label: { "zh-CN": "图片", en: "Image" }, description: { "zh-CN": "上传图片", en: "Upload image" } },
-  链接: { label: { "zh-CN": "链接", en: "Link" }, description: { "zh-CN": "外部链接", en: "External link" } },
-  高光时刻: { label: { "zh-CN": "高光时刻", en: "Highlight" }, description: { "zh-CN": "状态或动态", en: "Status or update" } },
-  教育经历: { label: { "zh-CN": "教育经历", en: "Education" }, description: { "zh-CN": "教育卡片", en: "Education card" } },
-  工作经历: { label: { "zh-CN": "工作经历", en: "Work experience" }, description: { "zh-CN": "时间轴与经历详情", en: "Timeline and experience details" } },
-  获奖记录: { label: { "zh-CN": "获奖记录", en: "Award" }, description: { "zh-CN": "奖项或荣誉", en: "Award or honor" } },
-  旅行足迹: { label: { "zh-CN": "旅行足迹", en: "Travel footprint" }, description: { "zh-CN": "中国地图与足迹列表", en: "China map and travel log" } },
-  个人项目: { label: { "zh-CN": "个人项目", en: "Personal projects" }, description: { "zh-CN": "项目卡片与双链接", en: "Project cards and links" } },
-  "此刻 NOW": { label: { "zh-CN": "此刻 NOW", en: "Now" }, description: { "zh-CN": "近期状态与生活关键词", en: "Current status and life keywords" } },
-  "最近在看 / 玩 / 听": { label: { "zh-CN": "最近在看 / 玩 / 听", en: "Media shelf" }, description: { "zh-CN": "书影音与游戏清单", en: "Movies, books, games and music" } },
-  照片故事: { label: { "zh-CN": "照片故事", en: "Photo stories" }, description: { "zh-CN": "多图故事与灯箱预览", en: "Photo stories and lightbox" } }
+ 常用: { group: { "zh-CN": "常用", en: "Common" } },
+ 经历: { group: { "zh-CN": "经历", en: "Experience" } },
+ 主页模块: { group: { "zh-CN": "主页模块", en: "Homepage modules" } },
+ 社交媒体: { group: { "zh-CN": "社交媒体", en: "Social" } },
+ 标题: { label: { "zh-CN": "标题", en: "Heading" }, description: { "zh-CN": "整行标题或说明", en: "Full-width heading or note" } },
+ 文本: { label: { "zh-CN": "文本", en: "Text" }, description: { "zh-CN": "文字区块", en: "Text block" } },
+ 图片: { label: { "zh-CN": "图片", en: "Image" }, description: { "zh-CN": "上传图片", en: "Upload image" } },
+ 链接: { label: { "zh-CN": "链接", en: "Link" }, description: { "zh-CN": "外部链接", en: "External link" } },
+ 高光时刻: { label: { "zh-CN": "高光时刻", en: "Highlight" }, description: { "zh-CN": "状态或动态", en: "Status or update" } },
+ 教育经历: { label: { "zh-CN": "教育经历", en: "Education" }, description: { "zh-CN": "教育卡片", en: "Education card" } },
+ 工作经历: { label: { "zh-CN": "工作经历", en: "Work experience" }, description: { "zh-CN": "时间轴与经历详情", en: "Timeline and experience details" } },
+ 获奖记录: { label: { "zh-CN": "获奖记录", en: "Award" }, description: { "zh-CN": "奖项或荣誉", en: "Award or honor" } },
+ 旅行足迹: { label: { "zh-CN": "旅行足迹", en: "Travel footprint" }, description: { "zh-CN": "中国地图与足迹列表", en: "China map and travel log" } },
+ 个人项目: { label: { "zh-CN": "个人项目", en: "Personal projects" }, description: { "zh-CN": "项目卡片与双链接", en: "Project cards and links" } },
+ "此刻 NOW": { label: { "zh-CN": "此刻 NOW", en: "Now" }, description: { "zh-CN": "近期状态与生活关键词", en: "Current status and life keywords" } },
+ "最近在看 / 玩 / 听": { label: { "zh-CN": "最近在看 / 玩 / 听", en: "Media shelf" }, description: { "zh-CN": "书影音与游戏清单", en: "Movies, books, games and music" } },
+ 照片故事: { label: { "zh-CN": "照片故事", en: "Photo stories" }, description: { "zh-CN": "多图故事与灯箱预览", en: "Photo stories and lightbox" } }
 };
 
 function getLocalizedTemplateGroup(group: string, language: EditorLanguage) {
-  return localizedTemplateText[group]?.group?.[language] ?? group;
+ return localizedTemplateText[group]?.group?.[language] ?? group;
 }
 
 function getLocalizedTemplateLabel(template: BlockTemplate, language: EditorLanguage) {
-  return localizedTemplateText[template.label]?.label?.[language] ?? template.label;
+ return localizedTemplateText[template.label]?.label?.[language] ?? template.label;
 }
 
 function getLocalizedTemplateDescription(template: BlockTemplate, language: EditorLanguage) {
-  return localizedTemplateText[template.label]?.description?.[language] ?? template.description;
+ return localizedTemplateText[template.label]?.description?.[language] ?? template.description;
 }
 
 const blockSizePresets: { size: BlockSize; label: string; icon: React.ReactNode }[] = [
-  { size: "wide-short", label: "横向 2x1/2", icon: <RectangleHorizontal className="scale-y-50" /> },
-  { size: "small-square", label: "小方块", icon: <Square /> },
-  { size: "wide", label: "横向 2 格", icon: <RectangleHorizontal /> },
-  { size: "large-square", label: "大方块 2x2", icon: <Square className="scale-125" /> },
-  { size: "full-short", label: "整行 3x1/2", icon: <RectangleHorizontal className="scale-x-125 scale-y-50" /> },
-  { size: "full-wide", label: "整行", icon: <RectangleHorizontal className="scale-125" /> },
-  { size: "full-tall", label: "整行 3x2", icon: <AppWindow className="scale-125" /> },
-  { size: "full-square", label: "整行 3x3", icon: <Square className="scale-150" /> },
-  { size: "tall", label: "竖向", icon: <RectangleVertical /> }
+ { size: "wide-short", label: "横向 2x1/2", icon: <RectangleHorizontal className="scale-y-50" /> },
+ { size: "small-square", label: "小方块", icon: <Square /> },
+ { size: "wide", label: "横向 2 格", icon: <RectangleHorizontal /> },
+ { size: "large-square", label: "大方块 2x2", icon: <Square className="scale-125" /> },
+ { size: "full-short", label: "整行 3x1/2", icon: <RectangleHorizontal className="scale-x-125 scale-y-50" /> },
+ { size: "full-wide", label: "整行", icon: <RectangleHorizontal className="scale-125" /> },
+ { size: "full-tall", label: "整行 3x2", icon: <AppWindow className="scale-125" /> },
+ { size: "full-square", label: "整行 3x3", icon: <Square className="scale-150" /> },
+ { size: "tall", label: "竖向", icon: <RectangleVertical /> }
 ];
 
 function getLocalizedBlockSizeLabel(size: BlockSize, language: EditorLanguage) {
-  const copy = editorCopy[language];
-  if (size === "wide-short") return copy.blockSizeWideShort;
-  if (size === "small-square") return copy.blockSizeSmallSquare;
-  if (size === "wide") return copy.blockSizeWide;
-  if (size === "large-square") return copy.blockSizeLargeSquare;
-  if (size === "full-short") return copy.blockSizeFullShort;
-  if (size === "full-wide") return copy.blockSizeFullWide;
-  if (size === "full-tall") return copy.blockSizeFullTall;
-  if (size === "full-square") return copy.blockSizeFullSquare;
-  if (size === "tall") return copy.blockSizeTall;
-  return size;
+ const copy = editorCopy[language];
+ if (size === "wide-short") return copy.blockSizeWideShort;
+ if (size === "small-square") return copy.blockSizeSmallSquare;
+ if (size === "wide") return copy.blockSizeWide;
+ if (size === "large-square") return copy.blockSizeLargeSquare;
+ if (size === "full-short") return copy.blockSizeFullShort;
+ if (size === "full-wide") return copy.blockSizeFullWide;
+ if (size === "full-tall") return copy.blockSizeFullTall;
+ if (size === "full-square") return copy.blockSizeFullSquare;
+ if (size === "tall") return copy.blockSizeTall;
+ return size;
 }
 
 const editorCanvasWidth: Record<LayoutDevice, number> = {
-  desktop: 1180,
-  mobile: 430
+ desktop: 1180,
+ mobile: 430
 };
 
 const desktopBreakpoint = 768;
 const adminEditorVersion = "1.1.0";
 const reservedVariantAccessCodes = new Set(["admin", "api", "icon", "_next", "favicon.ico", "reset"]);
 type ResizeMetrics = {
-  left: number;
-  top: number;
-  columnWidth: number;
-  gap: number;
-  columns: number;
-  minSpan: number;
-  cellSize: number;
+ left: number;
+ top: number;
+ columnWidth: number;
+ gap: number;
+ columns: number;
+ minSpan: number;
+ cellSize: number;
 };
 
 type BlockResizeDraft = {
-  size: BlockSize;
-  gridSpan: number;
-  rowSpan: number;
+ size: BlockSize;
+ gridSpan: number;
+ rowSpan: number;
 };
 
 type DragOverlayRect = {
-  width: number;
-  height: number;
+ width: number;
+ height: number;
 };
 
 type DragPreviewPlacement = {
-  blockId: string;
-  targetSectionId: string;
-  targetIndex: number;
-  targetContentIndex?: number;
-  columnStart?: number;
-  rowStart?: number;
+ blockId: string;
+ targetSectionId: string;
+ targetIndex: number;
+ targetContentIndex?: number;
+ columnStart?: number;
+ rowStart?: number;
 };
 
 type BlockPlacementDraft = {
-  columnStart?: number;
-  rowStart?: number;
+ columnStart?: number;
+ rowStart?: number;
 };
 
 const blockDropPreviewId = "__block_drop_preview__";
@@ -377,5257 +377,5257 @@ let adminDragBlockRectsSnapshot = new Map<string, MeasuredRect>();
 type RectLike = Pick<DOMRectReadOnly, "left" | "top" | "width" | "height">;
 type MeasuredRect = RectLike & Pick<DOMRectReadOnly, "right" | "bottom">;
 type Point = {
-  x: number;
-  y: number;
+ x: number;
+ y: number;
 };
 
 type GridMetrics = {
-  rect: DOMRectReadOnly;
-  columns: number;
-  columnWidth: number;
-  rowHeight: number;
-  columnGap: number;
-  rowGap: number;
+ rect: DOMRectReadOnly;
+ columns: number;
+ columnWidth: number;
+ rowHeight: number;
+ columnGap: number;
+ rowGap: number;
 };
 
 type GridPlacement = {
-  column: number;
-  row: number;
-  columnSpan: number;
-  rowSpan: number;
+ column: number;
+ row: number;
+ columnSpan: number;
+ rowSpan: number;
 };
 
 type ContentFlowItem =
-  | { type: "text-block"; id: string; block: Block }
-  | { type: "top-level-block"; id: string; block: Block };
+ | { type: "text-block"; id: string; block: Block }
+ | { type: "top-level-block"; id: string; block: Block };
 
 type EditorContentItem =
-  | { id: string; type: "top-level-blocks"; blocks: Block[]; sortOrder: number }
-  | { id: string; type: "text-block"; block: Block; sortOrder: number };
+ | { id: string; type: "top-level-blocks"; blocks: Block[]; sortOrder: number }
+ | { id: string; type: "text-block"; block: Block; sortOrder: number };
 
 export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialConfig: SiteConfig; initialLanguage: EditorLanguage }) {
-  const [baseConfig, setBaseConfig] = useState(() => normalizeContentFlowConfig(initialConfig));
-  const editorLanguage = useSyncExternalStore(
-    subscribeToEditorLanguage,
-    resolveInitialEditorLanguage,
-    () => initialLanguage
-  );
-  const [activeVariantId, setActiveVariantId] = useState(() => getMainVariantId(initialConfig));
-  const [activeLocale, setActiveLocale] = useState(() => getVariantMainLocale(initialConfig, getMainVariantId(initialConfig)));
-  const [modal, setModal] = useState<ModalState>(null);
-  const [overrideDraft, setOverrideDraft] = useState<{ targetVariantId: string; targetLocale: string; sourceVariantId: string; sourceLocale: string } | null>(
-    null
-  );
-  const [isDirty, setIsDirty] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
-  const [isStructureOpen, setIsStructureOpen] = useState(() => {
-    if (typeof window === "undefined") return false;
-    const saved = window.localStorage.getItem("personal-site-studio:structure-open");
-    return saved === null ? window.innerWidth >= 1440 : saved === "true";
-  });
-  const [lastOutlineGroupOrder, setLastOutlineGroupOrder] = useState<string[] | null>(null);
-  const [resizePreviewSize, setResizePreviewSize] = useState<BlockSize | null>(null);
-  const [resizeDrafts, setResizeDrafts] = useState<Record<string, BlockResizeDraft>>({});
-  const [activeDragBlockId, setActiveDragBlockId] = useState<string | null>(null);
-  const [dragOverlayRect, setDragOverlayRect] = useState<DragOverlayRect | null>(null);
-  const [dragPreviewPlacement, setDragPreviewPlacement] = useState<DragPreviewPlacement | null>(null);
-  const [hasMounted, setHasMounted] = useState(false);
-  const [editorDevice, setEditorDevice] = useState<LayoutDevice>(() => {
-    if (typeof window === "undefined") return "desktop";
-    return window.matchMedia("(max-width: 767px)").matches ? "mobile" : "desktop";
-  });
-  const [viewportWidth, setViewportWidth] = useState<number | null>(null);
-  const dragStartPointerRef = useRef<Point | null>(null);
-  const dragPointerRef = useRef<Point | null>(null);
-  const dragPointerOffsetRef = useRef<Point | null>(null);
-  const dragPointerUpdatedAtRef = useRef(0);
-  const dragPointerSourceRef = useRef<"native" | "synthetic" | null>(null);
-  const dragOverlayRectRef = useRef<DragOverlayRect | null>(null);
-  const activeDragBlockIdRef = useRef<string | null>(null);
-  const dragPreviewPlacementRef = useRef<DragPreviewPlacement | null>(null);
-  const dragPreviewSyncFrameRef = useRef<number | null>(null);
-  const validation = useMemo(() => validateSiteConfig(baseConfig), [baseConfig]);
-  const enabledVariants = useMemo(() => getEnabledVariants(baseConfig), [baseConfig]);
-  const resolvedActiveVariantId = enabledVariants.some((variant) => variant.id === activeVariantId)
-    ? activeVariantId
-    : getMainVariantId(baseConfig);
-  const availableLanguages = useMemo(
-    () => getAvailableLanguagesForVariant(baseConfig, resolvedActiveVariantId),
-    [baseConfig, resolvedActiveVariantId]
-  );
-  const resolvedActiveLocale = availableLanguages.some((language) => language.code === activeLocale)
-    ? activeLocale
-    : getVariantMainLocale(baseConfig, resolvedActiveVariantId);
-  const activeVariantIdRef = useRef(resolvedActiveVariantId);
-  const activeLocaleRef = useRef(resolvedActiveLocale);
-  const config = useMemo(
-    () => materializeSiteConfig(baseConfig, resolvedActiveVariantId, resolvedActiveLocale),
-    [baseConfig, resolvedActiveVariantId, resolvedActiveLocale]
-  );
-  const configRef = useRef(config);
-  const editorDeviceRef = useRef(editorDevice);
-  const copy = editorCopy[editorLanguage];
-  const sensors = useSensors(
-    useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 320, tolerance: 10 } })
-  );
-  const shouldShowLanguagePicker = availableLanguages.length > 1;
-  const shouldShowVariantPicker = baseConfig.settings.variants.isEnabled && enabledVariants.length > 1;
-  const renderModel = useMemo(() => buildRenderModel(config, { includeHidden: true }), [config]);
-  const outlineGroups = useMemo(() => buildContentOutlineGroups(config.blocks), [config.blocks]);
-  const blockSectionById = useMemo(() => {
-    return new Map(config.blocks.map((block) => [block.id, block.sectionId]));
-  }, [config.blocks]);
-  const collisionDetection = useMemo<CollisionDetection>(() => {
-    return (args) => {
-      const activeId = String(args.active.id);
-      const activeBlockSectionId = blockSectionById.get(activeId);
-
-      if (!activeBlockSectionId) {
-        return closestCenter(args);
-      }
-
-      return closestCenter({
-        ...args,
-        droppableContainers: args.droppableContainers.filter((container) => {
-          const id = String(container.id);
-          if (id === `section:${activeBlockSectionId}`) return false;
-          return true;
-        })
-      });
-    };
-  }, [blockSectionById]);
-  const hostDevice: LayoutDevice = viewportWidth !== null && viewportWidth < desktopBreakpoint ? "mobile" : "desktop";
-  const canEditDesktop = hostDevice === "desktop";
-  const canvasWidth = editorCanvasWidth[editorDevice];
-  const isStructureDocked = viewportWidth !== null && viewportWidth >= 1440;
-  const availableCanvasWidth = viewportWidth === null
-    ? canvasWidth
-    : viewportWidth - (isStructureOpen && isStructureDocked ? 344 : 24);
-  const canvasScale = viewportWidth === null ? 1 : Math.min(1, Math.max(0.32, availableCanvasWidth / canvasWidth));
-  const activeDragBlock = useMemo(
-    () => (activeDragBlockId ? config.blocks.find((block) => block.id === activeDragBlockId) ?? null : null),
-    [activeDragBlockId, config.blocks]
-  );
-  const editorContentItems = useMemo(
-    () => renderModel.orderedContentItems,
-    [renderModel]
-  );
-  const activeTextPreviewContentIndex =
-    activeDragBlock && isSectionTextBlock(activeDragBlock) && dragPreviewPlacement?.blockId === activeDragBlock.id
-      ? dragPreviewPlacement.targetContentIndex
-      : undefined;
-  const topLevelSection = useMemo<Section>(
-    () => ({
-      id: topLevelBlockSectionId,
-      title: "",
-      emoji: "",
-      description: "",
-      titleAlign: "left",
-      titleSize: "md",
-      layout: "grid",
-      gap: "md",
-      sortOrder: 0,
-      isVisible: true,
-      createdAt: "",
-      updatedAt: ""
-    }),
-    []
-  );
-
-  useEffect(() => {
-    const updateViewport = () => {
-      setViewportWidth(window.innerWidth);
-      if (window.innerWidth < desktopBreakpoint) {
-        setResizeDrafts({});
-        setResizePreviewSize(null);
-        setEditorDevice("mobile");
-      }
-    };
-    const frame = window.requestAnimationFrame(() => {
-      updateViewport();
-      setHasMounted(true);
-    });
-    window.addEventListener("resize", updateViewport);
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("resize", updateViewport);
-    };
-  }, []);
-
-  useEffect(() => {
-    configRef.current = config;
-  }, [config]);
-
-  useEffect(() => {
-    activeVariantIdRef.current = resolvedActiveVariantId;
-  }, [resolvedActiveVariantId]);
-
-  useEffect(() => {
-    activeLocaleRef.current = resolvedActiveLocale;
-  }, [resolvedActiveLocale]);
-
-  useEffect(() => {
-    editorDeviceRef.current = editorDevice;
-  }, [editorDevice]);
-
-  useEffect(() => {
-    const confirmUnsavedChanges = (event: BeforeUnloadEvent) => {
-      if (!isDirty) return;
-      event.preventDefault();
-      event.returnValue = "";
-    };
-
-    window.addEventListener("beforeunload", confirmUnsavedChanges);
-    return () => window.removeEventListener("beforeunload", confirmUnsavedChanges);
-  }, [isDirty]);
-
-  useEffect(() => {
-    const saved = window.localStorage.getItem(editorLanguageStorageKey);
-    if (saved !== editorLanguage) {
-      window.localStorage.setItem(editorLanguageStorageKey, editorLanguage);
-    }
-  }, [editorLanguage]);
-
-  function changeEditorLanguage(value: string) {
-    if (!isEditorLanguage(value)) return;
-    window.localStorage.setItem(editorLanguageStorageKey, value);
-    window.dispatchEvent(new StorageEvent("storage", { key: editorLanguageStorageKey }));
-  }
-
-  function getCurrentDragRect(): MeasuredRect | null {
-    const pointer = dragPointerRef.current;
-    const offset = dragPointerOffsetRef.current;
-    const rect = dragOverlayRectRef.current;
-    if (!pointer || !offset || !rect) return null;
-
-    const left = pointer.x - offset.x;
-    const top = pointer.y - offset.y;
-    return {
-      left,
-      top,
-      width: rect.width,
-      height: rect.height,
-      right: left + rect.width,
-      bottom: top + rect.height
-    };
-  }
-
-  function updateDragPreviewPlacement(next: DragPreviewPlacement | null) {
-    const current = dragPreviewPlacementRef.current;
-    if (
-      current?.blockId === next?.blockId &&
-      current?.targetSectionId === next?.targetSectionId &&
-      current?.targetIndex === next?.targetIndex &&
-      current?.targetContentIndex === next?.targetContentIndex &&
-      current?.columnStart === next?.columnStart &&
-      current?.rowStart === next?.rowStart
-    ) {
-      return;
-    }
-    cancelAdminBlockLayoutAnimations();
-    dragPreviewPlacementRef.current = next;
-    setDragPreviewPlacement(next);
-    window.requestAnimationFrame(cancelAdminBlockLayoutAnimations);
-  }
-
-  function update(next: SiteConfig) {
-    setConfig(normalizeContentFlowConfig(next));
-    setIsDirty(true);
-  }
-
-  function setStructureOpen(next: boolean) {
-    setIsStructureOpen(next);
-    window.localStorage.setItem("personal-site-studio:structure-open", String(next));
-  }
-
-  function selectOutlineGroup(group: ContentOutlineGroup) {
-    setSelectedBlockId(group.primaryEditBlockId);
-    window.requestAnimationFrame(() => {
-      document.querySelector<HTMLElement>(`[data-admin-block-id="${group.primaryEditBlockId}"]`)?.scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-      });
-    });
-  }
-
-  function editOutlineGroup(group: ContentOutlineGroup) {
-    setSelectedBlockId(group.primaryEditBlockId);
-    setModal(group.moduleType ? { type: "special-module", groupId: group.id } : { type: "block", blockId: group.primaryEditBlockId });
-  }
-
-  function captureOutlineOrder() {
-    setLastOutlineGroupOrder(outlineGroups.map((group) => group.id));
-  }
-
-  function reorderOutlineGroups(activeGroupId: string, overGroupId: string) {
-    captureOutlineOrder();
-    update({ ...config, blocks: reorderContentOutlineGroups(config.blocks, activeGroupId, overGroupId) });
-  }
-
-  function moveOutlineGroup(groupId: string, targetIndex: number) {
-    captureOutlineOrder();
-    update({ ...config, blocks: moveContentOutlineGroup(config.blocks, groupId, targetIndex) });
-  }
-
-  function undoOutlineOrder() {
-    if (!lastOutlineGroupOrder) return;
-    update({ ...config, blocks: applyContentOutlineGroupOrder(config.blocks, lastOutlineGroupOrder) });
-    setLastOutlineGroupOrder(null);
-  }
-
-  function toggleOutlineGroupVisibility(group: ContentOutlineGroup) {
-    update({ ...config, blocks: setContentOutlineGroupVisibility(config.blocks, group.id, !group.isVisible) });
-  }
-
-  function updateBaseConfig(next: SiteConfig) {
-    setBaseConfig(normalizeContentFlowConfig(next));
-    setIsDirty(true);
-  }
-
-  function getTopBarVariantLanguages(variantId: string) {
-    return getVariantLanguages(baseConfig, variantId);
-  }
-
-  function openTopBarOverrideDialog() {
-    const sourceVariantId = getMainVariantId(baseConfig);
-    setOverrideDraft({
-      targetVariantId: resolvedActiveVariantId,
-      targetLocale: resolvedActiveLocale,
-      sourceVariantId,
-      sourceLocale: getVariantMainLocale(baseConfig, sourceVariantId)
-    });
-  }
-
-  function applyTopBarVariantOverride(draft: { targetVariantId: string; targetLocale: string; sourceVariantId: string; sourceLocale: string }) {
-    const targetVariant = baseConfig.settings.variants.variants.find((variant) => variant.id === draft.targetVariantId);
-    const targetLanguage = getVariantLanguages(baseConfig, draft.targetVariantId).find((language) => language.code === draft.targetLocale);
-    const sourceVariant = baseConfig.settings.variants.variants.find((variant) => variant.id === draft.sourceVariantId);
-    const sourceLanguage = getVariantLanguages(baseConfig, draft.sourceVariantId).find((language) => language.code === draft.sourceLocale);
-    const sourceLabel = `${sourceVariant?.name || draft.sourceVariantId} - ${sourceLanguage?.label || draft.sourceLocale}`;
-    const targetLabel = `${targetVariant?.name || draft.targetVariantId} - ${targetLanguage?.label || draft.targetLocale}`;
-    const message =
-      editorLanguage === "zh-CN"
-        ? `确认用「${sourceLabel}」覆盖当前「${targetLabel}」？当前内容会被直接替换。`
-        : `Override "${targetLabel}" with "${sourceLabel}"? The current content will be replaced.`;
-    if (!window.confirm(message)) return;
-    const sourceConfig = materializeSiteConfig(baseConfig, draft.sourceVariantId, draft.sourceLocale);
-    updateBaseConfig(writeSiteContentSnapshot(baseConfig, draft.targetVariantId, draft.targetLocale, sourceConfig));
-    setOverrideDraft(null);
-  }
-
-  function setConfig(next: SiteConfig | ((current: SiteConfig) => SiteConfig)) {
-    setBaseConfig((current) => {
-      const currentActiveConfig = materializeSiteConfig(current, activeVariantIdRef.current, activeLocaleRef.current);
-      const nextActiveConfig = typeof next === "function" ? next(currentActiveConfig) : next;
-      return writeSiteContentSnapshot(current, activeVariantIdRef.current, activeLocaleRef.current, nextActiveConfig);
-    });
-  }
-
-  function exportConfig() {
-    const scopedConfig: SiteConfig = {
-      ...config,
-      contentVariants: {},
-      updatedAt: new Date().toISOString()
-    };
-    const blob = new Blob([JSON.stringify(scopedConfig, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    const activeVariant = enabledVariants.find((variant) => variant.id === resolvedActiveVariantId);
-    const activeLanguage = availableLanguages.find((language) => language.code === resolvedActiveLocale);
-    const safeName = [baseConfig.settings.projectName || "site-config", activeVariant?.name || resolvedActiveVariantId, activeLanguage?.label || resolvedActiveLocale]
-      .join("-")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-    link.href = url;
-    link.download = `${safeName || "site-config"}.json`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
-  }
-
-  async function importConfig(file: File) {
-    const text = await file.text();
-    const parsed = JSON.parse(text) as unknown;
-    const result = validateSiteConfig(parsed);
-
-    if (!result.success) {
-      toast.error(copy.importFailed, { description: result.error });
-      return;
-    }
-
-    const importedConfig = normalizeContentFlowConfig(result.data);
-    updateBaseConfig(writeSiteContentSnapshot(baseConfig, resolvedActiveVariantId, resolvedActiveLocale, importedConfig));
-    toast.success(copy.importSuccess, { description: copy.importSuccessDescription });
-  }
-
-  function patchProfile(patch: Partial<Profile>) {
-    update({ ...config, profile: { ...config.profile, ...patch } });
-  }
-
-  function patchBlock(blockId: string, patch: Partial<Block>) {
-    const linkedModuleIds = patch.isVisible === undefined ? new Set([blockId]) : getSpecialModuleDeleteIds(config.blocks, blockId);
-    const now = new Date().toISOString();
-    update({
-      ...config,
-      blocks: normalizeBlocks(
-        config.blocks.map((block) =>
-          block.id === blockId
-            ? { ...block, ...patch, sectionId: topLevelBlockSectionId, updatedAt: now }
-            : linkedModuleIds.has(block.id) && patch.isVisible !== undefined
-              ? { ...block, isVisible: patch.isVisible, updatedAt: now }
-              : block
-        )
-      )
-    });
-  }
-
-  function patchExperienceBlock(blockId: string, patch: Partial<Block>) {
-    const now = new Date().toISOString();
-    update({
-      ...config,
-      blocks: normalizeBlocks(
-        config.blocks.map((block) =>
-          block.id === blockId ? { ...block, ...patch, sectionId: topLevelBlockSectionId, updatedAt: now } : block
-        )
-      )
-    });
-  }
-
-  function replaceExperienceGroupEntries(groupId: string, nextEntries: Block[]) {
-    const group = buildContentOutlineGroups(config.blocks).find((item) => item.id === groupId);
-    if (!group || group.moduleType !== "experience" || !group.headingId) return;
-
-    const entryIds = new Set(group.blocks.filter((block) => !isSectionTextBlock(block)).map((block) => block.id));
-    const ordered = [...config.blocks].sort(bySortOrder).filter((block) => !entryIds.has(block.id));
-    const headingIndex = ordered.findIndex((block) => block.id === group.headingId);
-    if (headingIndex < 0) return;
-
-    const now = new Date().toISOString();
-    ordered.splice(
-      headingIndex + 1,
-      0,
-      ...nextEntries.map((block) => ({
-        ...block,
-        sectionId: topLevelBlockSectionId,
-        size: "wide" as const,
-        responsiveSizes: { ...block.responsiveSizes, desktop: "wide" as const, mobile: "full-wide" as const },
-        actionType: "modal" as const,
-        openInNewTab: false,
-        updatedAt: now
-      }))
-    );
-
-    update({
-      ...config,
-      blocks: ordered.map((block, index) => ({ ...block, sortOrder: index + 1 }))
-    });
-  }
-
-  function patchBlockSizeForDevice(blockId: string, size: BlockSize) {
-    setConfig((current) =>
-      normalizeContentFlowConfig({
-        ...current,
-        blocks: normalizeBlocks(
-          current.blocks.map((block) =>
-            block.id === blockId && !isSectionTextBlock(block)
-              ? {
-                  ...block,
-                  sectionId: topLevelBlockSectionId,
-                  size: block.size,
-                  responsiveSizes: {
-                    ...block.responsiveSizes,
-                    [editorDevice]: size
-                  },
-                  updatedAt: new Date().toISOString()
-                }
-              : block
-          )
-        )
-      })
-    );
-    setIsDirty(true);
-  }
-
-  function applyBlockPlacement(
-    block: Block,
-    device: LayoutDevice,
-    placement?: BlockPlacementDraft
-  ): Block {
-    if (!placement?.columnStart && !placement?.rowStart) return block;
-    return {
-      ...block,
-      placements: {
-        ...block.placements,
-        [device]: {
-          ...block.placements?.[device],
-          ...placement
-        }
-      },
-      updatedAt: new Date().toISOString()
-    };
-  }
-
-  function moveBlockWithPlacement(
-    blockId: string,
-    _targetSectionId: string,
-    _targetIndex: number,
-    placement?: BlockPlacementDraft
-  ) {
-    const activeBlock = config.blocks.find((block) => block.id === blockId);
-    if (!activeBlock) return config.blocks;
-
-    return normalizeBlocks(config.blocks).map((block) =>
-      block.id === blockId
-        ? applyBlockPlacement({ ...block, sectionId: topLevelBlockSectionId, updatedAt: new Date().toISOString() }, editorDevice, placement)
-        : block
-    );
-  }
-
-  function moveBlockToContentIndex(
-    blockId: string,
-    targetContentIndex: number,
-    placement?: BlockPlacementDraft
-  ): SiteConfig {
-    const activeBlock = config.blocks.find((block) => block.id === blockId);
-    if (!activeBlock) return config;
-
-    const now = new Date().toISOString();
-    const renderModel = buildRenderModel(config, { includeHidden: true });
-    const originalContentIndex = getContentIndexForBlock(renderModel, blockId);
-    const flowItems = getContentFlowForBlockMove(renderModel, blockId, isSectionTextBlock(activeBlock));
-    const nextItems: ContentFlowItem[] = [...flowItems];
-    const insertedIndex = Math.max(0, Math.min(targetContentIndex, flowItems.length));
-    nextItems.splice(insertedIndex, 0, {
-      type: "top-level-block",
-      id: blockId,
-      block: activeBlock
-    });
-
-    const blockSortOrderById = new Map<string, number>();
-    nextItems.forEach((item, index) => {
-      blockSortOrderById.set(item.id, index + 1);
-    });
-    const shouldReleaseAffectedPlacements =
-      shouldReleaseSiblingPlacementsForDrag(activeBlock, editorDevice) &&
-      (originalContentIndex !== insertedIndex || !isDragPreviewAtBlockPlacement(activeBlock, placement, editorDevice));
-    const affectedGroupBlockIds = shouldReleaseAffectedPlacements
-      ? getTopLevelBlockGroupIdsAtIndex(nextItems, insertedIndex)
-      : new Set<string>();
-
-    return {
-      ...config,
-      sections: [],
-      blocks: normalizeBlocks(
-        config.blocks.map((block) => {
-          if (block.id === blockId) {
-            return applyBlockPlacement(
-              {
-                ...block,
-                sectionId: topLevelBlockSectionId,
-                sortOrder: blockSortOrderById.get(block.id) ?? block.sortOrder,
-                updatedAt: now
-              },
-              editorDevice,
-              placement
-            );
-          }
-
-          if (blockSortOrderById.has(block.id)) {
-            const nextBlock = {
-              ...block,
-              sectionId: topLevelBlockSectionId,
-              sortOrder: blockSortOrderById.get(block.id) ?? block.sortOrder
-            };
-
-            return affectedGroupBlockIds.has(block.id)
-              ? { ...withoutBlockPlacementForDevice(nextBlock, editorDevice), updatedAt: now }
-              : nextBlock;
-          }
-
-          return block;
-        })
-      ),
-      settings: {
-        ...config.settings,
-        topLevelBlocksSortOrder: undefined
-      }
-    };
-  }
-
-  function getTopLevelBlockGroupIdsAtIndex(items: ContentFlowItem[], index: number) {
-    const ids = new Set<string>();
-    if (items[index]?.type !== "top-level-block") return ids;
-
-    for (let cursor = index; cursor >= 0 && items[cursor]?.type === "top-level-block"; cursor -= 1) {
-      ids.add(items[cursor].id);
-    }
-    for (let cursor = index + 1; cursor < items.length && items[cursor]?.type === "top-level-block"; cursor += 1) {
-      ids.add(items[cursor].id);
-    }
-
-    return ids;
-  }
-
-  function getContentIndexForBlock(renderModel: ReturnType<typeof buildRenderModel>, blockId: string) {
-    let index = 0;
-
-    for (const item of renderModel.orderedContentItems) {
-      if (item.type === "top-level-blocks") {
-        for (const block of item.blocks) {
-          if (block.id === blockId) return index;
-          index += 1;
-        }
-        continue;
-      }
-
-      if (item.block.id === blockId) return index;
-      index += 1;
-    }
-
-    return null;
-  }
-
-  function deleteBlock(blockId: string) {
-    const blockIds = getSpecialModuleDeleteIds(config.blocks, blockId);
-    const isSpecialModule = blockIds.size > 1;
-    const confirmMessage = isSpecialModule
-      ? editorLanguage === "zh-CN"
-        ? "确认删除整个模块？模块标题和内容会一起移除。"
-        : "Delete the entire module? Its heading and content will both be removed."
-      : copy.deleteBlockConfirm;
-    if (!window.confirm(confirmMessage)) return;
-    update({ ...config, blocks: normalizeBlocks(config.blocks.filter((block) => !blockIds.has(block.id))) });
-    setModal(null);
-  }
-
-  function getSpecialModuleDeleteIds(blocks: Block[], blockId: string) {
-    const ids = new Set([blockId]);
-    const outlineGroup = buildContentOutlineGroups(blocks).find((group) => group.blockIds.includes(blockId));
-    if (outlineGroup?.moduleType) return new Set(outlineGroup.blockIds);
-
-    const ordered = [...blocks].filter((block) => block.sectionId === topLevelBlockSectionId).sort(bySortOrder);
-    const targetIndex = ordered.findIndex((block) => block.id === blockId);
-    if (targetIndex < 0) return ids;
-
-    const target = ordered[targetIndex];
-    const targetModuleType = getSpecialModuleType(target);
-    if (targetModuleType) {
-      for (let index = targetIndex - 1; index >= 0; index -= 1) {
-        const candidate = ordered[index];
-        if (!isSectionTextBlock(candidate)) continue;
-        if (candidate.metadata?.sourceSectionId === targetModuleType) ids.add(candidate.id);
-        break;
-      }
-      return ids;
-    }
-
-    const sourceSectionId = target.metadata?.sourceSectionId;
-    if (!isSectionTextBlock(target) || !isSpecialModuleSourceId(sourceSectionId)) return ids;
-    for (let index = targetIndex + 1; index < ordered.length; index += 1) {
-      const candidate = ordered[index];
-      if (isSectionTextBlock(candidate)) break;
-      if (getSpecialModuleType(candidate) === sourceSectionId) ids.add(candidate.id);
-    }
-    return ids;
-  }
-
-  function addBlock(template: BlockTemplate) {
-    if (template.moduleType) {
-      addSpecialModule(template.moduleType);
-      return;
-    }
-
-    const now = new Date().toISOString();
-    const isTextSection = template.size === "section-text";
-    const isPlainTextBlock = template.defaultMetadata?.textVariant === "plain";
-    const newBlock: Block = {
-      id: crypto.randomUUID(),
-      sectionId: topLevelBlockSectionId,
-      title: isPlainTextBlock
-        ? copy.blockNewTextTitle
-        : template.defaultTitle ?? (isTextSection ? (editorLanguage === "zh-CN" ? "新区块标题" : "New Section") : getLocalizedTemplateLabel(template, editorLanguage)),
-      subtitle: template.defaultSubtitle ?? (isPlainTextBlock ? "" : getLocalizedTemplateDescription(template, editorLanguage)),
-      description: template.defaultDescription ?? (isPlainTextBlock ? copy.blockNewTextDescription : ""),
-      size: isTextSection ? "section-text" : template.size,
-      responsiveSizes: isTextSection
-        ? {
-            desktop: "section-text",
-            mobile: "section-text"
-          }
-        : undefined,
-      coverImage: "",
-      icon: template.defaultIcon ?? "",
-      badge: template.defaultBadge ?? "",
-      href: template.defaultHref ?? "",
-      actionType: template.defaultActionType ?? "none",
-      openInNewTab: true,
-      backgroundColor: "",
-      textColor: "",
-      metadata: isTextSection
-        ? {
-            titleAlign: "left",
-            titleSize: "md"
-          }
-        : template.defaultMetadata ?? {},
-      isVisible: true,
-      isFeatured: false,
-      sortOrder: getNextContentSortOrder(config),
-      createdAt: now,
-      updatedAt: now
-    };
-    update({ ...config, blocks: [...config.blocks, newBlock] });
-    setModal({ type: "block", blockId: newBlock.id });
-  }
-
-  function addSpecialModule(moduleType: SpecialModuleType) {
-    const now = new Date().toISOString();
-    const firstSortOrder = getNextContentSortOrder(config);
-    const moduleDefaults = getSpecialModuleDefaults(moduleType, editorLanguage);
-    const headingId = crypto.randomUUID();
-    const contentId = crypto.randomUUID();
-    const heading: Block = {
-      id: headingId,
-      sectionId: topLevelBlockSectionId,
-      title: moduleDefaults.headingTitle,
-      subtitle: moduleDefaults.headingSubtitle,
-      description: "",
-      size: "section-text",
-      responsiveSizes: { desktop: "section-text", mobile: "section-text" },
-      coverImage: "",
-      icon: moduleDefaults.icon,
-      badge: "",
-      href: "",
-      actionType: "none",
-      openInNewTab: false,
-      backgroundColor: "",
-      textColor: "",
-      metadata: {
-        sourceSectionId: moduleType,
-        titleAlign: "left",
-        titleSize: moduleDefaults.titleSize
-      },
-      isVisible: moduleDefaults.visible,
-      isFeatured: false,
-      sortOrder: firstSortOrder,
-      createdAt: now,
-      updatedAt: now
-    };
-    const content: Block = {
-      id: contentId,
-      sectionId: topLevelBlockSectionId,
-      title: moduleDefaults.contentTitle,
-      subtitle: moduleType === "experience"
-        ? (editorLanguage === "zh-CN" ? "职位名称 · 2026 年 1 月 - 至今" : "Role · Jan 2026 - Present")
-        : "",
-      description: moduleDefaults.description,
-      size: moduleType === "experience" ? "wide" : "full-wide",
-      responsiveSizes: moduleType === "experience"
-        ? { desktop: "wide", mobile: "full-wide" }
-        : { desktop: "full-wide", mobile: "full-wide" },
-      coverImage: "",
-      icon: moduleType === "experience" ? "building" : moduleDefaults.icon,
-      badge: "",
-      href: "",
-      actionType: moduleType === "experience" ? "modal" : "none",
-      openInNewTab: false,
-      backgroundColor: "",
-      textColor: "",
-      metadata: moduleDefaults.metadata,
-      isVisible: moduleDefaults.visible,
-      isFeatured: false,
-      sortOrder: firstSortOrder + 1,
-      createdAt: now,
-      updatedAt: now
-    };
-
-    update({ ...config, blocks: normalizeBlocks([...config.blocks, heading, content]) });
-    setModal({ type: "special-module", groupId: headingId });
-  }
-
-  function addSection() {
-    const now = new Date().toISOString();
-    const block: Block = {
-      id: crypto.randomUUID(),
-      sectionId: topLevelBlockSectionId,
-      title: editorLanguage === "zh-CN" ? "新区块标题" : "New Section",
-      subtitle: "",
-      description: "",
-      size: "section-text",
-      responsiveSizes: {
-        desktop: "section-text",
-        mobile: "section-text"
-      },
-      coverImage: "",
-      icon: "",
-      badge: "",
-      href: "",
-      actionType: "none",
-      openInNewTab: false,
-      backgroundColor: "",
-      textColor: "",
-      metadata: {
-        titleAlign: "left",
-        titleSize: "md"
-      },
-      sortOrder: getNextContentSortOrder(config),
-      isVisible: true,
-      isFeatured: false,
-      createdAt: now,
-      updatedAt: now
-    };
-    update({ ...config, blocks: [...config.blocks, block] });
-    setModal({ type: "block", blockId: block.id });
-  }
-
-  function onDragStart(event: DragStartEvent) {
-    const activeId = String(event.active.id);
-    const activeBlock = config.blocks.find((block) => block.id === activeId);
-    captureAdminBlockRects();
-    const activeRect = getAdminBlockVisualRect(activeId) ?? event.active.rect.current.initial;
-    const startPointer = getClientPoint(event.activatorEvent);
-    const overlayRect = activeBlock && activeRect ? getDragOverlayRect(activeBlock, activeRect, editorDevice) : null;
-    dragStartPointerRef.current = startPointer;
-    dragPointerRef.current = startPointer;
-    dragPointerOffsetRef.current =
-      startPointer && activeRect ? { x: startPointer.x - activeRect.left, y: startPointer.y - activeRect.top } : null;
-    dragPointerUpdatedAtRef.current = startPointer ? getNow() : 0;
-    dragPointerSourceRef.current = startPointer ? "native" : null;
-    dragOverlayRectRef.current = overlayRect;
-    activeDragBlockIdRef.current = activeBlock?.id ?? null;
-    window.addEventListener("pointermove", updateDragPointerFromPointerEvent);
-    window.addEventListener("touchmove", updateDragPointerFromTouchEvent, { passive: true });
-    setActiveDragBlockId(activeBlock?.id ?? null);
-    setDragOverlayRect(overlayRect);
-    updateDragPreviewPlacement(null);
-  }
-
-  function onDragMove(event: DragMoveEvent) {
-    const activeId = String(event.active.id);
-    const startPointer = dragStartPointerRef.current;
-    if (startPointer) {
-      const fallbackPointer = {
-        x: startPointer.x + event.delta.x,
-        y: startPointer.y + event.delta.y
-      };
-      const hasFreshNativePointer =
-        dragPointerSourceRef.current === "native" && getNow() - dragPointerUpdatedAtRef.current < 80;
-
-      if (!dragPointerRef.current || !hasFreshNativePointer) {
-        dragPointerRef.current = fallbackPointer;
-        dragPointerUpdatedAtRef.current = getNow();
-        dragPointerSourceRef.current = "synthetic";
-      }
-    }
-
-    const activeBlock = config.blocks.find((block) => block.id === activeId);
-    if (!activeBlock) return;
-
-    updateBlockDragPreview(activeBlock);
-  }
-
-  function onDragOver(event: DragOverEvent) {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    const activeId = String(active.id);
-    const overId = String(over.id);
-
-    const activeBlock = config.blocks.find((block) => block.id === activeId);
-    if (!activeBlock) return;
-
-    const overBlock = config.blocks.find((block) => block.id === overId);
-    if (!overBlock && !isSectionDroppableId(overId)) return;
-
-    const targetSectionId = overBlock?.sectionId ?? getSectionIdFromDroppableId(overId);
-    const syncedPreview = updateBlockDragPreview(activeBlock);
-    if (syncedPreview) {
-      return;
-    }
-
-    if (targetSectionId !== activeBlock.sectionId) return;
-    if (isSectionTextBlock(activeBlock) || (overBlock && isSectionTextBlock(overBlock))) return;
-
-    updateDragPreviewPlacement(null);
-
-    const targetBlocks = config.blocks
-      .filter((block) => block.sectionId === targetSectionId && !isSectionTextBlock(block))
-      .sort(bySortOrder);
-    if (!overBlock) return;
-
-    const targetIndex = targetBlocks.findIndex((block) => block.id === overBlock.id);
-    const sourceBlocks = config.blocks.filter((block) => block.sectionId === activeBlock.sectionId).sort(bySortOrder);
-    const sourceIndex = sourceBlocks.findIndex((block) => block.id === activeId);
-
-    if (targetIndex < 0) return;
-    if (activeBlock.sectionId === targetSectionId && sourceIndex === targetIndex) return;
-
-    updateDragPreviewPlacement({
-      blockId: activeId,
-      targetSectionId,
-      targetIndex,
-      ...getPlacementFromDrag({
-        sectionId: targetSectionId,
-        block: activeBlock,
-        pointer: dragPointerRef.current,
-        dragRect: getCurrentDragRect(),
-        device: editorDevice
-      })
-    });
-  }
-
-  function onDragEnd(event: DragEndEvent) {
-    const previewPlacement = dragPreviewPlacementRef.current;
-    const finalPointer = dragPointerRef.current;
-    const finalDragRect = getCurrentDragRect();
-    const { active, over } = event;
-    const activeId = String(active.id);
-    setActiveDragBlockId(null);
-    setDragOverlayRect(null);
-    dragStartPointerRef.current = null;
-    dragPointerRef.current = null;
-    dragPointerOffsetRef.current = null;
-    dragPointerUpdatedAtRef.current = 0;
-    dragPointerSourceRef.current = null;
-    dragOverlayRectRef.current = null;
-    activeDragBlockIdRef.current = null;
-    cancelDragPreviewSync();
-    window.removeEventListener("pointermove", updateDragPointerFromPointerEvent);
-    window.removeEventListener("touchmove", updateDragPointerFromTouchEvent);
-    updateDragPreviewPlacement(null);
-
-    const activeBlock = config.blocks.find((block) => block.id === activeId);
-    if (!activeBlock) return;
-
-    const finalPreviewPlacement =
-      previewPlacement?.blockId === activeId
-        ? previewPlacement
-        : getBlockDragPreviewPlacement({
-            config,
-            activeBlock,
-            pointer: finalPointer,
-            dragRect: finalDragRect,
-            device: editorDevice,
-            previousPlacement: previewPlacement
-          });
-
-    if (finalPreviewPlacement?.blockId === activeId) {
-      if (
-        finalPreviewPlacement.targetSectionId === topLevelBlockSectionId &&
-        finalPreviewPlacement.targetContentIndex !== undefined
-      ) {
-        update(
-          moveBlockToContentIndex(
-            activeId,
-            finalPreviewPlacement.targetContentIndex,
-            { columnStart: finalPreviewPlacement.columnStart, rowStart: finalPreviewPlacement.rowStart }
-          )
-        );
-        return;
-      }
-
-      update({
-        ...config,
-        blocks: moveBlockWithPlacement(
-          activeId,
-          finalPreviewPlacement.targetSectionId,
-          finalPreviewPlacement.targetIndex,
-          { columnStart: finalPreviewPlacement.columnStart, rowStart: finalPreviewPlacement.rowStart }
-        )
-      });
-      return;
-    }
-
-    if (isSectionTextBlock(activeBlock)) return;
-
-    if (!over || active.id === over.id) {
-      const placement = getPlacementFromDrag({
-        sectionId: activeBlock.sectionId,
-        block: activeBlock,
-        pointer: finalPointer,
-        dragRect: finalDragRect,
-        device: editorDevice
-      });
-      if (placement) {
-        update({
-          ...config,
-          blocks: normalizeBlocks(config.blocks).map((block) =>
-            block.id === activeId ? applyBlockPlacement(block, editorDevice, placement) : block
-          )
-        });
-      }
-      return;
-    }
-    const overId = String(over.id);
-
-    const overBlock = config.blocks.find((block) => block.id === overId);
-    if (!overBlock && !isSectionDroppableId(overId)) return;
-
-    const targetSectionId = overBlock?.sectionId ?? getSectionIdFromDroppableId(overId);
-    if (targetSectionId !== activeBlock.sectionId) return;
-    if (!overBlock && targetSectionId === activeBlock.sectionId) return;
-    if (overBlock && isSectionTextBlock(overBlock)) return;
-
-    const targetBlocks = config.blocks
-      .filter((block) => block.sectionId === targetSectionId && !isSectionTextBlock(block))
-      .sort(bySortOrder);
-    const targetIndex =
-      previewPlacement?.blockId === activeId && previewPlacement.targetSectionId === targetSectionId
-        ? previewPlacement.targetIndex
-        : overBlock
-          ? targetBlocks.findIndex((block) => block.id === overBlock.id)
-          : targetBlocks.length;
-
-    const placement =
-      previewPlacement?.blockId === activeId && previewPlacement.targetSectionId === targetSectionId
-        ? { columnStart: previewPlacement.columnStart, rowStart: previewPlacement.rowStart }
-        : getPlacementFromDrag({
-            sectionId: targetSectionId,
-            block: activeBlock,
-            pointer: finalPointer,
-            dragRect: finalDragRect,
-            device: editorDevice
-          });
-
-    update({ ...config, blocks: moveBlockWithPlacement(activeId, targetSectionId, targetIndex, placement) });
-  }
-
-  function onDragCancel() {
-    setActiveDragBlockId(null);
-    setDragOverlayRect(null);
-    dragStartPointerRef.current = null;
-    dragPointerRef.current = null;
-    dragPointerOffsetRef.current = null;
-    dragPointerUpdatedAtRef.current = 0;
-    dragPointerSourceRef.current = null;
-    dragOverlayRectRef.current = null;
-    activeDragBlockIdRef.current = null;
-    clearAdminBlockRectsSnapshot();
-    cancelDragPreviewSync();
-    window.removeEventListener("pointermove", updateDragPointerFromPointerEvent);
-    window.removeEventListener("touchmove", updateDragPointerFromTouchEvent);
-    updateDragPreviewPlacement(null);
-  }
-
-  const scheduleDragPreviewSync = useCallback(() => {
-    if (dragPreviewSyncFrameRef.current !== null) return;
-    dragPreviewSyncFrameRef.current = window.requestAnimationFrame(() => {
-      dragPreviewSyncFrameRef.current = null;
-      const activeId = activeDragBlockIdRef.current;
-      if (!activeId) return;
-      const currentConfig = configRef.current;
-      const activeBlock = currentConfig.blocks.find((block) => block.id === activeId);
-      if (!activeBlock) return;
-
-      updateDragPreviewPlacement(
-        getBlockDragPreviewPlacement({
-          config: currentConfig,
-          activeBlock,
-          pointer: dragPointerRef.current,
-          dragRect: getCurrentDragRect(),
-          device: editorDeviceRef.current,
-          previousPlacement: dragPreviewPlacementRef.current
-        })
-      );
-    });
-  }, []);
-
-  const updateDragPointerFromPointerEvent = useCallback(
-    (event: PointerEvent) => {
-      dragPointerRef.current = { x: event.clientX, y: event.clientY };
-      dragPointerUpdatedAtRef.current = getNow();
-      dragPointerSourceRef.current = "native";
-      scheduleDragPreviewSync();
-    },
-    [scheduleDragPreviewSync]
-  );
-
-  const updateDragPointerFromTouchEvent = useCallback(
-    (event: TouchEvent) => {
-      const touch = event.touches[0] ?? event.changedTouches[0];
-      if (!touch) return;
-      dragPointerRef.current = { x: touch.clientX, y: touch.clientY };
-      dragPointerUpdatedAtRef.current = getNow();
-      dragPointerSourceRef.current = "native";
-      scheduleDragPreviewSync();
-    },
-    [scheduleDragPreviewSync]
-  );
-
-  function updateBlockDragPreview(activeBlock: Block) {
-    const pointer = dragPointerRef.current;
-    const next = getBlockDragPreviewPlacement({
-      config,
-      activeBlock,
-      pointer,
-      dragRect: getCurrentDragRect(),
-      device: editorDevice,
-      previousPlacement: dragPreviewPlacementRef.current
-    });
-    updateDragPreviewPlacement(next);
-    return next;
-  }
-
-  function cancelDragPreviewSync() {
-    if (dragPreviewSyncFrameRef.current === null) return;
-    window.cancelAnimationFrame(dragPreviewSyncFrameRef.current);
-    dragPreviewSyncFrameRef.current = null;
-  }
-
-  async function save() {
-    const result = validateSiteConfig(baseConfig);
-    if (!result.success) {
-      toast.error(copy.saveFailed, { description: result.error });
-      return;
-    }
-
-    setIsSaving(true);
-    const response = await fetch("/api/admin/config", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(result.data)
-    });
-    const body = (await response.json().catch(() => null)) as { error?: string; updatedAt?: string } | null;
-    setIsSaving(false);
-
-    if (!response.ok) {
-      toast.error(copy.saveFailed, { description: body?.error ?? "Unknown error" });
-      return;
-    }
-
-    setBaseConfig((current) => ({ ...current, updatedAt: body?.updatedAt ?? new Date().toISOString() }));
-    setIsDirty(false);
-    toast.success(copy.saveSuccess);
-  }
-
-  return (
-    <main className="admin-studio min-h-screen text-[#101010]">
-      <header className="admin-studio__topbar sticky top-0 z-40">
-        <div className="mx-auto grid max-w-[1180px] gap-2 px-5 py-3 md:flex md:items-center md:justify-between">
-          <div className="flex items-center justify-between gap-3 md:contents">
-            <div className="flex min-w-0 items-center gap-3 md:order-1">
-              <span className="admin-studio__mark" aria-hidden="true"><img src="/brand-seal.png" alt="" /></span>
-              <div className="min-w-0">
-                <p className="admin-studio__eyebrow">CONTENT STUDIO</p>
-                <p className="truncate text-sm font-bold">{baseConfig.settings.projectName}</p>
-              </div>
-              <span className="admin-studio__status shrink-0">
-                <i /> {isDirty ? copy.unsaved : copy.saved} · v{adminEditorVersion}
-              </span>
-            </div>
-            <div className="flex items-center justify-end gap-2 md:order-3">
-              <Button variant="secondary" size="sm" className="admin-studio__secondary-action" onClick={() => setModal({ type: "project-settings" })}>
-                <Settings className="h-4 w-4" />
-                {copy.projectSettings}
-              </Button>
-              <Button size="sm" className="admin-studio__save-action" onClick={save} disabled={isSaving || !validation.success}>
-                <Save className="h-4 w-4" />
-                {isSaving ? copy.saving : copy.save}
-              </Button>
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 md:order-2 md:ml-auto md:justify-end">
-            {shouldShowVariantPicker ? (
-              <>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={openTopBarOverrideDialog}
-                  className="h-9 rounded-full border-[#E3CFC5] bg-[#F4EBE6] px-3 text-xs text-[#176B39] hover:bg-[#D4F0D8]"
-                >
-                  {copy.variantOverride}
-                </Button>
-                <Select
-                  value={resolvedActiveVariantId}
-                  onChange={(event) => setActiveVariantId(event.target.value)}
-                  className="h-9 w-[132px] text-xs"
-                  aria-label="选择版本"
-                >
-                  {enabledVariants.map((variant) => (
-                    <option key={variant.id} value={variant.id}>
-                      {variant.name}
-                    </option>
-                  ))}
-                </Select>
-              </>
-            ) : null}
-            {shouldShowLanguagePicker ? (
-              <Select
-                value={resolvedActiveLocale}
-                onChange={(event) => setActiveLocale(event.target.value)}
-                className="h-9 w-[112px] text-xs"
-                aria-label="选择语言"
-              >
-                {availableLanguages.map((language) => (
-                  <option key={language.code} value={language.code}>
-                    {language.label}
-                  </option>
-                ))}
-              </Select>
-            ) : null}
-          </div>
-        </div>
-      </header>
-
-      {hasMounted ? (
-        <>
-          {isStructureOpen ? (
-            <PageStructurePanel
-              groups={outlineGroups}
-              selectedBlockId={selectedBlockId}
-              isDocked={isStructureDocked}
-              canUndo={lastOutlineGroupOrder !== null}
-              editorLanguage={editorLanguage}
-              onClose={() => setStructureOpen(false)}
-              onSelect={selectOutlineGroup}
-              onEdit={editOutlineGroup}
-              onEditBlock={(blockId) => setModal({ type: "block", blockId })}
-              onToggleVisibility={toggleOutlineGroupVisibility}
-              onReorder={reorderOutlineGroups}
-              onMove={moveOutlineGroup}
-              onUndo={undoOutlineOrder}
-            />
-          ) : null}
-          <DndContext
-            id="admin-visual-editor-dnd"
-            sensors={sensors}
-            collisionDetection={collisionDetection}
-            onDragStart={onDragStart}
-            onDragMove={onDragMove}
-            onDragOver={onDragOver}
-            onDragEnd={onDragEnd}
-            onDragCancel={onDragCancel}
-          >
-            <div
-              className="admin-studio__stage flex justify-center overflow-x-hidden px-3 transition-[padding] duration-200"
-              style={{ paddingLeft: isStructureOpen && isStructureDocked ? 328 : undefined }}
-            >
-              <div
-                style={
-                  {
-                    "--site-bg": config.theme.backgroundColor,
-                    "--site-card": config.theme.cardBackground,
-                    "--site-text": config.theme.textColor,
-                    "--site-muted": config.theme.mutedTextColor,
-                    "--site-border": config.theme.borderColor,
-                    "--site-primary": config.theme.primaryColor,
-                    width: `${canvasWidth}px`,
-                    zoom: canvasScale
-                  } as React.CSSProperties & { zoom: number }
-                }
-                className={cn(
-                  "admin-studio__canvas grid gap-8 px-5 pb-28 pt-10 md:px-8 md:pt-14",
-                  editorDevice === "desktop" ? "grid-cols-[320px_minmax(0,1fr)] gap-12" : "grid-cols-1"
-                )}
-              >
-                <EditableProfile
-                  profile={config.profile}
-                  device={editorDevice}
-                  editorLanguage={editorLanguage}
-                  onPatch={patchProfile}
-                  onEditTags={() => setModal({ type: "tags" })}
-                  onEditSocial={() => setModal({ type: "social" })}
-                />
-                <section className="grid min-w-0 gap-2">
-                  <SortableContext
-                    items={editorContentItems.flatMap((item) => (item.type === "text-block" ? [item.block.id] : []))}
-                    strategy={rectSortingStrategy}
-                  >
-                    {(() => {
-                      const nodes: React.ReactNode[] = [];
-                      let contentCursor = 0;
-                      let didRenderTextPreview = false;
-                      let didRenderGridPreview = false;
-
-                      function pushTextPreview(position: number) {
-                        if (!activeDragBlock || !isSectionTextBlock(activeDragBlock)) return;
-                        if (didRenderTextPreview) return;
-                        if (activeTextPreviewContentIndex !== position) return;
-                        didRenderTextPreview = true;
-                        nodes.push(<TextBlockDropPreview key={`text-block-preview:${activeDragBlock.id}:${position}`} block={activeDragBlock} />);
-                      }
-
-                      function pushStandaloneGridPreview(position: number) {
-                        const previewContentIndex = dragPreviewPlacement?.targetContentIndex;
-                        if (!activeDragBlock || isSectionTextBlock(activeDragBlock)) return;
-                        if (didRenderGridPreview) return;
-                        if (dragPreviewPlacement?.blockId !== activeDragBlock.id) return;
-                        if (dragPreviewPlacement.targetSectionId !== topLevelBlockSectionId) return;
-                        if (previewContentIndex !== position) return;
-
-                        didRenderGridPreview = true;
-                        nodes.push(
-                          <StandaloneBlockDropPreview
-                            key={`block-preview:${activeDragBlock.id}:${position}`}
-                            device={editorDevice}
-                            block={activeDragBlock}
-                            placement={{ columnStart: dragPreviewPlacement.columnStart, rowStart: dragPreviewPlacement.rowStart }}
-                          />
-                        );
-                      }
-
-                      function pushEditableBlockGroup({
-                        key,
-                        contentGroupId,
-                        blocks,
-                        dragPreview,
-                        releaseSiblingPlacements
-                      }: {
-                        key: string;
-                        contentGroupId: string;
-                        blocks: Block[];
-                        dragPreview: DragPreviewPlacement | null;
-                        releaseSiblingPlacements: boolean;
-                      }) {
-                        if (blocks.length === 0) return;
-
-                        nodes.push(
-                          <EditableSection
-                            key={key}
-                            section={topLevelSection}
-                            contentGroupId={contentGroupId}
-                            blocks={blocks}
-                            onEditSection={() => undefined}
-                            onDeleteSection={() => undefined}
-                            onEditBlock={(blockId) => {
-                              const group = outlineGroups.find((item) => item.blockIds.includes(blockId));
-                              if (group?.moduleType) editOutlineGroup(group);
-                              else setModal({ type: "block", blockId });
-                            }}
-                            onDeleteBlock={deleteBlock}
-                            onSelectBlock={setSelectedBlockId}
-                            selectedBlockId={selectedBlockId}
-                            device={editorDevice}
-                            activeDragBlockId={activeDragBlockId}
-                            dragPreviewBlock={activeDragBlock}
-                            dragPreviewPlacement={dragPreview}
-                            onResizeBlock={patchBlockSizeForDevice}
-                            onResizePreview={setResizePreviewSize}
-                            resizeDrafts={resizeDrafts}
-                            onResizeDraft={(blockId, size) =>
-                              setResizeDrafts((current) => {
-                                if (!size) {
-                                  const next = { ...current };
-                                  delete next[blockId];
-                                  return next;
-                                }
-                                return { ...current, [blockId]: size };
-                              })
-                            }
-                            sectionHandleProps={{}}
-                            hideHeader
-                            showDragPreview={dragPreview !== null}
-                            releaseSiblingPlacementsDuringPreview={dragPreview !== null && releaseSiblingPlacements}
-                          />
-                        );
-                      }
-
-                      for (const item of editorContentItems) {
-                        pushTextPreview(contentCursor);
-
-                        if (item.type === "top-level-blocks") {
-                          const contentBlocks = item.blocks.filter((block) => block.id !== activeDragBlockId);
-                          const experienceGroup = outlineGroups.find(
-                            (group) => group.moduleType === "experience" && item.blocks.some((block) => group.blockIds.includes(block.id))
-                          );
-                          if (experienceGroup) {
-                            nodes.push(
-                              <EditableExperienceModule
-                                key={item.id}
-                                group={experienceGroup}
-                                blocks={item.blocks}
-                                selected={experienceGroup.blockIds.includes(selectedBlockId ?? "")}
-                                onEdit={() => editOutlineGroup(experienceGroup)}
-                                onDelete={() => deleteBlock(experienceGroup.primaryEditBlockId)}
-                                onSelect={() => setSelectedBlockId(experienceGroup.primaryEditBlockId)}
-                              />
-                            );
-                            contentCursor += contentBlocks.length;
-                            continue;
-                          }
-                          const textPreviewBlock =
-                            activeDragBlock !== null && isSectionTextBlock(activeDragBlock) ? activeDragBlock : null;
-                          const orderedContentBlocksForTextPreview =
-                            textPreviewBlock !== null ? getBlocksInMeasuredVisualOrder(contentBlocks) : contentBlocks;
-                          const previewContentIndex = dragPreviewPlacement?.targetContentIndex;
-                          const shouldShowGridPreview =
-                            activeDragBlock !== null &&
-                            !isSectionTextBlock(activeDragBlock) &&
-                            dragPreviewPlacement?.blockId === activeDragBlock.id &&
-                            dragPreviewPlacement.targetSectionId === topLevelBlockSectionId &&
-                            !didRenderGridPreview &&
-                            previewContentIndex !== undefined &&
-                            previewContentIndex >= contentCursor &&
-                            previewContentIndex <= contentCursor + contentBlocks.length;
-                          if (shouldShowGridPreview) {
-                            didRenderGridPreview = true;
-                          }
-                          const activeBlockIndex = item.blocks.findIndex((block) => block.id === activeDragBlockId);
-                          const activeContentIndex = activeBlockIndex >= 0 ? contentCursor + activeBlockIndex : null;
-                          const isOriginalPreviewPosition =
-                            activeDragBlock !== null &&
-                            dragPreviewPlacement !== null &&
-                            previewContentIndex === activeContentIndex &&
-                            isDragPreviewAtBlockPlacement(activeDragBlock, dragPreviewPlacement, editorDevice);
-                          const shouldReleaseSiblingPlacements =
-                            activeDragBlock !== null &&
-                            shouldReleaseSiblingPlacementsForDrag(activeDragBlock, editorDevice) &&
-                            !isOriginalPreviewPosition;
-
-                          const textPreviewOffset =
-                            textPreviewBlock !== null &&
-                            !didRenderTextPreview &&
-                            activeTextPreviewContentIndex !== undefined &&
-                            activeTextPreviewContentIndex > contentCursor &&
-                            activeTextPreviewContentIndex < contentCursor + contentBlocks.length
-                              ? activeTextPreviewContentIndex - contentCursor
-                              : null;
-
-                          if (textPreviewOffset !== null && textPreviewBlock !== null) {
-                            didRenderTextPreview = true;
-                            pushEditableBlockGroup({
-                              key: `${item.id}:before-text-preview`,
-                              contentGroupId: item.id,
-                              blocks: orderedContentBlocksForTextPreview.slice(0, textPreviewOffset),
-                              dragPreview: null,
-                              releaseSiblingPlacements: false
-                            });
-                            nodes.push(
-                              <TextBlockDropPreview
-                                key={`text-block-preview:${textPreviewBlock.id}:${activeTextPreviewContentIndex}`}
-                                block={textPreviewBlock}
-                              />
-                            );
-                            pushEditableBlockGroup({
-                              key: `${item.id}:after-text-preview`,
-                              contentGroupId: item.id,
-                              blocks: orderedContentBlocksForTextPreview.slice(textPreviewOffset),
-                              dragPreview: null,
-                              releaseSiblingPlacements: false
-                            });
-                            contentCursor += contentBlocks.length;
-                            continue;
-                          }
-
-                          pushEditableBlockGroup({
-                            key: item.id,
-                            contentGroupId: item.id,
-                            blocks: item.blocks,
-                            dragPreview:
-                              shouldShowGridPreview && dragPreviewPlacement
-                                ? {
-                                    ...dragPreviewPlacement,
-                                    targetIndex: (previewContentIndex ?? contentCursor) - contentCursor
-                                  }
-                                : null,
-                            releaseSiblingPlacements: shouldReleaseSiblingPlacements
-                          });
-                          contentCursor += contentBlocks.length;
-                          continue;
-                        }
-
-                        pushStandaloneGridPreview(contentCursor);
-                        nodes.push(
-                          <SortableTextBlock
-                            key={item.id}
-                            block={item.block}
-                            device={editorDevice}
-                            isDragOverlayActive={activeDragBlockId === item.block.id}
-                            disableSortableTransform={activeDragBlockId !== null}
-                            removeFromFlowDuringDrag={
-                              activeTextPreviewContentIndex !== undefined && activeDragBlockId === item.block.id
-                            }
-                            onEdit={() => {
-                              const group = outlineGroups.find((group) => group.blockIds.includes(item.block.id));
-                              if (group?.moduleType) editOutlineGroup(group);
-                              else setModal({ type: "block", blockId: item.block.id });
-                            }}
-                            onDelete={() => deleteBlock(item.block.id)}
-                            onSelect={() => setSelectedBlockId(item.block.id)}
-                            selected={selectedBlockId === item.block.id}
-                            disableDrag={isOutlineSpecialModuleType(item.block.metadata?.sourceSectionId)}
-                          />
-                        );
-                        if (item.block.id !== activeDragBlockId) {
-                          contentCursor += 1;
-                        }
-                      }
-
-                      pushTextPreview(contentCursor);
-                      pushStandaloneGridPreview(contentCursor);
-                      return nodes;
-                    })()}
-                  </SortableContext>
-                </section>
-              </div>
-            </div>
-            <DragOverlay
-              adjustScale={false}
-              dropAnimation={{
-                duration: 220,
-                easing: "cubic-bezier(0.22, 1, 0.36, 1)"
-              }}
-            >
-              {activeDragBlock && dragOverlayRect ? (
-                <div
-                  style={{
-                    width: dragOverlayRect.width,
-                    height: dragOverlayRect.height,
-                    minWidth: dragOverlayRect.width,
-                    minHeight: dragOverlayRect.height,
-                    maxWidth: dragOverlayRect.width,
-                    maxHeight: dragOverlayRect.height
-                  }}
-                  className="pointer-events-none box-border shrink-0 scale-[1.035] cursor-grabbing overflow-hidden rounded-[20px] opacity-95 shadow-[0_24px_70px_rgba(15,23,42,0.24)]"
-                >
-                  <DragOverlayBlockPreview
-                    block={activeDragBlock}
-                    width={dragOverlayRect.width}
-                    height={dragOverlayRect.height}
-                  />
-                </div>
-              ) : null}
-            </DragOverlay>
-          </DndContext>
-
-          <FloatingToolbar
-            device={editorDevice}
-            canEditDesktop={canEditDesktop}
-            editorLanguage={editorLanguage}
-            isStructureOpen={isStructureOpen}
-            onDeviceChange={(device) => {
-              if (device === "desktop" && !canEditDesktop) return;
-              setResizeDrafts({});
-              setResizePreviewSize(null);
-              setEditorDevice(device);
-            }}
-            onToggleStructure={() => setStructureOpen(!isStructureOpen)}
-            onAddBlock={() => setModal({ type: "add-block" })}
-          />
-          {resizePreviewSize ? <ResizePreview activeSize={resizePreviewSize} editorLanguage={editorLanguage} /> : null}
-        </>
-      ) : null}
-
-      {modal ? (
-        <EditorModal
-          title={modalTitle(modal, editorLanguage)}
-          onClose={() => setModal(null)}
-          onSave={save}
-          isSaving={isSaving}
-          editorLanguage={editorLanguage}
-          canSave={modal.type !== "project-settings" || validation.success}
-          footerStart={
-            modal.type === "block" || modal.type === "special-module" ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  const blockId = modal.type === "block"
-                    ? modal.blockId
-                    : outlineGroups.find((group) => group.id === modal.groupId)?.primaryEditBlockId;
-                  if (blockId) deleteBlock(blockId);
-                }}
-                className="text-red-600 hover:bg-red-50 hover:text-red-700"
-              >
-                <Trash2 className="h-4 w-4" />
-                {copy.delete}
-              </Button>
-            ) : null
-          }
-        >
-          {modal.type === "tags" ? <TagsQuickForm profile={config.profile} onPatch={patchProfile} editorLanguage={editorLanguage} /> : null}
-          {modal.type === "social" ? <SocialLinksQuickForm profile={config.profile} onPatch={patchProfile} editorLanguage={editorLanguage} /> : null}
-          {modal.type === "block" ? (
-            <BlockModalBody
-              block={config.blocks.find((block) => block.id === modal.blockId)}
-              onPatch={(patch) => patchBlock(modal.blockId, patch)}
-              editorLanguage={editorLanguage}
-            />
-          ) : null}
-          {modal.type === "special-module" ? (
-            <SpecialModuleModalBody
-              group={outlineGroups.find((group) => group.id === modal.groupId)}
-              onPatchBlock={patchBlock}
-              onPatchExperienceBlock={patchExperienceBlock}
-              onReplaceExperienceEntries={replaceExperienceGroupEntries}
-              onSetGroupVisibility={(groupId, isVisible) =>
-                update({ ...config, blocks: setContentOutlineGroupVisibility(config.blocks, groupId, isVisible) })
-              }
-              editorLanguage={editorLanguage}
-            />
-          ) : null}
-          {modal.type === "add-block" ? <AddBlockDialog onAdd={addBlock} editorLanguage={editorLanguage} /> : null}
-          {modal.type === "project-settings" ? (
-            <ProjectSettingsForm
-              config={baseConfig}
-              contentConfig={config}
-              activeVariantId={resolvedActiveVariantId}
-              activeLocale={resolvedActiveLocale}
-              onChange={updateBaseConfig}
-              onContentChange={update}
-              onExport={exportConfig}
-              onImport={importConfig}
-              editorLanguage={editorLanguage}
-              onEditorLanguageChange={changeEditorLanguage}
-            />
-          ) : null}
-        </EditorModal>
-      ) : null}
-      {overrideDraft ? (
-        <VariantOverrideDialog
-          draft={overrideDraft}
-          variants={[...baseConfig.settings.variants.variants].sort(bySortOrder)}
-          getLanguages={getTopBarVariantLanguages}
-          editorLanguage={editorLanguage}
-          onChange={setOverrideDraft}
-          onClose={() => setOverrideDraft(null)}
-          onApply={() => applyTopBarVariantOverride(overrideDraft)}
-        />
-      ) : null}
-    </main>
-  );
+ const [baseConfig, setBaseConfig] = useState(() => normalizeContentFlowConfig(initialConfig));
+ const editorLanguage = useSyncExternalStore(
+ subscribeToEditorLanguage,
+ resolveInitialEditorLanguage,
+ () => initialLanguage
+ );
+ const [activeVariantId, setActiveVariantId] = useState(() => getMainVariantId(initialConfig));
+ const [activeLocale, setActiveLocale] = useState(() => getVariantMainLocale(initialConfig, getMainVariantId(initialConfig)));
+ const [modal, setModal] = useState<ModalState>(null);
+ const [overrideDraft, setOverrideDraft] = useState<{ targetVariantId: string; targetLocale: string; sourceVariantId: string; sourceLocale: string } | null>(
+ null
+ );
+ const [isDirty, setIsDirty] = useState(false);
+ const [isSaving, setIsSaving] = useState(false);
+ const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+ const [isStructureOpen, setIsStructureOpen] = useState(() => {
+ if (typeof window === "undefined") return false;
+ const saved = window.localStorage.getItem("personal-site-studio:structure-open");
+ return saved === null ? window.innerWidth >= 1440 : saved === "true";
+ });
+ const [lastOutlineGroupOrder, setLastOutlineGroupOrder] = useState<string[] | null>(null);
+ const [resizePreviewSize, setResizePreviewSize] = useState<BlockSize | null>(null);
+ const [resizeDrafts, setResizeDrafts] = useState<Record<string, BlockResizeDraft>>({});
+ const [activeDragBlockId, setActiveDragBlockId] = useState<string | null>(null);
+ const [dragOverlayRect, setDragOverlayRect] = useState<DragOverlayRect | null>(null);
+ const [dragPreviewPlacement, setDragPreviewPlacement] = useState<DragPreviewPlacement | null>(null);
+ const [hasMounted, setHasMounted] = useState(false);
+ const [editorDevice, setEditorDevice] = useState<LayoutDevice>(() => {
+ if (typeof window === "undefined") return "desktop";
+ return window.matchMedia("(max-width: 767px)").matches ? "mobile" : "desktop";
+ });
+ const [viewportWidth, setViewportWidth] = useState<number | null>(null);
+ const dragStartPointerRef = useRef<Point | null>(null);
+ const dragPointerRef = useRef<Point | null>(null);
+ const dragPointerOffsetRef = useRef<Point | null>(null);
+ const dragPointerUpdatedAtRef = useRef(0);
+ const dragPointerSourceRef = useRef<"native" | "synthetic" | null>(null);
+ const dragOverlayRectRef = useRef<DragOverlayRect | null>(null);
+ const activeDragBlockIdRef = useRef<string | null>(null);
+ const dragPreviewPlacementRef = useRef<DragPreviewPlacement | null>(null);
+ const dragPreviewSyncFrameRef = useRef<number | null>(null);
+ const validation = useMemo(() => validateSiteConfig(baseConfig), [baseConfig]);
+ const enabledVariants = useMemo(() => getEnabledVariants(baseConfig), [baseConfig]);
+ const resolvedActiveVariantId = enabledVariants.some((variant) => variant.id === activeVariantId)
+ ? activeVariantId
+ : getMainVariantId(baseConfig);
+ const availableLanguages = useMemo(
+ () => getAvailableLanguagesForVariant(baseConfig, resolvedActiveVariantId),
+ [baseConfig, resolvedActiveVariantId]
+ );
+ const resolvedActiveLocale = availableLanguages.some((language) => language.code === activeLocale)
+ ? activeLocale
+ : getVariantMainLocale(baseConfig, resolvedActiveVariantId);
+ const activeVariantIdRef = useRef(resolvedActiveVariantId);
+ const activeLocaleRef = useRef(resolvedActiveLocale);
+ const config = useMemo(
+ () => materializeSiteConfig(baseConfig, resolvedActiveVariantId, resolvedActiveLocale),
+ [baseConfig, resolvedActiveVariantId, resolvedActiveLocale]
+ );
+ const configRef = useRef(config);
+ const editorDeviceRef = useRef(editorDevice);
+ const copy = editorCopy[editorLanguage];
+ const sensors = useSensors(
+ useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
+ useSensor(TouchSensor, { activationConstraint: { delay: 320, tolerance: 10 } })
+ );
+ const shouldShowLanguagePicker = availableLanguages.length > 1;
+ const shouldShowVariantPicker = baseConfig.settings.variants.isEnabled && enabledVariants.length > 1;
+ const renderModel = useMemo(() => buildRenderModel(config, { includeHidden: true }), [config]);
+ const outlineGroups = useMemo(() => buildContentOutlineGroups(config.blocks), [config.blocks]);
+ const blockSectionById = useMemo(() => {
+ return new Map(config.blocks.map((block) => [block.id, block.sectionId]));
+ }, [config.blocks]);
+ const collisionDetection = useMemo<CollisionDetection>(() => {
+ return (args) => {
+ const activeId = String(args.active.id);
+ const activeBlockSectionId = blockSectionById.get(activeId);
+
+ if (!activeBlockSectionId) {
+ return closestCenter(args);
+ }
+
+ return closestCenter({
+ ...args,
+ droppableContainers: args.droppableContainers.filter((container) => {
+ const id = String(container.id);
+ if (id === `section:${activeBlockSectionId}`) return false;
+ return true;
+ })
+ });
+ };
+ }, [blockSectionById]);
+ const hostDevice: LayoutDevice = viewportWidth !== null && viewportWidth < desktopBreakpoint ? "mobile" : "desktop";
+ const canEditDesktop = hostDevice === "desktop";
+ const canvasWidth = editorCanvasWidth[editorDevice];
+ const isStructureDocked = viewportWidth !== null && viewportWidth >= 1440;
+ const availableCanvasWidth = viewportWidth === null
+ ? canvasWidth
+ : viewportWidth - (isStructureOpen && isStructureDocked ? 344 : 24);
+ const canvasScale = viewportWidth === null ? 1 : Math.min(1, Math.max(0.32, availableCanvasWidth / canvasWidth));
+ const activeDragBlock = useMemo(
+ () => (activeDragBlockId ? config.blocks.find((block) => block.id === activeDragBlockId) ?? null : null),
+ [activeDragBlockId, config.blocks]
+ );
+ const editorContentItems = useMemo(
+ () => renderModel.orderedContentItems,
+ [renderModel]
+ );
+ const activeTextPreviewContentIndex =
+ activeDragBlock && isSectionTextBlock(activeDragBlock) && dragPreviewPlacement?.blockId === activeDragBlock.id
+ ? dragPreviewPlacement.targetContentIndex
+ : undefined;
+ const topLevelSection = useMemo<Section>(
+ () => ({
+ id: topLevelBlockSectionId,
+ title: "",
+ emoji: "",
+ description: "",
+ titleAlign: "left",
+ titleSize: "md",
+ layout: "grid",
+ gap: "md",
+ sortOrder: 0,
+ isVisible: true,
+ createdAt: "",
+ updatedAt: ""
+ }),
+ []
+ );
+
+ useEffect(() => {
+ const updateViewport = () => {
+ setViewportWidth(window.innerWidth);
+ if (window.innerWidth < desktopBreakpoint) {
+ setResizeDrafts({});
+ setResizePreviewSize(null);
+ setEditorDevice("mobile");
+ }
+ };
+ const frame = window.requestAnimationFrame(() => {
+ updateViewport();
+ setHasMounted(true);
+ });
+ window.addEventListener("resize", updateViewport);
+ return () => {
+ window.cancelAnimationFrame(frame);
+ window.removeEventListener("resize", updateViewport);
+ };
+ }, []);
+
+ useEffect(() => {
+ configRef.current = config;
+ }, [config]);
+
+ useEffect(() => {
+ activeVariantIdRef.current = resolvedActiveVariantId;
+ }, [resolvedActiveVariantId]);
+
+ useEffect(() => {
+ activeLocaleRef.current = resolvedActiveLocale;
+ }, [resolvedActiveLocale]);
+
+ useEffect(() => {
+ editorDeviceRef.current = editorDevice;
+ }, [editorDevice]);
+
+ useEffect(() => {
+ const confirmUnsavedChanges = (event: BeforeUnloadEvent) => {
+ if (!isDirty) return;
+ event.preventDefault();
+ event.returnValue = "";
+ };
+
+ window.addEventListener("beforeunload", confirmUnsavedChanges);
+ return () => window.removeEventListener("beforeunload", confirmUnsavedChanges);
+ }, [isDirty]);
+
+ useEffect(() => {
+ const saved = window.localStorage.getItem(editorLanguageStorageKey);
+ if (saved !== editorLanguage) {
+ window.localStorage.setItem(editorLanguageStorageKey, editorLanguage);
+ }
+ }, [editorLanguage]);
+
+ function changeEditorLanguage(value: string) {
+ if (!isEditorLanguage(value)) return;
+ window.localStorage.setItem(editorLanguageStorageKey, value);
+ window.dispatchEvent(new StorageEvent("storage", { key: editorLanguageStorageKey }));
+ }
+
+ function getCurrentDragRect(): MeasuredRect | null {
+ const pointer = dragPointerRef.current;
+ const offset = dragPointerOffsetRef.current;
+ const rect = dragOverlayRectRef.current;
+ if (!pointer || !offset || !rect) return null;
+
+ const left = pointer.x - offset.x;
+ const top = pointer.y - offset.y;
+ return {
+ left,
+ top,
+ width: rect.width,
+ height: rect.height,
+ right: left + rect.width,
+ bottom: top + rect.height
+ };
+ }
+
+ function updateDragPreviewPlacement(next: DragPreviewPlacement | null) {
+ const current = dragPreviewPlacementRef.current;
+ if (
+ current?.blockId === next?.blockId &&
+ current?.targetSectionId === next?.targetSectionId &&
+ current?.targetIndex === next?.targetIndex &&
+ current?.targetContentIndex === next?.targetContentIndex &&
+ current?.columnStart === next?.columnStart &&
+ current?.rowStart === next?.rowStart
+ ) {
+ return;
+ }
+ cancelAdminBlockLayoutAnimations();
+ dragPreviewPlacementRef.current = next;
+ setDragPreviewPlacement(next);
+ window.requestAnimationFrame(cancelAdminBlockLayoutAnimations);
+ }
+
+ function update(next: SiteConfig) {
+ setConfig(normalizeContentFlowConfig(next));
+ setIsDirty(true);
+ }
+
+ function setStructureOpen(next: boolean) {
+ setIsStructureOpen(next);
+ window.localStorage.setItem("personal-site-studio:structure-open", String(next));
+ }
+
+ function selectOutlineGroup(group: ContentOutlineGroup) {
+ setSelectedBlockId(group.primaryEditBlockId);
+ window.requestAnimationFrame(() => {
+ document.querySelector<HTMLElement>(`[data-admin-block-id="${group.primaryEditBlockId}"]`)?.scrollIntoView({
+ behavior: "smooth",
+ block: "center"
+ });
+ });
+ }
+
+ function editOutlineGroup(group: ContentOutlineGroup) {
+ setSelectedBlockId(group.primaryEditBlockId);
+ setModal(group.moduleType ? { type: "special-module", groupId: group.id } : { type: "block", blockId: group.primaryEditBlockId });
+ }
+
+ function captureOutlineOrder() {
+ setLastOutlineGroupOrder(outlineGroups.map((group) => group.id));
+ }
+
+ function reorderOutlineGroups(activeGroupId: string, overGroupId: string) {
+ captureOutlineOrder();
+ update({ ...config, blocks: reorderContentOutlineGroups(config.blocks, activeGroupId, overGroupId) });
+ }
+
+ function moveOutlineGroup(groupId: string, targetIndex: number) {
+ captureOutlineOrder();
+ update({ ...config, blocks: moveContentOutlineGroup(config.blocks, groupId, targetIndex) });
+ }
+
+ function undoOutlineOrder() {
+ if (!lastOutlineGroupOrder) return;
+ update({ ...config, blocks: applyContentOutlineGroupOrder(config.blocks, lastOutlineGroupOrder) });
+ setLastOutlineGroupOrder(null);
+ }
+
+ function toggleOutlineGroupVisibility(group: ContentOutlineGroup) {
+ update({ ...config, blocks: setContentOutlineGroupVisibility(config.blocks, group.id, !group.isVisible) });
+ }
+
+ function updateBaseConfig(next: SiteConfig) {
+ setBaseConfig(normalizeContentFlowConfig(next));
+ setIsDirty(true);
+ }
+
+ function getTopBarVariantLanguages(variantId: string) {
+ return getVariantLanguages(baseConfig, variantId);
+ }
+
+ function openTopBarOverrideDialog() {
+ const sourceVariantId = getMainVariantId(baseConfig);
+ setOverrideDraft({
+ targetVariantId: resolvedActiveVariantId,
+ targetLocale: resolvedActiveLocale,
+ sourceVariantId,
+ sourceLocale: getVariantMainLocale(baseConfig, sourceVariantId)
+ });
+ }
+
+ function applyTopBarVariantOverride(draft: { targetVariantId: string; targetLocale: string; sourceVariantId: string; sourceLocale: string }) {
+ const targetVariant = baseConfig.settings.variants.variants.find((variant) => variant.id === draft.targetVariantId);
+ const targetLanguage = getVariantLanguages(baseConfig, draft.targetVariantId).find((language) => language.code === draft.targetLocale);
+ const sourceVariant = baseConfig.settings.variants.variants.find((variant) => variant.id === draft.sourceVariantId);
+ const sourceLanguage = getVariantLanguages(baseConfig, draft.sourceVariantId).find((language) => language.code === draft.sourceLocale);
+ const sourceLabel = `${sourceVariant?.name || draft.sourceVariantId} - ${sourceLanguage?.label || draft.sourceLocale}`;
+ const targetLabel = `${targetVariant?.name || draft.targetVariantId} - ${targetLanguage?.label || draft.targetLocale}`;
+ const message =
+ editorLanguage === "zh-CN"
+ ? `确认用「${sourceLabel}」覆盖当前「${targetLabel}」？当前内容会被直接替换。`
+ : `Override "${targetLabel}" with "${sourceLabel}"? The current content will be replaced.`;
+ if (!window.confirm(message)) return;
+ const sourceConfig = materializeSiteConfig(baseConfig, draft.sourceVariantId, draft.sourceLocale);
+ updateBaseConfig(writeSiteContentSnapshot(baseConfig, draft.targetVariantId, draft.targetLocale, sourceConfig));
+ setOverrideDraft(null);
+ }
+
+ function setConfig(next: SiteConfig | ((current: SiteConfig) => SiteConfig)) {
+ setBaseConfig((current) => {
+ const currentActiveConfig = materializeSiteConfig(current, activeVariantIdRef.current, activeLocaleRef.current);
+ const nextActiveConfig = typeof next === "function" ? next(currentActiveConfig) : next;
+ return writeSiteContentSnapshot(current, activeVariantIdRef.current, activeLocaleRef.current, nextActiveConfig);
+ });
+ }
+
+ function exportConfig() {
+ const scopedConfig: SiteConfig = {
+ ...config,
+ contentVariants: {},
+ updatedAt: new Date().toISOString()
+ };
+ const blob = new Blob([JSON.stringify(scopedConfig, null, 2)], { type: "application/json" });
+ const url = URL.createObjectURL(blob);
+ const link = document.createElement("a");
+ const activeVariant = enabledVariants.find((variant) => variant.id === resolvedActiveVariantId);
+ const activeLanguage = availableLanguages.find((language) => language.code === resolvedActiveLocale);
+ const safeName = [baseConfig.settings.projectName || "site-config", activeVariant?.name || resolvedActiveVariantId, activeLanguage?.label || resolvedActiveLocale]
+ .join("-")
+ .toLowerCase()
+ .replace(/[^a-z0-9]+/g, "-")
+ .replace(/(^-|-$)/g, "");
+ link.href = url;
+ link.download = `${safeName || "site-config"}.json`;
+ document.body.appendChild(link);
+ link.click();
+ link.remove();
+ URL.revokeObjectURL(url);
+ }
+
+ async function importConfig(file: File) {
+ const text = await file.text();
+ const parsed = JSON.parse(text) as unknown;
+ const result = validateSiteConfig(parsed);
+
+ if (!result.success) {
+ toast.error(copy.importFailed, { description: result.error });
+ return;
+ }
+
+ const importedConfig = normalizeContentFlowConfig(result.data);
+ updateBaseConfig(writeSiteContentSnapshot(baseConfig, resolvedActiveVariantId, resolvedActiveLocale, importedConfig));
+ toast.success(copy.importSuccess, { description: copy.importSuccessDescription });
+ }
+
+ function patchProfile(patch: Partial<Profile>) {
+ update({ ...config, profile: { ...config.profile, ...patch } });
+ }
+
+ function patchBlock(blockId: string, patch: Partial<Block>) {
+ const linkedModuleIds = patch.isVisible === undefined ? new Set([blockId]) : getSpecialModuleDeleteIds(config.blocks, blockId);
+ const now = new Date().toISOString();
+ update({
+ ...config,
+ blocks: normalizeBlocks(
+ config.blocks.map((block) =>
+ block.id === blockId
+ ? { ...block, ...patch, sectionId: topLevelBlockSectionId, updatedAt: now }
+ : linkedModuleIds.has(block.id) && patch.isVisible !== undefined
+ ? { ...block, isVisible: patch.isVisible, updatedAt: now }
+ : block
+ )
+ )
+ });
+ }
+
+ function patchExperienceBlock(blockId: string, patch: Partial<Block>) {
+ const now = new Date().toISOString();
+ update({
+ ...config,
+ blocks: normalizeBlocks(
+ config.blocks.map((block) =>
+ block.id === blockId ? { ...block, ...patch, sectionId: topLevelBlockSectionId, updatedAt: now } : block
+ )
+ )
+ });
+ }
+
+ function replaceExperienceGroupEntries(groupId: string, nextEntries: Block[]) {
+ const group = buildContentOutlineGroups(config.blocks).find((item) => item.id === groupId);
+ if (!group || group.moduleType !== "experience" || !group.headingId) return;
+
+ const entryIds = new Set(group.blocks.filter((block) => !isSectionTextBlock(block)).map((block) => block.id));
+ const ordered = [...config.blocks].sort(bySortOrder).filter((block) => !entryIds.has(block.id));
+ const headingIndex = ordered.findIndex((block) => block.id === group.headingId);
+ if (headingIndex < 0) return;
+
+ const now = new Date().toISOString();
+ ordered.splice(
+ headingIndex + 1,
+ 0,
+ ...nextEntries.map((block) => ({
+ ...block,
+ sectionId: topLevelBlockSectionId,
+ size: "wide" as const,
+ responsiveSizes: { ...block.responsiveSizes, desktop: "wide" as const, mobile: "full-wide" as const },
+ actionType: "modal" as const,
+ openInNewTab: false,
+ updatedAt: now
+ }))
+ );
+
+ update({
+ ...config,
+ blocks: ordered.map((block, index) => ({ ...block, sortOrder: index + 1 }))
+ });
+ }
+
+ function patchBlockSizeForDevice(blockId: string, size: BlockSize) {
+ setConfig((current) =>
+ normalizeContentFlowConfig({
+ ...current,
+ blocks: normalizeBlocks(
+ current.blocks.map((block) =>
+ block.id === blockId && !isSectionTextBlock(block)
+ ? {
+ ...block,
+ sectionId: topLevelBlockSectionId,
+ size: block.size,
+ responsiveSizes: {
+ ...block.responsiveSizes,
+ [editorDevice]: size
+ },
+ updatedAt: new Date().toISOString()
+ }
+ : block
+ )
+ )
+ })
+ );
+ setIsDirty(true);
+ }
+
+ function applyBlockPlacement(
+ block: Block,
+ device: LayoutDevice,
+ placement?: BlockPlacementDraft
+ ): Block {
+ if (!placement?.columnStart && !placement?.rowStart) return block;
+ return {
+ ...block,
+ placements: {
+ ...block.placements,
+ [device]: {
+ ...block.placements?.[device],
+ ...placement
+ }
+ },
+ updatedAt: new Date().toISOString()
+ };
+ }
+
+ function moveBlockWithPlacement(
+ blockId: string,
+ _targetSectionId: string,
+ _targetIndex: number,
+ placement?: BlockPlacementDraft
+ ) {
+ const activeBlock = config.blocks.find((block) => block.id === blockId);
+ if (!activeBlock) return config.blocks;
+
+ return normalizeBlocks(config.blocks).map((block) =>
+ block.id === blockId
+ ? applyBlockPlacement({ ...block, sectionId: topLevelBlockSectionId, updatedAt: new Date().toISOString() }, editorDevice, placement)
+ : block
+ );
+ }
+
+ function moveBlockToContentIndex(
+ blockId: string,
+ targetContentIndex: number,
+ placement?: BlockPlacementDraft
+ ): SiteConfig {
+ const activeBlock = config.blocks.find((block) => block.id === blockId);
+ if (!activeBlock) return config;
+
+ const now = new Date().toISOString();
+ const renderModel = buildRenderModel(config, { includeHidden: true });
+ const originalContentIndex = getContentIndexForBlock(renderModel, blockId);
+ const flowItems = getContentFlowForBlockMove(renderModel, blockId, isSectionTextBlock(activeBlock));
+ const nextItems: ContentFlowItem[] = [...flowItems];
+ const insertedIndex = Math.max(0, Math.min(targetContentIndex, flowItems.length));
+ nextItems.splice(insertedIndex, 0, {
+ type: "top-level-block",
+ id: blockId,
+ block: activeBlock
+ });
+
+ const blockSortOrderById = new Map<string, number>();
+ nextItems.forEach((item, index) => {
+ blockSortOrderById.set(item.id, index + 1);
+ });
+ const shouldReleaseAffectedPlacements =
+ shouldReleaseSiblingPlacementsForDrag(activeBlock, editorDevice) &&
+ (originalContentIndex !== insertedIndex || !isDragPreviewAtBlockPlacement(activeBlock, placement, editorDevice));
+ const affectedGroupBlockIds = shouldReleaseAffectedPlacements
+ ? getTopLevelBlockGroupIdsAtIndex(nextItems, insertedIndex)
+ : new Set<string>();
+
+ return {
+ ...config,
+ sections: [],
+ blocks: normalizeBlocks(
+ config.blocks.map((block) => {
+ if (block.id === blockId) {
+ return applyBlockPlacement(
+ {
+ ...block,
+ sectionId: topLevelBlockSectionId,
+ sortOrder: blockSortOrderById.get(block.id) ?? block.sortOrder,
+ updatedAt: now
+ },
+ editorDevice,
+ placement
+ );
+ }
+
+ if (blockSortOrderById.has(block.id)) {
+ const nextBlock = {
+ ...block,
+ sectionId: topLevelBlockSectionId,
+ sortOrder: blockSortOrderById.get(block.id) ?? block.sortOrder
+ };
+
+ return affectedGroupBlockIds.has(block.id)
+ ? { ...withoutBlockPlacementForDevice(nextBlock, editorDevice), updatedAt: now }
+ : nextBlock;
+ }
+
+ return block;
+ })
+ ),
+ settings: {
+ ...config.settings,
+ topLevelBlocksSortOrder: undefined
+ }
+ };
+ }
+
+ function getTopLevelBlockGroupIdsAtIndex(items: ContentFlowItem[], index: number) {
+ const ids = new Set<string>();
+ if (items[index]?.type !== "top-level-block") return ids;
+
+ for (let cursor = index; cursor >= 0 && items[cursor]?.type === "top-level-block"; cursor -= 1) {
+ ids.add(items[cursor].id);
+ }
+ for (let cursor = index + 1; cursor < items.length && items[cursor]?.type === "top-level-block"; cursor += 1) {
+ ids.add(items[cursor].id);
+ }
+
+ return ids;
+ }
+
+ function getContentIndexForBlock(renderModel: ReturnType<typeof buildRenderModel>, blockId: string) {
+ let index = 0;
+
+ for (const item of renderModel.orderedContentItems) {
+ if (item.type === "top-level-blocks") {
+ for (const block of item.blocks) {
+ if (block.id === blockId) return index;
+ index += 1;
+ }
+ continue;
+ }
+
+ if (item.block.id === blockId) return index;
+ index += 1;
+ }
+
+ return null;
+ }
+
+ function deleteBlock(blockId: string) {
+ const blockIds = getSpecialModuleDeleteIds(config.blocks, blockId);
+ const isSpecialModule = blockIds.size > 1;
+ const confirmMessage = isSpecialModule
+ ? editorLanguage === "zh-CN"
+ ? "确认删除整个模块？模块标题和内容会一起移除。"
+ : "Delete the entire module? Its heading and content will both be removed."
+ : copy.deleteBlockConfirm;
+ if (!window.confirm(confirmMessage)) return;
+ update({ ...config, blocks: normalizeBlocks(config.blocks.filter((block) => !blockIds.has(block.id))) });
+ setModal(null);
+ }
+
+ function getSpecialModuleDeleteIds(blocks: Block[], blockId: string) {
+ const ids = new Set([blockId]);
+ const outlineGroup = buildContentOutlineGroups(blocks).find((group) => group.blockIds.includes(blockId));
+ if (outlineGroup?.moduleType) return new Set(outlineGroup.blockIds);
+
+ const ordered = [...blocks].filter((block) => block.sectionId === topLevelBlockSectionId).sort(bySortOrder);
+ const targetIndex = ordered.findIndex((block) => block.id === blockId);
+ if (targetIndex < 0) return ids;
+
+ const target = ordered[targetIndex];
+ const targetModuleType = getSpecialModuleType(target);
+ if (targetModuleType) {
+ for (let index = targetIndex - 1; index >= 0; index -= 1) {
+ const candidate = ordered[index];
+ if (!isSectionTextBlock(candidate)) continue;
+ if (candidate.metadata?.sourceSectionId === targetModuleType) ids.add(candidate.id);
+ break;
+ }
+ return ids;
+ }
+
+ const sourceSectionId = target.metadata?.sourceSectionId;
+ if (!isSectionTextBlock(target) || !isSpecialModuleSourceId(sourceSectionId)) return ids;
+ for (let index = targetIndex + 1; index < ordered.length; index += 1) {
+ const candidate = ordered[index];
+ if (isSectionTextBlock(candidate)) break;
+ if (getSpecialModuleType(candidate) === sourceSectionId) ids.add(candidate.id);
+ }
+ return ids;
+ }
+
+ function addBlock(template: BlockTemplate) {
+ if (template.moduleType) {
+ addSpecialModule(template.moduleType);
+ return;
+ }
+
+ const now = new Date().toISOString();
+ const isTextSection = template.size === "section-text";
+ const isPlainTextBlock = template.defaultMetadata?.textVariant === "plain";
+ const newBlock: Block = {
+ id: crypto.randomUUID(),
+ sectionId: topLevelBlockSectionId,
+ title: isPlainTextBlock
+ ? copy.blockNewTextTitle
+ : template.defaultTitle ?? (isTextSection ? (editorLanguage === "zh-CN" ? "新区块标题" : "New Section") : getLocalizedTemplateLabel(template, editorLanguage)),
+ subtitle: template.defaultSubtitle ?? (isPlainTextBlock ? "" : getLocalizedTemplateDescription(template, editorLanguage)),
+ description: template.defaultDescription ?? (isPlainTextBlock ? copy.blockNewTextDescription : ""),
+ size: isTextSection ? "section-text" : template.size,
+ responsiveSizes: isTextSection
+ ? {
+ desktop: "section-text",
+ mobile: "section-text"
+ }
+ : undefined,
+ coverImage: "",
+ icon: template.defaultIcon ?? "",
+ badge: template.defaultBadge ?? "",
+ href: template.defaultHref ?? "",
+ actionType: template.defaultActionType ?? "none",
+ openInNewTab: true,
+ backgroundColor: "",
+ textColor: "",
+ metadata: isTextSection
+ ? {
+ titleAlign: "left",
+ titleSize: "md"
+ }
+ : template.defaultMetadata ?? {},
+ isVisible: true,
+ isFeatured: false,
+ sortOrder: getNextContentSortOrder(config),
+ createdAt: now,
+ updatedAt: now
+ };
+ update({ ...config, blocks: [...config.blocks, newBlock] });
+ setModal({ type: "block", blockId: newBlock.id });
+ }
+
+ function addSpecialModule(moduleType: SpecialModuleType) {
+ const now = new Date().toISOString();
+ const firstSortOrder = getNextContentSortOrder(config);
+ const moduleDefaults = getSpecialModuleDefaults(moduleType, editorLanguage);
+ const headingId = crypto.randomUUID();
+ const contentId = crypto.randomUUID();
+ const heading: Block = {
+ id: headingId,
+ sectionId: topLevelBlockSectionId,
+ title: moduleDefaults.headingTitle,
+ subtitle: moduleDefaults.headingSubtitle,
+ description: "",
+ size: "section-text",
+ responsiveSizes: { desktop: "section-text", mobile: "section-text" },
+ coverImage: "",
+ icon: moduleDefaults.icon,
+ badge: "",
+ href: "",
+ actionType: "none",
+ openInNewTab: false,
+ backgroundColor: "",
+ textColor: "",
+ metadata: {
+ sourceSectionId: moduleType,
+ titleAlign: "left",
+ titleSize: moduleDefaults.titleSize
+ },
+ isVisible: moduleDefaults.visible,
+ isFeatured: false,
+ sortOrder: firstSortOrder,
+ createdAt: now,
+ updatedAt: now
+ };
+ const content: Block = {
+ id: contentId,
+ sectionId: topLevelBlockSectionId,
+ title: moduleDefaults.contentTitle,
+ subtitle: moduleType === "experience"
+ ? (editorLanguage === "zh-CN" ? "职位名称 · 2026 年 1 月 - 至今" : "Role · Jan 2026 - Present")
+ : "",
+ description: moduleDefaults.description,
+ size: moduleType === "experience" ? "wide" : "full-wide",
+ responsiveSizes: moduleType === "experience"
+ ? { desktop: "wide", mobile: "full-wide" }
+ : { desktop: "full-wide", mobile: "full-wide" },
+ coverImage: "",
+ icon: moduleType === "experience" ? "building" : moduleDefaults.icon,
+ badge: "",
+ href: "",
+ actionType: moduleType === "experience" ? "modal" : "none",
+ openInNewTab: false,
+ backgroundColor: "",
+ textColor: "",
+ metadata: moduleDefaults.metadata,
+ isVisible: moduleDefaults.visible,
+ isFeatured: false,
+ sortOrder: firstSortOrder + 1,
+ createdAt: now,
+ updatedAt: now
+ };
+
+ update({ ...config, blocks: normalizeBlocks([...config.blocks, heading, content]) });
+ setModal({ type: "special-module", groupId: headingId });
+ }
+
+ function addSection() {
+ const now = new Date().toISOString();
+ const block: Block = {
+ id: crypto.randomUUID(),
+ sectionId: topLevelBlockSectionId,
+ title: editorLanguage === "zh-CN" ? "新区块标题" : "New Section",
+ subtitle: "",
+ description: "",
+ size: "section-text",
+ responsiveSizes: {
+ desktop: "section-text",
+ mobile: "section-text"
+ },
+ coverImage: "",
+ icon: "",
+ badge: "",
+ href: "",
+ actionType: "none",
+ openInNewTab: false,
+ backgroundColor: "",
+ textColor: "",
+ metadata: {
+ titleAlign: "left",
+ titleSize: "md"
+ },
+ sortOrder: getNextContentSortOrder(config),
+ isVisible: true,
+ isFeatured: false,
+ createdAt: now,
+ updatedAt: now
+ };
+ update({ ...config, blocks: [...config.blocks, block] });
+ setModal({ type: "block", blockId: block.id });
+ }
+
+ function onDragStart(event: DragStartEvent) {
+ const activeId = String(event.active.id);
+ const activeBlock = config.blocks.find((block) => block.id === activeId);
+ captureAdminBlockRects();
+ const activeRect = getAdminBlockVisualRect(activeId) ?? event.active.rect.current.initial;
+ const startPointer = getClientPoint(event.activatorEvent);
+ const overlayRect = activeBlock && activeRect ? getDragOverlayRect(activeBlock, activeRect, editorDevice) : null;
+ dragStartPointerRef.current = startPointer;
+ dragPointerRef.current = startPointer;
+ dragPointerOffsetRef.current =
+ startPointer && activeRect ? { x: startPointer.x - activeRect.left, y: startPointer.y - activeRect.top } : null;
+ dragPointerUpdatedAtRef.current = startPointer ? getNow() : 0;
+ dragPointerSourceRef.current = startPointer ? "native" : null;
+ dragOverlayRectRef.current = overlayRect;
+ activeDragBlockIdRef.current = activeBlock?.id ?? null;
+ window.addEventListener("pointermove", updateDragPointerFromPointerEvent);
+ window.addEventListener("touchmove", updateDragPointerFromTouchEvent, { passive: true });
+ setActiveDragBlockId(activeBlock?.id ?? null);
+ setDragOverlayRect(overlayRect);
+ updateDragPreviewPlacement(null);
+ }
+
+ function onDragMove(event: DragMoveEvent) {
+ const activeId = String(event.active.id);
+ const startPointer = dragStartPointerRef.current;
+ if (startPointer) {
+ const fallbackPointer = {
+ x: startPointer.x + event.delta.x,
+ y: startPointer.y + event.delta.y
+ };
+ const hasFreshNativePointer =
+ dragPointerSourceRef.current === "native" && getNow() - dragPointerUpdatedAtRef.current < 80;
+
+ if (!dragPointerRef.current || !hasFreshNativePointer) {
+ dragPointerRef.current = fallbackPointer;
+ dragPointerUpdatedAtRef.current = getNow();
+ dragPointerSourceRef.current = "synthetic";
+ }
+ }
+
+ const activeBlock = config.blocks.find((block) => block.id === activeId);
+ if (!activeBlock) return;
+
+ updateBlockDragPreview(activeBlock);
+ }
+
+ function onDragOver(event: DragOverEvent) {
+ const { active, over } = event;
+ if (!over || active.id === over.id) return;
+ const activeId = String(active.id);
+ const overId = String(over.id);
+
+ const activeBlock = config.blocks.find((block) => block.id === activeId);
+ if (!activeBlock) return;
+
+ const overBlock = config.blocks.find((block) => block.id === overId);
+ if (!overBlock && !isSectionDroppableId(overId)) return;
+
+ const targetSectionId = overBlock?.sectionId ?? getSectionIdFromDroppableId(overId);
+ const syncedPreview = updateBlockDragPreview(activeBlock);
+ if (syncedPreview) {
+ return;
+ }
+
+ if (targetSectionId !== activeBlock.sectionId) return;
+ if (isSectionTextBlock(activeBlock) || (overBlock && isSectionTextBlock(overBlock))) return;
+
+ updateDragPreviewPlacement(null);
+
+ const targetBlocks = config.blocks
+ .filter((block) => block.sectionId === targetSectionId && !isSectionTextBlock(block))
+ .sort(bySortOrder);
+ if (!overBlock) return;
+
+ const targetIndex = targetBlocks.findIndex((block) => block.id === overBlock.id);
+ const sourceBlocks = config.blocks.filter((block) => block.sectionId === activeBlock.sectionId).sort(bySortOrder);
+ const sourceIndex = sourceBlocks.findIndex((block) => block.id === activeId);
+
+ if (targetIndex < 0) return;
+ if (activeBlock.sectionId === targetSectionId && sourceIndex === targetIndex) return;
+
+ updateDragPreviewPlacement({
+ blockId: activeId,
+ targetSectionId,
+ targetIndex,
+ ...getPlacementFromDrag({
+ sectionId: targetSectionId,
+ block: activeBlock,
+ pointer: dragPointerRef.current,
+ dragRect: getCurrentDragRect(),
+ device: editorDevice
+ })
+ });
+ }
+
+ function onDragEnd(event: DragEndEvent) {
+ const previewPlacement = dragPreviewPlacementRef.current;
+ const finalPointer = dragPointerRef.current;
+ const finalDragRect = getCurrentDragRect();
+ const { active, over } = event;
+ const activeId = String(active.id);
+ setActiveDragBlockId(null);
+ setDragOverlayRect(null);
+ dragStartPointerRef.current = null;
+ dragPointerRef.current = null;
+ dragPointerOffsetRef.current = null;
+ dragPointerUpdatedAtRef.current = 0;
+ dragPointerSourceRef.current = null;
+ dragOverlayRectRef.current = null;
+ activeDragBlockIdRef.current = null;
+ cancelDragPreviewSync();
+ window.removeEventListener("pointermove", updateDragPointerFromPointerEvent);
+ window.removeEventListener("touchmove", updateDragPointerFromTouchEvent);
+ updateDragPreviewPlacement(null);
+
+ const activeBlock = config.blocks.find((block) => block.id === activeId);
+ if (!activeBlock) return;
+
+ const finalPreviewPlacement =
+ previewPlacement?.blockId === activeId
+ ? previewPlacement
+ : getBlockDragPreviewPlacement({
+ config,
+ activeBlock,
+ pointer: finalPointer,
+ dragRect: finalDragRect,
+ device: editorDevice,
+ previousPlacement: previewPlacement
+ });
+
+ if (finalPreviewPlacement?.blockId === activeId) {
+ if (
+ finalPreviewPlacement.targetSectionId === topLevelBlockSectionId &&
+ finalPreviewPlacement.targetContentIndex !== undefined
+ ) {
+ update(
+ moveBlockToContentIndex(
+ activeId,
+ finalPreviewPlacement.targetContentIndex,
+ { columnStart: finalPreviewPlacement.columnStart, rowStart: finalPreviewPlacement.rowStart }
+ )
+ );
+ return;
+ }
+
+ update({
+ ...config,
+ blocks: moveBlockWithPlacement(
+ activeId,
+ finalPreviewPlacement.targetSectionId,
+ finalPreviewPlacement.targetIndex,
+ { columnStart: finalPreviewPlacement.columnStart, rowStart: finalPreviewPlacement.rowStart }
+ )
+ });
+ return;
+ }
+
+ if (isSectionTextBlock(activeBlock)) return;
+
+ if (!over || active.id === over.id) {
+ const placement = getPlacementFromDrag({
+ sectionId: activeBlock.sectionId,
+ block: activeBlock,
+ pointer: finalPointer,
+ dragRect: finalDragRect,
+ device: editorDevice
+ });
+ if (placement) {
+ update({
+ ...config,
+ blocks: normalizeBlocks(config.blocks).map((block) =>
+ block.id === activeId ? applyBlockPlacement(block, editorDevice, placement) : block
+ )
+ });
+ }
+ return;
+ }
+ const overId = String(over.id);
+
+ const overBlock = config.blocks.find((block) => block.id === overId);
+ if (!overBlock && !isSectionDroppableId(overId)) return;
+
+ const targetSectionId = overBlock?.sectionId ?? getSectionIdFromDroppableId(overId);
+ if (targetSectionId !== activeBlock.sectionId) return;
+ if (!overBlock && targetSectionId === activeBlock.sectionId) return;
+ if (overBlock && isSectionTextBlock(overBlock)) return;
+
+ const targetBlocks = config.blocks
+ .filter((block) => block.sectionId === targetSectionId && !isSectionTextBlock(block))
+ .sort(bySortOrder);
+ const targetIndex =
+ previewPlacement?.blockId === activeId && previewPlacement.targetSectionId === targetSectionId
+ ? previewPlacement.targetIndex
+ : overBlock
+ ? targetBlocks.findIndex((block) => block.id === overBlock.id)
+ : targetBlocks.length;
+
+ const placement =
+ previewPlacement?.blockId === activeId && previewPlacement.targetSectionId === targetSectionId
+ ? { columnStart: previewPlacement.columnStart, rowStart: previewPlacement.rowStart }
+ : getPlacementFromDrag({
+ sectionId: targetSectionId,
+ block: activeBlock,
+ pointer: finalPointer,
+ dragRect: finalDragRect,
+ device: editorDevice
+ });
+
+ update({ ...config, blocks: moveBlockWithPlacement(activeId, targetSectionId, targetIndex, placement) });
+ }
+
+ function onDragCancel() {
+ setActiveDragBlockId(null);
+ setDragOverlayRect(null);
+ dragStartPointerRef.current = null;
+ dragPointerRef.current = null;
+ dragPointerOffsetRef.current = null;
+ dragPointerUpdatedAtRef.current = 0;
+ dragPointerSourceRef.current = null;
+ dragOverlayRectRef.current = null;
+ activeDragBlockIdRef.current = null;
+ clearAdminBlockRectsSnapshot();
+ cancelDragPreviewSync();
+ window.removeEventListener("pointermove", updateDragPointerFromPointerEvent);
+ window.removeEventListener("touchmove", updateDragPointerFromTouchEvent);
+ updateDragPreviewPlacement(null);
+ }
+
+ const scheduleDragPreviewSync = useCallback(() => {
+ if (dragPreviewSyncFrameRef.current !== null) return;
+ dragPreviewSyncFrameRef.current = window.requestAnimationFrame(() => {
+ dragPreviewSyncFrameRef.current = null;
+ const activeId = activeDragBlockIdRef.current;
+ if (!activeId) return;
+ const currentConfig = configRef.current;
+ const activeBlock = currentConfig.blocks.find((block) => block.id === activeId);
+ if (!activeBlock) return;
+
+ updateDragPreviewPlacement(
+ getBlockDragPreviewPlacement({
+ config: currentConfig,
+ activeBlock,
+ pointer: dragPointerRef.current,
+ dragRect: getCurrentDragRect(),
+ device: editorDeviceRef.current,
+ previousPlacement: dragPreviewPlacementRef.current
+ })
+ );
+ });
+ }, []);
+
+ const updateDragPointerFromPointerEvent = useCallback(
+ (event: PointerEvent) => {
+ dragPointerRef.current = { x: event.clientX, y: event.clientY };
+ dragPointerUpdatedAtRef.current = getNow();
+ dragPointerSourceRef.current = "native";
+ scheduleDragPreviewSync();
+ },
+ [scheduleDragPreviewSync]
+ );
+
+ const updateDragPointerFromTouchEvent = useCallback(
+ (event: TouchEvent) => {
+ const touch = event.touches[0] ?? event.changedTouches[0];
+ if (!touch) return;
+ dragPointerRef.current = { x: touch.clientX, y: touch.clientY };
+ dragPointerUpdatedAtRef.current = getNow();
+ dragPointerSourceRef.current = "native";
+ scheduleDragPreviewSync();
+ },
+ [scheduleDragPreviewSync]
+ );
+
+ function updateBlockDragPreview(activeBlock: Block) {
+ const pointer = dragPointerRef.current;
+ const next = getBlockDragPreviewPlacement({
+ config,
+ activeBlock,
+ pointer,
+ dragRect: getCurrentDragRect(),
+ device: editorDevice,
+ previousPlacement: dragPreviewPlacementRef.current
+ });
+ updateDragPreviewPlacement(next);
+ return next;
+ }
+
+ function cancelDragPreviewSync() {
+ if (dragPreviewSyncFrameRef.current === null) return;
+ window.cancelAnimationFrame(dragPreviewSyncFrameRef.current);
+ dragPreviewSyncFrameRef.current = null;
+ }
+
+ async function save() {
+ const result = validateSiteConfig(baseConfig);
+ if (!result.success) {
+ toast.error(copy.saveFailed, { description: result.error });
+ return;
+ }
+
+ setIsSaving(true);
+ const response = await fetch("/api/admin/config", {
+ method: "PUT",
+ headers: { "Content-Type": "application/json" },
+ body: JSON.stringify(result.data)
+ });
+ const body = (await response.json().catch(() => null)) as { error?: string; updatedAt?: string } | null;
+ setIsSaving(false);
+
+ if (!response.ok) {
+ toast.error(copy.saveFailed, { description: body?.error ?? "Unknown error" });
+ return;
+ }
+
+ setBaseConfig((current) => ({ ...current, updatedAt: body?.updatedAt ?? new Date().toISOString() }));
+ setIsDirty(false);
+ toast.success(copy.saveSuccess);
+ }
+
+ return (
+ <main className="admin-studio min-h-screen text-[#201D18]">
+ <header className="admin-studio__topbar sticky top-0 z-40">
+ <div className="mx-auto grid max-w-[1180px] gap-2 px-5 py-3 md:flex md:items-center md:justify-between">
+ <div className="flex items-center justify-between gap-3 md:contents">
+ <div className="flex min-w-0 items-center gap-3 md:order-1">
+ <span className="admin-studio__mark" aria-hidden="true"><img src="/brand-seal.png" alt="" /></span>
+ <div className="min-w-0">
+ <p className="admin-studio__eyebrow">CONTENT STUDIO</p>
+ <p className="truncate text-sm font-bold">{baseConfig.settings.projectName}</p>
+ </div>
+ <span className="admin-studio__status shrink-0">
+ <i /> {isDirty ? copy.unsaved : copy.saved} · v{adminEditorVersion}
+ </span>
+ </div>
+ <div className="flex items-center justify-end gap-2 md:order-3">
+ <Button variant="secondary" size="sm" className="admin-studio__secondary-action" onClick={() => setModal({ type: "project-settings" })}>
+ <Settings className="h-4 w-4" />
+ {copy.projectSettings}
+ </Button>
+ <Button size="sm" className="admin-studio__save-action" onClick={save} disabled={isSaving || !validation.success}>
+ <Save className="h-4 w-4" />
+ {isSaving ? copy.saving : copy.save}
+ </Button>
+ </div>
+ </div>
+ <div className="flex flex-wrap items-center gap-2 md:order-2 md:ml-auto md:justify-end">
+ {shouldShowVariantPicker ? (
+ <>
+ <Button
+ type="button"
+ variant="secondary"
+ size="sm"
+ onClick={openTopBarOverrideDialog}
+ className="h-9 rounded-[4px] border-[#E3CFC5] bg-[#F4EBE6] px-3 text-xs text-[#7E2A16] hover:bg-[#F4EBE6]"
+ >
+ {copy.variantOverride}
+ </Button>
+ <Select
+ value={resolvedActiveVariantId}
+ onChange={(event) => setActiveVariantId(event.target.value)}
+ className="h-9 w-[132px] text-xs"
+ aria-label="选择版本"
+ >
+ {enabledVariants.map((variant) => (
+ <option key={variant.id} value={variant.id}>
+ {variant.name}
+ </option>
+ ))}
+ </Select>
+ </>
+ ) : null}
+ {shouldShowLanguagePicker ? (
+ <Select
+ value={resolvedActiveLocale}
+ onChange={(event) => setActiveLocale(event.target.value)}
+ className="h-9 w-[112px] text-xs"
+ aria-label="选择语言"
+ >
+ {availableLanguages.map((language) => (
+ <option key={language.code} value={language.code}>
+ {language.label}
+ </option>
+ ))}
+ </Select>
+ ) : null}
+ </div>
+ </div>
+ </header>
+
+ {hasMounted ? (
+ <>
+ {isStructureOpen ? (
+ <PageStructurePanel
+ groups={outlineGroups}
+ selectedBlockId={selectedBlockId}
+ isDocked={isStructureDocked}
+ canUndo={lastOutlineGroupOrder !== null}
+ editorLanguage={editorLanguage}
+ onClose={() => setStructureOpen(false)}
+ onSelect={selectOutlineGroup}
+ onEdit={editOutlineGroup}
+ onEditBlock={(blockId) => setModal({ type: "block", blockId })}
+ onToggleVisibility={toggleOutlineGroupVisibility}
+ onReorder={reorderOutlineGroups}
+ onMove={moveOutlineGroup}
+ onUndo={undoOutlineOrder}
+ />
+ ) : null}
+ <DndContext
+ id="admin-visual-editor-dnd"
+ sensors={sensors}
+ collisionDetection={collisionDetection}
+ onDragStart={onDragStart}
+ onDragMove={onDragMove}
+ onDragOver={onDragOver}
+ onDragEnd={onDragEnd}
+ onDragCancel={onDragCancel}
+ >
+ <div
+ className="admin-studio__stage flex justify-center overflow-x-hidden px-3 transition-[padding] duration-200"
+ style={{ paddingLeft: isStructureOpen && isStructureDocked ? 328 : undefined }}
+ >
+ <div
+ style={
+ {
+ "--site-bg": config.theme.backgroundColor,
+ "--site-card": config.theme.cardBackground,
+ "--site-text": config.theme.textColor,
+ "--site-muted": config.theme.mutedTextColor,
+ "--site-border": config.theme.borderColor,
+ "--site-primary": config.theme.primaryColor,
+ width: `${canvasWidth}px`,
+ zoom: canvasScale
+ } as React.CSSProperties & { zoom: number }
+ }
+ className={cn(
+ "admin-studio__canvas grid gap-8 px-5 pb-28 pt-10 md:px-8 md:pt-14",
+ editorDevice === "desktop" ? "grid-cols-[320px_minmax(0,1fr)] gap-12" : "grid-cols-1"
+ )}
+ >
+ <EditableProfile
+ profile={config.profile}
+ device={editorDevice}
+ editorLanguage={editorLanguage}
+ onPatch={patchProfile}
+ onEditTags={() => setModal({ type: "tags" })}
+ onEditSocial={() => setModal({ type: "social" })}
+ />
+ <section className="grid min-w-0 gap-2">
+ <SortableContext
+ items={editorContentItems.flatMap((item) => (item.type === "text-block" ? [item.block.id] : []))}
+ strategy={rectSortingStrategy}
+ >
+ {(() => {
+ const nodes: React.ReactNode[] = [];
+ let contentCursor = 0;
+ let didRenderTextPreview = false;
+ let didRenderGridPreview = false;
+
+ function pushTextPreview(position: number) {
+ if (!activeDragBlock || !isSectionTextBlock(activeDragBlock)) return;
+ if (didRenderTextPreview) return;
+ if (activeTextPreviewContentIndex !== position) return;
+ didRenderTextPreview = true;
+ nodes.push(<TextBlockDropPreview key={`text-block-preview:${activeDragBlock.id}:${position}`} block={activeDragBlock} />);
+ }
+
+ function pushStandaloneGridPreview(position: number) {
+ const previewContentIndex = dragPreviewPlacement?.targetContentIndex;
+ if (!activeDragBlock || isSectionTextBlock(activeDragBlock)) return;
+ if (didRenderGridPreview) return;
+ if (dragPreviewPlacement?.blockId !== activeDragBlock.id) return;
+ if (dragPreviewPlacement.targetSectionId !== topLevelBlockSectionId) return;
+ if (previewContentIndex !== position) return;
+
+ didRenderGridPreview = true;
+ nodes.push(
+ <StandaloneBlockDropPreview
+ key={`block-preview:${activeDragBlock.id}:${position}`}
+ device={editorDevice}
+ block={activeDragBlock}
+ placement={{ columnStart: dragPreviewPlacement.columnStart, rowStart: dragPreviewPlacement.rowStart }}
+ />
+ );
+ }
+
+ function pushEditableBlockGroup({
+ key,
+ contentGroupId,
+ blocks,
+ dragPreview,
+ releaseSiblingPlacements
+ }: {
+ key: string;
+ contentGroupId: string;
+ blocks: Block[];
+ dragPreview: DragPreviewPlacement | null;
+ releaseSiblingPlacements: boolean;
+ }) {
+ if (blocks.length === 0) return;
+
+ nodes.push(
+ <EditableSection
+ key={key}
+ section={topLevelSection}
+ contentGroupId={contentGroupId}
+ blocks={blocks}
+ onEditSection={() => undefined}
+ onDeleteSection={() => undefined}
+ onEditBlock={(blockId) => {
+ const group = outlineGroups.find((item) => item.blockIds.includes(blockId));
+ if (group?.moduleType) editOutlineGroup(group);
+ else setModal({ type: "block", blockId });
+ }}
+ onDeleteBlock={deleteBlock}
+ onSelectBlock={setSelectedBlockId}
+ selectedBlockId={selectedBlockId}
+ device={editorDevice}
+ activeDragBlockId={activeDragBlockId}
+ dragPreviewBlock={activeDragBlock}
+ dragPreviewPlacement={dragPreview}
+ onResizeBlock={patchBlockSizeForDevice}
+ onResizePreview={setResizePreviewSize}
+ resizeDrafts={resizeDrafts}
+ onResizeDraft={(blockId, size) =>
+ setResizeDrafts((current) => {
+ if (!size) {
+ const next = { ...current };
+ delete next[blockId];
+ return next;
+ }
+ return { ...current, [blockId]: size };
+ })
+ }
+ sectionHandleProps={{}}
+ hideHeader
+ showDragPreview={dragPreview !== null}
+ releaseSiblingPlacementsDuringPreview={dragPreview !== null && releaseSiblingPlacements}
+ />
+ );
+ }
+
+ for (const item of editorContentItems) {
+ pushTextPreview(contentCursor);
+
+ if (item.type === "top-level-blocks") {
+ const contentBlocks = item.blocks.filter((block) => block.id !== activeDragBlockId);
+ const experienceGroup = outlineGroups.find(
+ (group) => group.moduleType === "experience" && item.blocks.some((block) => group.blockIds.includes(block.id))
+ );
+ if (experienceGroup) {
+ nodes.push(
+ <EditableExperienceModule
+ key={item.id}
+ group={experienceGroup}
+ blocks={item.blocks}
+ selected={experienceGroup.blockIds.includes(selectedBlockId ?? "")}
+ onEdit={() => editOutlineGroup(experienceGroup)}
+ onDelete={() => deleteBlock(experienceGroup.primaryEditBlockId)}
+ onSelect={() => setSelectedBlockId(experienceGroup.primaryEditBlockId)}
+ />
+ );
+ contentCursor += contentBlocks.length;
+ continue;
+ }
+ const textPreviewBlock =
+ activeDragBlock !== null && isSectionTextBlock(activeDragBlock) ? activeDragBlock : null;
+ const orderedContentBlocksForTextPreview =
+ textPreviewBlock !== null ? getBlocksInMeasuredVisualOrder(contentBlocks) : contentBlocks;
+ const previewContentIndex = dragPreviewPlacement?.targetContentIndex;
+ const shouldShowGridPreview =
+ activeDragBlock !== null &&
+ !isSectionTextBlock(activeDragBlock) &&
+ dragPreviewPlacement?.blockId === activeDragBlock.id &&
+ dragPreviewPlacement.targetSectionId === topLevelBlockSectionId &&
+ !didRenderGridPreview &&
+ previewContentIndex !== undefined &&
+ previewContentIndex >= contentCursor &&
+ previewContentIndex <= contentCursor + contentBlocks.length;
+ if (shouldShowGridPreview) {
+ didRenderGridPreview = true;
+ }
+ const activeBlockIndex = item.blocks.findIndex((block) => block.id === activeDragBlockId);
+ const activeContentIndex = activeBlockIndex >= 0 ? contentCursor + activeBlockIndex : null;
+ const isOriginalPreviewPosition =
+ activeDragBlock !== null &&
+ dragPreviewPlacement !== null &&
+ previewContentIndex === activeContentIndex &&
+ isDragPreviewAtBlockPlacement(activeDragBlock, dragPreviewPlacement, editorDevice);
+ const shouldReleaseSiblingPlacements =
+ activeDragBlock !== null &&
+ shouldReleaseSiblingPlacementsForDrag(activeDragBlock, editorDevice) &&
+ !isOriginalPreviewPosition;
+
+ const textPreviewOffset =
+ textPreviewBlock !== null &&
+ !didRenderTextPreview &&
+ activeTextPreviewContentIndex !== undefined &&
+ activeTextPreviewContentIndex > contentCursor &&
+ activeTextPreviewContentIndex < contentCursor + contentBlocks.length
+ ? activeTextPreviewContentIndex - contentCursor
+ : null;
+
+ if (textPreviewOffset !== null && textPreviewBlock !== null) {
+ didRenderTextPreview = true;
+ pushEditableBlockGroup({
+ key: `${item.id}:before-text-preview`,
+ contentGroupId: item.id,
+ blocks: orderedContentBlocksForTextPreview.slice(0, textPreviewOffset),
+ dragPreview: null,
+ releaseSiblingPlacements: false
+ });
+ nodes.push(
+ <TextBlockDropPreview
+ key={`text-block-preview:${textPreviewBlock.id}:${activeTextPreviewContentIndex}`}
+ block={textPreviewBlock}
+ />
+ );
+ pushEditableBlockGroup({
+ key: `${item.id}:after-text-preview`,
+ contentGroupId: item.id,
+ blocks: orderedContentBlocksForTextPreview.slice(textPreviewOffset),
+ dragPreview: null,
+ releaseSiblingPlacements: false
+ });
+ contentCursor += contentBlocks.length;
+ continue;
+ }
+
+ pushEditableBlockGroup({
+ key: item.id,
+ contentGroupId: item.id,
+ blocks: item.blocks,
+ dragPreview:
+ shouldShowGridPreview && dragPreviewPlacement
+ ? {
+ ...dragPreviewPlacement,
+ targetIndex: (previewContentIndex ?? contentCursor) - contentCursor
+ }
+ : null,
+ releaseSiblingPlacements: shouldReleaseSiblingPlacements
+ });
+ contentCursor += contentBlocks.length;
+ continue;
+ }
+
+ pushStandaloneGridPreview(contentCursor);
+ nodes.push(
+ <SortableTextBlock
+ key={item.id}
+ block={item.block}
+ device={editorDevice}
+ isDragOverlayActive={activeDragBlockId === item.block.id}
+ disableSortableTransform={activeDragBlockId !== null}
+ removeFromFlowDuringDrag={
+ activeTextPreviewContentIndex !== undefined && activeDragBlockId === item.block.id
+ }
+ onEdit={() => {
+ const group = outlineGroups.find((group) => group.blockIds.includes(item.block.id));
+ if (group?.moduleType) editOutlineGroup(group);
+ else setModal({ type: "block", blockId: item.block.id });
+ }}
+ onDelete={() => deleteBlock(item.block.id)}
+ onSelect={() => setSelectedBlockId(item.block.id)}
+ selected={selectedBlockId === item.block.id}
+ disableDrag={isOutlineSpecialModuleType(item.block.metadata?.sourceSectionId)}
+ />
+ );
+ if (item.block.id !== activeDragBlockId) {
+ contentCursor += 1;
+ }
+ }
+
+ pushTextPreview(contentCursor);
+ pushStandaloneGridPreview(contentCursor);
+ return nodes;
+ })()}
+ </SortableContext>
+ </section>
+ </div>
+ </div>
+ <DragOverlay
+ adjustScale={false}
+ dropAnimation={{
+ duration: 220,
+ easing: "cubic-bezier(0.22, 1, 0.36, 1)"
+ }}
+ >
+ {activeDragBlock && dragOverlayRect ? (
+ <div
+ style={{
+ width: dragOverlayRect.width,
+ height: dragOverlayRect.height,
+ minWidth: dragOverlayRect.width,
+ minHeight: dragOverlayRect.height,
+ maxWidth: dragOverlayRect.width,
+ maxHeight: dragOverlayRect.height
+ }}
+ className="pointer-events-none box-border shrink-0 scale-[1.035] cursor-grabbing overflow-hidden rounded-[8px] opacity-95 shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)]"
+ >
+ <DragOverlayBlockPreview
+ block={activeDragBlock}
+ width={dragOverlayRect.width}
+ height={dragOverlayRect.height}
+ />
+ </div>
+ ) : null}
+ </DragOverlay>
+ </DndContext>
+
+ <FloatingToolbar
+ device={editorDevice}
+ canEditDesktop={canEditDesktop}
+ editorLanguage={editorLanguage}
+ isStructureOpen={isStructureOpen}
+ onDeviceChange={(device) => {
+ if (device === "desktop" && !canEditDesktop) return;
+ setResizeDrafts({});
+ setResizePreviewSize(null);
+ setEditorDevice(device);
+ }}
+ onToggleStructure={() => setStructureOpen(!isStructureOpen)}
+ onAddBlock={() => setModal({ type: "add-block" })}
+ />
+ {resizePreviewSize ? <ResizePreview activeSize={resizePreviewSize} editorLanguage={editorLanguage} /> : null}
+ </>
+ ) : null}
+
+ {modal ? (
+ <EditorModal
+ title={modalTitle(modal, editorLanguage)}
+ onClose={() => setModal(null)}
+ onSave={save}
+ isSaving={isSaving}
+ editorLanguage={editorLanguage}
+ canSave={modal.type !== "project-settings" || validation.success}
+ footerStart={
+ modal.type === "block" || modal.type === "special-module" ? (
+ <Button
+ type="button"
+ variant="ghost"
+ size="sm"
+ onClick={() => {
+ const blockId = modal.type === "block"
+ ? modal.blockId
+ : outlineGroups.find((group) => group.id === modal.groupId)?.primaryEditBlockId;
+ if (blockId) deleteBlock(blockId);
+ }}
+ className="text-red-600 hover:bg-red-50 hover:text-red-700"
+ >
+ <Trash2 className="h-4 w-4" />
+ {copy.delete}
+ </Button>
+ ) : null
+ }
+ >
+ {modal.type === "tags" ? <TagsQuickForm profile={config.profile} onPatch={patchProfile} editorLanguage={editorLanguage} /> : null}
+ {modal.type === "social" ? <SocialLinksQuickForm profile={config.profile} onPatch={patchProfile} editorLanguage={editorLanguage} /> : null}
+ {modal.type === "block" ? (
+ <BlockModalBody
+ block={config.blocks.find((block) => block.id === modal.blockId)}
+ onPatch={(patch) => patchBlock(modal.blockId, patch)}
+ editorLanguage={editorLanguage}
+ />
+ ) : null}
+ {modal.type === "special-module" ? (
+ <SpecialModuleModalBody
+ group={outlineGroups.find((group) => group.id === modal.groupId)}
+ onPatchBlock={patchBlock}
+ onPatchExperienceBlock={patchExperienceBlock}
+ onReplaceExperienceEntries={replaceExperienceGroupEntries}
+ onSetGroupVisibility={(groupId, isVisible) =>
+ update({ ...config, blocks: setContentOutlineGroupVisibility(config.blocks, groupId, isVisible) })
+ }
+ editorLanguage={editorLanguage}
+ />
+ ) : null}
+ {modal.type === "add-block" ? <AddBlockDialog onAdd={addBlock} editorLanguage={editorLanguage} /> : null}
+ {modal.type === "project-settings" ? (
+ <ProjectSettingsForm
+ config={baseConfig}
+ contentConfig={config}
+ activeVariantId={resolvedActiveVariantId}
+ activeLocale={resolvedActiveLocale}
+ onChange={updateBaseConfig}
+ onContentChange={update}
+ onExport={exportConfig}
+ onImport={importConfig}
+ editorLanguage={editorLanguage}
+ onEditorLanguageChange={changeEditorLanguage}
+ />
+ ) : null}
+ </EditorModal>
+ ) : null}
+ {overrideDraft ? (
+ <VariantOverrideDialog
+ draft={overrideDraft}
+ variants={[...baseConfig.settings.variants.variants].sort(bySortOrder)}
+ getLanguages={getTopBarVariantLanguages}
+ editorLanguage={editorLanguage}
+ onChange={setOverrideDraft}
+ onClose={() => setOverrideDraft(null)}
+ onApply={() => applyTopBarVariantOverride(overrideDraft)}
+ />
+ ) : null}
+ </main>
+ );
 }
 
 function EditableProfile({
-  profile,
-  device,
-  editorLanguage,
-  onPatch,
-  onEditTags,
-  onEditSocial
+ profile,
+ device,
+ editorLanguage,
+ onPatch,
+ onEditTags,
+ onEditSocial
 }: {
-  profile: Profile;
-  device: LayoutDevice;
-  editorLanguage: EditorLanguage;
-  onPatch: (patch: Partial<Profile>) => void;
-  onEditTags: () => void;
-  onEditSocial: () => void;
+ profile: Profile;
+ device: LayoutDevice;
+ editorLanguage: EditorLanguage;
+ onPatch: (patch: Partial<Profile>) => void;
+ onEditTags: () => void;
+ onEditSocial: () => void;
 }) {
-  const copy = editorCopy[editorLanguage];
-  return (
-    <aside className={cn("admin-profile-panel", device === "desktop" && "sticky top-24 self-start")}>
-      <div className="admin-profile-panel__card grid w-full gap-5 rounded-[28px] p-6 text-left">
-        <span className="group/avatar relative w-fit">
-          <img src={profile.avatarUrl || "/default-avatar.svg"} alt="" className="h-36 w-36 rounded-full object-cover" />
-          <div className="absolute right-1 top-1 opacity-0 transition group-hover/avatar:opacity-100">
-            <ImageCropUploader
-              folder="avatar"
-              value=""
-              shape="circle"
-              label=""
-              buttonText={editorLanguage === "zh-CN" ? "编辑" : "Edit"}
-              buttonIconOnly
-              buttonClassName="h-9 w-9 rounded-full border border-[#EAEAEA] bg-white p-0 text-black shadow-soft hover:bg-white"
-              onUploaded={(url) => onPatch({ avatarUrl: url })}
-            />
-          </div>
-        </span>
-        <div className="grid gap-3">
-          <InlineProfileText
-            value={profile.displayName}
-            className="rounded-xl px-1 text-3xl font-black leading-tight tracking-[-0.04em] hover:bg-[#EDE8DA]"
-            inputClassName="text-3xl font-bold"
-            onChange={(displayName) => onPatch({ displayName })}
-          />
-          <InlineProfileText
-            value={profile.headline}
-            multiline
-            className="rounded-xl px-1 text-base font-bold leading-6 hover:bg-[#EDE8DA]"
-            inputClassName="min-h-20 text-base font-medium leading-6"
-            onChange={(headline) => onPatch({ headline })}
-          />
-          <div className="text-base leading-6">
-            <InlineProfileText
-              value={profile.bio}
-              multiline
-              className="rounded-xl px-1 text-sm leading-7 text-[#5F625D] hover:bg-[#EDE8DA]"
-              onChange={(bio) => onPatch({ bio })}
-            />
-          </div>
-          <InlineProfileText
-            value={profile.location ?? ""}
-            placeholder={editorLanguage === "zh-CN" ? "添加位置" : "Add location"}
-            className="inline-flex w-fit rounded-xl px-1 text-sm text-[#5F625D] hover:bg-[#EDE8DA]"
-            onChange={(location) => onPatch({ location })}
-            prefix={<MapPin className="h-4 w-4" />}
-          />
-          <div className="flex flex-wrap gap-2">
-            {profile.tags.map((tag) => (
-              <span key={tag} className="admin-profile-panel__chip rounded-full px-3 py-1.5 text-sm">
-                {tag}
-              </span>
-            ))}
-          </div>
-          <button type="button" onClick={onEditTags} className="admin-profile-panel__add w-fit rounded-full border border-dashed px-3 py-1.5 text-sm font-bold">
-            <Pencil className="mr-1 inline h-3.5 w-3.5" />
-            {editorLanguage === "zh-CN" ? `修改或添加${copy.tag}` : `Edit or Add ${copy.tag}`}
-          </button>
-          <div className="flex flex-wrap gap-2">
-            {[...profile.socialLinks]
-              .filter((link) => link.isVisible)
-              .sort(bySortOrder)
-              .map((link) => (
-                <button
-                  key={link.id}
-                  type="button"
-                  onClick={onEditSocial}
-                  className="admin-profile-panel__social inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-bold transition"
-                >
-                  <SocialIcon name={link.icon} />
-                  {link.label}
-                </button>
-              ))}
-            <button type="button" onClick={onEditSocial} className="admin-profile-panel__add inline-flex items-center gap-2 rounded-full border border-dashed px-3 py-2 text-sm font-bold">
-              <Plus className="h-3.5 w-3.5" />
-              {editorLanguage === "zh-CN" ? "社交按钮" : "Social Buttons"}
-            </button>
-          </div>
-        </div>
-      </div>
-    </aside>
-  );
+ const copy = editorCopy[editorLanguage];
+ return (
+ <aside className={cn("admin-profile-panel", device === "desktop" && "sticky top-24 self-start")}>
+ <div className="admin-profile-panel__card grid w-full gap-5 rounded-[8px] p-6 text-left">
+ <span className="group/avatar relative w-fit">
+ <img src={profile.avatarUrl || "/default-avatar.svg"} alt="" className="h-36 w-36 rounded-[4px] object-cover" />
+ <div className="absolute right-1 top-1 opacity-0 transition group-hover/avatar:opacity-100">
+ <ImageCropUploader
+ folder="avatar"
+ value=""
+ shape="circle"
+ label=""
+ buttonText={editorLanguage === "zh-CN" ? "编辑" : "Edit"}
+ buttonIconOnly
+ buttonClassName="h-9 w-9 rounded-[4px] border border-[#DDD6C8] bg-[#FCFAF5] p-0 text-black hover:bg-[#FCFAF5]"
+ onUploaded={(url) => onPatch({ avatarUrl: url })}
+ />
+ </div>
+ </span>
+ <div className="grid gap-3">
+ <InlineProfileText
+ value={profile.displayName}
+ className="rounded-[5px] px-1 text-3xl font-bold leading-tight tracking-[-0.04em] hover:bg-[#EDE8DB]"
+ inputClassName="text-3xl font-bold"
+ onChange={(displayName) => onPatch({ displayName })}
+ />
+ <InlineProfileText
+ value={profile.headline}
+ multiline
+ className="rounded-[5px] px-1 text-base font-bold leading-6 hover:bg-[#EDE8DB]"
+ inputClassName="min-h-20 text-base font-medium leading-6"
+ onChange={(headline) => onPatch({ headline })}
+ />
+ <div className="text-base leading-6">
+ <InlineProfileText
+ value={profile.bio}
+ multiline
+ className="rounded-[5px] px-1 text-sm leading-7 text-[#6F6A5E] hover:bg-[#EDE8DB]"
+ onChange={(bio) => onPatch({ bio })}
+ />
+ </div>
+ <InlineProfileText
+ value={profile.location ?? ""}
+ placeholder={editorLanguage === "zh-CN" ? "添加位置" : "Add location"}
+ className="inline-flex w-fit rounded-[5px] px-1 text-sm text-[#6F6A5E] hover:bg-[#EDE8DB]"
+ onChange={(location) => onPatch({ location })}
+ prefix={<MapPin className="h-4 w-4" />}
+ />
+ <div className="flex flex-wrap gap-2">
+ {profile.tags.map((tag) => (
+ <span key={tag} className="admin-profile-panel__chip rounded-[4px] px-3 py-1.5 text-sm">
+ {tag}
+ </span>
+ ))}
+ </div>
+ <button type="button" onClick={onEditTags} className="admin-profile-panel__add w-fit rounded-[4px] border border-dashed px-3 py-1.5 text-sm font-bold">
+ <Pencil className="mr-1 inline h-3.5 w-3.5" />
+ {editorLanguage === "zh-CN" ? `修改或添加${copy.tag}` : `Edit or Add ${copy.tag}`}
+ </button>
+ <div className="flex flex-wrap gap-2">
+ {[...profile.socialLinks]
+ .filter((link) => link.isVisible)
+ .sort(bySortOrder)
+ .map((link) => (
+ <button
+ key={link.id}
+ type="button"
+ onClick={onEditSocial}
+ className="admin-profile-panel__social inline-flex items-center gap-2 rounded-[4px] border px-3 py-2 text-sm font-bold transition"
+ >
+ <SocialIcon name={link.icon} />
+ {link.label}
+ </button>
+ ))}
+ <button type="button" onClick={onEditSocial} className="admin-profile-panel__add inline-flex items-center gap-2 rounded-[4px] border border-dashed px-3 py-2 text-sm font-bold">
+ <Plus className="h-3.5 w-3.5" />
+ {editorLanguage === "zh-CN" ? "社交按钮" : "Social Buttons"}
+ </button>
+ </div>
+ </div>
+ </div>
+ </aside>
+ );
 }
 
 function InlineProfileText({
-  value,
-  placeholder = "点击编辑",
-  multiline = false,
-  className,
-  inputClassName,
-  prefix,
-  onChange
+ value,
+ placeholder = "点击编辑",
+ multiline = false,
+ className,
+ inputClassName,
+ prefix,
+ onChange
 }: {
-  value: string;
-  placeholder?: string;
-  multiline?: boolean;
-  className?: string;
-  inputClassName?: string;
-  prefix?: React.ReactNode;
-  onChange: (value: string) => void;
+ value: string;
+ placeholder?: string;
+ multiline?: boolean;
+ className?: string;
+ inputClassName?: string;
+ prefix?: React.ReactNode;
+ onChange: (value: string) => void;
 }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [draft, setDraft] = useState(value);
+ const [isEditing, setIsEditing] = useState(false);
+ const [draft, setDraft] = useState(value);
 
-  function commit() {
-    setIsEditing(false);
-    if (draft !== value) {
-      onChange(draft);
-    }
-  }
+ function commit() {
+ setIsEditing(false);
+ if (draft !== value) {
+ onChange(draft);
+ }
+ }
 
-  if (isEditing) {
-    if (multiline) {
-      return (
-        <Textarea
-          autoFocus
-          value={draft}
-          onChange={(event) => setDraft(event.target.value)}
-          onBlur={commit}
-          className={cn("min-h-24", inputClassName)}
-        />
-      );
-    }
+ if (isEditing) {
+ if (multiline) {
+ return (
+ <Textarea
+ autoFocus
+ value={draft}
+ onChange={(event) => setDraft(event.target.value)}
+ onBlur={commit}
+ className={cn("min-h-24", inputClassName)}
+ />
+ );
+ }
 
-    return (
-      <Input
-        autoFocus
-        value={draft}
-        onChange={(event) => setDraft(event.target.value)}
-        onBlur={commit}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") commit();
-          if (event.key === "Escape") {
-            setDraft(value);
-            setIsEditing(false);
-          }
-        }}
-        className={inputClassName}
-      />
-    );
-  }
+ return (
+ <Input
+ autoFocus
+ value={draft}
+ onChange={(event) => setDraft(event.target.value)}
+ onBlur={commit}
+ onKeyDown={(event) => {
+ if (event.key === "Enter") commit();
+ if (event.key === "Escape") {
+ setDraft(value);
+ setIsEditing(false);
+ }
+ }}
+ className={inputClassName}
+ />
+ );
+ }
 
-  return (
-    <button
-      type="button"
-      onClick={() => {
-        setDraft(value);
-        setIsEditing(true);
-      }}
-      className={cn("min-h-7 text-left transition", className)}
-    >
-      <span className={cn("inline-flex items-center gap-1.5", value && "whitespace-pre-wrap")}>
-        {prefix}
-        {value || <span className="text-[#9CA3AF]">{placeholder}</span>}
-      </span>
-    </button>
-  );
+ return (
+ <button
+ type="button"
+ onClick={() => {
+ setDraft(value);
+ setIsEditing(true);
+ }}
+ className={cn("min-h-7 text-left transition", className)}
+ >
+ <span className={cn("inline-flex items-center gap-1.5", value && "whitespace-pre-wrap")}>
+ {prefix}
+ {value || <span className="text-[#A39C8D]">{placeholder}</span>}
+ </span>
+ </button>
+ );
 }
 
 const socialIconPresets = ["link", "github", "x", "weibo", "wechat", "instagram", "youtube", "linkedin", "website", "mail"] as const;
 
 function SocialIcon({ name }: { name?: string }) {
-  const iconClass = "h-4 w-4";
-  if (name === "github") return <Github className={iconClass} />;
-  if (name === "twitter" || name === "x") return <Twitter className={iconClass} />;
-  if (name === "weibo") return <Radio className={iconClass} />;
-  if (name === "wechat") return <MessagesSquare className={iconClass} />;
-  if (name === "instagram") return <Instagram className={iconClass} />;
-  if (name === "youtube") return <Youtube className={iconClass} />;
-  if (name === "linkedin") return <Linkedin className={iconClass} />;
-  if (name === "website" || name === "globe") return <Globe2 className={iconClass} />;
-  if (name === "mail" || name === "email") return <Mail className={iconClass} />;
-  return <LinkIcon className={iconClass} />;
+ const iconClass = "h-4 w-4";
+ if (name === "github") return <Github className={iconClass} />;
+ if (name === "twitter" || name === "x") return <Twitter className={iconClass} />;
+ if (name === "weibo") return <Radio className={iconClass} />;
+ if (name === "wechat") return <MessagesSquare className={iconClass} />;
+ if (name === "instagram") return <Instagram className={iconClass} />;
+ if (name === "youtube") return <Youtube className={iconClass} />;
+ if (name === "linkedin") return <Linkedin className={iconClass} />;
+ if (name === "website" || name === "globe") return <Globe2 className={iconClass} />;
+ if (name === "mail" || name === "email") return <Mail className={iconClass} />;
+ return <LinkIcon className={iconClass} />;
 }
 
 function inferSocialIconFromUrl(value: string, currentIcon?: string) {
-  if (!value || value === "https://") return currentIcon || "link";
-  const lowerValue = value.toLowerCase();
-  if (lowerValue.includes("github.com")) return "github";
-  if (lowerValue.includes("twitter.com") || lowerValue.includes("x.com")) return "x";
-  if (lowerValue.includes("weibo.com")) return "weibo";
-  if (lowerValue.includes("weixin.qq.com") || lowerValue.includes("wechat.com")) return "wechat";
-  if (lowerValue.includes("instagram.com")) return "instagram";
-  if (lowerValue.includes("youtube.com") || lowerValue.includes("youtu.be")) return "youtube";
-  if (lowerValue.includes("linkedin.com")) return "linkedin";
-  if (lowerValue.startsWith("mailto:")) return "mail";
-  return currentIcon || "website";
+ if (!value || value === "https://") return currentIcon || "link";
+ const lowerValue = value.toLowerCase();
+ if (lowerValue.includes("github.com")) return "github";
+ if (lowerValue.includes("twitter.com") || lowerValue.includes("x.com")) return "x";
+ if (lowerValue.includes("weibo.com")) return "weibo";
+ if (lowerValue.includes("weixin.qq.com") || lowerValue.includes("wechat.com")) return "wechat";
+ if (lowerValue.includes("instagram.com")) return "instagram";
+ if (lowerValue.includes("youtube.com") || lowerValue.includes("youtu.be")) return "youtube";
+ if (lowerValue.includes("linkedin.com")) return "linkedin";
+ if (lowerValue.startsWith("mailto:")) return "mail";
+ return currentIcon || "website";
 }
 
 function inferSocialLabelFromUrl(value: string) {
-  const icon = inferSocialIconFromUrl(value);
-  if (icon === "github") return "GitHub";
-  if (icon === "twitter" || icon === "x") return "X";
-  if (icon === "weibo") return "Weibo";
-  if (icon === "wechat") return "WeChat";
-  if (icon === "instagram") return "Instagram";
-  if (icon === "youtube") return "YouTube";
-  if (icon === "linkedin") return "LinkedIn";
-  if (icon === "mail") return "Email";
-  return "Website";
+ const icon = inferSocialIconFromUrl(value);
+ if (icon === "github") return "GitHub";
+ if (icon === "twitter" || icon === "x") return "X";
+ if (icon === "weibo") return "Weibo";
+ if (icon === "wechat") return "WeChat";
+ if (icon === "instagram") return "Instagram";
+ if (icon === "youtube") return "YouTube";
+ if (icon === "linkedin") return "LinkedIn";
+ if (icon === "mail") return "Email";
+ return "Website";
 }
 
 function getSocialIconLabel(icon: string) {
-  if (icon === "x" || icon === "twitter") return "X";
-  if (icon === "github") return "GitHub";
-  if (icon === "weibo") return "Weibo";
-  if (icon === "wechat") return "WeChat";
-  if (icon === "youtube") return "YouTube";
-  if (icon === "linkedin") return "LinkedIn";
-  if (icon === "website") return "Website";
-  if (icon === "mail") return "Email";
-  if (icon === "instagram") return "Instagram";
-  return "Link";
+ if (icon === "x" || icon === "twitter") return "X";
+ if (icon === "github") return "GitHub";
+ if (icon === "weibo") return "Weibo";
+ if (icon === "wechat") return "WeChat";
+ if (icon === "youtube") return "YouTube";
+ if (icon === "linkedin") return "LinkedIn";
+ if (icon === "website") return "Website";
+ if (icon === "mail") return "Email";
+ if (icon === "instagram") return "Instagram";
+ return "Link";
 }
 
 function moveItem<T>(items: T[], oldIndex: number, newIndex: number) {
-  if (oldIndex === newIndex) return items;
-  const next = [...items];
-  const [item] = next.splice(oldIndex, 1);
-  next.splice(newIndex, 0, item);
-  return next;
+ if (oldIndex === newIndex) return items;
+ const next = [...items];
+ const [item] = next.splice(oldIndex, 1);
+ next.splice(newIndex, 0, item);
+ return next;
 }
 
 function getContentFlowForBlockMove(
-  renderModel: ReturnType<typeof buildRenderModel>,
-  activeBlockId: string,
-  preferVisualBlockOrder = false
+ renderModel: ReturnType<typeof buildRenderModel>,
+ activeBlockId: string,
+ preferVisualBlockOrder = false
 ): ContentFlowItem[] {
-  const flowItems: ContentFlowItem[] = [];
+ const flowItems: ContentFlowItem[] = [];
 
-  for (const item of renderModel.orderedContentItems) {
-    if (item.type === "top-level-blocks") {
-      const blocks = item.blocks.filter((block) => block.id !== activeBlockId);
-      flowItems.push(
-        ...(preferVisualBlockOrder ? getBlocksInMeasuredVisualOrder(blocks) : blocks).map((block) => ({
-          type: "top-level-block" as const,
-          id: block.id,
-          block
-        }))
-      );
-      continue;
-    }
+ for (const item of renderModel.orderedContentItems) {
+ if (item.type === "top-level-blocks") {
+ const blocks = item.blocks.filter((block) => block.id !== activeBlockId);
+ flowItems.push(
+ ...(preferVisualBlockOrder ? getBlocksInMeasuredVisualOrder(blocks) : blocks).map((block) => ({
+ type: "top-level-block" as const,
+ id: block.id,
+ block
+ }))
+ );
+ continue;
+ }
 
-    if (item.block.id !== activeBlockId) {
-      flowItems.push({ type: "text-block", id: item.id, block: item.block });
-    }
-  }
+ if (item.block.id !== activeBlockId) {
+ flowItems.push({ type: "text-block", id: item.id, block: item.block });
+ }
+ }
 
-  return flowItems;
+ return flowItems;
 }
 
 function getBlocksInMeasuredVisualOrder(blocks: Block[]) {
-  const measuredBlocks = blocks
-    .map((block, index) => {
-      const rect = getMeasuredAdminBlockRect(block.id);
-      return rect ? { block, index, rect } : null;
-    })
-    .filter((item): item is { block: Block; index: number; rect: MeasuredRect } => item !== null);
+ const measuredBlocks = blocks
+ .map((block, index) => {
+ const rect = getMeasuredAdminBlockRect(block.id);
+ return rect ? { block, index, rect } : null;
+ })
+ .filter((item): item is { block: Block; index: number; rect: MeasuredRect } => item !== null);
 
-  if (measuredBlocks.length !== blocks.length) return blocks;
+ if (measuredBlocks.length !== blocks.length) return blocks;
 
-  return measuredBlocks
-    .sort((a, b) => {
-      const rowThreshold = Math.max(24, Math.min(a.rect.height, b.rect.height) * 0.45);
-      if (Math.abs(a.rect.top - b.rect.top) > rowThreshold) return a.rect.top - b.rect.top;
-      if (Math.abs(a.rect.left - b.rect.left) > 8) return a.rect.left - b.rect.left;
-      return a.index - b.index;
-    })
-    .map((item) => item.block);
+ return measuredBlocks
+ .sort((a, b) => {
+ const rowThreshold = Math.max(24, Math.min(a.rect.height, b.rect.height) * 0.45);
+ if (Math.abs(a.rect.top - b.rect.top) > rowThreshold) return a.rect.top - b.rect.top;
+ if (Math.abs(a.rect.left - b.rect.left) > 8) return a.rect.left - b.rect.left;
+ return a.index - b.index;
+ })
+ .map((item) => item.block);
 }
 
 function DragOverlayBlockPreview({ block, width, height }: { block: Block; width: number; height: number }) {
-  if (isSectionTextBlock(block)) {
-    return <DragOverlayTextBlockPreview block={block} width={width} height={height} />;
-  }
+ if (isSectionTextBlock(block)) {
+ return <DragOverlayTextBlockPreview block={block} width={width} height={height} />;
+ }
 
-  return (
-    <div
-      className="relative box-border overflow-hidden rounded-[20px] border border-[#111] bg-white p-4 ring-2 ring-[#B23C22]/25"
-      style={{ width, height }}
-    >
-      {block.coverImage ? (
-        <>
-          <img src={block.coverImage} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
-          <div className="absolute inset-x-4 bottom-4 z-10">
-            <span className="line-clamp-2 inline-block max-w-full rounded-[18px] border border-[#E5E7EB] bg-white/95 px-3 py-1.5 text-sm font-semibold leading-5 text-[#111] shadow-soft">
-              {block.title}
-            </span>
-          </div>
-        </>
-      ) : (
-        <div className="flex h-full flex-col justify-between gap-3">
-          <div className="grid gap-2">
-            {block.icon ? <div className="flex"><BlockIcon name={block.icon} className="h-5 w-5" style={{ color: getBlockIconColor(block.metadata?.iconColor) }} /></div> : null}
-            <h3 className="line-clamp-2 text-lg font-semibold leading-tight">{block.title}</h3>
-            {block.subtitle ? <p className="line-clamp-2 text-sm text-[#475569]">{block.subtitle}</p> : null}
-            {block.description ? <p className="line-clamp-3 text-sm leading-6 text-[#555]">{block.description}</p> : null}
-          </div>
-          {block.badge ? (
-            <span className="line-clamp-2 w-fit max-w-full rounded-[18px] border border-[#E5E7EB] bg-white/95 px-3 py-1.5 text-xs font-semibold leading-5 text-[#475569] shadow-soft">
-              {block.badge}
-            </span>
-          ) : null}
-        </div>
-      )}
-    </div>
-  );
+ return (
+ <div
+ className="relative box-border overflow-hidden rounded-[8px] border border-[#201D18] bg-[#FCFAF5] p-4 ring-2 ring-[#B23C22]/25"
+ style={{ width, height }}
+ >
+ {block.coverImage ? (
+ <>
+ <img src={block.coverImage} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
+ <div className="absolute inset-x-4 bottom-4 z-10">
+ <span className="line-clamp-2 inline-block max-w-full rounded-[8px] border border-[#DDD6C8] bg-[#FCFAF5]/95 px-3 py-1.5 text-sm font-semibold leading-5 text-[#201D18]">
+ {block.title}
+ </span>
+ </div>
+ </>
+ ) : (
+ <div className="flex h-full flex-col justify-between gap-3">
+ <div className="grid gap-2">
+ {block.icon ? <div className="flex"><BlockIcon name={block.icon} className="h-5 w-5" style={{ color: getBlockIconColor(block.metadata?.iconColor) }} /></div> : null}
+ <h3 className="line-clamp-2 text-lg font-semibold leading-tight">{block.title}</h3>
+ {block.subtitle ? <p className="line-clamp-2 text-sm text-[#6F6A5E]">{block.subtitle}</p> : null}
+ {block.description ? <p className="line-clamp-3 text-sm leading-6 text-[#A39C8D]">{block.description}</p> : null}
+ </div>
+ {block.badge ? (
+ <span className="line-clamp-2 w-fit max-w-full rounded-[8px] border border-[#DDD6C8] bg-[#FCFAF5]/95 px-3 py-1.5 text-xs font-semibold leading-5 text-[#6F6A5E]">
+ {block.badge}
+ </span>
+ ) : null}
+ </div>
+ )}
+ </div>
+ );
 }
 
 function DragOverlayTextBlockPreview({ block, width, height }: { block: Block; width: number; height: number }) {
-  const rawTitleSize = block.metadata?.titleSize;
-  const rawTitleAlign = block.metadata?.titleAlign;
-  const titleSize = rawTitleSize === "sm" || rawTitleSize === "lg" ? rawTitleSize : "md";
-  const titleAlign = rawTitleAlign === "center" || rawTitleAlign === "right" ? rawTitleAlign : "left";
-  const subtitle = block.subtitle || block.description;
-  const titleClass = titleSize === "lg" ? "text-[25px]" : titleSize === "sm" ? "text-lg" : "text-[22px]";
+ const rawTitleSize = block.metadata?.titleSize;
+ const rawTitleAlign = block.metadata?.titleAlign;
+ const titleSize = rawTitleSize === "sm" || rawTitleSize === "lg" ? rawTitleSize : "md";
+ const titleAlign = rawTitleAlign === "center" || rawTitleAlign === "right" ? rawTitleAlign : "left";
+ const subtitle = block.subtitle || block.description;
+ const titleClass = titleSize === "lg" ? "text-[25px]" : titleSize === "sm" ? "text-lg" : "text-[22px]";
 
-  return (
-    <div
-      className={cn(
-        "flex box-border h-full w-full flex-col justify-center overflow-hidden rounded-[20px] border border-[#111] bg-white px-3.5 py-2.5 ring-2 ring-[#B23C22]/25",
-        titleAlign === "center" && "items-center text-center",
-        titleAlign === "right" && "items-end text-right",
-        titleAlign === "left" && "items-start text-left"
-      )}
-      style={{ width, height }}
-    >
-      <h3 className={cn("max-w-full truncate font-bold leading-tight tracking-normal text-[#111]", titleClass)}>
-        {block.title.trim()}
-        {block.icon ? <span className="ml-1 text-[#B23C22]">{block.icon}</span> : null}
-      </h3>
-      {subtitle ? <p className="mt-1 max-w-full truncate text-sm leading-5 text-[#64748B]">{subtitle}</p> : null}
-    </div>
-  );
+ return (
+ <div
+ className={cn(
+ "flex box-border h-full w-full flex-col justify-center overflow-hidden rounded-[8px] border border-[#201D18] bg-[#FCFAF5] px-3.5 py-2.5 ring-2 ring-[#B23C22]/25",
+ titleAlign === "center" && "items-center text-center",
+ titleAlign === "right" && "items-end text-right",
+ titleAlign === "left" && "items-start text-left"
+ )}
+ style={{ width, height }}
+ >
+ <h3 className={cn("max-w-full truncate font-bold leading-tight tracking-normal text-[#201D18]", titleClass)}>
+ {block.title.trim()}
+ {block.icon ? <span className="ml-1 text-[#B23C22]">{block.icon}</span> : null}
+ </h3>
+ {subtitle ? <p className="mt-1 max-w-full truncate text-sm leading-5 text-[#6F6A5E]">{subtitle}</p> : null}
+ </div>
+ );
 }
 
 function getAdminBlockVisualRect(blockId: string) {
-  return getMeasuredAdminBlockRect(blockId);
+ return getMeasuredAdminBlockRect(blockId);
 }
 
 function getDragOverlayRect(block: Block, rect: RectLike, device: LayoutDevice): DragOverlayRect {
-  const displaySize = getBlockSize(block, device);
-  if (displaySize === "small-square" || displaySize === "large-square") {
-    const side = Math.min(rect.width, rect.height);
-    return { width: side, height: side };
-  }
+ const displaySize = getBlockSize(block, device);
+ if (displaySize === "small-square" || displaySize === "large-square") {
+ const side = Math.min(rect.width, rect.height);
+ return { width: side, height: side };
+ }
 
-  return { width: rect.width, height: rect.height };
+ return { width: rect.width, height: rect.height };
 }
 
 function findAdminBlockElement(blockId: string) {
-  return Array.from(document.querySelectorAll<HTMLElement>("[data-admin-block-id]")).find(
-    (element) => element.dataset.adminBlockId === blockId
-  );
+ return Array.from(document.querySelectorAll<HTMLElement>("[data-admin-block-id]")).find(
+ (element) => element.dataset.adminBlockId === blockId
+ );
 }
 
 function captureAdminBlockRects() {
-  const rects = new Map<string, MeasuredRect>();
-  for (const element of document.querySelectorAll<HTMLElement>("[data-admin-block-id]")) {
-    const blockId = element.dataset.adminBlockId;
-    if (!blockId) continue;
-    rects.set(blockId, copyMeasuredRect(element.getBoundingClientRect()));
-  }
-  adminDragBlockRectsSnapshot = rects;
-  return rects;
+ const rects = new Map<string, MeasuredRect>();
+ for (const element of document.querySelectorAll<HTMLElement>("[data-admin-block-id]")) {
+ const blockId = element.dataset.adminBlockId;
+ if (!blockId) continue;
+ rects.set(blockId, copyMeasuredRect(element.getBoundingClientRect()));
+ }
+ adminDragBlockRectsSnapshot = rects;
+ return rects;
 }
 
 function clearAdminBlockRectsSnapshot() {
-  adminDragBlockRectsSnapshot = new Map();
+ adminDragBlockRectsSnapshot = new Map();
 }
 
 function getMeasuredAdminBlockRect(blockId: string) {
-  const snapshotRect = adminDragBlockRectsSnapshot.get(blockId);
-  if (snapshotRect) return snapshotRect;
+ const snapshotRect = adminDragBlockRectsSnapshot.get(blockId);
+ if (snapshotRect) return snapshotRect;
 
-  const element = findAdminBlockElement(blockId);
-  const rect = element?.getBoundingClientRect();
-  return rect ? copyMeasuredRect(rect) : null;
+ const element = findAdminBlockElement(blockId);
+ const rect = element?.getBoundingClientRect();
+ return rect ? copyMeasuredRect(rect) : null;
 }
 
 function copyMeasuredRect(rect: DOMRectReadOnly): MeasuredRect {
-  return {
-    left: rect.left,
-    top: rect.top,
-    width: rect.width,
-    height: rect.height,
-    right: rect.right,
-    bottom: rect.bottom
-  };
+ return {
+ left: rect.left,
+ top: rect.top,
+ width: rect.width,
+ height: rect.height,
+ right: rect.right,
+ bottom: rect.bottom
+ };
 }
 
 function getClientPoint(event: Event): Point | null {
-  if (event instanceof MouseEvent) {
-    return { x: event.clientX, y: event.clientY };
-  }
+ if (event instanceof MouseEvent) {
+ return { x: event.clientX, y: event.clientY };
+ }
 
-  if (typeof TouchEvent !== "undefined" && event instanceof TouchEvent && event.touches.length > 0) {
-    const touch = event.touches[0];
-    return { x: touch.clientX, y: touch.clientY };
-  }
+ if (typeof TouchEvent !== "undefined" && event instanceof TouchEvent && event.touches.length > 0) {
+ const touch = event.touches[0];
+ return { x: touch.clientX, y: touch.clientY };
+ }
 
-  if (typeof TouchEvent !== "undefined" && event instanceof TouchEvent && event.changedTouches.length > 0) {
-    const touch = event.changedTouches[0];
-    return { x: touch.clientX, y: touch.clientY };
-  }
+ if (typeof TouchEvent !== "undefined" && event instanceof TouchEvent && event.changedTouches.length > 0) {
+ const touch = event.changedTouches[0];
+ return { x: touch.clientX, y: touch.clientY };
+ }
 
-  return null;
+ return null;
 }
 
 function getNow() {
-  return typeof performance === "undefined" ? Date.now() : performance.now();
+ return typeof performance === "undefined" ? Date.now() : performance.now();
 }
 
 function isSectionDroppableId(id: string) {
-  return id.startsWith("section:") || id.startsWith("content-group:");
+ return id.startsWith("section:") || id.startsWith("content-group:");
 }
 
 function getSectionIdFromDroppableId(id: string) {
-  if (id.startsWith("content-group:")) return topLevelBlockSectionId;
-  if (id.startsWith("section:")) return id.replace("section:", "");
-  return topLevelBlockSectionId;
+ if (id.startsWith("content-group:")) return topLevelBlockSectionId;
+ if (id.startsWith("section:")) return id.replace("section:", "");
+ return topLevelBlockSectionId;
 }
 
 function getBlockDragPreviewPlacement({
-  config,
-  activeBlock,
-  pointer,
-  dragRect,
-  device,
-  previousPlacement
+ config,
+ activeBlock,
+ pointer,
+ dragRect,
+ device,
+ previousPlacement
 }: {
-  config: SiteConfig;
-  activeBlock: Block;
-  pointer: Point | null;
-  dragRect: MeasuredRect | null;
-  device: LayoutDevice;
-  previousPlacement?: DragPreviewPlacement | null;
+ config: SiteConfig;
+ activeBlock: Block;
+ pointer: Point | null;
+ dragRect: MeasuredRect | null;
+ device: LayoutDevice;
+ previousPlacement?: DragPreviewPlacement | null;
 }): DragPreviewPlacement | null {
-  const contentTarget = getTopLevelContentTargetFromDrag(config, activeBlock, pointer, dragRect, device);
-  if (contentTarget) {
-    const placement = isSectionTextBlock(activeBlock)
-      ? undefined
-      : getPlacementFromDrag({
-          sectionId: topLevelBlockSectionId,
-          block: activeBlock,
-          pointer,
-          dragRect,
-          device
-        });
+ const contentTarget = getTopLevelContentTargetFromDrag(config, activeBlock, pointer, dragRect, device);
+ if (contentTarget) {
+ const placement = isSectionTextBlock(activeBlock)
+ ? undefined
+ : getPlacementFromDrag({
+ sectionId: topLevelBlockSectionId,
+ block: activeBlock,
+ pointer,
+ dragRect,
+ device
+ });
 
-    return {
-      blockId: activeBlock.id,
-      targetSectionId: topLevelBlockSectionId,
-      targetIndex: contentTarget.targetIndex,
-      targetContentIndex: contentTarget.targetContentIndex,
-      ...placement
-    };
-  }
+ return {
+ blockId: activeBlock.id,
+ targetSectionId: topLevelBlockSectionId,
+ targetIndex: contentTarget.targetIndex,
+ targetContentIndex: contentTarget.targetContentIndex,
+ ...placement
+ };
+ }
 
-  if (isSectionTextBlock(activeBlock)) {
-    const fallbackIndex = getContentTargetIndexFromPointer(
-      getContentFlowForBlockMove(buildRenderModel(config, { includeHidden: true }), activeBlock.id, true),
-      pointer ?? getDragCenterPoint(dragRect)
-    );
+ if (isSectionTextBlock(activeBlock)) {
+ const fallbackIndex = getContentTargetIndexFromPointer(
+ getContentFlowForBlockMove(buildRenderModel(config, { includeHidden: true }), activeBlock.id, true),
+ pointer ?? getDragCenterPoint(dragRect)
+ );
 
-    return {
-      blockId: activeBlock.id,
-      targetSectionId: topLevelBlockSectionId,
-      targetIndex: 0,
-      targetContentIndex: fallbackIndex ?? 0
-    };
-  }
+ return {
+ blockId: activeBlock.id,
+ targetSectionId: topLevelBlockSectionId,
+ targetIndex: 0,
+ targetContentIndex: fallbackIndex ?? 0
+ };
+ }
 
-  const targetSectionId = topLevelBlockSectionId;
+ const targetSectionId = topLevelBlockSectionId;
 
-  const targetBlocks = config.blocks
-    .filter((block) => block.sectionId === targetSectionId && block.id !== activeBlock.id && !isSectionTextBlock(block))
-    .sort(bySortOrder);
-  const placement = getPlacementFromDrag({ sectionId: targetSectionId, block: activeBlock, pointer, dragRect, device });
-  const targetIndex =
-    getInsertionIndexFromPointer({
-      targetBlocks,
-      pointer,
-      dragRect,
-      activeBlock,
-      targetSectionId,
-      device,
-      activePlacement: placement
-    }) ??
-    (previousPlacement?.blockId === activeBlock.id && previousPlacement.targetSectionId === targetSectionId
-      ? previousPlacement.targetIndex
-      : targetBlocks.length);
+ const targetBlocks = config.blocks
+ .filter((block) => block.sectionId === targetSectionId && block.id !== activeBlock.id && !isSectionTextBlock(block))
+ .sort(bySortOrder);
+ const placement = getPlacementFromDrag({ sectionId: targetSectionId, block: activeBlock, pointer, dragRect, device });
+ const targetIndex =
+ getInsertionIndexFromPointer({
+ targetBlocks,
+ pointer,
+ dragRect,
+ activeBlock,
+ targetSectionId,
+ device,
+ activePlacement: placement
+ }) ??
+ (previousPlacement?.blockId === activeBlock.id && previousPlacement.targetSectionId === targetSectionId
+ ? previousPlacement.targetIndex
+ : targetBlocks.length);
 
-  return { blockId: activeBlock.id, targetSectionId, targetIndex, ...placement };
+ return { blockId: activeBlock.id, targetSectionId, targetIndex, ...placement };
 }
 
 function getTopLevelContentTargetFromDrag(
-  config: SiteConfig,
-  activeBlock: Block,
-  pointer: Point | null,
-  dragRect: MeasuredRect | null,
-  device: LayoutDevice
+ config: SiteConfig,
+ activeBlock: Block,
+ pointer: Point | null,
+ dragRect: MeasuredRect | null,
+ device: LayoutDevice
 ) {
-  const intentPoint = pointer ?? getDragCenterPoint(dragRect);
-  if (!intentPoint) return null;
+ const intentPoint = pointer ?? getDragCenterPoint(dragRect);
+ if (!intentPoint) return null;
 
-  const isTextDrag = isSectionTextBlock(activeBlock);
-  const flowItems = getContentFlowForBlockMove(buildRenderModel(config, { includeHidden: true }), activeBlock.id, isTextDrag);
-  if (isTextDrag) {
-    const directTextTarget = getTextBlockContentTargetFromPointer(flowItems, intentPoint, true);
-    if (directTextTarget) return directTextTarget;
-  }
+ const isTextDrag = isSectionTextBlock(activeBlock);
+ const flowItems = getContentFlowForBlockMove(buildRenderModel(config, { includeHidden: true }), activeBlock.id, isTextDrag);
+ if (isTextDrag) {
+ const directTextTarget = getTextBlockContentTargetFromPointer(flowItems, intentPoint, true);
+ if (directTextTarget) return directTextTarget;
+ }
 
-  const groupTarget = getTopLevelContentGroupTarget(config, activeBlock, intentPoint, pointer, dragRect, device);
-  if (groupTarget) {
-    return groupTarget;
-  }
+ const groupTarget = getTopLevelContentGroupTarget(config, activeBlock, intentPoint, pointer, dragRect, device);
+ if (groupTarget) {
+ return groupTarget;
+ }
 
-  const dragCenterPoint = getDragCenterPoint(dragRect);
-  if (
-    isTextDrag &&
-    dragCenterPoint &&
-    (Math.abs(dragCenterPoint.x - intentPoint.x) > 4 || Math.abs(dragCenterPoint.y - intentPoint.y) > 4)
-  ) {
-    const centerGroupTarget = getTopLevelContentGroupTarget(config, activeBlock, dragCenterPoint, pointer, dragRect, device);
-    if (centerGroupTarget) return centerGroupTarget;
-  }
+ const dragCenterPoint = getDragCenterPoint(dragRect);
+ if (
+ isTextDrag &&
+ dragCenterPoint &&
+ (Math.abs(dragCenterPoint.x - intentPoint.x) > 4 || Math.abs(dragCenterPoint.y - intentPoint.y) > 4)
+ ) {
+ const centerGroupTarget = getTopLevelContentGroupTarget(config, activeBlock, dragCenterPoint, pointer, dragRect, device);
+ if (centerGroupTarget) return centerGroupTarget;
+ }
 
-  const textTarget = getTextBlockContentTargetFromPointer(flowItems, intentPoint, false);
-  if (textTarget) return textTarget;
+ const textTarget = getTextBlockContentTargetFromPointer(flowItems, intentPoint, false);
+ if (textTarget) return textTarget;
 
-  const gapTargetIndex = getContentGapTargetIndexFromPointer(flowItems, intentPoint);
-  if (gapTargetIndex !== null) {
-    return { targetContentIndex: gapTargetIndex, targetIndex: 0 };
-  }
+ const gapTargetIndex = getContentGapTargetIndexFromPointer(flowItems, intentPoint);
+ if (gapTargetIndex !== null) {
+ return { targetContentIndex: gapTargetIndex, targetIndex: 0 };
+ }
 
-  return null;
+ return null;
 }
 
 function getTopLevelContentGroupTarget(
-  config: SiteConfig,
-  activeBlock: Block,
-  intentPoint: Point,
-  pointer: Point | null,
-  dragRect: MeasuredRect | null,
-  device: LayoutDevice
+ config: SiteConfig,
+ activeBlock: Block,
+ intentPoint: Point,
+ pointer: Point | null,
+ dragRect: MeasuredRect | null,
+ device: LayoutDevice
 ) {
-  const groups = getTopLevelContentGroupTargets(config, activeBlock.id, isSectionTextBlock(activeBlock));
-  const candidates = groups
-    .map((group) => {
-      const rect = getAdminContentGroupGridRect(group.id);
-      if (!rect) return null;
+ const groups = getTopLevelContentGroupTargets(config, activeBlock.id, isSectionTextBlock(activeBlock));
+ const candidates = groups
+ .map((group) => {
+ const rect = getAdminContentGroupGridRect(group.id);
+ if (!rect) return null;
 
-      const verticalBand = Math.max(48, rect.height * 0.18);
-      const horizontalBand = 96;
-      const isNear =
-        intentPoint.y >= rect.top - verticalBand &&
-        intentPoint.y <= rect.bottom + verticalBand &&
-        intentPoint.x >= rect.left - horizontalBand &&
-        intentPoint.x <= rect.right + horizontalBand;
-      if (!isNear) return null;
+ const verticalBand = Math.max(48, rect.height * 0.18);
+ const horizontalBand = 96;
+ const isNear =
+ intentPoint.y >= rect.top - verticalBand &&
+ intentPoint.y <= rect.bottom + verticalBand &&
+ intentPoint.x >= rect.left - horizontalBand &&
+ intentPoint.x <= rect.right + horizontalBand;
+ if (!isNear) return null;
 
-      return {
-        group,
-        rect,
-        distance: getDistanceToRect(intentPoint, rect)
-      };
-    })
-    .filter((item): item is { group: ContentGroupTarget; rect: MeasuredRect; distance: number } => item !== null)
-    .sort((a, b) => a.distance - b.distance);
+ return {
+ group,
+ rect,
+ distance: getDistanceToRect(intentPoint, rect)
+ };
+ })
+ .filter((item): item is { group: ContentGroupTarget; rect: MeasuredRect; distance: number } => item !== null)
+ .sort((a, b) => a.distance - b.distance);
 
-  const candidate = candidates[0];
-  if (!candidate) return null;
+ const candidate = candidates[0];
+ if (!candidate) return null;
 
-  if (isSectionTextBlock(activeBlock)) {
-    const rowSplitIndex = getTextBlockInsertionIndexWithinContentGroup(candidate.group, intentPoint);
-    if (rowSplitIndex !== null) {
-      return {
-        targetContentIndex: rowSplitIndex,
-        targetIndex: 0
-      };
-    }
+ if (isSectionTextBlock(activeBlock)) {
+ const rowSplitIndex = getTextBlockInsertionIndexWithinContentGroup(candidate.group, intentPoint);
+ if (rowSplitIndex !== null) {
+ return {
+ targetContentIndex: rowSplitIndex,
+ targetIndex: 0
+ };
+ }
 
-    const insertAfterGroup = intentPoint.y > candidate.rect.top + candidate.rect.height / 2;
-    return {
-      targetContentIndex: candidate.group.startIndex + (insertAfterGroup ? candidate.group.blocks.length : 0),
-      targetIndex: 0
-    };
-  }
+ const insertAfterGroup = intentPoint.y > candidate.rect.top + candidate.rect.height / 2;
+ return {
+ targetContentIndex: candidate.group.startIndex + (insertAfterGroup ? candidate.group.blocks.length : 0),
+ targetIndex: 0
+ };
+ }
 
-  const placement = getPlacementFromDrag({
-    sectionId: topLevelBlockSectionId,
-    block: activeBlock,
-    pointer,
-    dragRect,
-    device
-  });
-  const targetIndex =
-    getInsertionIndexFromPointer({
-      targetBlocks: candidate.group.blocks,
-      pointer,
-      dragRect,
-      activeBlock,
-      targetSectionId: topLevelBlockSectionId,
-      device,
-      activePlacement: placement
-    }) ?? getInsertionIndexFromBlockRects(candidate.group.blocks, intentPoint);
-  return {
-    targetContentIndex: candidate.group.startIndex + targetIndex,
-    targetIndex
-  };
+ const placement = getPlacementFromDrag({
+ sectionId: topLevelBlockSectionId,
+ block: activeBlock,
+ pointer,
+ dragRect,
+ device
+ });
+ const targetIndex =
+ getInsertionIndexFromPointer({
+ targetBlocks: candidate.group.blocks,
+ pointer,
+ dragRect,
+ activeBlock,
+ targetSectionId: topLevelBlockSectionId,
+ device,
+ activePlacement: placement
+ }) ?? getInsertionIndexFromBlockRects(candidate.group.blocks, intentPoint);
+ return {
+ targetContentIndex: candidate.group.startIndex + targetIndex,
+ targetIndex
+ };
 }
 
 type ContentGroupTarget = {
-  id: string;
-  blocks: Block[];
-  startIndex: number;
+ id: string;
+ blocks: Block[];
+ startIndex: number;
 };
 
 function getTopLevelContentGroupTargets(config: SiteConfig, activeBlockId: string, preferVisualBlockOrder = false): ContentGroupTarget[] {
-  const renderModel = buildRenderModel(config, { includeHidden: true });
-  const groups: ContentGroupTarget[] = [];
-  let flowIndex = 0;
+ const renderModel = buildRenderModel(config, { includeHidden: true });
+ const groups: ContentGroupTarget[] = [];
+ let flowIndex = 0;
 
-  for (const item of renderModel.orderedContentItems) {
-    if (item.type === "top-level-blocks") {
-      const blocks = item.blocks.filter((block) => block.id !== activeBlockId);
-      const orderedBlocks = preferVisualBlockOrder ? getBlocksInMeasuredVisualOrder(blocks) : blocks;
-      const startIndex = flowIndex;
-      flowIndex += orderedBlocks.length;
-      if (orderedBlocks.length > 0) {
-        groups.push({ id: item.id, blocks: orderedBlocks, startIndex });
-      }
-      continue;
-    }
+ for (const item of renderModel.orderedContentItems) {
+ if (item.type === "top-level-blocks") {
+ const blocks = item.blocks.filter((block) => block.id !== activeBlockId);
+ const orderedBlocks = preferVisualBlockOrder ? getBlocksInMeasuredVisualOrder(blocks) : blocks;
+ const startIndex = flowIndex;
+ flowIndex += orderedBlocks.length;
+ if (orderedBlocks.length > 0) {
+ groups.push({ id: item.id, blocks: orderedBlocks, startIndex });
+ }
+ continue;
+ }
 
-    if (item.block.id !== activeBlockId) {
-      flowIndex += 1;
-    }
-  }
+ if (item.block.id !== activeBlockId) {
+ flowIndex += 1;
+ }
+ }
 
-  return groups;
+ return groups;
 }
 
 function getTextBlockInsertionIndexWithinContentGroup(group: ContentGroupTarget, intentPoint: Point) {
-  const measuredBlocks = group.blocks
-    .map((block, index) => {
-      const rect = getMeasuredAdminBlockRect(block.id);
-      return rect ? { block, index, rect } : null;
-    })
-    .filter((item): item is { block: Block; index: number; rect: MeasuredRect } => item !== null);
+ const measuredBlocks = group.blocks
+ .map((block, index) => {
+ const rect = getMeasuredAdminBlockRect(block.id);
+ return rect ? { block, index, rect } : null;
+ })
+ .filter((item): item is { block: Block; index: number; rect: MeasuredRect } => item !== null);
 
-  if (measuredBlocks.length < 2) return null;
+ if (measuredBlocks.length < 2) return null;
 
-  const rowThreshold = Math.max(24, Math.min(...measuredBlocks.map((item) => item.rect.height)) * 0.45);
-  const rows: Array<{
-    items: Array<{ block: Block; index: number; rect: MeasuredRect }>;
-    top: number;
-    bottom: number;
-  }> = [];
+ const rowThreshold = Math.max(24, Math.min(...measuredBlocks.map((item) => item.rect.height)) * 0.45);
+ const rows: Array<{
+ items: Array<{ block: Block; index: number; rect: MeasuredRect }>;
+ top: number;
+ bottom: number;
+ }> = [];
 
-  for (const item of measuredBlocks.sort((a, b) => (Math.abs(a.rect.top - b.rect.top) > 8 ? a.rect.top - b.rect.top : a.rect.left - b.rect.left))) {
-    const centerY = item.rect.top + item.rect.height / 2;
-    const row = rows.find((candidate) => Math.abs((candidate.top + candidate.bottom) / 2 - centerY) <= rowThreshold);
-    if (row) {
-      row.items.push(item);
-      row.top = Math.min(row.top, item.rect.top);
-      row.bottom = Math.max(row.bottom, item.rect.bottom);
-      continue;
-    }
+ for (const item of measuredBlocks.sort((a, b) => (Math.abs(a.rect.top - b.rect.top) > 8 ? a.rect.top - b.rect.top : a.rect.left - b.rect.left))) {
+ const centerY = item.rect.top + item.rect.height / 2;
+ const row = rows.find((candidate) => Math.abs((candidate.top + candidate.bottom) / 2 - centerY) <= rowThreshold);
+ if (row) {
+ row.items.push(item);
+ row.top = Math.min(row.top, item.rect.top);
+ row.bottom = Math.max(row.bottom, item.rect.bottom);
+ continue;
+ }
 
-    rows.push({ items: [item], top: item.rect.top, bottom: item.rect.bottom });
-  }
+ rows.push({ items: [item], top: item.rect.top, bottom: item.rect.bottom });
+ }
 
-  if (rows.length < 2) return null;
+ if (rows.length < 2) return null;
 
-  for (let index = 0; index < rows.length - 1; index += 1) {
-    const upperRow = rows[index];
-    const lowerRow = rows[index + 1];
-    const upperCenter = (upperRow.top + upperRow.bottom) / 2;
-    const lowerCenter = (lowerRow.top + lowerRow.bottom) / 2;
-    const gapPadding = Math.max(18, Math.min(lowerRow.top - upperRow.bottom, rowThreshold));
-    const isBetweenRows =
-      (intentPoint.y >= upperCenter && intentPoint.y <= lowerCenter) ||
-      (intentPoint.y >= upperRow.bottom - gapPadding && intentPoint.y <= lowerRow.top + gapPadding);
+ for (let index = 0; index < rows.length - 1; index += 1) {
+ const upperRow = rows[index];
+ const lowerRow = rows[index + 1];
+ const upperCenter = (upperRow.top + upperRow.bottom) / 2;
+ const lowerCenter = (lowerRow.top + lowerRow.bottom) / 2;
+ const gapPadding = Math.max(18, Math.min(lowerRow.top - upperRow.bottom, rowThreshold));
+ const isBetweenRows =
+ (intentPoint.y >= upperCenter && intentPoint.y <= lowerCenter) ||
+ (intentPoint.y >= upperRow.bottom - gapPadding && intentPoint.y <= lowerRow.top + gapPadding);
 
-    if (!isBetweenRows) continue;
+ if (!isBetweenRows) continue;
 
-    const rowsBeforeTarget = rows.slice(0, index + 1);
-    const lastIndexBeforeTarget = Math.max(...rowsBeforeTarget.flatMap((row) => row.items.map((item) => item.index)));
-    return group.startIndex + lastIndexBeforeTarget + 1;
-  }
+ const rowsBeforeTarget = rows.slice(0, index + 1);
+ const lastIndexBeforeTarget = Math.max(...rowsBeforeTarget.flatMap((row) => row.items.map((item) => item.index)));
+ return group.startIndex + lastIndexBeforeTarget + 1;
+ }
 
-  return null;
+ return null;
 }
 
 function getContentTargetIndexFromPointer(flowItems: ContentFlowItem[], pointer: Point | null) {
-  if (!pointer) return null;
+ if (!pointer) return null;
 
-  const measuredItems = flowItems
-    .map((item, index) => {
-      const rect = getMeasuredAdminBlockRect(item.id);
-      return rect ? { index, rect } : null;
-    })
-    .filter((item): item is { index: number; rect: MeasuredRect } => item !== null)
-    .sort((a, b) => (Math.abs(a.rect.top - b.rect.top) > 8 ? a.rect.top - b.rect.top : a.rect.left - b.rect.left));
+ const measuredItems = flowItems
+ .map((item, index) => {
+ const rect = getMeasuredAdminBlockRect(item.id);
+ return rect ? { index, rect } : null;
+ })
+ .filter((item): item is { index: number; rect: MeasuredRect } => item !== null)
+ .sort((a, b) => (Math.abs(a.rect.top - b.rect.top) > 8 ? a.rect.top - b.rect.top : a.rect.left - b.rect.left));
 
-  for (const item of measuredItems) {
-    if (pointer.y < item.rect.top + item.rect.height / 2) return item.index;
-  }
+ for (const item of measuredItems) {
+ if (pointer.y < item.rect.top + item.rect.height / 2) return item.index;
+ }
 
-  return flowItems.length;
+ return flowItems.length;
 }
 
 function getContentGapTargetIndexFromPointer(flowItems: ContentFlowItem[], pointer: Point) {
-  const measuredItems = flowItems
-    .map((item, index) => {
-      const rect = getMeasuredAdminBlockRect(item.id);
-      return rect ? { index, rect } : null;
-    })
-    .filter((item): item is { index: number; rect: MeasuredRect } => item !== null)
-    .sort((a, b) => (Math.abs(a.rect.top - b.rect.top) > 8 ? a.rect.top - b.rect.top : a.rect.left - b.rect.left));
+ const measuredItems = flowItems
+ .map((item, index) => {
+ const rect = getMeasuredAdminBlockRect(item.id);
+ return rect ? { index, rect } : null;
+ })
+ .filter((item): item is { index: number; rect: MeasuredRect } => item !== null)
+ .sort((a, b) => (Math.abs(a.rect.top - b.rect.top) > 8 ? a.rect.top - b.rect.top : a.rect.left - b.rect.left));
 
-  if (measuredItems.length === 0) return null;
+ if (measuredItems.length === 0) return null;
 
-  const first = measuredItems[0];
-  const last = measuredItems[measuredItems.length - 1];
-  const topBand = Math.max(64, first.rect.height * 0.85);
-  const bottomBand = Math.max(64, last.rect.height * 0.85);
-  if (pointer.y >= first.rect.top - topBand && pointer.y < first.rect.top + first.rect.height / 2) {
-    return first.index;
-  }
-  if (pointer.y > last.rect.top + last.rect.height / 2 && pointer.y <= last.rect.bottom + bottomBand) {
-    return flowItems.length;
-  }
+ const first = measuredItems[0];
+ const last = measuredItems[measuredItems.length - 1];
+ const topBand = Math.max(64, first.rect.height * 0.85);
+ const bottomBand = Math.max(64, last.rect.height * 0.85);
+ if (pointer.y >= first.rect.top - topBand && pointer.y < first.rect.top + first.rect.height / 2) {
+ return first.index;
+ }
+ if (pointer.y > last.rect.top + last.rect.height / 2 && pointer.y <= last.rect.bottom + bottomBand) {
+ return flowItems.length;
+ }
 
-  for (let index = 0; index < measuredItems.length - 1; index += 1) {
-    const current = measuredItems[index];
-    const next = measuredItems[index + 1];
-    const gapTop = current.rect.bottom;
-    const gapBottom = next.rect.top;
-    if (gapBottom <= gapTop) continue;
-    if (pointer.y >= gapTop && pointer.y <= gapBottom) {
-      return next.index;
-    }
-  }
+ for (let index = 0; index < measuredItems.length - 1; index += 1) {
+ const current = measuredItems[index];
+ const next = measuredItems[index + 1];
+ const gapTop = current.rect.bottom;
+ const gapBottom = next.rect.top;
+ if (gapBottom <= gapTop) continue;
+ if (pointer.y >= gapTop && pointer.y <= gapBottom) {
+ return next.index;
+ }
+ }
 
-  return null;
+ return null;
 }
 
 function getTextBlockContentTargetFromPointer(flowItems: ContentFlowItem[], pointer: Point, preferDirectHover: boolean) {
-  const candidates = flowItems
-    .map((item, index) => {
-      if (item.type !== "text-block") return null;
+ const candidates = flowItems
+ .map((item, index) => {
+ if (item.type !== "text-block") return null;
 
-      const rect = getMeasuredAdminBlockRect(item.id);
-      if (!rect) return null;
+ const rect = getMeasuredAdminBlockRect(item.id);
+ if (!rect) return null;
 
-      const horizontalBand = 96;
-      if (pointer.x < rect.left - horizontalBand || pointer.x > rect.right + horizontalBand) return null;
+ const horizontalBand = 96;
+ if (pointer.x < rect.left - horizontalBand || pointer.x > rect.right + horizontalBand) return null;
 
-      const centerY = rect.top + rect.height / 2;
-      const isInside = pointer.y >= rect.top && pointer.y <= rect.bottom;
-      if (isInside) {
-        return {
-          targetContentIndex: index + (pointer.y >= centerY ? 1 : 0),
-          targetIndex: 0,
-          score: Math.abs(pointer.y - centerY) * 0.01
-        };
-      }
+ const centerY = rect.top + rect.height / 2;
+ const isInside = pointer.y >= rect.top && pointer.y <= rect.bottom;
+ if (isInside) {
+ return {
+ targetContentIndex: index + (pointer.y >= centerY ? 1 : 0),
+ targetIndex: 0,
+ score: Math.abs(pointer.y - centerY) * 0.01
+ };
+ }
 
-      const verticalBand = preferDirectHover ? Math.max(10, rect.height * 0.22) : Math.max(28, rect.height * 0.7);
-      if (pointer.y < rect.top && rect.top - pointer.y <= verticalBand) {
-        return {
-          targetContentIndex: index,
-          targetIndex: 0,
-          score: 100 + (rect.top - pointer.y)
-        };
-      }
-      if (pointer.y > rect.bottom && pointer.y - rect.bottom <= verticalBand) {
-        return {
-          targetContentIndex: index + 1,
-          targetIndex: 0,
-          score: 100 + (pointer.y - rect.bottom)
-        };
-      }
+ const verticalBand = preferDirectHover ? Math.max(10, rect.height * 0.22) : Math.max(28, rect.height * 0.7);
+ if (pointer.y < rect.top && rect.top - pointer.y <= verticalBand) {
+ return {
+ targetContentIndex: index,
+ targetIndex: 0,
+ score: 100 + (rect.top - pointer.y)
+ };
+ }
+ if (pointer.y > rect.bottom && pointer.y - rect.bottom <= verticalBand) {
+ return {
+ targetContentIndex: index + 1,
+ targetIndex: 0,
+ score: 100 + (pointer.y - rect.bottom)
+ };
+ }
 
-      return null;
-    })
-    .filter(
-      (item): item is { targetContentIndex: number; targetIndex: number; score: number } => item !== null
-    )
-    .sort((a, b) => a.score - b.score);
+ return null;
+ })
+ .filter(
+ (item): item is { targetContentIndex: number; targetIndex: number; score: number } => item !== null
+ )
+ .sort((a, b) => a.score - b.score);
 
-  const candidate = candidates[0];
-  return candidate ? { targetContentIndex: candidate.targetContentIndex, targetIndex: candidate.targetIndex } : null;
+ const candidate = candidates[0];
+ return candidate ? { targetContentIndex: candidate.targetContentIndex, targetIndex: candidate.targetIndex } : null;
 }
 
 function getPlacementFromDrag({
-  sectionId,
-  block,
-  pointer,
-  dragRect,
-  device
+ sectionId,
+ block,
+ pointer,
+ dragRect,
+ device
 }: {
-  sectionId: string;
-  block: Block;
-  pointer: Point | null;
-  dragRect: MeasuredRect | null;
-  device: LayoutDevice;
+ sectionId: string;
+ block: Block;
+ pointer: Point | null;
+ dragRect: MeasuredRect | null;
+ device: LayoutDevice;
 }): BlockPlacementDraft | undefined {
-  const metrics = getAdminSectionGridMetrics(sectionId, device, pointer, dragRect);
-  if (!metrics || (!pointer && !dragRect)) return undefined;
+ const metrics = getAdminSectionGridMetrics(sectionId, device, pointer, dragRect);
+ if (!metrics || (!pointer && !dragRect)) return undefined;
 
-  const size = getBlockSize(block, device);
-  const logicalColumnSpan = getLogicalColumnSpan(size, device);
-  const logicalColumns = getLogicalColumnCount(device);
-  const maxColumnStart = logicalColumns - logicalColumnSpan + 1;
-  const width = getGridItemWidth(getDefaultGridSpan(size, device), metrics);
-  const height = getDefaultRowSpan(size) * metrics.rowHeight + (getDefaultRowSpan(size) - 1) * metrics.rowGap;
-  const anchorX = dragRect ? dragRect.left : pointer ? pointer.x - width / 2 : metrics.rect.left;
-  const anchorY = dragRect ? dragRect.top : pointer ? pointer.y - height / 2 : metrics.rect.top;
-  const logicalCellWidth = getGridItemWidth(device === "desktop" ? 4 : 6, metrics);
-  const logicalColumnUnit = logicalCellWidth + metrics.columnGap;
-  const logicalRowUnit = metrics.rowHeight + metrics.rowGap;
-  const columnStart = clamp(Math.round((anchorX - metrics.rect.left) / logicalColumnUnit) + 1, 1, maxColumnStart);
-  const rowStart = clamp(Math.round((anchorY - metrics.rect.top) / logicalRowUnit) + 1, 1, 240);
+ const size = getBlockSize(block, device);
+ const logicalColumnSpan = getLogicalColumnSpan(size, device);
+ const logicalColumns = getLogicalColumnCount(device);
+ const maxColumnStart = logicalColumns - logicalColumnSpan + 1;
+ const width = getGridItemWidth(getDefaultGridSpan(size, device), metrics);
+ const height = getDefaultRowSpan(size) * metrics.rowHeight + (getDefaultRowSpan(size) - 1) * metrics.rowGap;
+ const anchorX = dragRect ? dragRect.left : pointer ? pointer.x - width / 2 : metrics.rect.left;
+ const anchorY = dragRect ? dragRect.top : pointer ? pointer.y - height / 2 : metrics.rect.top;
+ const logicalCellWidth = getGridItemWidth(device === "desktop" ? 4 : 6, metrics);
+ const logicalColumnUnit = logicalCellWidth + metrics.columnGap;
+ const logicalRowUnit = metrics.rowHeight + metrics.rowGap;
+ const columnStart = clamp(Math.round((anchorX - metrics.rect.left) / logicalColumnUnit) + 1, 1, maxColumnStart);
+ const rowStart = clamp(Math.round((anchorY - metrics.rect.top) / logicalRowUnit) + 1, 1, 240);
 
-  return { columnStart, rowStart };
+ return { columnStart, rowStart };
 }
 
 function getDragIntentPoint(pointer: Point | null, dragRect: MeasuredRect | null): Point | null {
-  if (dragRect) {
-    return {
-      x: dragRect.left + Math.min(48, dragRect.width * 0.18),
-      y: dragRect.top + Math.min(48, dragRect.height * 0.18)
-    };
-  }
+ if (dragRect) {
+ return {
+ x: dragRect.left + Math.min(48, dragRect.width * 0.18),
+ y: dragRect.top + Math.min(48, dragRect.height * 0.18)
+ };
+ }
 
-  return pointer;
+ return pointer;
 }
 
 function getDragCenterPoint(dragRect: MeasuredRect | null): Point | null {
-  if (!dragRect) return null;
-  return {
-    x: dragRect.left + dragRect.width / 2,
-    y: dragRect.top + dragRect.height / 2
-  };
+ if (!dragRect) return null;
+ return {
+ x: dragRect.left + dragRect.width / 2,
+ y: dragRect.top + dragRect.height / 2
+ };
 }
 
 function getInsertionIndexFromPointer({
-  targetBlocks,
-  pointer,
-  dragRect,
-  activeBlock,
-  targetSectionId,
-  device,
-  activePlacement
+ targetBlocks,
+ pointer,
+ dragRect,
+ activeBlock,
+ targetSectionId,
+ device,
+ activePlacement
 }: {
-  targetBlocks: Block[];
-  pointer: Point | null;
-  dragRect: MeasuredRect | null;
-  activeBlock: Block;
-  targetSectionId: string;
-  device: LayoutDevice;
-  activePlacement?: BlockPlacementDraft;
+ targetBlocks: Block[];
+ pointer: Point | null;
+ dragRect: MeasuredRect | null;
+ activeBlock: Block;
+ targetSectionId: string;
+ device: LayoutDevice;
+ activePlacement?: BlockPlacementDraft;
 }) {
-  if (!pointer && !dragRect) return null;
-  const activeSize = getBlockSize(activeBlock, device);
-  const shouldPreferPlacement = getLogicalColumnSpan(activeSize, device) > 1;
-  if (shouldPreferPlacement && activePlacement) {
-    const placementIndex = getSimulatedGridInsertionIndex(
-      targetBlocks,
-      pointer,
-      dragRect,
-      activeBlock,
-      targetSectionId,
-      device,
-      activePlacement
-    );
-    if (placementIndex !== null) return placementIndex;
-  }
+ if (!pointer && !dragRect) return null;
+ const activeSize = getBlockSize(activeBlock, device);
+ const shouldPreferPlacement = getLogicalColumnSpan(activeSize, device) > 1;
+ if (shouldPreferPlacement && activePlacement) {
+ const placementIndex = getSimulatedGridInsertionIndex(
+ targetBlocks,
+ pointer,
+ dragRect,
+ activeBlock,
+ targetSectionId,
+ device,
+ activePlacement
+ );
+ if (placementIndex !== null) return placementIndex;
+ }
 
-  if (pointer && isPointerInBlockInsertionBand(targetBlocks, pointer)) {
-    return getInsertionIndexFromBlockRects(targetBlocks, pointer);
-  }
+ if (pointer && isPointerInBlockInsertionBand(targetBlocks, pointer)) {
+ return getInsertionIndexFromBlockRects(targetBlocks, pointer);
+ }
 
-  const simulatedIndex = getSimulatedGridInsertionIndex(
-    targetBlocks,
-    pointer,
-    dragRect,
-    activeBlock,
-    targetSectionId,
-    device,
-    activePlacement
-  );
-  if (simulatedIndex !== null) return simulatedIndex;
+ const simulatedIndex = getSimulatedGridInsertionIndex(
+ targetBlocks,
+ pointer,
+ dragRect,
+ activeBlock,
+ targetSectionId,
+ device,
+ activePlacement
+ );
+ if (simulatedIndex !== null) return simulatedIndex;
 
-  if (dragRect) {
-    return getInsertionIndexFromBlockRects(
-      targetBlocks,
-      getDragCenterPoint(dragRect) ?? {
-        x: dragRect.left,
-        y: dragRect.top
-      }
-    );
-  }
+ if (dragRect) {
+ return getInsertionIndexFromBlockRects(
+ targetBlocks,
+ getDragCenterPoint(dragRect) ?? {
+ x: dragRect.left,
+ y: dragRect.top
+ }
+ );
+ }
 
-  return pointer ? getInsertionIndexFromBlockRects(targetBlocks, pointer) : null;
+ return pointer ? getInsertionIndexFromBlockRects(targetBlocks, pointer) : null;
 }
 
 function isPointerInBlockInsertionBand(targetBlocks: Block[], pointer: Point) {
-  return targetBlocks.some((block) => {
-    const rect = getMeasuredAdminBlockRect(block.id);
-    if (!rect) return false;
+ return targetBlocks.some((block) => {
+ const rect = getMeasuredAdminBlockRect(block.id);
+ if (!rect) return false;
 
-    const verticalBand = Math.max(48, rect.height * 0.42);
-    const horizontalBand = Math.max(36, rect.width * 0.18);
-    return (
-      pointer.y >= rect.top - verticalBand &&
-      pointer.y <= rect.bottom + verticalBand &&
-      pointer.x >= rect.left - horizontalBand &&
-      pointer.x <= rect.right + horizontalBand
-    );
-  });
+ const verticalBand = Math.max(48, rect.height * 0.42);
+ const horizontalBand = Math.max(36, rect.width * 0.18);
+ return (
+ pointer.y >= rect.top - verticalBand &&
+ pointer.y <= rect.bottom + verticalBand &&
+ pointer.x >= rect.left - horizontalBand &&
+ pointer.x <= rect.right + horizontalBand
+ );
+ });
 }
 
 function getSimulatedGridInsertionIndex(
-  targetBlocks: Block[],
-  pointer: Point | null,
-  dragRect: MeasuredRect | null,
-  activeBlock: Block,
-  targetSectionId: string,
-  device: LayoutDevice,
-  activePlacement?: BlockPlacementDraft
+ targetBlocks: Block[],
+ pointer: Point | null,
+ dragRect: MeasuredRect | null,
+ activeBlock: Block,
+ targetSectionId: string,
+ device: LayoutDevice,
+ activePlacement?: BlockPlacementDraft
 ) {
-  const metrics = getAdminSectionGridMetrics(targetSectionId, device, pointer, dragRect);
-  if (!metrics) return null;
+ const metrics = getAdminSectionGridMetrics(targetSectionId, device, pointer, dragRect);
+ if (!metrics) return null;
 
-  const desiredPlacement = activePlacement
-    ? getGridPlacementFromBlockPlacement(activeBlock, activePlacement, device, metrics.columns)
-    : null;
-  let bestCandidate: { index: number; score: number } | null = null;
-  for (let index = 0; index <= targetBlocks.length; index += 1) {
-    const placement = simulateActiveGridPlacement(targetBlocks, activeBlock, index, device, metrics.columns, activePlacement);
-    if (!placement) continue;
-    const rect = getGridPlacementRect(placement, metrics);
-    const pointerScore = pointer ? getPointerToPlacementScore(pointer, rect) : Number.POSITIVE_INFINITY;
-    const dragScore = dragRect ? getDragRectToPlacementScore(dragRect, rect) : Number.POSITIVE_INFINITY;
-    const placementScore = desiredPlacement ? getGridPlacementDistanceScore(placement, desiredPlacement) : 0;
-    const score = desiredPlacement
-      ? placementScore + (dragRect ? Math.min(dragScore, 220) * 0.08 : Math.min(pointerScore, 220) * 0.08)
-      : dragRect
-        ? dragScore + Math.min(pointerScore, 160) * 0.2
-        : pointerScore;
+ const desiredPlacement = activePlacement
+ ? getGridPlacementFromBlockPlacement(activeBlock, activePlacement, device, metrics.columns)
+ : null;
+ let bestCandidate: { index: number; score: number } | null = null;
+ for (let index = 0; index <= targetBlocks.length; index += 1) {
+ const placement = simulateActiveGridPlacement(targetBlocks, activeBlock, index, device, metrics.columns, activePlacement);
+ if (!placement) continue;
+ const rect = getGridPlacementRect(placement, metrics);
+ const pointerScore = pointer ? getPointerToPlacementScore(pointer, rect) : Number.POSITIVE_INFINITY;
+ const dragScore = dragRect ? getDragRectToPlacementScore(dragRect, rect) : Number.POSITIVE_INFINITY;
+ const placementScore = desiredPlacement ? getGridPlacementDistanceScore(placement, desiredPlacement) : 0;
+ const score = desiredPlacement
+ ? placementScore + (dragRect ? Math.min(dragScore, 220) * 0.08 : Math.min(pointerScore, 220) * 0.08)
+ : dragRect
+ ? dragScore + Math.min(pointerScore, 160) * 0.2
+ : pointerScore;
 
-    if (!bestCandidate || score < bestCandidate.score) {
-      bestCandidate = { index, score };
-    }
-  }
+ if (!bestCandidate || score < bestCandidate.score) {
+ bestCandidate = { index, score };
+ }
+ }
 
-  return bestCandidate?.index ?? null;
+ return bestCandidate?.index ?? null;
 }
 
 function getAdminSectionGridMetrics(
-  sectionId: string,
-  device: LayoutDevice,
-  pointer?: Point | null,
-  dragRect?: MeasuredRect | null
+ sectionId: string,
+ device: LayoutDevice,
+ pointer?: Point | null,
+ dragRect?: MeasuredRect | null
 ): GridMetrics | null {
-  const gridElement = findAdminSectionGridElement(sectionId, pointer, dragRect);
-  if (!gridElement) return null;
+ const gridElement = findAdminSectionGridElement(sectionId, pointer, dragRect);
+ if (!gridElement) return null;
 
-  const rect = gridElement.getBoundingClientRect();
-  if (rect.width <= 0) return null;
+ const rect = gridElement.getBoundingClientRect();
+ if (rect.width <= 0) return null;
 
-  const columns = 12;
-  const scale = gridElement.offsetWidth > 0 ? rect.width / gridElement.offsetWidth : 1;
-  const styles = window.getComputedStyle(gridElement);
-  const rawColumnGap = Number.parseFloat(styles.columnGap || styles.gap || "16");
-  const rawRowGap = Number.parseFloat(styles.rowGap || styles.gap || "16");
-  const columnGap = Number.isFinite(rawColumnGap) ? rawColumnGap * scale : 16 * scale;
-  const rowGap = Number.isFinite(rawRowGap) ? rawRowGap * scale : columnGap;
-  const columnWidth = (rect.width - columnGap * (columns - 1)) / columns;
-  const minSpan = device === "desktop" ? 4 : 6;
-  const rowHeight = columnWidth * minSpan + columnGap * (minSpan - 1);
+ const columns = 12;
+ const scale = gridElement.offsetWidth > 0 ? rect.width / gridElement.offsetWidth : 1;
+ const styles = window.getComputedStyle(gridElement);
+ const rawColumnGap = Number.parseFloat(styles.columnGap || styles.gap || "16");
+ const rawRowGap = Number.parseFloat(styles.rowGap || styles.gap || "16");
+ const columnGap = Number.isFinite(rawColumnGap) ? rawColumnGap * scale : 16 * scale;
+ const rowGap = Number.isFinite(rawRowGap) ? rawRowGap * scale : columnGap;
+ const columnWidth = (rect.width - columnGap * (columns - 1)) / columns;
+ const minSpan = device === "desktop" ? 4 : 6;
+ const rowHeight = columnWidth * minSpan + columnGap * (minSpan - 1);
 
-  return {
-    rect,
-    columns,
-    columnWidth,
-    rowHeight,
-    columnGap,
-    rowGap
-  };
+ return {
+ rect,
+ columns,
+ columnWidth,
+ rowHeight,
+ columnGap,
+ rowGap
+ };
 }
 
 function simulateActiveGridPlacement(
-  targetBlocks: Block[],
-  activeBlock: Block,
-  insertionIndex: number,
-  device: LayoutDevice,
-  columns: number,
-  activePlacement?: BlockPlacementDraft
+ targetBlocks: Block[],
+ activeBlock: Block,
+ insertionIndex: number,
+ device: LayoutDevice,
+ columns: number,
+ activePlacement?: BlockPlacementDraft
 ) {
-  const sequence: Array<{ columnSpan: number; rowSpan: number; columnStart?: number; rowStart?: number; isActive: boolean }> = [];
+ const sequence: Array<{ columnSpan: number; rowSpan: number; columnStart?: number; rowStart?: number; isActive: boolean }> = [];
 
-  targetBlocks.forEach((block, index) => {
-    if (index === insertionIndex) {
-      sequence.push(getGridItemShape(activeBlock, device, true, activePlacement));
-    }
-    sequence.push(getGridItemShape(block, device, false));
-  });
+ targetBlocks.forEach((block, index) => {
+ if (index === insertionIndex) {
+ sequence.push(getGridItemShape(activeBlock, device, true, activePlacement));
+ }
+ sequence.push(getGridItemShape(block, device, false));
+ });
 
-  if (insertionIndex === targetBlocks.length) {
-    sequence.push(getGridItemShape(activeBlock, device, true, activePlacement));
-  }
+ if (insertionIndex === targetBlocks.length) {
+ sequence.push(getGridItemShape(activeBlock, device, true, activePlacement));
+ }
 
-  const occupied: boolean[][] = [];
-  for (const item of sequence) {
-    const placement = placeGridItem(occupied, columns, item.columnSpan, item.rowSpan, item.columnStart, item.rowStart);
-    if (item.isActive) return placement;
-  }
+ const occupied: boolean[][] = [];
+ for (const item of sequence) {
+ const placement = placeGridItem(occupied, columns, item.columnSpan, item.rowSpan, item.columnStart, item.rowStart);
+ if (item.isActive) return placement;
+ }
 
-  return null;
+ return null;
 }
 
 function getGridItemShape(block: Block, device: LayoutDevice, isActive: boolean, activePlacement?: BlockPlacementDraft) {
-  const size = getBlockSize(block, device);
-  const columnStart = isActive && activePlacement
-    ? getGridColumnStartFromPlacement(activePlacement, device)
-    : getBlockColumnStart(block, device);
-  const rowStart = isActive && activePlacement ? activePlacement.rowStart : getBlockRowStart(block, device);
-  return {
-    columnSpan: getDefaultGridSpan(size, device),
-    rowSpan: getDefaultRowSpan(size),
-    columnStart,
-    rowStart,
-    isActive
-  };
+ const size = getBlockSize(block, device);
+ const columnStart = isActive && activePlacement
+ ? getGridColumnStartFromPlacement(activePlacement, device)
+ : getBlockColumnStart(block, device);
+ const rowStart = isActive && activePlacement ? activePlacement.rowStart : getBlockRowStart(block, device);
+ return {
+ columnSpan: getDefaultGridSpan(size, device),
+ rowSpan: getDefaultRowSpan(size),
+ columnStart,
+ rowStart,
+ isActive
+ };
 }
 
 function getGridPlacementFromBlockPlacement(
-  block: Block,
-  placement: BlockPlacementDraft,
-  device: LayoutDevice,
-  columns: number
+ block: Block,
+ placement: BlockPlacementDraft,
+ device: LayoutDevice,
+ columns: number
 ): GridPlacement {
-  const size = getBlockSize(block, device);
-  const columnSpan = getDefaultGridSpan(size, device);
-  const rowSpan = getDefaultRowSpan(size);
-  const columnStart = getGridColumnStartFromPlacement(placement, device);
-  const rowStart = placement.rowStart;
-  return {
-    column: columnStart ? clamp(columnStart - 1, 0, columns - columnSpan) : 0,
-    row: rowStart ? clamp(rowStart - 1, 0, 239) : 0,
-    columnSpan,
-    rowSpan
-  };
+ const size = getBlockSize(block, device);
+ const columnSpan = getDefaultGridSpan(size, device);
+ const rowSpan = getDefaultRowSpan(size);
+ const columnStart = getGridColumnStartFromPlacement(placement, device);
+ const rowStart = placement.rowStart;
+ return {
+ column: columnStart ? clamp(columnStart - 1, 0, columns - columnSpan) : 0,
+ row: rowStart ? clamp(rowStart - 1, 0, 239) : 0,
+ columnSpan,
+ rowSpan
+ };
 }
 
 function getGridColumnStartFromPlacement(placement: BlockPlacementDraft, device: LayoutDevice) {
-  if (!placement.columnStart) return undefined;
-  const baseSpan = device === "desktop" ? 4 : 6;
-  return (placement.columnStart - 1) * baseSpan + 1;
+ if (!placement.columnStart) return undefined;
+ const baseSpan = device === "desktop" ? 4 : 6;
+ return (placement.columnStart - 1) * baseSpan + 1;
 }
 
 function isDragPreviewAtBlockPlacement(block: Block, previewPlacement: BlockPlacementDraft | undefined, device: LayoutDevice) {
-  if (!previewPlacement) return true;
+ if (!previewPlacement) return true;
 
-  const currentColumnStart = getBlockColumnStart(block, device);
-  const currentRowStart = getBlockRowStart(block, device);
-  const previewColumnStart = getGridColumnStartFromPlacement(previewPlacement, device);
-  const previewRowStart = previewPlacement.rowStart;
-  const hasSavedPlacement = currentColumnStart !== undefined || currentRowStart !== undefined;
+ const currentColumnStart = getBlockColumnStart(block, device);
+ const currentRowStart = getBlockRowStart(block, device);
+ const previewColumnStart = getGridColumnStartFromPlacement(previewPlacement, device);
+ const previewRowStart = previewPlacement.rowStart;
+ const hasSavedPlacement = currentColumnStart !== undefined || currentRowStart !== undefined;
 
-  if (!hasSavedPlacement) return true;
+ if (!hasSavedPlacement) return true;
 
-  const isSameColumn =
-    currentColumnStart === undefined || previewColumnStart === undefined || currentColumnStart === previewColumnStart;
-  const isSameRow = currentRowStart === undefined || previewRowStart === undefined || currentRowStart === previewRowStart;
-  return isSameColumn && isSameRow;
+ const isSameColumn =
+ currentColumnStart === undefined || previewColumnStart === undefined || currentColumnStart === previewColumnStart;
+ const isSameRow = currentRowStart === undefined || previewRowStart === undefined || currentRowStart === previewRowStart;
+ return isSameColumn && isSameRow;
 }
 
 function shouldReleaseSiblingPlacementsForDrag(block: Block, device: LayoutDevice) {
-  return getLogicalColumnSpan(getBlockSize(block, device), device) > 1;
+ return getLogicalColumnSpan(getBlockSize(block, device), device) > 1;
 }
 
 function getGridPlacementDistanceScore(source: GridPlacement, target: GridPlacement) {
-  return Math.abs(source.row - target.row) * 1200 + Math.abs(source.column - target.column) * 700;
+ return Math.abs(source.row - target.row) * 1200 + Math.abs(source.column - target.column) * 700;
 }
 
 function placeGridItem(
-  occupied: boolean[][],
-  columns: number,
-  rawColumnSpan: number,
-  rawRowSpan: number,
-  rawColumnStart?: number,
-  rawRowStart?: number
+ occupied: boolean[][],
+ columns: number,
+ rawColumnSpan: number,
+ rawRowSpan: number,
+ rawColumnStart?: number,
+ rawRowStart?: number
 ): GridPlacement {
-  const columnSpan = clamp(rawColumnSpan, 1, columns);
-  const rowSpan = Math.max(1, rawRowSpan);
-  const preferredColumn = rawColumnStart ? clamp(rawColumnStart - 1, 0, columns - columnSpan) : null;
-  const preferredRow = rawRowStart ? clamp(rawRowStart - 1, 0, 239) : null;
+ const columnSpan = clamp(rawColumnSpan, 1, columns);
+ const rowSpan = Math.max(1, rawRowSpan);
+ const preferredColumn = rawColumnStart ? clamp(rawColumnStart - 1, 0, columns - columnSpan) : null;
+ const preferredRow = rawRowStart ? clamp(rawRowStart - 1, 0, 239) : null;
 
-  const rowsToTry =
-    preferredRow === null
-      ? Array.from({ length: 240 }, (_, row) => row)
-      : [preferredRow, ...Array.from({ length: 240 }, (_, row) => row).filter((row) => row !== preferredRow)];
+ const rowsToTry =
+ preferredRow === null
+ ? Array.from({ length: 240 }, (_, row) => row)
+ : [preferredRow, ...Array.from({ length: 240 }, (_, row) => row).filter((row) => row !== preferredRow)];
 
-  for (const row of rowsToTry) {
-    ensureGridRows(occupied, row + rowSpan, columns);
-    const columnsToTry =
-      preferredColumn === null
-        ? Array.from({ length: columns - columnSpan + 1 }, (_, column) => column)
-        : [
-            preferredColumn,
-            ...Array.from({ length: columns - columnSpan + 1 }, (_, column) => column).filter(
-              (column) => column !== preferredColumn
-            )
-          ];
+ for (const row of rowsToTry) {
+ ensureGridRows(occupied, row + rowSpan, columns);
+ const columnsToTry =
+ preferredColumn === null
+ ? Array.from({ length: columns - columnSpan + 1 }, (_, column) => column)
+ : [
+ preferredColumn,
+ ...Array.from({ length: columns - columnSpan + 1 }, (_, column) => column).filter(
+ (column) => column !== preferredColumn
+ )
+ ];
 
-    for (const column of columnsToTry) {
-      if (!canPlaceGridItem(occupied, column, row, columnSpan, rowSpan)) continue;
-      occupyGridItem(occupied, column, row, columnSpan, rowSpan);
-      return { column, row, columnSpan, rowSpan };
-    }
-  }
+ for (const column of columnsToTry) {
+ if (!canPlaceGridItem(occupied, column, row, columnSpan, rowSpan)) continue;
+ occupyGridItem(occupied, column, row, columnSpan, rowSpan);
+ return { column, row, columnSpan, rowSpan };
+ }
+ }
 
-  return { column: 0, row: occupied.length, columnSpan, rowSpan };
+ return { column: 0, row: occupied.length, columnSpan, rowSpan };
 }
 
 function ensureGridRows(occupied: boolean[][], rowCount: number, columns: number) {
-  while (occupied.length < rowCount) {
-    occupied.push(Array.from({ length: columns }, () => false));
-  }
+ while (occupied.length < rowCount) {
+ occupied.push(Array.from({ length: columns }, () => false));
+ }
 }
 
 function canPlaceGridItem(
-  occupied: boolean[][],
-  column: number,
-  row: number,
-  columnSpan: number,
-  rowSpan: number
+ occupied: boolean[][],
+ column: number,
+ row: number,
+ columnSpan: number,
+ rowSpan: number
 ) {
-  for (let rowOffset = 0; rowOffset < rowSpan; rowOffset += 1) {
-    for (let columnOffset = 0; columnOffset < columnSpan; columnOffset += 1) {
-      if (occupied[row + rowOffset]?.[column + columnOffset]) return false;
-    }
-  }
-  return true;
+ for (let rowOffset = 0; rowOffset < rowSpan; rowOffset += 1) {
+ for (let columnOffset = 0; columnOffset < columnSpan; columnOffset += 1) {
+ if (occupied[row + rowOffset]?.[column + columnOffset]) return false;
+ }
+ }
+ return true;
 }
 
 function occupyGridItem(occupied: boolean[][], column: number, row: number, columnSpan: number, rowSpan: number) {
-  for (let rowOffset = 0; rowOffset < rowSpan; rowOffset += 1) {
-    for (let columnOffset = 0; columnOffset < columnSpan; columnOffset += 1) {
-      occupied[row + rowOffset][column + columnOffset] = true;
-    }
-  }
+ for (let rowOffset = 0; rowOffset < rowSpan; rowOffset += 1) {
+ for (let columnOffset = 0; columnOffset < columnSpan; columnOffset += 1) {
+ occupied[row + rowOffset][column + columnOffset] = true;
+ }
+ }
 }
 
 function getGridPlacementRect(placement: GridPlacement, metrics: GridMetrics): MeasuredRect {
-  const left = metrics.rect.left + placement.column * (metrics.columnWidth + metrics.columnGap);
-  const top = metrics.rect.top + placement.row * (metrics.rowHeight + metrics.rowGap);
-  const width = getGridItemWidth(placement.columnSpan, metrics);
-  const height = placement.rowSpan * metrics.rowHeight + (placement.rowSpan - 1) * metrics.rowGap;
-  return {
-    left,
-    top,
-    width,
-    height,
-    right: left + width,
-    bottom: top + height
-  };
+ const left = metrics.rect.left + placement.column * (metrics.columnWidth + metrics.columnGap);
+ const top = metrics.rect.top + placement.row * (metrics.rowHeight + metrics.rowGap);
+ const width = getGridItemWidth(placement.columnSpan, metrics);
+ const height = placement.rowSpan * metrics.rowHeight + (placement.rowSpan - 1) * metrics.rowGap;
+ return {
+ left,
+ top,
+ width,
+ height,
+ right: left + width,
+ bottom: top + height
+ };
 }
 
 function getGridItemWidth(columnSpan: number, metrics: GridMetrics) {
-  return columnSpan * metrics.columnWidth + (columnSpan - 1) * metrics.columnGap;
+ return columnSpan * metrics.columnWidth + (columnSpan - 1) * metrics.columnGap;
 }
 
 function getPointerToPlacementScore(pointer: Point, rect: MeasuredRect) {
-  const outsideDistance = getDistanceToRect(pointer, rect);
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-  const centerDistance = Math.hypot(pointer.x - centerX, pointer.y - centerY);
-  return outsideDistance * 6 + centerDistance * 0.2;
+ const outsideDistance = getDistanceToRect(pointer, rect);
+ const centerX = rect.left + rect.width / 2;
+ const centerY = rect.top + rect.height / 2;
+ const centerDistance = Math.hypot(pointer.x - centerX, pointer.y - centerY);
+ return outsideDistance * 6 + centerDistance * 0.2;
 }
 
 function getDragRectToPlacementScore(dragRect: MeasuredRect, placementRect: MeasuredRect) {
-  const leftDistance = Math.abs(dragRect.left - placementRect.left);
-  const topDistance = Math.abs(dragRect.top - placementRect.top);
-  const centerDistance = Math.hypot(
-    dragRect.left + dragRect.width / 2 - (placementRect.left + placementRect.width / 2),
-    dragRect.top + dragRect.height / 2 - (placementRect.top + placementRect.height / 2)
-  );
-  const overlapArea = getRectIntersectionArea(dragRect, placementRect);
-  const overlapRatio = overlapArea / Math.max(1, Math.min(dragRect.width * dragRect.height, placementRect.width * placementRect.height));
-  return leftDistance * 3 + topDistance * 2 + centerDistance * 0.12 - overlapRatio * 120;
+ const leftDistance = Math.abs(dragRect.left - placementRect.left);
+ const topDistance = Math.abs(dragRect.top - placementRect.top);
+ const centerDistance = Math.hypot(
+ dragRect.left + dragRect.width / 2 - (placementRect.left + placementRect.width / 2),
+ dragRect.top + dragRect.height / 2 - (placementRect.top + placementRect.height / 2)
+ );
+ const overlapArea = getRectIntersectionArea(dragRect, placementRect);
+ const overlapRatio = overlapArea / Math.max(1, Math.min(dragRect.width * dragRect.height, placementRect.width * placementRect.height));
+ return leftDistance * 3 + topDistance * 2 + centerDistance * 0.12 - overlapRatio * 120;
 }
 
 function findAdminSectionGridElement(sectionId: string, pointer?: Point | null, dragRect?: MeasuredRect | null) {
-  const candidates = Array.from(document.querySelectorAll<HTMLElement>("[data-admin-section-grid-id]")).filter(
-    (element) => element.dataset.adminSectionGridId === sectionId
-  );
-  if (candidates.length <= 1) return candidates[0] ?? null;
+ const candidates = Array.from(document.querySelectorAll<HTMLElement>("[data-admin-section-grid-id]")).filter(
+ (element) => element.dataset.adminSectionGridId === sectionId
+ );
+ if (candidates.length <= 1) return candidates[0] ?? null;
 
-  const intentPoint = pointer ?? getDragCenterPoint(dragRect ?? null);
-  if (!intentPoint) return candidates[0] ?? null;
+ const intentPoint = pointer ?? getDragCenterPoint(dragRect ?? null);
+ if (!intentPoint) return candidates[0] ?? null;
 
-  return candidates
-    .map((element) => {
-      const rect = element.getBoundingClientRect();
-      return { element, score: getDistanceToRect(intentPoint, rect) };
-    })
-    .sort((a, b) => a.score - b.score)[0]?.element ?? null;
+ return candidates
+ .map((element) => {
+ const rect = element.getBoundingClientRect();
+ return { element, score: getDistanceToRect(intentPoint, rect) };
+ })
+ .sort((a, b) => a.score - b.score)[0]?.element ?? null;
 }
 
 function getAdminContentGroupGridRect(contentGroupId: string): MeasuredRect | null {
-  const rects = Array.from(document.querySelectorAll<HTMLElement>("[data-admin-content-group-id]"))
-    .filter((element) => element.dataset.adminContentGroupId === contentGroupId)
-    .map((element) => copyMeasuredRect(element.getBoundingClientRect()))
-    .filter((rect) => rect.width > 0 && rect.height > 0);
+ const rects = Array.from(document.querySelectorAll<HTMLElement>("[data-admin-content-group-id]"))
+ .filter((element) => element.dataset.adminContentGroupId === contentGroupId)
+ .map((element) => copyMeasuredRect(element.getBoundingClientRect()))
+ .filter((rect) => rect.width > 0 && rect.height > 0);
 
-  if (rects.length === 0) return null;
+ if (rects.length === 0) return null;
 
-  const left = Math.min(...rects.map((rect) => rect.left));
-  const top = Math.min(...rects.map((rect) => rect.top));
-  const right = Math.max(...rects.map((rect) => rect.right));
-  const bottom = Math.max(...rects.map((rect) => rect.bottom));
-  return {
-    left,
-    top,
-    width: right - left,
-    height: bottom - top,
-    right,
-    bottom
-  };
+ const left = Math.min(...rects.map((rect) => rect.left));
+ const top = Math.min(...rects.map((rect) => rect.top));
+ const right = Math.max(...rects.map((rect) => rect.right));
+ const bottom = Math.max(...rects.map((rect) => rect.bottom));
+ return {
+ left,
+ top,
+ width: right - left,
+ height: bottom - top,
+ right,
+ bottom
+ };
 }
 
 function getAxisDistance(value: number, start: number, end: number) {
-  if (value < start) return start - value;
-  if (value > end) return value - end;
-  return 0;
+ if (value < start) return start - value;
+ if (value > end) return value - end;
+ return 0;
 }
 
 function getDistanceToRect(point: Point, rect: MeasuredRect) {
-  return Math.hypot(getAxisDistance(point.x, rect.left, rect.right), getAxisDistance(point.y, rect.top, rect.bottom));
+ return Math.hypot(getAxisDistance(point.x, rect.left, rect.right), getAxisDistance(point.y, rect.top, rect.bottom));
 }
 
 function getRectIntersectionArea(source: MeasuredRect, target: MeasuredRect) {
-  const width = Math.max(0, Math.min(source.right, target.right) - Math.max(source.left, target.left));
-  const height = Math.max(0, Math.min(source.bottom, target.bottom) - Math.max(source.top, target.top));
-  return width * height;
+ const width = Math.max(0, Math.min(source.right, target.right) - Math.max(source.left, target.left));
+ const height = Math.max(0, Math.min(source.bottom, target.bottom) - Math.max(source.top, target.top));
+ return width * height;
 }
 
 function isPointInRect(point: Point, rect: RectLike & Pick<DOMRectReadOnly, "right" | "bottom">) {
-  return point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom;
+ return point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom;
 }
 
 function getInsertionIndexFromBlockRects(targetBlocks: Block[], pointer: Point) {
-  if (targetBlocks.length === 0) return 0;
+ if (targetBlocks.length === 0) return 0;
 
-  const items = targetBlocks
-    .map((block, index) => {
-      const rect = getMeasuredAdminBlockRect(block.id);
-      return rect ? { index, rect } : null;
-    })
-    .filter((item): item is { index: number; rect: MeasuredRect } => item !== null)
-    .sort((a, b) => (Math.abs(a.rect.top - b.rect.top) > 8 ? a.rect.top - b.rect.top : a.rect.left - b.rect.left));
+ const items = targetBlocks
+ .map((block, index) => {
+ const rect = getMeasuredAdminBlockRect(block.id);
+ return rect ? { index, rect } : null;
+ })
+ .filter((item): item is { index: number; rect: MeasuredRect } => item !== null)
+ .sort((a, b) => (Math.abs(a.rect.top - b.rect.top) > 8 ? a.rect.top - b.rect.top : a.rect.left - b.rect.left));
 
-  if (items.length === 0) return targetBlocks.length;
+ if (items.length === 0) return targetBlocks.length;
 
-  const rowThreshold = Math.max(24, Math.min(...items.map((item) => item.rect.height)) * 0.5);
-  const rows: Array<Array<{ index: number; rect: MeasuredRect }>> = [];
-  for (const item of items) {
-    const row = rows.find((candidate) => Math.abs(candidate[0].rect.top - item.rect.top) <= rowThreshold);
-    if (row) {
-      row.push(item);
-    } else {
-      rows.push([item]);
-    }
-  }
+ const rowThreshold = Math.max(24, Math.min(...items.map((item) => item.rect.height)) * 0.5);
+ const rows: Array<Array<{ index: number; rect: MeasuredRect }>> = [];
+ for (const item of items) {
+ const row = rows.find((candidate) => Math.abs(candidate[0].rect.top - item.rect.top) <= rowThreshold);
+ if (row) {
+ row.push(item);
+ } else {
+ rows.push([item]);
+ }
+ }
 
-  for (const row of rows) {
-    row.sort((a, b) => a.rect.left - b.rect.left);
-    const rowTop = Math.min(...row.map((item) => item.rect.top));
-    const rowBottom = Math.max(...row.map((item) => item.rect.bottom));
-    if (pointer.y < rowTop - rowThreshold * 0.6) {
-      return row[0].index;
-    }
-    if (pointer.y <= rowBottom + rowThreshold * 0.6) {
-      for (const item of row) {
-        if (pointer.x < item.rect.left + item.rect.width / 2) {
-          return item.index;
-        }
-      }
-      return row[row.length - 1].index + 1;
-    }
-  }
+ for (const row of rows) {
+ row.sort((a, b) => a.rect.left - b.rect.left);
+ const rowTop = Math.min(...row.map((item) => item.rect.top));
+ const rowBottom = Math.max(...row.map((item) => item.rect.bottom));
+ if (pointer.y < rowTop - rowThreshold * 0.6) {
+ return row[0].index;
+ }
+ if (pointer.y <= rowBottom + rowThreshold * 0.6) {
+ for (const item of row) {
+ if (pointer.x < item.rect.left + item.rect.width / 2) {
+ return item.index;
+ }
+ }
+ return row[row.length - 1].index + 1;
+ }
+ }
 
-  return targetBlocks.length;
+ return targetBlocks.length;
 }
 
 function EditableExperienceModule({
-  group,
-  blocks,
-  selected,
-  onEdit,
-  onDelete,
-  onSelect
+ group,
+ blocks,
+ selected,
+ onEdit,
+ onDelete,
+ onSelect
 }: {
-  group: ContentOutlineGroup;
-  blocks: Block[];
-  selected: boolean;
-  onEdit: () => void;
-  onDelete: () => void;
-  onSelect: () => void;
+ group: ContentOutlineGroup;
+ blocks: Block[];
+ selected: boolean;
+ onEdit: () => void;
+ onDelete: () => void;
+ onSelect: () => void;
 }) {
-  return (
-    <section
-      data-admin-block="true"
-      data-admin-block-id={group.primaryEditBlockId}
-      className={cn(
-        "group relative rounded-[24px] p-2 transition",
-        selected && "ring-4 ring-[#B23C22]/20",
-        !group.isVisible && "opacity-55 grayscale-[0.18]"
-      )}
-      onClick={onSelect}
-    >
-      <ExperienceModulePreview blocks={blocks} />
-      <div className="pointer-events-none absolute inset-0 z-30 opacity-0 transition group-hover:opacity-100">
-        <button
-          type="button"
-          onClick={(event) => {
-            event.stopPropagation();
-            onDelete();
-          }}
-          className="pointer-events-auto absolute -left-1 -top-1 grid h-9 w-9 place-items-center rounded-full border-2 border-white bg-white shadow-[0_12px_30px_rgba(15,23,42,0.18)] transition hover:border-red-100 hover:bg-red-50"
-          aria-label="删除工作经历模块"
-        >
-          <Trash2 className="h-4 w-4 text-red-500" />
-        </button>
-        <button
-          type="button"
-          onClick={(event) => {
-            event.stopPropagation();
-            onEdit();
-          }}
-          className="pointer-events-auto absolute -right-1 -top-1 grid h-9 w-9 place-items-center rounded-full border-2 border-white bg-white shadow-[0_12px_30px_rgba(15,23,42,0.18)] transition hover:border-[#D8E9FF] hover:bg-[#F2F8FF]"
-          aria-label="编辑工作经历模块"
-        >
-          <Pencil className="h-4 w-4" />
-        </button>
-      </div>
-    </section>
-  );
+ return (
+ <section
+ data-admin-block="true"
+ data-admin-block-id={group.primaryEditBlockId}
+ className={cn(
+ "group relative rounded-[8px] p-2 transition",
+ selected && "ring-4 ring-[#B23C22]/20",
+ !group.isVisible && "opacity-55 grayscale-[0.18]"
+ )}
+ onClick={onSelect}
+ >
+ <ExperienceModulePreview blocks={blocks} />
+ <div className="pointer-events-none absolute inset-0 z-30 opacity-0 transition group-hover:opacity-100">
+ <button
+ type="button"
+ onClick={(event) => {
+ event.stopPropagation();
+ onDelete();
+ }}
+ className="pointer-events-auto absolute -left-1 -top-1 grid h-9 w-9 place-items-center rounded-[4px] border border-[#DDD6C8] bg-[#FCFAF5] shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)] transition hover:border-red-100 hover:bg-red-50"
+ aria-label="删除工作经历模块"
+ >
+ <Trash2 className="h-4 w-4 text-red-500" />
+ </button>
+ <button
+ type="button"
+ onClick={(event) => {
+ event.stopPropagation();
+ onEdit();
+ }}
+ className="pointer-events-auto absolute -right-1 -top-1 grid h-9 w-9 place-items-center rounded-[4px] border border-[#DDD6C8] bg-[#FCFAF5] shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)] transition hover:border-[#F4EBE6] hover:bg-[#F4EBE6]"
+ aria-label="编辑工作经历模块"
+ >
+ <Pencil className="h-4 w-4" />
+ </button>
+ </div>
+ </section>
+ );
 }
 
 function EditableSection({
-  section,
-  contentGroupId,
-  blocks,
-  device,
-  onEditSection,
-  onDeleteSection,
-  onEditBlock,
-  onDeleteBlock,
-  onSelectBlock,
-  selectedBlockId,
-  activeDragBlockId,
-  dragPreviewBlock,
-  dragPreviewPlacement,
-  onResizeBlock,
-  onResizePreview,
-  resizeDrafts,
-  onResizeDraft,
-  sectionHandleProps,
-  sectionContainerProps,
-  hideHeader = false,
-  showDragPreview = false,
-  releaseSiblingPlacementsDuringPreview = false
+ section,
+ contentGroupId,
+ blocks,
+ device,
+ onEditSection,
+ onDeleteSection,
+ onEditBlock,
+ onDeleteBlock,
+ onSelectBlock,
+ selectedBlockId,
+ activeDragBlockId,
+ dragPreviewBlock,
+ dragPreviewPlacement,
+ onResizeBlock,
+ onResizePreview,
+ resizeDrafts,
+ onResizeDraft,
+ sectionHandleProps,
+ sectionContainerProps,
+ hideHeader = false,
+ showDragPreview = false,
+ releaseSiblingPlacementsDuringPreview = false
 }: {
-  section: Section;
-  contentGroupId?: string;
-  blocks: Block[];
-  device: LayoutDevice;
-  onEditSection: () => void;
-  onDeleteSection: () => void;
-  onEditBlock: (blockId: string) => void;
-  onDeleteBlock: (blockId: string) => void;
-  onSelectBlock: (blockId: string) => void;
-  selectedBlockId: string | null;
-  activeDragBlockId: string | null;
-  dragPreviewBlock: Block | null;
-  dragPreviewPlacement: DragPreviewPlacement | null;
-  onResizeBlock: (blockId: string, size: BlockSize) => void;
-  onResizePreview: (size: BlockSize | null) => void;
-  resizeDrafts: Record<string, BlockResizeDraft>;
-  onResizeDraft: (blockId: string, draft: BlockResizeDraft | null) => void;
-  sectionHandleProps: React.HTMLAttributes<HTMLButtonElement>;
-  sectionContainerProps?: React.HTMLAttributes<HTMLDivElement> & { ref?: (node: HTMLDivElement | null) => void };
-  hideHeader?: boolean;
-  showDragPreview?: boolean;
-  releaseSiblingPlacementsDuringPreview?: boolean;
+ section: Section;
+ contentGroupId?: string;
+ blocks: Block[];
+ device: LayoutDevice;
+ onEditSection: () => void;
+ onDeleteSection: () => void;
+ onEditBlock: (blockId: string) => void;
+ onDeleteBlock: (blockId: string) => void;
+ onSelectBlock: (blockId: string) => void;
+ selectedBlockId: string | null;
+ activeDragBlockId: string | null;
+ dragPreviewBlock: Block | null;
+ dragPreviewPlacement: DragPreviewPlacement | null;
+ onResizeBlock: (blockId: string, size: BlockSize) => void;
+ onResizePreview: (size: BlockSize | null) => void;
+ resizeDrafts: Record<string, BlockResizeDraft>;
+ onResizeDraft: (blockId: string, draft: BlockResizeDraft | null) => void;
+ sectionHandleProps: React.HTMLAttributes<HTMLButtonElement>;
+ sectionContainerProps?: React.HTMLAttributes<HTMLDivElement> & { ref?: (node: HTMLDivElement | null) => void };
+ hideHeader?: boolean;
+ showDragPreview?: boolean;
+ releaseSiblingPlacementsDuringPreview?: boolean;
 }) {
-  const droppableId = contentGroupId ? `content-group:${contentGroupId}` : `section:${section.id}`;
-  const { setNodeRef } = useDroppable({ id: droppableId });
-  const previewIndex =
-    showDragPreview && dragPreviewBlock && dragPreviewPlacement?.targetSectionId === section.id
-      ? Math.max(0, Math.min(dragPreviewPlacement.targetIndex, blocks.filter((block) => block.id !== activeDragBlockId).length))
-      : null;
-  const shouldRenderDropPreview = previewIndex !== null && dragPreviewBlock !== null;
-  const gridItems: Array<{ type: "block"; block: Block } | { type: "preview"; block: Block; placement?: BlockPlacementDraft }> = [];
-  blocks
-    .filter((block) => !(shouldRenderDropPreview && block.id === activeDragBlockId))
-    .forEach((block, index) => {
-      if (shouldRenderDropPreview && previewIndex === index && dragPreviewBlock) {
-        gridItems.push({
-          type: "preview",
-          block: dragPreviewBlock,
-          placement: { columnStart: dragPreviewPlacement?.columnStart, rowStart: dragPreviewPlacement?.rowStart }
-        });
-      }
-      gridItems.push({ type: "block", block });
-    });
-  if (shouldRenderDropPreview && previewIndex === gridItems.filter((item) => item.type === "block").length && dragPreviewBlock) {
-    gridItems.push({
-      type: "preview",
-      block: dragPreviewBlock,
-      placement: { columnStart: dragPreviewPlacement?.columnStart, rowStart: dragPreviewPlacement?.rowStart }
-    });
-  }
-  const compactedGridStyles = getCompactedBlockGridStyles(
-    gridItems.map((item) => {
-      const resizeDraft = item.type === "block" ? resizeDrafts[item.block.id] : undefined;
-      const resizedBlock = resizeDraft
-        ? { ...item.block, responsiveSizes: { ...item.block.responsiveSizes, [device]: resizeDraft.size } }
-        : item.block;
-      const block =
-        item.type === "preview" && item.placement
-          ? { ...resizedBlock, placements: { ...resizedBlock.placements, [device]: item.placement } }
-          : shouldRenderDropPreview && releaseSiblingPlacementsDuringPreview
-            ? withoutBlockPlacementForDevice(resizedBlock, device)
-            : resizedBlock;
-      return {
-        id: item.type === "preview" ? blockDropPreviewId : item.block.id,
-        block
-      };
-    }),
-    device
-  );
-  const shouldShowBlockGrid = hideHeader || blocks.length > 0 || shouldRenderDropPreview;
-  return (
-    <section
-      ref={setNodeRef}
-      data-admin-section-id={section.id}
-      data-admin-droppable-id={droppableId}
-      className="admin-grid-container grid gap-6 rounded-[24px] p-2 transition"
-    >
-      {hideHeader ? null : (
-        <div
-          {...sectionContainerProps}
-          data-admin-section-heading-id={section.id}
-          className={cn("group relative flex items-center justify-between gap-3", sectionContainerProps?.className)}
-        >
-          <div className="min-w-0">
-            <button
-              type="button"
-              className={cn(
-                "admin-draggable absolute top-1 grid h-9 w-9 cursor-grab place-items-center rounded-full bg-white text-[#9CA3AF] shadow-soft transition active:cursor-grabbing",
-                device === "mobile" ? "-left-2 opacity-100" : "-left-11 opacity-0 group-hover:opacity-100"
-              )}
-              {...sectionHandleProps}
-            >
-              <GripVertical className="h-4 w-4" />
-            </button>
-            <button type="button" onClick={onEditSection} className="min-w-0 rounded-xl px-1 text-left">
-              <h2 className="text-2xl font-bold tracking-normal">
-                {section.title}
-                {section.emoji ? <span className="ml-1 text-[#B23C22]">{section.emoji}</span> : null}
-              </h2>
-              {section.description ? <p className="mt-1 text-sm text-[#64748B]">{section.description}</p> : null}
-            </button>
-          </div>
-          <div className={cn("flex gap-1 transition", device === "mobile" ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
-            <button type="button" onClick={onDeleteSection} className="grid h-9 w-9 place-items-center rounded-full bg-white shadow-soft">
-              <Trash2 className="h-4 w-4 text-red-500" />
-            </button>
-            <button type="button" onClick={onEditSection} className="grid h-9 w-9 place-items-center rounded-full bg-white shadow-soft">
-              <Pencil className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      )}
-      {shouldShowBlockGrid ? (
-        <SortableContext items={blocks.map((block) => block.id)} strategy={rectSortingStrategy}>
-          <div
-            className={cn("relative", blockGridClassByDevice[device])}
-            data-device={device}
-            data-admin-section-grid-id={section.id}
-            data-admin-content-group-id={contentGroupId}
-            style={{ gridTemplateColumns: "repeat(12, minmax(0, 1fr))", gridAutoFlow: "dense" }}
-          >
-            {shouldRenderDropPreview && dragPreviewBlock ? (
-              <BlockDropPreview
-                block={dragPreviewBlock}
-                device={device}
-                placement={{ columnStart: dragPreviewPlacement?.columnStart, rowStart: dragPreviewPlacement?.rowStart }}
-                layoutStyle={compactedGridStyles.get(blockDropPreviewId)}
-              />
-            ) : null}
-            {blocks.map((block) => (
-              <SortableBlock
-                key={block.id}
-                block={block}
-                displaySize={resizeDrafts[block.id]?.size ?? getBlockSize(block, device)}
-                device={device}
-                layoutStyle={compactedGridStyles.get(block.id)}
-                isDragOverlayActive={activeDragBlockId === block.id}
-                disableSortableTransform={activeDragBlockId !== null}
-                hideOriginalDuringDrag={false}
-                removeFromFlowDuringDrag={shouldRenderDropPreview && activeDragBlockId === block.id}
-                onEdit={() => onEditBlock(block.id)}
-                onDelete={() => onDeleteBlock(block.id)}
-                onSelect={() => onSelectBlock(block.id)}
-                selected={selectedBlockId === block.id}
-                onResize={(size) => onResizeBlock(block.id, size)}
-                onResizePreview={onResizePreview}
-                onResizeDraft={(size) => onResizeDraft(block.id, size)}
-              />
-            ))}
-          </div>
-        </SortableContext>
-      ) : null}
-    </section>
-  );
+ const droppableId = contentGroupId ? `content-group:${contentGroupId}` : `section:${section.id}`;
+ const { setNodeRef } = useDroppable({ id: droppableId });
+ const previewIndex =
+ showDragPreview && dragPreviewBlock && dragPreviewPlacement?.targetSectionId === section.id
+ ? Math.max(0, Math.min(dragPreviewPlacement.targetIndex, blocks.filter((block) => block.id !== activeDragBlockId).length))
+ : null;
+ const shouldRenderDropPreview = previewIndex !== null && dragPreviewBlock !== null;
+ const gridItems: Array<{ type: "block"; block: Block } | { type: "preview"; block: Block; placement?: BlockPlacementDraft }> = [];
+ blocks
+ .filter((block) => !(shouldRenderDropPreview && block.id === activeDragBlockId))
+ .forEach((block, index) => {
+ if (shouldRenderDropPreview && previewIndex === index && dragPreviewBlock) {
+ gridItems.push({
+ type: "preview",
+ block: dragPreviewBlock,
+ placement: { columnStart: dragPreviewPlacement?.columnStart, rowStart: dragPreviewPlacement?.rowStart }
+ });
+ }
+ gridItems.push({ type: "block", block });
+ });
+ if (shouldRenderDropPreview && previewIndex === gridItems.filter((item) => item.type === "block").length && dragPreviewBlock) {
+ gridItems.push({
+ type: "preview",
+ block: dragPreviewBlock,
+ placement: { columnStart: dragPreviewPlacement?.columnStart, rowStart: dragPreviewPlacement?.rowStart }
+ });
+ }
+ const compactedGridStyles = getCompactedBlockGridStyles(
+ gridItems.map((item) => {
+ const resizeDraft = item.type === "block" ? resizeDrafts[item.block.id] : undefined;
+ const resizedBlock = resizeDraft
+ ? { ...item.block, responsiveSizes: { ...item.block.responsiveSizes, [device]: resizeDraft.size } }
+ : item.block;
+ const block =
+ item.type === "preview" && item.placement
+ ? { ...resizedBlock, placements: { ...resizedBlock.placements, [device]: item.placement } }
+ : shouldRenderDropPreview && releaseSiblingPlacementsDuringPreview
+ ? withoutBlockPlacementForDevice(resizedBlock, device)
+ : resizedBlock;
+ return {
+ id: item.type === "preview" ? blockDropPreviewId : item.block.id,
+ block
+ };
+ }),
+ device
+ );
+ const shouldShowBlockGrid = hideHeader || blocks.length > 0 || shouldRenderDropPreview;
+ return (
+ <section
+ ref={setNodeRef}
+ data-admin-section-id={section.id}
+ data-admin-droppable-id={droppableId}
+ className="admin-grid-container grid gap-6 rounded-[8px] p-2 transition"
+ >
+ {hideHeader ? null : (
+ <div
+ {...sectionContainerProps}
+ data-admin-section-heading-id={section.id}
+ className={cn("group relative flex items-center justify-between gap-3", sectionContainerProps?.className)}
+ >
+ <div className="min-w-0">
+ <button
+ type="button"
+ className={cn(
+ "admin-draggable absolute top-1 grid h-9 w-9 cursor-grab place-items-center rounded-[4px] bg-[#FCFAF5] text-[#A39C8D] transition active:cursor-grabbing",
+ device === "mobile" ? "-left-2 opacity-100" : "-left-11 opacity-0 group-hover:opacity-100"
+ )}
+ {...sectionHandleProps}
+ >
+ <GripVertical className="h-4 w-4" />
+ </button>
+ <button type="button" onClick={onEditSection} className="min-w-0 rounded-[5px] px-1 text-left">
+ <h2 className="text-2xl font-bold tracking-normal">
+ {section.title}
+ {section.emoji ? <span className="ml-1 text-[#B23C22]">{section.emoji}</span> : null}
+ </h2>
+ {section.description ? <p className="mt-1 text-sm text-[#6F6A5E]">{section.description}</p> : null}
+ </button>
+ </div>
+ <div className={cn("flex gap-1 transition", device === "mobile" ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
+ <button type="button" onClick={onDeleteSection} className="grid h-9 w-9 place-items-center rounded-[4px] bg-[#FCFAF5]">
+ <Trash2 className="h-4 w-4 text-red-500" />
+ </button>
+ <button type="button" onClick={onEditSection} className="grid h-9 w-9 place-items-center rounded-[4px] bg-[#FCFAF5]">
+ <Pencil className="h-4 w-4" />
+ </button>
+ </div>
+ </div>
+ )}
+ {shouldShowBlockGrid ? (
+ <SortableContext items={blocks.map((block) => block.id)} strategy={rectSortingStrategy}>
+ <div
+ className={cn("relative", blockGridClassByDevice[device])}
+ data-device={device}
+ data-admin-section-grid-id={section.id}
+ data-admin-content-group-id={contentGroupId}
+ style={{ gridTemplateColumns: "repeat(12, minmax(0, 1fr))", gridAutoFlow: "dense" }}
+ >
+ {shouldRenderDropPreview && dragPreviewBlock ? (
+ <BlockDropPreview
+ block={dragPreviewBlock}
+ device={device}
+ placement={{ columnStart: dragPreviewPlacement?.columnStart, rowStart: dragPreviewPlacement?.rowStart }}
+ layoutStyle={compactedGridStyles.get(blockDropPreviewId)}
+ />
+ ) : null}
+ {blocks.map((block) => (
+ <SortableBlock
+ key={block.id}
+ block={block}
+ displaySize={resizeDrafts[block.id]?.size ?? getBlockSize(block, device)}
+ device={device}
+ layoutStyle={compactedGridStyles.get(block.id)}
+ isDragOverlayActive={activeDragBlockId === block.id}
+ disableSortableTransform={activeDragBlockId !== null}
+ hideOriginalDuringDrag={false}
+ removeFromFlowDuringDrag={shouldRenderDropPreview && activeDragBlockId === block.id}
+ onEdit={() => onEditBlock(block.id)}
+ onDelete={() => onDeleteBlock(block.id)}
+ onSelect={() => onSelectBlock(block.id)}
+ selected={selectedBlockId === block.id}
+ onResize={(size) => onResizeBlock(block.id, size)}
+ onResizePreview={onResizePreview}
+ onResizeDraft={(size) => onResizeDraft(block.id, size)}
+ />
+ ))}
+ </div>
+ </SortableContext>
+ ) : null}
+ </section>
+ );
 }
 
 function StandaloneBlockDropPreview({
-  block,
-  device,
-  placement
+ block,
+ device,
+ placement
 }: {
-  block: Block;
-  device: LayoutDevice;
-  placement?: BlockPlacementDraft;
+ block: Block;
+ device: LayoutDevice;
+ placement?: BlockPlacementDraft;
 }) {
-  return (
-    <section className="admin-grid-container grid gap-6 rounded-[24px] p-2 transition">
-      <div
-        className={cn("relative", blockGridClassByDevice[device])}
-        data-device={device}
-        style={{ gridTemplateColumns: "repeat(12, minmax(0, 1fr))", gridAutoFlow: "dense" }}
-      >
-        <BlockDropPreview block={block} device={device} placement={placement} />
-      </div>
-    </section>
-  );
+ return (
+ <section className="admin-grid-container grid gap-6 rounded-[8px] p-2 transition">
+ <div
+ className={cn("relative", blockGridClassByDevice[device])}
+ data-device={device}
+ style={{ gridTemplateColumns: "repeat(12, minmax(0, 1fr))", gridAutoFlow: "dense" }}
+ >
+ <BlockDropPreview block={block} device={device} placement={placement} />
+ </div>
+ </section>
+ );
 }
 
 function BlockDropPreview({
-  block,
-  device,
-  placement,
-  layoutStyle
+ block,
+ device,
+ placement,
+ layoutStyle
 }: {
-  block: Block;
-  device: LayoutDevice;
-  placement?: BlockPlacementDraft;
-  layoutStyle?: React.CSSProperties;
+ block: Block;
+ device: LayoutDevice;
+ placement?: BlockPlacementDraft;
+ layoutStyle?: React.CSSProperties;
 }) {
-  const displaySize = getBlockSize(block, device);
-  const gridSpan = getDefaultGridSpan(displaySize, device);
-  const rowSpan = getDefaultRowSpan(displaySize);
-  const previewBlock = placement ? { ...block, placements: { ...block.placements, [device]: placement } } : block;
-  const placementStyle = {
-    ...getAdminBlockGridStyle(previewBlock, device, displaySize),
-    ...layoutStyle,
-    gridColumnEnd: `span ${gridSpan}`,
-    gridRowEnd: `span ${rowSpan}`
-  };
-  return (
-    <div
-      style={placementStyle}
-      className={cn(
-        "pointer-events-none rounded-[20px] border-2 border-dashed border-[#B23C22]/55 bg-[#F4EBE6]/75 shadow-[inset_0_0_0_1px_rgba(33,185,91,0.12)]",
-        blockSizeClassByDevice[device][displaySize]
-      )}
-    >
-      <div className="grid h-full w-full place-items-center rounded-[18px] bg-white/35 text-xs font-bold text-[#168c46]">
-        放到这里
-      </div>
-    </div>
-  );
+ const displaySize = getBlockSize(block, device);
+ const gridSpan = getDefaultGridSpan(displaySize, device);
+ const rowSpan = getDefaultRowSpan(displaySize);
+ const previewBlock = placement ? { ...block, placements: { ...block.placements, [device]: placement } } : block;
+ const placementStyle = {
+ ...getAdminBlockGridStyle(previewBlock, device, displaySize),
+ ...layoutStyle,
+ gridColumnEnd: `span ${gridSpan}`,
+ gridRowEnd: `span ${rowSpan}`
+ };
+ return (
+ <div
+ style={placementStyle}
+ className={cn(
+ "pointer-events-none rounded-[8px] border-2 border-dashed border-[#B23C22]/55 bg-[#F4EBE6]/75 ",
+ blockSizeClassByDevice[device][displaySize]
+ )}
+ >
+ <div className="grid h-full w-full place-items-center rounded-[8px] bg-[#FCFAF5]/35 text-xs font-bold text-[#B23C22]">
+ 放到这里
+ </div>
+ </div>
+ );
 }
 
 function TextBlockDropPreview({ block }: { block: Block }) {
-  return (
-    <div className="pointer-events-none rounded-[20px] border-2 border-dashed border-[#B23C22]/45 bg-[#F4EBE6]/65 px-2 py-2">
-      <BlockCard block={block} disableActions withLayout={false} className="min-h-0 opacity-50" />
-    </div>
-  );
+ return (
+ <div className="pointer-events-none rounded-[8px] border-2 border-dashed border-[#B23C22]/45 bg-[#F4EBE6]/65 px-2 py-2">
+ <BlockCard block={block} disableActions withLayout={false} className="min-h-0 opacity-50" />
+ </div>
+ );
 }
 
 function withoutBlockPlacementForDevice(block: Block, device: LayoutDevice): Block {
-  if (!block.placements?.[device]) return block;
+ if (!block.placements?.[device]) return block;
 
-  const placements = { ...block.placements };
-  delete placements[device];
-  return { ...block, placements };
+ const placements = { ...block.placements };
+ delete placements[device];
+ return { ...block, placements };
 }
 
 function SortableTextBlock({
-  block,
-  device,
-  isDragOverlayActive,
-  disableSortableTransform,
-  removeFromFlowDuringDrag,
-  onEdit,
-  onDelete,
-  onSelect,
-  selected,
-  disableDrag
+ block,
+ device,
+ isDragOverlayActive,
+ disableSortableTransform,
+ removeFromFlowDuringDrag,
+ onEdit,
+ onDelete,
+ onSelect,
+ selected,
+ disableDrag
 }: {
-  block: Block;
-  device: LayoutDevice;
-  isDragOverlayActive: boolean;
-  disableSortableTransform: boolean;
-  removeFromFlowDuringDrag: boolean;
-  onEdit: () => void;
-  onDelete: () => void;
-  onSelect: () => void;
-  selected: boolean;
-  disableDrag: boolean;
+ block: Block;
+ device: LayoutDevice;
+ isDragOverlayActive: boolean;
+ disableSortableTransform: boolean;
+ removeFromFlowDuringDrag: boolean;
+ onEdit: () => void;
+ onDelete: () => void;
+ onSelect: () => void;
+ selected: boolean;
+ disableDrag: boolean;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id, disabled: disableDrag });
-  const visualTransform = disableSortableTransform || isDragOverlayActive ? undefined : CSS.Translate.toString(transform);
-  const visualTransition = disableSortableTransform ? undefined : transition;
-  const removeFromFlowStyle: React.CSSProperties | undefined = removeFromFlowDuringDrag
-    ? { position: "absolute", opacity: 0, pointerEvents: "none" }
-    : undefined;
+ const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id, disabled: disableDrag });
+ const visualTransform = disableSortableTransform || isDragOverlayActive ? undefined : CSS.Translate.toString(transform);
+ const visualTransition = disableSortableTransform ? undefined : transition;
+ const removeFromFlowStyle: React.CSSProperties | undefined = removeFromFlowDuringDrag
+ ? { position: "absolute", opacity: 0, pointerEvents: "none" }
+ : undefined;
 
-  return (
-    <div
-      ref={setNodeRef}
-      data-admin-block="true"
-      data-admin-block-id={block.id}
-      style={{ transform: visualTransform, transition: visualTransition, ...removeFromFlowStyle }}
-      className={cn(
-        "admin-draggable group relative rounded-[20px] px-0 py-1 transition-all duration-200 ease-out",
-        disableDrag ? "cursor-default" : "cursor-grab active:cursor-grabbing",
-        selected ? "ring-4 ring-[#B23C22]/20" : "",
-        isDragging || isDragOverlayActive ? "z-20 opacity-20" : "",
-        !block.isVisible ? "opacity-55 grayscale-[0.18]" : ""
-      )}
-      onClick={onSelect}
-      {...attributes}
-      {...listeners}
-    >
-      <div className="rounded-[20px] p-2 transition-all duration-200 ease-out group-hover:bg-[#EDE8DA]/70">
-        <div className="transition-transform duration-200 ease-out group-hover:scale-[0.97]">
-          <BlockCard block={block} disableActions withLayout={false} className="min-h-0" />
-        </div>
-      </div>
-      <div className={cn("pointer-events-none absolute inset-0 z-30 transition", device === "mobile" ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
-        <button
-          type="button"
-          onPointerDown={(event) => event.stopPropagation()}
-          onClick={(event) => {
-            event.stopPropagation();
-            onDelete();
-          }}
-          className={cn(
-            "pointer-events-auto absolute grid place-items-center rounded-full border-2 border-white bg-white shadow-[0_12px_30px_rgba(15,23,42,0.18)] transition hover:border-red-100 hover:bg-red-50",
-            device === "mobile" ? "-left-2 -top-2 h-[30px] w-[30px]" : "-left-3 -top-3 h-9 w-9"
-          )}
-        >
-          <Trash2 className={cn("text-red-500", device === "mobile" ? "h-3.5 w-3.5" : "h-4 w-4")} />
-        </button>
-        <button
-          type="button"
-          onPointerDown={(event) => event.stopPropagation()}
-          onClick={(event) => {
-            event.stopPropagation();
-            onEdit();
-          }}
-          className={cn(
-            "pointer-events-auto absolute grid place-items-center rounded-full border-2 border-white bg-white shadow-[0_12px_30px_rgba(15,23,42,0.18)] transition hover:border-[#D8E9FF] hover:bg-[#F2F8FF]",
-            device === "mobile" ? "-right-2 -top-2 h-[30px] w-[30px]" : "-right-3 -top-3 h-9 w-9"
-          )}
-        >
-          <Pencil className={cn(device === "mobile" ? "h-3.5 w-3.5" : "h-4 w-4")} />
-        </button>
-      </div>
-    </div>
-  );
+ return (
+ <div
+ ref={setNodeRef}
+ data-admin-block="true"
+ data-admin-block-id={block.id}
+ style={{ transform: visualTransform, transition: visualTransition, ...removeFromFlowStyle }}
+ className={cn(
+ "admin-draggable group relative rounded-[8px] px-0 py-1 transition-all duration-200 ease-out",
+ disableDrag ? "cursor-default" : "cursor-grab active:cursor-grabbing",
+ selected ? "ring-4 ring-[#B23C22]/20" : "",
+ isDragging || isDragOverlayActive ? "z-20 opacity-20" : "",
+ !block.isVisible ? "opacity-55 grayscale-[0.18]" : ""
+ )}
+ onClick={onSelect}
+ {...attributes}
+ {...listeners}
+ >
+ <div className="rounded-[8px] p-2 transition-all duration-200 ease-out group-hover:bg-[#EDE8DB]/70">
+ <div className="transition-transform duration-200 ease-out group-hover:scale-[0.97]">
+ <BlockCard block={block} disableActions withLayout={false} className="min-h-0" />
+ </div>
+ </div>
+ <div className={cn("pointer-events-none absolute inset-0 z-30 transition", device === "mobile" ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
+ <button
+ type="button"
+ onPointerDown={(event) => event.stopPropagation()}
+ onClick={(event) => {
+ event.stopPropagation();
+ onDelete();
+ }}
+ className={cn(
+ "pointer-events-auto absolute grid place-items-center rounded-[4px] border border-[#DDD6C8] bg-[#FCFAF5] shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)] transition hover:border-red-100 hover:bg-red-50",
+ device === "mobile" ? "-left-2 -top-2 h-[30px] w-[30px]" : "-left-3 -top-3 h-9 w-9"
+ )}
+ >
+ <Trash2 className={cn("text-red-500", device === "mobile" ? "h-3.5 w-3.5" : "h-4 w-4")} />
+ </button>
+ <button
+ type="button"
+ onPointerDown={(event) => event.stopPropagation()}
+ onClick={(event) => {
+ event.stopPropagation();
+ onEdit();
+ }}
+ className={cn(
+ "pointer-events-auto absolute grid place-items-center rounded-[4px] border border-[#DDD6C8] bg-[#FCFAF5] shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)] transition hover:border-[#F4EBE6] hover:bg-[#F4EBE6]",
+ device === "mobile" ? "-right-2 -top-2 h-[30px] w-[30px]" : "-right-3 -top-3 h-9 w-9"
+ )}
+ >
+ <Pencil className={cn(device === "mobile" ? "h-3.5 w-3.5" : "h-4 w-4")} />
+ </button>
+ </div>
+ </div>
+ );
 }
 
 function SortableBlock({
-  block,
-  displaySize,
-  device,
-  layoutStyle,
-  isDragOverlayActive,
-  disableSortableTransform,
-  hideOriginalDuringDrag,
-  removeFromFlowDuringDrag,
-  onEdit,
-  onDelete,
-  onSelect,
-  selected,
-  onResize,
-  onResizePreview,
-  onResizeDraft
+ block,
+ displaySize,
+ device,
+ layoutStyle,
+ isDragOverlayActive,
+ disableSortableTransform,
+ hideOriginalDuringDrag,
+ removeFromFlowDuringDrag,
+ onEdit,
+ onDelete,
+ onSelect,
+ selected,
+ onResize,
+ onResizePreview,
+ onResizeDraft
 }: {
-  block: Block;
-  displaySize: BlockSize;
-  device: LayoutDevice;
-  layoutStyle?: React.CSSProperties;
-  isDragOverlayActive: boolean;
-  disableSortableTransform: boolean;
-  hideOriginalDuringDrag: boolean;
-  removeFromFlowDuringDrag: boolean;
-  onEdit: () => void;
-  onDelete: () => void;
-  onSelect: () => void;
-  selected: boolean;
-  onResize: (size: BlockSize) => void;
-  onResizePreview: (size: BlockSize | null) => void;
-  onResizeDraft: (draft: BlockResizeDraft | null) => void;
+ block: Block;
+ displaySize: BlockSize;
+ device: LayoutDevice;
+ layoutStyle?: React.CSSProperties;
+ isDragOverlayActive: boolean;
+ disableSortableTransform: boolean;
+ hideOriginalDuringDrag: boolean;
+ removeFromFlowDuringDrag: boolean;
+ onEdit: () => void;
+ onDelete: () => void;
+ onSelect: () => void;
+ selected: boolean;
+ onResize: (size: BlockSize) => void;
+ onResizePreview: (size: BlockSize | null) => void;
+ onResizeDraft: (draft: BlockResizeDraft | null) => void;
 }) {
-  const isSpecialModule = Boolean(getSpecialModuleType(block));
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id, disabled: isSpecialModule });
-  const blockNodeRef = useRef<HTMLDivElement | null>(null);
-  const [isResizing, setIsResizing] = useState(false);
-  const [localResizeDraft, setLocalResizeDraft] = useState<BlockResizeDraft | null>(null);
-  const activeDisplaySize = localResizeDraft?.size ?? displaySize;
-  const activeGridSpan = localResizeDraft?.gridSpan ?? getDefaultGridSpan(activeDisplaySize, device);
-  const activeRowSpan = localResizeDraft?.rowSpan ?? getDefaultRowSpan(activeDisplaySize);
-  const setBlockNodeRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      blockNodeRef.current = node;
-      setNodeRef(node);
-    },
-    [setNodeRef]
-  );
-  const resizeStyle = {
-    ...getAdminBlockGridStyle(block, device, activeDisplaySize),
-    ...layoutStyle,
-    gridColumnEnd: `span ${activeGridSpan}`,
-    gridRowEnd: `span ${activeRowSpan}`
-  };
-  const visualTransform =
-    disableSortableTransform || isDragOverlayActive || removeFromFlowDuringDrag ? undefined : CSS.Translate.toString(transform);
-  const visualTransition = disableSortableTransform ? undefined : transition;
+ const isSpecialModule = Boolean(getSpecialModuleType(block));
+ const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id, disabled: isSpecialModule });
+ const blockNodeRef = useRef<HTMLDivElement | null>(null);
+ const [isResizing, setIsResizing] = useState(false);
+ const [localResizeDraft, setLocalResizeDraft] = useState<BlockResizeDraft | null>(null);
+ const activeDisplaySize = localResizeDraft?.size ?? displaySize;
+ const activeGridSpan = localResizeDraft?.gridSpan ?? getDefaultGridSpan(activeDisplaySize, device);
+ const activeRowSpan = localResizeDraft?.rowSpan ?? getDefaultRowSpan(activeDisplaySize);
+ const setBlockNodeRef = useCallback(
+ (node: HTMLDivElement | null) => {
+ blockNodeRef.current = node;
+ setNodeRef(node);
+ },
+ [setNodeRef]
+ );
+ const resizeStyle = {
+ ...getAdminBlockGridStyle(block, device, activeDisplaySize),
+ ...layoutStyle,
+ gridColumnEnd: `span ${activeGridSpan}`,
+ gridRowEnd: `span ${activeRowSpan}`
+ };
+ const visualTransform =
+ disableSortableTransform || isDragOverlayActive || removeFromFlowDuringDrag ? undefined : CSS.Translate.toString(transform);
+ const visualTransition = disableSortableTransform ? undefined : transition;
 
-  function startResize(event: React.PointerEvent<HTMLButtonElement>) {
-    event.preventDefault();
-    event.stopPropagation();
-    event.currentTarget.setPointerCapture(event.pointerId);
-    event.nativeEvent.stopImmediatePropagation();
-    onSelect();
-    setIsResizing(true);
-    onResizePreview(activeDisplaySize);
-    const metrics = getResizeMetrics(event.currentTarget, device);
-    const initialDraft = metrics
-      ? {
-          size: activeDisplaySize,
-          gridSpan: getDefaultGridSpan(activeDisplaySize, device),
-          rowSpan: getDefaultRowSpan(activeDisplaySize)
-        }
-      : null;
-    if (initialDraft) {
-      setLocalResizeDraft(initialDraft);
-      onResizeDraft(initialDraft);
-    }
-    const initialSize = activeDisplaySize;
-    let lastDraft: BlockResizeDraft | null = initialDraft;
+ function startResize(event: React.PointerEvent<HTMLButtonElement>) {
+ event.preventDefault();
+ event.stopPropagation();
+ event.currentTarget.setPointerCapture(event.pointerId);
+ event.nativeEvent.stopImmediatePropagation();
+ onSelect();
+ setIsResizing(true);
+ onResizePreview(activeDisplaySize);
+ const metrics = getResizeMetrics(event.currentTarget, device);
+ const initialDraft = metrics
+ ? {
+ size: activeDisplaySize,
+ gridSpan: getDefaultGridSpan(activeDisplaySize, device),
+ rowSpan: getDefaultRowSpan(activeDisplaySize)
+ }
+ : null;
+ if (initialDraft) {
+ setLocalResizeDraft(initialDraft);
+ onResizeDraft(initialDraft);
+ }
+ const initialSize = activeDisplaySize;
+ let lastDraft: BlockResizeDraft | null = initialDraft;
 
-    function updateSize(moveEvent: PointerEvent) {
-      moveEvent.preventDefault();
-      if (!metrics) return;
+ function updateSize(moveEvent: PointerEvent) {
+ moveEvent.preventDefault();
+ if (!metrics) return;
 
-      const nextDraft = getPointerResizeDraft(moveEvent, metrics, device);
-      if (
-        !lastDraft ||
-        nextDraft.size !== lastDraft.size ||
-        nextDraft.gridSpan !== lastDraft.gridSpan ||
-        nextDraft.rowSpan !== lastDraft.rowSpan
-      ) {
-        const gridElement = blockNodeRef.current?.parentElement instanceof HTMLElement ? blockNodeRef.current.parentElement : null;
-        const previousLayout = captureAdminBlockLayout(gridElement);
-        lastDraft = nextDraft;
-        flushSync(() => {
-          setLocalResizeDraft(nextDraft);
-          onResizeDraft(nextDraft);
-          onResizePreview(nextDraft.size);
-        });
-        animateAdminBlockLayout(gridElement, previousLayout, block.id);
-      }
-    }
+ const nextDraft = getPointerResizeDraft(moveEvent, metrics, device);
+ if (
+ !lastDraft ||
+ nextDraft.size !== lastDraft.size ||
+ nextDraft.gridSpan !== lastDraft.gridSpan ||
+ nextDraft.rowSpan !== lastDraft.rowSpan
+ ) {
+ const gridElement = blockNodeRef.current?.parentElement instanceof HTMLElement ? blockNodeRef.current.parentElement : null;
+ const previousLayout = captureAdminBlockLayout(gridElement);
+ lastDraft = nextDraft;
+ flushSync(() => {
+ setLocalResizeDraft(nextDraft);
+ onResizeDraft(nextDraft);
+ onResizePreview(nextDraft.size);
+ });
+ animateAdminBlockLayout(gridElement, previousLayout, block.id);
+ }
+ }
 
-    function stopResize() {
-      window.removeEventListener("pointermove", updateSize);
-      window.removeEventListener("pointerup", stopResize);
-      window.removeEventListener("pointercancel", stopResize);
-      if (lastDraft && lastDraft.size !== initialSize) {
-        onResize(lastDraft.size);
-      }
-      window.setTimeout(() => {
-        setLocalResizeDraft(null);
-        onResizeDraft(null);
-        setIsResizing(false);
-        onResizePreview(null);
-      }, 140);
-    }
+ function stopResize() {
+ window.removeEventListener("pointermove", updateSize);
+ window.removeEventListener("pointerup", stopResize);
+ window.removeEventListener("pointercancel", stopResize);
+ if (lastDraft && lastDraft.size !== initialSize) {
+ onResize(lastDraft.size);
+ }
+ window.setTimeout(() => {
+ setLocalResizeDraft(null);
+ onResizeDraft(null);
+ setIsResizing(false);
+ onResizePreview(null);
+ }, 140);
+ }
 
-    window.addEventListener("pointermove", updateSize);
-    window.addEventListener("pointerup", stopResize);
-    window.addEventListener("pointercancel", stopResize);
-  }
+ window.addEventListener("pointermove", updateSize);
+ window.addEventListener("pointerup", stopResize);
+ window.addEventListener("pointercancel", stopResize);
+ }
 
-  return (
-    <div
-      ref={setBlockNodeRef}
-      data-admin-block="true"
-      data-admin-block-id={block.id}
-      style={{ transform: visualTransform, transition: visualTransition, ...resizeStyle }}
-      className={cn(
-        "admin-draggable group relative will-change-transform transition-all duration-200 ease-out",
-        isSpecialModule ? "cursor-default" : "cursor-grab active:cursor-grabbing",
-        selected ? "rounded-[20px] ring-4 ring-[#B23C22]/20" : "",
-        blockSizeClassByDevice[device][activeDisplaySize],
-        removeFromFlowDuringDrag ? "absolute left-0 top-0 z-20 h-px w-px overflow-hidden opacity-0" : "",
-        hideOriginalDuringDrag ? "opacity-0" : isDragging || isDragOverlayActive ? "z-20 opacity-20" : "",
-        isResizing ? "z-30" : "",
-        !block.isVisible ? "opacity-55 grayscale-[0.18]" : ""
-      )}
-      onClick={onSelect}
-      {...attributes}
-      {...listeners}
-    >
-      <div data-admin-block-surface="true" className="h-full w-full overflow-hidden rounded-[20px]">
-        {getSpecialModuleType(block) ? (
-          <SpecialModulePreview block={block} />
-        ) : (
-          <BlockCard block={block} disableActions withLayout={false} className="h-full w-full select-none ring-0 group-hover:ring-2 group-hover:ring-[#B23C22]/20" />
-        )}
-      </div>
-      <div className={cn("pointer-events-none absolute inset-0 z-30 transition", device === "mobile" ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
-        <button
-          type="button"
-          onPointerDown={(event) => event.stopPropagation()}
-          onClick={(event) => {
-            event.stopPropagation();
-            onDelete();
-          }}
-          className={cn(
-            "pointer-events-auto absolute grid place-items-center rounded-full border-2 border-white bg-white shadow-[0_12px_30px_rgba(15,23,42,0.18)] transition hover:border-red-100 hover:bg-red-50",
-            device === "mobile" ? "-left-2 -top-2 h-[30px] w-[30px]" : "-left-3 -top-3 h-9 w-9"
-          )}
-        >
-          <Trash2 className={cn("text-red-500", device === "mobile" ? "h-3.5 w-3.5" : "h-4 w-4")} />
-        </button>
-        <button
-          type="button"
-          onPointerDown={(event) => event.stopPropagation()}
-          onClick={(event) => {
-            event.stopPropagation();
-            onEdit();
-          }}
-          className={cn(
-            "pointer-events-auto absolute grid place-items-center rounded-full border-2 border-white bg-white shadow-[0_12px_30px_rgba(15,23,42,0.18)] transition hover:border-[#D8E9FF] hover:bg-[#F2F8FF]",
-            device === "mobile" ? "-right-2 -top-2 h-[30px] w-[30px]" : "-right-3 -top-3 h-9 w-9"
-          )}
-        >
-          <Pencil className={cn(device === "mobile" ? "h-3.5 w-3.5" : "h-4 w-4")} />
-        </button>
-      </div>
-      <button
-        type="button"
-        title="拖动调整大小"
-        onPointerDown={startResize}
-        onClick={(event) => {
-          event.stopPropagation();
-          onSelect();
-        }}
-        className="absolute -bottom-1 -right-1 z-30 grid h-12 w-12 touch-none cursor-nwse-resize place-items-center rounded-br-[20px] rounded-tl-[22px] bg-black text-white opacity-0 shadow-[0_10px_28px_rgba(0,0,0,0.22)] transition group-hover:opacity-100"
-      >
-        <span className="grid h-7 w-7 place-items-end">
-          <span className="h-4 w-4 rounded-br-lg border-b-[3px] border-r-[3px] border-current" />
-        </span>
-      </button>
-    </div>
-  );
+ return (
+ <div
+ ref={setBlockNodeRef}
+ data-admin-block="true"
+ data-admin-block-id={block.id}
+ style={{ transform: visualTransform, transition: visualTransition, ...resizeStyle }}
+ className={cn(
+ "admin-draggable group relative will-change-transform transition-all duration-200 ease-out",
+ isSpecialModule ? "cursor-default" : "cursor-grab active:cursor-grabbing",
+ selected ? "rounded-[8px] ring-4 ring-[#B23C22]/20" : "",
+ blockSizeClassByDevice[device][activeDisplaySize],
+ removeFromFlowDuringDrag ? "absolute left-0 top-0 z-20 h-px w-px overflow-hidden opacity-0" : "",
+ hideOriginalDuringDrag ? "opacity-0" : isDragging || isDragOverlayActive ? "z-20 opacity-20" : "",
+ isResizing ? "z-30" : "",
+ !block.isVisible ? "opacity-55 grayscale-[0.18]" : ""
+ )}
+ onClick={onSelect}
+ {...attributes}
+ {...listeners}
+ >
+ <div data-admin-block-surface="true" className="h-full w-full overflow-hidden rounded-[8px]">
+ {getSpecialModuleType(block) ? (
+ <SpecialModulePreview block={block} />
+ ) : (
+ <BlockCard block={block} disableActions withLayout={false} className="h-full w-full select-none ring-0 group-hover:ring-2 group-hover:ring-[#B23C22]/20" />
+ )}
+ </div>
+ <div className={cn("pointer-events-none absolute inset-0 z-30 transition", device === "mobile" ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
+ <button
+ type="button"
+ onPointerDown={(event) => event.stopPropagation()}
+ onClick={(event) => {
+ event.stopPropagation();
+ onDelete();
+ }}
+ className={cn(
+ "pointer-events-auto absolute grid place-items-center rounded-[4px] border border-[#DDD6C8] bg-[#FCFAF5] shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)] transition hover:border-red-100 hover:bg-red-50",
+ device === "mobile" ? "-left-2 -top-2 h-[30px] w-[30px]" : "-left-3 -top-3 h-9 w-9"
+ )}
+ >
+ <Trash2 className={cn("text-red-500", device === "mobile" ? "h-3.5 w-3.5" : "h-4 w-4")} />
+ </button>
+ <button
+ type="button"
+ onPointerDown={(event) => event.stopPropagation()}
+ onClick={(event) => {
+ event.stopPropagation();
+ onEdit();
+ }}
+ className={cn(
+ "pointer-events-auto absolute grid place-items-center rounded-[4px] border border-[#DDD6C8] bg-[#FCFAF5] shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)] transition hover:border-[#F4EBE6] hover:bg-[#F4EBE6]",
+ device === "mobile" ? "-right-2 -top-2 h-[30px] w-[30px]" : "-right-3 -top-3 h-9 w-9"
+ )}
+ >
+ <Pencil className={cn(device === "mobile" ? "h-3.5 w-3.5" : "h-4 w-4")} />
+ </button>
+ </div>
+ <button
+ type="button"
+ title="拖动调整大小"
+ onPointerDown={startResize}
+ onClick={(event) => {
+ event.stopPropagation();
+ onSelect();
+ }}
+ className="absolute -bottom-1 -right-1 z-30 grid h-12 w-12 touch-none cursor-nwse-resize place-items-center rounded-br-[8px] rounded-tl-[8px] bg-[#B23C22] text-white opacity-0 shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)] transition group-hover:opacity-100"
+ >
+ <span className="grid h-7 w-7 place-items-end">
+ <span className="h-4 w-4 rounded-br-[5px] border-b-[3px] border-r-[3px] border-current" />
+ </span>
+ </button>
+ </div>
+ );
 }
 
 type AdminBlockLayoutSnapshot = {
-  rect: DOMRectReadOnly;
-  surfaceRect: DOMRectReadOnly | null;
+ rect: DOMRectReadOnly;
+ surfaceRect: DOMRectReadOnly | null;
 };
 
 function captureAdminBlockLayout(gridElement: HTMLElement | null) {
-  const layout = new Map<string, AdminBlockLayoutSnapshot>();
-  if (!gridElement) return layout;
+ const layout = new Map<string, AdminBlockLayoutSnapshot>();
+ if (!gridElement) return layout;
 
-  gridElement.querySelectorAll<HTMLElement>("[data-admin-block-id]").forEach((element) => {
-    const blockId = element.dataset.adminBlockId;
-    if (!blockId) return;
-    const surface = element.querySelector<HTMLElement>("[data-admin-block-surface='true']");
-    layout.set(blockId, {
-      rect: element.getBoundingClientRect(),
-      surfaceRect: surface ? surface.getBoundingClientRect() : null
-    });
-  });
+ gridElement.querySelectorAll<HTMLElement>("[data-admin-block-id]").forEach((element) => {
+ const blockId = element.dataset.adminBlockId;
+ if (!blockId) return;
+ const surface = element.querySelector<HTMLElement>("[data-admin-block-surface='true']");
+ layout.set(blockId, {
+ rect: element.getBoundingClientRect(),
+ surfaceRect: surface ? surface.getBoundingClientRect() : null
+ });
+ });
 
-  return layout;
+ return layout;
 }
 
 function cancelAdminBlockLayoutAnimations() {
-  document.querySelectorAll<HTMLElement>("[data-admin-block-id], [data-admin-block-surface='true']").forEach((element) => {
-    element.getAnimations().forEach((animation) => {
-      if (animation.id === "admin-block-resize-layout" || animation.id === "admin-block-resize-surface") {
-        animation.cancel();
-      }
-    });
-  });
+ document.querySelectorAll<HTMLElement>("[data-admin-block-id], [data-admin-block-surface='true']").forEach((element) => {
+ element.getAnimations().forEach((animation) => {
+ if (animation.id === "admin-block-resize-layout" || animation.id === "admin-block-resize-surface") {
+ animation.cancel();
+ }
+ });
+ });
 }
 
 function animateAdminBlockLayout(gridElement: HTMLElement | null, previousLayout: Map<string, AdminBlockLayoutSnapshot>, activeBlockId: string) {
-  if (!gridElement || previousLayout.size === 0) return;
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+ if (!gridElement || previousLayout.size === 0) return;
+ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  gridElement.querySelectorAll<HTMLElement>("[data-admin-block-id]").forEach((element) => {
-    const blockId = element.dataset.adminBlockId;
-    const before = blockId ? previousLayout.get(blockId) : null;
-    if (!blockId || !before) return;
+ gridElement.querySelectorAll<HTMLElement>("[data-admin-block-id]").forEach((element) => {
+ const blockId = element.dataset.adminBlockId;
+ const before = blockId ? previousLayout.get(blockId) : null;
+ if (!blockId || !before) return;
 
-    const after = element.getBoundingClientRect();
-    const deltaX = before.rect.left - after.left;
-    const deltaY = before.rect.top - after.top;
-    const hasPositionChange = Math.abs(deltaX) > 0.5 || Math.abs(deltaY) > 0.5;
+ const after = element.getBoundingClientRect();
+ const deltaX = before.rect.left - after.left;
+ const deltaY = before.rect.top - after.top;
+ const hasPositionChange = Math.abs(deltaX) > 0.5 || Math.abs(deltaY) > 0.5;
 
-    if (hasPositionChange) {
-      element.getAnimations().forEach((animation) => {
-        if (animation.id === "admin-block-resize-layout") {
-          animation.cancel();
-        }
-      });
+ if (hasPositionChange) {
+ element.getAnimations().forEach((animation) => {
+ if (animation.id === "admin-block-resize-layout") {
+ animation.cancel();
+ }
+ });
 
-      const animation = element.animate(
-        [
-          {
-            transform: `translate(${deltaX}px, ${deltaY}px)`,
-            transformOrigin: "top left"
-          },
-          {
-            transform: "translate(0, 0)",
-            transformOrigin: "top left"
-          }
-        ],
-        {
-          duration: 220,
-          easing: "cubic-bezier(0.22, 1, 0.36, 1)"
-        }
-      );
-      animation.id = "admin-block-resize-layout";
-    }
+ const animation = element.animate(
+ [
+ {
+ transform: `translate(${deltaX}px, ${deltaY}px)`,
+ transformOrigin: "top left"
+ },
+ {
+ transform: "translate(0, 0)",
+ transformOrigin: "top left"
+ }
+ ],
+ {
+ duration: 220,
+ easing: "cubic-bezier(0.22, 1, 0.36, 1)"
+ }
+ );
+ animation.id = "admin-block-resize-layout";
+ }
 
-    if (blockId !== activeBlockId) return;
+ if (blockId !== activeBlockId) return;
 
-    const surface = element.querySelector<HTMLElement>("[data-admin-block-surface='true']");
-    if (!surface || !before.surfaceRect) return;
+ const surface = element.querySelector<HTMLElement>("[data-admin-block-surface='true']");
+ if (!surface || !before.surfaceRect) return;
 
-    const surfaceAfter = surface.getBoundingClientRect();
-    const hasSizeChange = Math.abs(before.surfaceRect.width - surfaceAfter.width) > 0.5 || Math.abs(before.surfaceRect.height - surfaceAfter.height) > 0.5;
+ const surfaceAfter = surface.getBoundingClientRect();
+ const hasSizeChange = Math.abs(before.surfaceRect.width - surfaceAfter.width) > 0.5 || Math.abs(before.surfaceRect.height - surfaceAfter.height) > 0.5;
 
-    if (!hasSizeChange) return;
+ if (!hasSizeChange) return;
 
-    surface.getAnimations().forEach((animation) => {
-      if (animation.id === "admin-block-resize-surface") {
-        animation.cancel();
-      }
-    });
+ surface.getAnimations().forEach((animation) => {
+ if (animation.id === "admin-block-resize-surface") {
+ animation.cancel();
+ }
+ });
 
-    const surfaceAnimation = surface.animate(
-      [
-        {
-          width: `${before.surfaceRect.width}px`,
-          height: `${before.surfaceRect.height}px`
-        },
-        {
-          width: `${surfaceAfter.width}px`,
-          height: `${surfaceAfter.height}px`
-        }
-      ],
-      {
-        duration: 220,
-        easing: "cubic-bezier(0.22, 1, 0.36, 1)"
-      }
-    );
-    surfaceAnimation.id = "admin-block-resize-surface";
-  });
+ const surfaceAnimation = surface.animate(
+ [
+ {
+ width: `${before.surfaceRect.width}px`,
+ height: `${before.surfaceRect.height}px`
+ },
+ {
+ width: `${surfaceAfter.width}px`,
+ height: `${surfaceAfter.height}px`
+ }
+ ],
+ {
+ duration: 220,
+ easing: "cubic-bezier(0.22, 1, 0.36, 1)"
+ }
+ );
+ surfaceAnimation.id = "admin-block-resize-surface";
+ });
 }
 
 function getResizeMetrics(handle: HTMLElement, device: LayoutDevice): ResizeMetrics | null {
-  const blockElement = handle.closest("[data-admin-block='true']");
-  const gridElement = blockElement?.parentElement;
-  if (!(blockElement instanceof HTMLElement) || !(gridElement instanceof HTMLElement)) {
-    return null;
-  }
+ const blockElement = handle.closest("[data-admin-block='true']");
+ const gridElement = blockElement?.parentElement;
+ if (!(blockElement instanceof HTMLElement) || !(gridElement instanceof HTMLElement)) {
+ return null;
+ }
 
-  const columns = 12;
-  const minSpan = device === "desktop" ? 4 : 6;
-  const blockRect = blockElement.getBoundingClientRect();
-  const gridRect = gridElement.getBoundingClientRect();
-  const gridScale = gridElement.offsetWidth > 0 ? gridRect.width / gridElement.offsetWidth : 1;
-  const styles = window.getComputedStyle(gridElement);
-  const rawGap = Number.parseFloat(styles.columnGap || styles.gap || "16");
-  const gap = Number.isFinite(rawGap) ? rawGap * gridScale : 16 * gridScale;
-  const columnWidth = (gridRect.width - gap * (columns - 1)) / columns;
-  const cellSize = columnWidth * minSpan + gap * (minSpan - 1);
+ const columns = 12;
+ const minSpan = device === "desktop" ? 4 : 6;
+ const blockRect = blockElement.getBoundingClientRect();
+ const gridRect = gridElement.getBoundingClientRect();
+ const gridScale = gridElement.offsetWidth > 0 ? gridRect.width / gridElement.offsetWidth : 1;
+ const styles = window.getComputedStyle(gridElement);
+ const rawGap = Number.parseFloat(styles.columnGap || styles.gap || "16");
+ const gap = Number.isFinite(rawGap) ? rawGap * gridScale : 16 * gridScale;
+ const columnWidth = (gridRect.width - gap * (columns - 1)) / columns;
+ const cellSize = columnWidth * minSpan + gap * (minSpan - 1);
 
-  return {
-    left: blockRect.left,
-    top: blockRect.top,
-    columnWidth,
-    gap,
-    columns,
-    minSpan,
-    cellSize
-  };
+ return {
+ left: blockRect.left,
+ top: blockRect.top,
+ columnWidth,
+ gap,
+ columns,
+ minSpan,
+ cellSize
+ };
 }
 
 function getPointerResizeDraft(event: PointerEvent, metrics: ResizeMetrics, device: LayoutDevice): BlockResizeDraft {
-  const rawWidth = Math.max(metrics.columnWidth * metrics.minSpan, event.clientX - metrics.left);
-  const rawHeight = Math.max((metrics.cellSize - metrics.gap) / 2, event.clientY - metrics.top);
-  const logicalColumnUnit = metrics.cellSize + metrics.gap;
-  const logicalHalfRowUnit = logicalColumnUnit / 2;
-  const logicalCols = clamp(Math.round((rawWidth + metrics.gap) / logicalColumnUnit), 1, device === "desktop" ? 3 : 2);
-  const logicalHalfRows = clamp(Math.round((rawHeight + metrics.gap) / logicalHalfRowUnit), 1, 6);
-  const size = getPresetFromDraft({ logicalCols, logicalHalfRows, device });
+ const rawWidth = Math.max(metrics.columnWidth * metrics.minSpan, event.clientX - metrics.left);
+ const rawHeight = Math.max((metrics.cellSize - metrics.gap) / 2, event.clientY - metrics.top);
+ const logicalColumnUnit = metrics.cellSize + metrics.gap;
+ const logicalHalfRowUnit = logicalColumnUnit / 2;
+ const logicalCols = clamp(Math.round((rawWidth + metrics.gap) / logicalColumnUnit), 1, device === "desktop" ? 3 : 2);
+ const logicalHalfRows = clamp(Math.round((rawHeight + metrics.gap) / logicalHalfRowUnit), 1, 6);
+ const size = getPresetFromDraft({ logicalCols, logicalHalfRows, device });
 
-  return {
-    size,
-    gridSpan: getDefaultGridSpan(size, device),
-    rowSpan: getDefaultRowSpan(size)
-  };
+ return {
+ size,
+ gridSpan: getDefaultGridSpan(size, device),
+ rowSpan: getDefaultRowSpan(size)
+ };
 }
 
 function getPresetFromDraft({
-  logicalCols,
-  logicalHalfRows,
-  device
+ logicalCols,
+ logicalHalfRows,
+ device
 }: {
-  logicalCols: number;
-  logicalHalfRows: number;
-  device: LayoutDevice;
+ logicalCols: number;
+ logicalHalfRows: number;
+ device: LayoutDevice;
 }): BlockSize {
-  if (logicalCols <= 1) {
-    return logicalHalfRows >= 4 ? "tall" : "small-square";
-  }
+ if (logicalCols <= 1) {
+ return logicalHalfRows >= 4 ? "tall" : "small-square";
+ }
 
-  if (device === "mobile") {
-    if (logicalHalfRows <= 1) return "wide-short";
-    if (logicalHalfRows >= 6) return "full-square";
-    return logicalHalfRows >= 4 ? "large-square" : "wide";
-  }
+ if (device === "mobile") {
+ if (logicalHalfRows <= 1) return "wide-short";
+ if (logicalHalfRows >= 6) return "full-square";
+ return logicalHalfRows >= 4 ? "large-square" : "wide";
+ }
 
-  if (logicalCols === 2) {
-    if (logicalHalfRows <= 1) return "wide-short";
-    return logicalHalfRows >= 4 ? "large-square" : "wide";
-  }
+ if (logicalCols === 2) {
+ if (logicalHalfRows <= 1) return "wide-short";
+ return logicalHalfRows >= 4 ? "large-square" : "wide";
+ }
 
-  if (logicalHalfRows <= 1) return "full-short";
-  if (logicalHalfRows >= 6) return "full-square";
-  if (logicalHalfRows >= 4) return "full-tall";
-  return "full-wide";
+ if (logicalHalfRows <= 1) return "full-short";
+ if (logicalHalfRows >= 6) return "full-square";
+ if (logicalHalfRows >= 4) return "full-tall";
+ return "full-wide";
 }
 
 function clamp(value: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, value));
+ return Math.max(min, Math.min(max, value));
 }
 
 function FloatingToolbar({
-  device,
-  canEditDesktop,
-  editorLanguage,
-  isStructureOpen,
-  onDeviceChange,
-  onToggleStructure,
-  onAddBlock
+ device,
+ canEditDesktop,
+ editorLanguage,
+ isStructureOpen,
+ onDeviceChange,
+ onToggleStructure,
+ onAddBlock
 }: {
-  device: LayoutDevice;
-  canEditDesktop: boolean;
-  editorLanguage: EditorLanguage;
-  isStructureOpen: boolean;
-  onDeviceChange: (device: LayoutDevice) => void;
-  onToggleStructure: () => void;
-  onAddBlock: () => void;
+ device: LayoutDevice;
+ canEditDesktop: boolean;
+ editorLanguage: EditorLanguage;
+ isStructureOpen: boolean;
+ onDeviceChange: (device: LayoutDevice) => void;
+ onToggleStructure: () => void;
+ onAddBlock: () => void;
 }) {
-  const copy = editorCopy[editorLanguage];
-  return (
-    <div className="admin-floating-toolbar fixed bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-[24px] p-2">
-      <button
-        type="button"
-        onClick={onToggleStructure}
-        className={cn(
-          "flex h-10 items-center gap-2 rounded-[14px] px-3 text-xs font-bold transition",
-          isStructureOpen ? "admin-floating-toolbar__device--active" : "text-[#5F625D] hover:bg-white/70"
-        )}
-        title={editorLanguage === "zh-CN" ? "页面结构" : "Page structure"}
-      >
-        <PanelLeft className="h-4 w-4" />
-        {editorLanguage === "zh-CN" ? "结构" : "Structure"}
-      </button>
-      <div className="admin-floating-toolbar__devices flex rounded-[18px] p-1">
-        <button
-          type="button"
-          disabled={!canEditDesktop}
-          onClick={() => onDeviceChange("desktop")}
-          className={`grid h-10 w-10 place-items-center rounded-[14px] transition ${
-            device === "desktop"
-              ? "admin-floating-toolbar__device--active"
-              : canEditDesktop
-                ? "text-[#5F625D] hover:bg-white/70"
-                : "cursor-not-allowed text-[#CBD5E1]"
-          }`}
-          title={canEditDesktop ? copy.desktop : copy.desktopDisabled}
-        >
-          <Laptop className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          onClick={() => onDeviceChange("mobile")}
-          className={`grid h-10 w-10 place-items-center rounded-[14px] transition ${
-            device === "mobile" ? "admin-floating-toolbar__device--active" : "text-[#5F625D] hover:bg-white/70"
-          }`}
-          title={copy.mobile}
-        >
-          <Smartphone className="h-4 w-4" />
-        </button>
-      </div>
-      <Button onClick={onAddBlock} className="admin-floating-toolbar__add h-10 whitespace-nowrap px-3">
-        <Plus className="h-4 w-4" />
-        {copy.addBlock}
-      </Button>
-    </div>
-  );
+ const copy = editorCopy[editorLanguage];
+ return (
+ <div className="admin-floating-toolbar fixed bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-[8px] p-2">
+ <button
+ type="button"
+ onClick={onToggleStructure}
+ className={cn(
+ "flex h-10 items-center gap-2 rounded-[6px] px-3 text-xs font-bold transition",
+ isStructureOpen ? "admin-floating-toolbar__device--active" : "text-[#6F6A5E] hover:bg-[#FCFAF5]/70"
+ )}
+ title={editorLanguage === "zh-CN" ? "页面结构" : "Page structure"}
+ >
+ <PanelLeft className="h-4 w-4" />
+ {editorLanguage === "zh-CN" ? "结构" : "Structure"}
+ </button>
+ <div className="admin-floating-toolbar__devices flex rounded-[8px] p-1">
+ <button
+ type="button"
+ disabled={!canEditDesktop}
+ onClick={() => onDeviceChange("desktop")}
+ className={`grid h-10 w-10 place-items-center rounded-[6px] transition ${
+ device === "desktop"
+ ? "admin-floating-toolbar__device--active"
+ : canEditDesktop
+ ? "text-[#6F6A5E] hover:bg-[#FCFAF5]/70"
+ : "cursor-not-allowed text-[#DDD6C8]"
+ }`}
+ title={canEditDesktop ? copy.desktop : copy.desktopDisabled}
+ >
+ <Laptop className="h-4 w-4" />
+ </button>
+ <button
+ type="button"
+ onClick={() => onDeviceChange("mobile")}
+ className={`grid h-10 w-10 place-items-center rounded-[6px] transition ${
+ device === "mobile" ? "admin-floating-toolbar__device--active" : "text-[#6F6A5E] hover:bg-[#FCFAF5]/70"
+ }`}
+ title={copy.mobile}
+ >
+ <Smartphone className="h-4 w-4" />
+ </button>
+ </div>
+ <Button onClick={onAddBlock} className="admin-floating-toolbar__add h-10 whitespace-nowrap px-3">
+ <Plus className="h-4 w-4" />
+ {copy.addBlock}
+ </Button>
+ </div>
+ );
 }
 
 function ResizePreview({ activeSize, editorLanguage }: { activeSize: BlockSize; editorLanguage: EditorLanguage }) {
-  return (
-    <div className="admin-resize-preview fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-4 rounded-[28px] px-6 py-3 backdrop-blur">
-      {blockSizePresets.map((preset) => (
-        <div
-          key={preset.size}
-          title={getLocalizedBlockSizeLabel(preset.size, editorLanguage)}
-          className={`grid h-11 w-11 place-items-center rounded-xl border transition [&>span>svg]:h-6 [&>span>svg]:w-6 ${
-            activeSize === preset.size
-              ? "border-[#B23C22] bg-[#B23C22] text-[#FCFAF5]"
-              : "border-transparent bg-white/70 text-[#8A887F]"
-          }`}
-        >
-          <span>{preset.icon}</span>
-        </div>
-      ))}
-    </div>
-  );
+ return (
+ <div className="admin-resize-preview fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-4 rounded-[8px] px-6 py-3 backdrop-blur">
+ {blockSizePresets.map((preset) => (
+ <div
+ key={preset.size}
+ title={getLocalizedBlockSizeLabel(preset.size, editorLanguage)}
+ className={`grid h-11 w-11 place-items-center rounded-[5px] border transition [&>span>svg]:h-6 [&>span>svg]:w-6 ${
+ activeSize === preset.size
+ ? "border-[#B23C22] bg-[#B23C22] text-[#FCFAF5]"
+ : "border-transparent bg-[#FCFAF5]/70 text-[#A39C8D]"
+ }`}
+ >
+ <span>{preset.icon}</span>
+ </div>
+ ))}
+ </div>
+ );
 }
 
 function EditorModal({
-  title,
-  children,
-  onClose,
-  onSave,
-  isSaving,
-  editorLanguage,
-  canSave = true,
-  tone = "light",
-  footerStart
+ title,
+ children,
+ onClose,
+ onSave,
+ isSaving,
+ editorLanguage,
+ canSave = true,
+ tone = "light",
+ footerStart
 }: {
-  title: string;
-  children: React.ReactNode;
-  onClose: () => void;
-  onSave: () => Promise<void>;
-  isSaving: boolean;
-  editorLanguage: EditorLanguage;
-  canSave?: boolean;
-  tone?: "light" | "dark";
-  footerStart?: React.ReactNode;
+ title: string;
+ children: React.ReactNode;
+ onClose: () => void;
+ onSave: () => Promise<void>;
+ isSaving: boolean;
+ editorLanguage: EditorLanguage;
+ canSave?: boolean;
+ tone?: "light" | "dark";
+ footerStart?: React.ReactNode;
 }) {
-  const isDark = tone === "dark";
-  const copy = editorCopy[editorLanguage];
-  return (
-    <div className="admin-editor-modal fixed inset-0 z-50 grid place-items-center p-4" onMouseDown={onClose}>
-      <div
-        className={cn(
-          "admin-editor-modal__panel flex max-h-[86vh] w-full max-w-3xl flex-col overflow-hidden",
-          isDark ? "bg-[#1C1C1C] text-white" : "bg-white text-[#111]"
-        )}
-        onMouseDown={(event) => event.stopPropagation()}
-      >
-        <div className={cn("admin-editor-modal__header flex items-center justify-between border-b px-6 py-5", isDark ? "border-white/10" : "border-[#D8D2C4]")}>
-          <div><p>EDIT CONTENT</p><h3 className="text-xl font-black tracking-[-0.03em]">{title}</h3></div>
-          <button type="button" onClick={onClose} className={cn("admin-editor-modal__close grid h-9 w-9 place-items-center rounded-full", isDark ? "hover:bg-white/10" : "hover:bg-[#EDE8DA]")}>
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-        <div className="admin-editor-modal__body overflow-auto p-6">{children}</div>
-        <div className={cn("admin-editor-modal__footer flex items-center justify-between gap-3 border-t px-6 py-4", isDark ? "border-white/10" : "border-[#D8D2C4]")}>
-          <div>{footerStart}</div>
-          <div className="flex justify-end gap-2">
-            <Button variant="ghost" onClick={onClose} className={cn(isDark && "text-white hover:bg-white/10")}>{copy.cancel}</Button>
-            <Button
-              onClick={async () => {
-                await onSave();
-                onClose();
-              }}
-              disabled={isSaving || !canSave}
-              className={cn(isDark ? "rounded-full bg-white text-black hover:bg-white/90" : "admin-editor-modal__save")}
-            >
-              {isSaving ? copy.saving : copy.save}
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+ const isDark = tone === "dark";
+ const copy = editorCopy[editorLanguage];
+ return (
+ <div className="admin-editor-modal fixed inset-0 z-50 grid place-items-center p-4" onMouseDown={onClose}>
+ <div
+ className={cn(
+ "admin-editor-modal__panel flex max-h-[86vh] w-full max-w-3xl flex-col overflow-hidden",
+ isDark ? "bg-[#201D18] text-white" : "bg-[#FCFAF5] text-[#201D18]"
+ )}
+ onMouseDown={(event) => event.stopPropagation()}
+ >
+ <div className={cn("admin-editor-modal__header flex items-center justify-between border-b px-6 py-5", isDark ? "border-white/10" : "border-[#DDD6C8]")}>
+ <div><p>EDIT CONTENT</p><h3 className="text-xl font-bold tracking-[-0.03em]">{title}</h3></div>
+ <button type="button" onClick={onClose} className={cn("admin-editor-modal__close grid h-9 w-9 place-items-center rounded-[4px]", isDark ? "hover:bg-[#FCFAF5]/10" : "hover:bg-[#EDE8DB]")}>
+ <X className="h-4 w-4" />
+ </button>
+ </div>
+ <div className="admin-editor-modal__body overflow-auto p-6">{children}</div>
+ <div className={cn("admin-editor-modal__footer flex items-center justify-between gap-3 border-t px-6 py-4", isDark ? "border-white/10" : "border-[#DDD6C8]")}>
+ <div>{footerStart}</div>
+ <div className="flex justify-end gap-2">
+ <Button variant="ghost" onClick={onClose} className={cn(isDark && "text-white hover:bg-[#FCFAF5]/10")}>{copy.cancel}</Button>
+ <Button
+ onClick={async () => {
+ await onSave();
+ onClose();
+ }}
+ disabled={isSaving || !canSave}
+ className={cn(isDark ? "rounded-[4px] bg-[#FCFAF5] text-black hover:bg-[#FCFAF5]/90" : "admin-editor-modal__save")}
+ >
+ {isSaving ? copy.saving : copy.save}
+ </Button>
+ </div>
+ </div>
+ </div>
+ </div>
+ );
 }
 
 function TagsQuickForm({
-  profile,
-  onPatch,
-  editorLanguage
+ profile,
+ onPatch,
+ editorLanguage
 }: {
-  profile: Profile;
-  onPatch: (patch: Partial<Profile>) => void;
-  editorLanguage: EditorLanguage;
+ profile: Profile;
+ onPatch: (patch: Partial<Profile>) => void;
+ editorLanguage: EditorLanguage;
 }) {
-  const copy = editorCopy[editorLanguage];
-  function updateTag(index: number, value: string) {
-    onPatch({ tags: profile.tags.map((tag, itemIndex) => (itemIndex === index ? value : tag)) });
-  }
+ const copy = editorCopy[editorLanguage];
+ function updateTag(index: number, value: string) {
+ onPatch({ tags: profile.tags.map((tag, itemIndex) => (itemIndex === index ? value : tag)) });
+ }
 
-  return (
-    <div className="grid gap-4">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-[#64748B]">{copy.tagsHelp}</p>
-        <Button type="button" variant="secondary" size="sm" onClick={() => onPatch({ tags: [...profile.tags, editorLanguage === "zh-CN" ? "新标签" : "New Tag"] })}>
-          <Plus className="h-4 w-4" />
-          {copy.addTag}
-        </Button>
-      </div>
-      <div className="grid gap-2">
-        {profile.tags.map((tag, index) => (
-          <div key={`tag-editor-${index}`} className="grid gap-2 rounded-2xl border border-[#EAEAEA] p-3 sm:grid-cols-[1fr_auto]">
-            <Input value={tag} onChange={(event) => updateTag(index, event.target.value)} />
-            <div className="flex gap-1">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => onPatch({ tags: moveItem(profile.tags, index, Math.max(0, index - 1)) })}
-              >
-                ↑
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => onPatch({ tags: moveItem(profile.tags, index, Math.min(profile.tags.length - 1, index + 1)) })}
-              >
-                ↓
-              </Button>
-              <Button type="button" variant="ghost" size="icon" onClick={() => onPatch({ tags: profile.tags.filter((_, itemIndex) => itemIndex !== index) })}>
-                <Trash2 className="h-4 w-4 text-red-500" />
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+ return (
+ <div className="grid gap-4">
+ <div className="flex items-center justify-between">
+ <p className="text-sm text-[#6F6A5E]">{copy.tagsHelp}</p>
+ <Button type="button" variant="secondary" size="sm" onClick={() => onPatch({ tags: [...profile.tags, editorLanguage === "zh-CN" ? "新标签" : "New Tag"] })}>
+ <Plus className="h-4 w-4" />
+ {copy.addTag}
+ </Button>
+ </div>
+ <div className="grid gap-2">
+ {profile.tags.map((tag, index) => (
+ <div key={`tag-editor-${index}`} className="grid gap-2 rounded-[6px] border border-[#DDD6C8] p-3 sm:grid-cols-[1fr_auto]">
+ <Input value={tag} onChange={(event) => updateTag(index, event.target.value)} />
+ <div className="flex gap-1">
+ <Button
+ type="button"
+ variant="ghost"
+ size="sm"
+ onClick={() => onPatch({ tags: moveItem(profile.tags, index, Math.max(0, index - 1)) })}
+ >
+ ↑
+ </Button>
+ <Button
+ type="button"
+ variant="ghost"
+ size="sm"
+ onClick={() => onPatch({ tags: moveItem(profile.tags, index, Math.min(profile.tags.length - 1, index + 1)) })}
+ >
+ ↓
+ </Button>
+ <Button type="button" variant="ghost" size="icon" onClick={() => onPatch({ tags: profile.tags.filter((_, itemIndex) => itemIndex !== index) })}>
+ <Trash2 className="h-4 w-4 text-red-500" />
+ </Button>
+ </div>
+ </div>
+ ))}
+ </div>
+ </div>
+ );
 }
 
 function SocialLinksQuickForm({
-  profile,
-  onPatch,
-  editorLanguage
+ profile,
+ onPatch,
+ editorLanguage
 }: {
-  profile: Profile;
-  onPatch: (patch: Partial<Profile>) => void;
-  editorLanguage: EditorLanguage;
+ profile: Profile;
+ onPatch: (patch: Partial<Profile>) => void;
+ editorLanguage: EditorLanguage;
 }) {
-  const copy = editorCopy[editorLanguage];
-  const orderedLinks = [...profile.socialLinks].sort(bySortOrder);
-  const [expandedLinkIds, setExpandedLinkIds] = useState<Set<string>>(() => new Set(orderedLinks[0]?.id ? [orderedLinks[0].id] : []));
-  const allExpanded = orderedLinks.length > 0 && orderedLinks.every((link) => expandedLinkIds.has(link.id));
+ const copy = editorCopy[editorLanguage];
+ const orderedLinks = [...profile.socialLinks].sort(bySortOrder);
+ const [expandedLinkIds, setExpandedLinkIds] = useState<Set<string>>(() => new Set(orderedLinks[0]?.id ? [orderedLinks[0].id] : []));
+ const allExpanded = orderedLinks.length > 0 && orderedLinks.every((link) => expandedLinkIds.has(link.id));
 
-  function patchLinks(links: SocialLink[]) {
-    onPatch({ socialLinks: normalizeSortOrder(links) });
-  }
+ function patchLinks(links: SocialLink[]) {
+ onPatch({ socialLinks: normalizeSortOrder(links) });
+ }
 
-  function updateSocial(linkId: string, patch: Partial<SocialLink>) {
-    patchLinks(orderedLinks.map((link) => (link.id === linkId ? { ...link, ...patch } : link)));
-  }
+ function updateSocial(linkId: string, patch: Partial<SocialLink>) {
+ patchLinks(orderedLinks.map((link) => (link.id === linkId ? { ...link, ...patch } : link)));
+ }
 
-  function patchHref(link: SocialLink, href: string) {
-    updateSocial(link.id, { href, icon: inferSocialIconFromUrl(href, link.icon), label: link.label || inferSocialLabelFromUrl(href) });
-  }
+ function patchHref(link: SocialLink, href: string) {
+ updateSocial(link.id, { href, icon: inferSocialIconFromUrl(href, link.icon), label: link.label || inferSocialLabelFromUrl(href) });
+ }
 
-  return (
-    <div className="grid gap-5 text-[#333]">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-[#64748B]">{copy.socialButtonsHelp}</p>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => setExpandedLinkIds(allExpanded ? new Set<string>() : new Set(orderedLinks.map((link) => link.id)))}
-          >
-            {allExpanded ? copy.allCollapse : copy.allExpand}
-          </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            onClick={() => {
-              const newLink: SocialLink = {
-                id: crypto.randomUUID(),
-                label: copy.newLink,
-                icon: "link",
-                href: "https://",
-                actionType: "link",
-                openInNewTab: true,
-                isVisible: true,
-                sortOrder: orderedLinks.length + 1
-              };
-              patchLinks([...orderedLinks, newLink]);
-              setExpandedLinkIds((current) => new Set([...current, newLink.id]));
-            }}
-          >
-            <Plus className="h-4 w-4" />
-            {copy.add}
-          </Button>
-        </div>
-      </div>
-      <div className="grid gap-3">
-        {orderedLinks.map((link, index) => {
-          const isExpanded = expandedLinkIds.has(link.id);
-          return (
-            <div key={link.id} className="grid rounded-[18px] border border-[#EAEAEA] bg-white p-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setExpandedLinkIds((current) => {
-                      const next = new Set(current);
-                      if (isExpanded) {
-                        next.delete(link.id);
-                      } else {
-                        next.add(link.id);
-                      }
-                      return next;
-                    })
-                  }
-                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#F8F6EF] text-[#64748B] transition hover:bg-[#F4EBE6] hover:text-[#176B39]"
-                  aria-label={isExpanded ? (editorLanguage === "zh-CN" ? "折叠社交媒体标签" : "Collapse social link") : (editorLanguage === "zh-CN" ? "展开社交媒体标签" : "Expand social link")}
-                >
-                  <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isExpanded && "rotate-180")} />
-                </button>
-                <div className="inline-flex min-w-0 flex-1 items-center gap-2 rounded-xl text-left">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#F4EBE6] text-[#B23C22]">
-                    <SocialIcon name={link.icon} />
-                  </span>
-                  <span className="grid min-w-0 gap-0.5">
-                    <span className="truncate text-sm font-semibold text-[#111]">{link.label || copy.newLink}</span>
-                    <span className="truncate text-xs text-[#64748B]">
-                      {link.actionType === "copy" ? link.copyText || copy.blockCopyText : link.href || "link"}
-                    </span>
-                  </span>
-                </div>
-              <div className="flex gap-1">
-                <Button type="button" variant="ghost" size="sm" disabled={index === 0} onClick={() => patchLinks(moveItem(orderedLinks, index, Math.max(0, index - 1)))}>
-                  ↑
-                </Button>
-                <Button type="button" variant="ghost" size="sm" disabled={index === orderedLinks.length - 1} onClick={() => patchLinks(moveItem(orderedLinks, index, Math.min(orderedLinks.length - 1, index + 1)))}>
-                  ↓
-                </Button>
-                <Button type="button" variant="ghost" size="icon" onClick={() => patchLinks(orderedLinks.filter((item) => item.id !== link.id))}>
-                  <Trash2 className="h-4 w-4 text-red-500" />
-                </Button>
-              </div>
-            </div>
-              <div className={cn("grid transition-[grid-template-rows] duration-200 ease-out", isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
-                <div className="min-h-0 overflow-hidden">
-                  <div className="mt-3 grid gap-3 border-t border-[#EEF2F7] pt-3">
-                  <div className="grid gap-3 md:grid-cols-2">
-                    <Field label={editorLanguage === "zh-CN" ? "名称" : "Label"}>
-                      <Input value={link.label} onChange={(event) => updateSocial(link.id, { label: event.target.value })} />
-                    </Field>
-                    <Field label={editorLanguage === "zh-CN" ? "类型" : "Type"}>
-                      <Select value={link.actionType ?? "link"} onChange={(event) => updateSocial(link.id, { actionType: event.target.value as SocialLink["actionType"] })}>
-                        <option value="link">{copy.linkAction}</option>
-                        <option value="copy">{copy.blockCopyText}</option>
-                      </Select>
-                    </Field>
-                    {link.actionType === "copy" ? (
-                      <Field label={copy.blockCopyText} className="md:col-span-2">
-                        <Input value={link.copyText ?? ""} onChange={(event) => updateSocial(link.id, { copyText: event.target.value })} />
-                      </Field>
-                    ) : (
-                      <Field label={copy.blockHref} className="md:col-span-2">
-                        <Input value={link.href} onChange={(event) => patchHref(link, event.target.value)} />
-                      </Field>
-                    )}
-                  </div>
-                  <Field label={editorLanguage === "zh-CN" ? "图标" : "Icon"}>
-                    <div className="flex flex-wrap gap-2">
-                      {socialIconPresets.map((icon) => (
-                        <button
-                          key={icon}
-                          type="button"
-                          aria-pressed={link.icon === icon}
-                          onClick={() => {
-                            updateSocial(link.id, { icon });
-                          }}
-                          className={cn(
-                            "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-full border px-3 text-sm transition",
-                            link.icon === icon
-                              ? "border-[#B23C22] bg-[#B23C22] text-[#FCFAF5]"
-                              : "border-[#D5D0C4] bg-white text-[#475569] hover:border-[#B23C22]/40"
-                          )}
-                        >
-                          <SocialIcon name={icon} />
-                          <span>{getSocialIconLabel(icon)}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </Field>
-                  <div className="flex flex-wrap gap-4 text-sm text-[#475569]">
-                    <label className="flex items-center gap-2">
-                      <Checkbox checked={link.isVisible} onChange={(event) => updateSocial(link.id, { isVisible: event.target.checked })} />
-                      {copy.visible}
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <Checkbox checked={link.openInNewTab ?? true} onChange={(event) => updateSocial(link.id, { openInNewTab: event.target.checked })} />
-                      {copy.openTab}
-                    </label>
-                  </div>
-                </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+ return (
+ <div className="grid gap-5 text-[#201D18]">
+ <div className="flex flex-wrap items-center justify-between gap-2">
+ <p className="text-sm text-[#6F6A5E]">{copy.socialButtonsHelp}</p>
+ <div className="flex flex-wrap items-center gap-2">
+ <Button
+ type="button"
+ variant="ghost"
+ size="sm"
+ onClick={() => setExpandedLinkIds(allExpanded ? new Set<string>() : new Set(orderedLinks.map((link) => link.id)))}
+ >
+ {allExpanded ? copy.allCollapse : copy.allExpand}
+ </Button>
+ <Button
+ type="button"
+ variant="secondary"
+ size="sm"
+ onClick={() => {
+ const newLink: SocialLink = {
+ id: crypto.randomUUID(),
+ label: copy.newLink,
+ icon: "link",
+ href: "https://",
+ actionType: "link",
+ openInNewTab: true,
+ isVisible: true,
+ sortOrder: orderedLinks.length + 1
+ };
+ patchLinks([...orderedLinks, newLink]);
+ setExpandedLinkIds((current) => new Set([...current, newLink.id]));
+ }}
+ >
+ <Plus className="h-4 w-4" />
+ {copy.add}
+ </Button>
+ </div>
+ </div>
+ <div className="grid gap-3">
+ {orderedLinks.map((link, index) => {
+ const isExpanded = expandedLinkIds.has(link.id);
+ return (
+ <div key={link.id} className="grid rounded-[8px] border border-[#DDD6C8] bg-[#FCFAF5] p-3">
+ <div className="flex flex-wrap items-center justify-between gap-2">
+ <button
+ type="button"
+ onClick={() =>
+ setExpandedLinkIds((current) => {
+ const next = new Set(current);
+ if (isExpanded) {
+ next.delete(link.id);
+ } else {
+ next.add(link.id);
+ }
+ return next;
+ })
+ }
+ className="grid h-9 w-9 shrink-0 place-items-center rounded-[4px] bg-[#F6F3EC] text-[#6F6A5E] transition hover:bg-[#F4EBE6] hover:text-[#7E2A16]"
+ aria-label={isExpanded ? (editorLanguage === "zh-CN" ? "折叠社交媒体标签" : "Collapse social link") : (editorLanguage === "zh-CN" ? "展开社交媒体标签" : "Expand social link")}
+ >
+ <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isExpanded && "rotate-180")} />
+ </button>
+ <div className="inline-flex min-w-0 flex-1 items-center gap-2 rounded-[5px] text-left">
+ <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[4px] bg-[#F4EBE6] text-[#B23C22]">
+ <SocialIcon name={link.icon} />
+ </span>
+ <span className="grid min-w-0 gap-0.5">
+ <span className="truncate text-sm font-semibold text-[#201D18]">{link.label || copy.newLink}</span>
+ <span className="truncate text-xs text-[#6F6A5E]">
+ {link.actionType === "copy" ? link.copyText || copy.blockCopyText : link.href || "link"}
+ </span>
+ </span>
+ </div>
+ <div className="flex gap-1">
+ <Button type="button" variant="ghost" size="sm" disabled={index === 0} onClick={() => patchLinks(moveItem(orderedLinks, index, Math.max(0, index - 1)))}>
+ ↑
+ </Button>
+ <Button type="button" variant="ghost" size="sm" disabled={index === orderedLinks.length - 1} onClick={() => patchLinks(moveItem(orderedLinks, index, Math.min(orderedLinks.length - 1, index + 1)))}>
+ ↓
+ </Button>
+ <Button type="button" variant="ghost" size="icon" onClick={() => patchLinks(orderedLinks.filter((item) => item.id !== link.id))}>
+ <Trash2 className="h-4 w-4 text-red-500" />
+ </Button>
+ </div>
+ </div>
+ <div className={cn("grid transition-[grid-template-rows] duration-200 ease-out", isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
+ <div className="min-h-0 overflow-hidden">
+ <div className="mt-3 grid gap-3 border-t border-[#EDE8DB] pt-3">
+ <div className="grid gap-3 md:grid-cols-2">
+ <Field label={editorLanguage === "zh-CN" ? "名称" : "Label"}>
+ <Input value={link.label} onChange={(event) => updateSocial(link.id, { label: event.target.value })} />
+ </Field>
+ <Field label={editorLanguage === "zh-CN" ? "类型" : "Type"}>
+ <Select value={link.actionType ?? "link"} onChange={(event) => updateSocial(link.id, { actionType: event.target.value as SocialLink["actionType"] })}>
+ <option value="link">{copy.linkAction}</option>
+ <option value="copy">{copy.blockCopyText}</option>
+ </Select>
+ </Field>
+ {link.actionType === "copy" ? (
+ <Field label={copy.blockCopyText} className="md:col-span-2">
+ <Input value={link.copyText ?? ""} onChange={(event) => updateSocial(link.id, { copyText: event.target.value })} />
+ </Field>
+ ) : (
+ <Field label={copy.blockHref} className="md:col-span-2">
+ <Input value={link.href} onChange={(event) => patchHref(link, event.target.value)} />
+ </Field>
+ )}
+ </div>
+ <Field label={editorLanguage === "zh-CN" ? "图标" : "Icon"}>
+ <div className="flex flex-wrap gap-2">
+ {socialIconPresets.map((icon) => (
+ <button
+ key={icon}
+ type="button"
+ aria-pressed={link.icon === icon}
+ onClick={() => {
+ updateSocial(link.id, { icon });
+ }}
+ className={cn(
+ "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-[4px] border px-3 text-sm transition",
+ link.icon === icon
+ ? "border-[#B23C22] bg-[#B23C22] text-[#FCFAF5]"
+ : "border-[#DDD6C8] bg-[#FCFAF5] text-[#6F6A5E] hover:border-[#B23C22]/40"
+ )}
+ >
+ <SocialIcon name={icon} />
+ <span>{getSocialIconLabel(icon)}</span>
+ </button>
+ ))}
+ </div>
+ </Field>
+ <div className="flex flex-wrap gap-4 text-sm text-[#6F6A5E]">
+ <label className="flex items-center gap-2">
+ <Checkbox checked={link.isVisible} onChange={(event) => updateSocial(link.id, { isVisible: event.target.checked })} />
+ {copy.visible}
+ </label>
+ <label className="flex items-center gap-2">
+ <Checkbox checked={link.openInNewTab ?? true} onChange={(event) => updateSocial(link.id, { openInNewTab: event.target.checked })} />
+ {copy.openTab}
+ </label>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+ );
+ })}
+ </div>
+ </div>
+ );
 }
 
 function ProfileQuickForm({ profile, onPatch }: { profile: Profile; onPatch: (patch: Partial<Profile>) => void }) {
-  return (
-    <div className="grid gap-4">
-      <div className="grid gap-3 md:grid-cols-2">
-        <Field label="头像 URL">
-          <Input value={profile.avatarUrl} onChange={(event) => onPatch({ avatarUrl: event.target.value })} />
-        </Field>
-        <Field label="名称">
-          <Input value={profile.displayName} onChange={(event) => onPatch({ displayName: event.target.value })} />
-        </Field>
-        <Field label="Headline">
-          <Textarea value={profile.headline} onChange={(event) => onPatch({ headline: event.target.value })} className="min-h-20" />
-        </Field>
-        <Field label="位置">
-          <Input value={profile.location ?? ""} onChange={(event) => onPatch({ location: event.target.value })} />
-        </Field>
-      </div>
-      <Field label="简介">
-        <Textarea value={profile.bio} onChange={(event) => onPatch({ bio: event.target.value })} />
-      </Field>
-      <Field label="Tags，用逗号分隔">
-        <Input value={profile.tags.join(", ")} onChange={(event) => onPatch({ tags: event.target.value.split(",").map((tag) => tag.trim()).filter(Boolean) })} />
-      </Field>
-      <MediaUploader folder="avatar" onUploaded={(url) => onPatch({ avatarUrl: url })} />
-    </div>
-  );
+ return (
+ <div className="grid gap-4">
+ <div className="grid gap-3 md:grid-cols-2">
+ <Field label="头像 URL">
+ <Input value={profile.avatarUrl} onChange={(event) => onPatch({ avatarUrl: event.target.value })} />
+ </Field>
+ <Field label="名称">
+ <Input value={profile.displayName} onChange={(event) => onPatch({ displayName: event.target.value })} />
+ </Field>
+ <Field label="Headline">
+ <Textarea value={profile.headline} onChange={(event) => onPatch({ headline: event.target.value })} className="min-h-20" />
+ </Field>
+ <Field label="位置">
+ <Input value={profile.location ?? ""} onChange={(event) => onPatch({ location: event.target.value })} />
+ </Field>
+ </div>
+ <Field label="简介">
+ <Textarea value={profile.bio} onChange={(event) => onPatch({ bio: event.target.value })} />
+ </Field>
+ <Field label="Tags，用逗号分隔">
+ <Input value={profile.tags.join(", ")} onChange={(event) => onPatch({ tags: event.target.value.split(",").map((tag) => tag.trim()).filter(Boolean) })} />
+ </Field>
+ <MediaUploader folder="avatar" onUploaded={(url) => onPatch({ avatarUrl: url })} />
+ </div>
+ );
 }
 
 function BlockModalBody({
-  block,
-  onPatch,
-  editorLanguage
+ block,
+ onPatch,
+ editorLanguage
 }: {
-  block?: Block;
-  onPatch: (patch: Partial<Block>) => void;
-  editorLanguage: EditorLanguage;
+ block?: Block;
+ onPatch: (patch: Partial<Block>) => void;
+ editorLanguage: EditorLanguage;
 }) {
-  if (!block) return null;
-  return getSpecialModuleType(block) ? (
-    <SpecialModuleForm block={block} onPatch={onPatch} editorLanguage={editorLanguage} />
-  ) : (
-    <BlockForm block={block} onPatch={onPatch} editorLanguage={editorLanguage} />
-  );
+ if (!block) return null;
+ return getSpecialModuleType(block) ? (
+ <SpecialModuleForm block={block} onPatch={onPatch} editorLanguage={editorLanguage} />
+ ) : (
+ <BlockForm block={block} onPatch={onPatch} editorLanguage={editorLanguage} />
+ );
 }
 
 function SpecialModuleModalBody({
-  group,
-  onPatchBlock,
-  onPatchExperienceBlock,
-  onReplaceExperienceEntries,
-  onSetGroupVisibility,
-  editorLanguage
+ group,
+ onPatchBlock,
+ onPatchExperienceBlock,
+ onReplaceExperienceEntries,
+ onSetGroupVisibility,
+ editorLanguage
 }: {
-  group?: ContentOutlineGroup;
-  onPatchBlock: (blockId: string, patch: Partial<Block>) => void;
-  onPatchExperienceBlock: (blockId: string, patch: Partial<Block>) => void;
-  onReplaceExperienceEntries: (groupId: string, blocks: Block[]) => void;
-  onSetGroupVisibility: (groupId: string, isVisible: boolean) => void;
-  editorLanguage: EditorLanguage;
+ group?: ContentOutlineGroup;
+ onPatchBlock: (blockId: string, patch: Partial<Block>) => void;
+ onPatchExperienceBlock: (blockId: string, patch: Partial<Block>) => void;
+ onReplaceExperienceEntries: (groupId: string, blocks: Block[]) => void;
+ onSetGroupVisibility: (groupId: string, isVisible: boolean) => void;
+ editorLanguage: EditorLanguage;
 }) {
-  if (!group) return null;
-  const heading = group.headingId ? group.blocks.find((block) => block.id === group.headingId) : undefined;
-  if (group.moduleType === "experience") {
-    if (!heading) return null;
-    const experiences = group.blocks.filter((block) => !isSectionTextBlock(block));
-    return (
-      <ExperienceModuleForm
-        heading={heading}
-        experiences={experiences}
-        onPatchHeading={(patch) => onPatchBlock(heading.id, patch)}
-        onPatchExperience={onPatchExperienceBlock}
-        onReplaceExperiences={(blocks) => onReplaceExperienceEntries(group.id, blocks)}
-        onSetVisibility={(isVisible) => onSetGroupVisibility(group.id, isVisible)}
-        editorLanguage={editorLanguage}
-      />
-    );
-  }
+ if (!group) return null;
+ const heading = group.headingId ? group.blocks.find((block) => block.id === group.headingId) : undefined;
+ if (group.moduleType === "experience") {
+ if (!heading) return null;
+ const experiences = group.blocks.filter((block) => !isSectionTextBlock(block));
+ return (
+ <ExperienceModuleForm
+ heading={heading}
+ experiences={experiences}
+ onPatchHeading={(patch) => onPatchBlock(heading.id, patch)}
+ onPatchExperience={onPatchExperienceBlock}
+ onReplaceExperiences={(blocks) => onReplaceExperienceEntries(group.id, blocks)}
+ onSetVisibility={(isVisible) => onSetGroupVisibility(group.id, isVisible)}
+ editorLanguage={editorLanguage}
+ />
+ );
+ }
 
-  const content = group.blocks.find((block) => getSpecialModuleType(block));
-  if (!content) return null;
+ const content = group.blocks.find((block) => getSpecialModuleType(block));
+ if (!content) return null;
 
-  return (
-    <SpecialModuleForm
-      block={content}
-      heading={heading}
-      onPatch={(patch) => onPatchBlock(content.id, patch)}
-      onPatchHeading={heading ? (patch) => onPatchBlock(heading.id, patch) : undefined}
-      editorLanguage={editorLanguage}
-    />
-  );
+ return (
+ <SpecialModuleForm
+ block={content}
+ heading={heading}
+ onPatch={(patch) => onPatchBlock(content.id, patch)}
+ onPatchHeading={heading ? (patch) => onPatchBlock(heading.id, patch) : undefined}
+ editorLanguage={editorLanguage}
+ />
+ );
 }
 
 function AddBlockDialog({ onAdd, editorLanguage }: { onAdd: (template: BlockTemplate) => void; editorLanguage: EditorLanguage }) {
-  const copy = editorCopy[editorLanguage];
-  return (
-    <div className="grid gap-5">
-      <div className="rounded-xl bg-[#F3F5F9] px-4 py-3 text-sm text-[#7A8190]">
-        {copy.blockTemplatesNote}
-      </div>
-      {blockTemplates.map((group) => (
-        <section key={group.group} className="grid gap-3">
-          <h4 className="font-bold">{getLocalizedTemplateGroup(group.group, editorLanguage)}</h4>
-          <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
-            {group.items.map((item) => (
-              <button key={`${group.group}-${item.label}`} type="button" onClick={() => onAdd(item)} className="grid justify-items-center gap-2 rounded-2xl p-3 text-center hover:bg-[#F8FBFF]">
-                <span className="grid h-12 w-12 place-items-center rounded-xl border border-[#D5D0C4] bg-white text-[#B23C22] [&>svg]:h-6 [&>svg]:w-6">
-                  {item.icon}
-                </span>
-                <span className="text-xs font-medium">{getLocalizedTemplateLabel(item, editorLanguage)}</span>
-              </button>
-            ))}
-          </div>
-        </section>
-      ))}
-    </div>
-  );
+ const copy = editorCopy[editorLanguage];
+ return (
+ <div className="grid gap-5">
+ <div className="rounded-[5px] bg-[#EDE8DB] px-4 py-3 text-sm text-[#6F6A5E]">
+ {copy.blockTemplatesNote}
+ </div>
+ {blockTemplates.map((group) => (
+ <section key={group.group} className="grid gap-3">
+ <h4 className="font-bold">{getLocalizedTemplateGroup(group.group, editorLanguage)}</h4>
+ <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
+ {group.items.map((item) => (
+ <button key={`${group.group}-${item.label}`} type="button" onClick={() => onAdd(item)} className="grid justify-items-center gap-2 rounded-[6px] p-3 text-center hover:bg-[#F4EBE6]">
+ <span className="grid h-12 w-12 place-items-center rounded-[5px] border border-[#DDD6C8] bg-[#FCFAF5] text-[#B23C22] [&>svg]:h-6 [&>svg]:w-6">
+ {item.icon}
+ </span>
+ <span className="text-xs font-medium">{getLocalizedTemplateLabel(item, editorLanguage)}</span>
+ </button>
+ ))}
+ </div>
+ </section>
+ ))}
+ </div>
+ );
 }
 
 function ProjectSettingsForm({
-  config,
-  contentConfig,
-  activeVariantId,
-  activeLocale,
-  onChange,
-  onContentChange,
-  onExport,
-  onImport,
-  editorLanguage,
-  onEditorLanguageChange
+ config,
+ contentConfig,
+ activeVariantId,
+ activeLocale,
+ onChange,
+ onContentChange,
+ onExport,
+ onImport,
+ editorLanguage,
+ onEditorLanguageChange
 }: {
-  config: SiteConfig;
-  contentConfig: SiteConfig;
-  activeVariantId: string;
-  activeLocale: string;
-  onChange: (config: SiteConfig) => void;
-  onContentChange: (config: SiteConfig) => void;
-  onExport: () => void;
-  onImport: (file: File) => Promise<void>;
-  editorLanguage: EditorLanguage;
-  onEditorLanguageChange: (language: string) => void;
+ config: SiteConfig;
+ contentConfig: SiteConfig;
+ activeVariantId: string;
+ activeLocale: string;
+ onChange: (config: SiteConfig) => void;
+ onContentChange: (config: SiteConfig) => void;
+ onExport: () => void;
+ onImport: (file: File) => Promise<void>;
+ editorLanguage: EditorLanguage;
+ onEditorLanguageChange: (language: string) => void;
 }) {
-  const copy = editorCopy[editorLanguage];
-  const theme = contentConfig.theme;
-  const settings = config.settings;
-  const contentSettings = contentConfig.settings;
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [activePanel, setActivePanel] = useState<ProjectSettingsPanel>("basic");
-  const [languageDraft, setLanguageDraft] = useState<{ variantId: string; code: string; label: string } | null>(null);
-  const [collapsedVariantIds, setCollapsedVariantIds] = useState<Set<string>>(() => new Set());
-  const activeVariant = settings.variants.variants.find((variant) => variant.id === activeVariantId);
-  const activeLanguage = getVariantLanguageList(activeVariantId).find((language) => language.code === activeLocale);
+ const copy = editorCopy[editorLanguage];
+ const theme = contentConfig.theme;
+ const settings = config.settings;
+ const contentSettings = contentConfig.settings;
+ const fileInputRef = useRef<HTMLInputElement | null>(null);
+ const [activePanel, setActivePanel] = useState<ProjectSettingsPanel>("basic");
+ const [languageDraft, setLanguageDraft] = useState<{ variantId: string; code: string; label: string } | null>(null);
+ const [collapsedVariantIds, setCollapsedVariantIds] = useState<Set<string>>(() => new Set());
+ const activeVariant = settings.variants.variants.find((variant) => variant.id === activeVariantId);
+ const activeLanguage = getVariantLanguageList(activeVariantId).find((language) => language.code === activeLocale);
 
-  function patchTheme(patch: Partial<SiteConfig["theme"]>) {
-    onContentChange({ ...contentConfig, theme: { ...theme, ...patch } });
-  }
+ function patchTheme(patch: Partial<SiteConfig["theme"]>) {
+ onContentChange({ ...contentConfig, theme: { ...theme, ...patch } });
+ }
 
-  function patchContentSettings(patch: Partial<SiteConfig["settings"]>) {
-    onContentChange({ ...contentConfig, settings: { ...contentSettings, ...patch } });
-  }
+ function patchContentSettings(patch: Partial<SiteConfig["settings"]>) {
+ onContentChange({ ...contentConfig, settings: { ...contentSettings, ...patch } });
+ }
 
-  function patchSettings(patch: Partial<SiteConfig["settings"]>) {
-    onChange({ ...config, settings: { ...settings, ...patch } });
-  }
+ function patchSettings(patch: Partial<SiteConfig["settings"]>) {
+ onChange({ ...config, settings: { ...settings, ...patch } });
+ }
 
-  async function logoutAdmin() {
-    const response = await fetch("/api/admin/logout", { method: "POST" });
-    if (!response.ok) {
-      toast.error("退出登录失败");
-      return;
-    }
-    window.location.href = "/admin/login";
-  }
+ async function logoutAdmin() {
+ const response = await fetch("/api/admin/logout", { method: "POST" });
+ if (!response.ok) {
+ toast.error("退出登录失败");
+ return;
+ }
+ window.location.href = "/admin/login";
+ }
 
-  function updateVariant(id: string, patch: Partial<SiteConfig["settings"]["variants"]["variants"][number]>) {
-    const nextId = patch.id ?? id;
-    onChange({
-      ...config,
-      settings: {
-        ...settings,
-        variants: {
-          ...settings.variants,
-          isEnabled: true,
-          mainVariantId: settings.variants.mainVariantId === id ? nextId : settings.variants.mainVariantId,
-          variants: settings.variants.variants.map((variant) => (variant.id === id ? { ...variant, ...patch, isEnabled: true } : variant))
-        }
-      },
-      contentVariants: nextId === id ? config.contentVariants : renameVariantContentKeys(config.contentVariants ?? {}, id, nextId)
-    });
-  }
+ function updateVariant(id: string, patch: Partial<SiteConfig["settings"]["variants"]["variants"][number]>) {
+ const nextId = patch.id ?? id;
+ onChange({
+ ...config,
+ settings: {
+ ...settings,
+ variants: {
+ ...settings.variants,
+ isEnabled: true,
+ mainVariantId: settings.variants.mainVariantId === id ? nextId : settings.variants.mainVariantId,
+ variants: settings.variants.variants.map((variant) => (variant.id === id ? { ...variant, ...patch, isEnabled: true } : variant))
+ }
+ },
+ contentVariants: nextId === id ? config.contentVariants : renameVariantContentKeys(config.contentVariants ?? {}, id, nextId)
+ });
+ }
 
-  function toggleVariantCollapsed(variantId: string) {
-    setCollapsedVariantIds((current) => {
-      const next = new Set(current);
-      if (next.has(variantId)) {
-        next.delete(variantId);
-      } else {
-        next.add(variantId);
-      }
-      return next;
-    });
-  }
+ function toggleVariantCollapsed(variantId: string) {
+ setCollapsedVariantIds((current) => {
+ const next = new Set(current);
+ if (next.has(variantId)) {
+ next.delete(variantId);
+ } else {
+ next.add(variantId);
+ }
+ return next;
+ });
+ }
 
-  function addVariant() {
-    const nextSortOrder = Math.max(0, ...settings.variants.variants.map((variant) => variant.sortOrder)) + 1;
-    const id = `v${nextSortOrder}`;
-    const mainLanguage = getDefaultVersionLanguageForEditor();
-    const mainLocale = mainLanguage.code;
-    patchSettings({
-      variants: {
-        ...settings.variants,
-        isEnabled: true,
-        variants: [
-          ...settings.variants.variants,
-          {
-            id,
-            name: copy.newVersion,
-            accessCode: id,
-            isEnabled: true,
-            allowSeoIndex: false,
-            sortOrder: nextSortOrder,
-            mainLocale,
-            languages: [{ ...mainLanguage, sortOrder: 1, isEnabled: true }],
-            languageSettings: { [mainLocale]: { isEnabled: true } }
-          }
-        ]
-      }
-    });
-  }
+ function addVariant() {
+ const nextSortOrder = Math.max(0, ...settings.variants.variants.map((variant) => variant.sortOrder)) + 1;
+ const id = `v${nextSortOrder}`;
+ const mainLanguage = getDefaultVersionLanguageForEditor();
+ const mainLocale = mainLanguage.code;
+ patchSettings({
+ variants: {
+ ...settings.variants,
+ isEnabled: true,
+ variants: [
+ ...settings.variants.variants,
+ {
+ id,
+ name: copy.newVersion,
+ accessCode: id,
+ isEnabled: true,
+ allowSeoIndex: false,
+ sortOrder: nextSortOrder,
+ mainLocale,
+ languages: [{ ...mainLanguage, sortOrder: 1, isEnabled: true }],
+ languageSettings: { [mainLocale]: { isEnabled: true } }
+ }
+ ]
+ }
+ });
+ }
 
-  function getDefaultVersionLanguageForEditor() {
-    const preferredLocale = editorLanguage === "en" ? "en" : "zh-CN";
-    const fallbackLocale = getVariantMainLanguageCode(settings.variants.mainVariantId);
-    const mainVariantLanguages = getVariantLanguageList(settings.variants.mainVariantId);
-    const preferredLanguage =
-      mainVariantLanguages.find((language) => language.code === preferredLocale) ??
-      mainVariantLanguages.find((language) => language.code.toLowerCase().startsWith(`${preferredLocale.split("-")[0].toLowerCase()}-`));
-    const languageOption = languageOptions.find((language) => language.code === preferredLocale);
-    const fallbackLanguage = mainVariantLanguages.find((language) => language.code === fallbackLocale);
+ function getDefaultVersionLanguageForEditor() {
+ const preferredLocale = editorLanguage === "en" ? "en" : "zh-CN";
+ const fallbackLocale = getVariantMainLanguageCode(settings.variants.mainVariantId);
+ const mainVariantLanguages = getVariantLanguageList(settings.variants.mainVariantId);
+ const preferredLanguage =
+ mainVariantLanguages.find((language) => language.code === preferredLocale) ??
+ mainVariantLanguages.find((language) => language.code.toLowerCase().startsWith(`${preferredLocale.split("-")[0].toLowerCase()}-`));
+ const languageOption = languageOptions.find((language) => language.code === preferredLocale);
+ const fallbackLanguage = mainVariantLanguages.find((language) => language.code === fallbackLocale);
 
-    return {
-      ...(preferredLanguage ??
-        (languageOption
-          ? { code: languageOption.code, label: languageOption.defaultNote, isEnabled: true, sortOrder: 1 }
-          : fallbackLanguage ?? { code: fallbackLocale, label: fallbackLocale, isEnabled: true, sortOrder: 1 })),
-      isEnabled: true,
-      sortOrder: 1
-    };
-  }
+ return {
+ ...(preferredLanguage ??
+ (languageOption
+ ? { code: languageOption.code, label: languageOption.defaultNote, isEnabled: true, sortOrder: 1 }
+ : fallbackLanguage ?? { code: fallbackLocale, label: fallbackLocale, isEnabled: true, sortOrder: 1 })),
+ isEnabled: true,
+ sortOrder: 1
+ };
+ }
 
-  function removeVariant(id: string) {
-    const nextVariants = settings.variants.variants.filter((variant) => variant.id !== id);
-    onChange({
-      ...config,
-      settings: {
-        ...settings,
-        variants: {
-          ...settings.variants,
-          mainVariantId: settings.variants.mainVariantId === id ? nextVariants[0]?.id ?? "main" : settings.variants.mainVariantId,
-          variants: nextVariants.length ? normalizeSortOrder(nextVariants) : settings.variants.variants
-        }
-      },
-      contentVariants: removeVariantContentKeys(config.contentVariants ?? {}, id)
-    });
-  }
+ function removeVariant(id: string) {
+ const nextVariants = settings.variants.variants.filter((variant) => variant.id !== id);
+ onChange({
+ ...config,
+ settings: {
+ ...settings,
+ variants: {
+ ...settings.variants,
+ mainVariantId: settings.variants.mainVariantId === id ? nextVariants[0]?.id ?? "main" : settings.variants.mainVariantId,
+ variants: nextVariants.length ? normalizeSortOrder(nextVariants) : settings.variants.variants
+ }
+ },
+ contentVariants: removeVariantContentKeys(config.contentVariants ?? {}, id)
+ });
+ }
 
-  function setVariantLanguage(variantId: string, locale: string, isEnabled: boolean) {
-    const key = getContentVariantKey(variantId, locale);
-    const variantMainLocale = getVariantMainLanguageCode(variantId);
-    const nextContentVariants = { ...(config.contentVariants ?? {}) };
-    if (isEnabled && locale !== variantMainLocale && !nextContentVariants[key]) {
-      nextContentVariants[key] = getSiteContentSnapshot(materializeSiteConfig(config, variantId, variantMainLocale));
-    }
-    onChange({
-      ...config,
-      settings: {
-        ...settings,
-        languages: {
-          ...settings.languages,
-          isEnabled: settings.languages.isEnabled || isEnabled
-        },
-        variants: {
-          ...settings.variants,
-          variants: settings.variants.variants.map((variant) =>
-            variant.id === variantId
-              ? {
-                  ...variant,
-                  languageSettings: {
-                    ...variant.languageSettings,
-                    [locale]: { isEnabled }
-                  },
-                  languages: ensureVariantLanguages(variant).map((language) =>
-                    language.code === locale ? { ...language, isEnabled: locale === variantMainLocale ? true : isEnabled } : language
-                  )
-                }
-              : variant
-          )
-        }
-      },
-      contentVariants: nextContentVariants
-    });
-  }
+ function setVariantLanguage(variantId: string, locale: string, isEnabled: boolean) {
+ const key = getContentVariantKey(variantId, locale);
+ const variantMainLocale = getVariantMainLanguageCode(variantId);
+ const nextContentVariants = { ...(config.contentVariants ?? {}) };
+ if (isEnabled && locale !== variantMainLocale && !nextContentVariants[key]) {
+ nextContentVariants[key] = getSiteContentSnapshot(materializeSiteConfig(config, variantId, variantMainLocale));
+ }
+ onChange({
+ ...config,
+ settings: {
+ ...settings,
+ languages: {
+ ...settings.languages,
+ isEnabled: settings.languages.isEnabled || isEnabled
+ },
+ variants: {
+ ...settings.variants,
+ variants: settings.variants.variants.map((variant) =>
+ variant.id === variantId
+ ? {
+ ...variant,
+ languageSettings: {
+ ...variant.languageSettings,
+ [locale]: { isEnabled }
+ },
+ languages: ensureVariantLanguages(variant).map((language) =>
+ language.code === locale ? { ...language, isEnabled: locale === variantMainLocale ? true : isEnabled } : language
+ )
+ }
+ : variant
+ )
+ }
+ },
+ contentVariants: nextContentVariants
+ });
+ }
 
-  function openAddVariantLanguage(variantId: string) {
-    const variantLanguages = getVariantLanguageList(variantId);
-    const existingCodes = new Set(variantLanguages.map((language) => language.code));
-    const preferredCode = editorLanguage === "en" ? "en" : "zh-CN";
-    const option =
-      languageOptions.find((language) => language.code === preferredCode && !existingCodes.has(language.code)) ??
-      languageOptions.find((language) => !existingCodes.has(language.code)) ??
-      languageOptions[0];
-    setLanguageDraft({ variantId, code: option.code, label: option.defaultNote });
-  }
+ function openAddVariantLanguage(variantId: string) {
+ const variantLanguages = getVariantLanguageList(variantId);
+ const existingCodes = new Set(variantLanguages.map((language) => language.code));
+ const preferredCode = editorLanguage === "en" ? "en" : "zh-CN";
+ const option =
+ languageOptions.find((language) => language.code === preferredCode && !existingCodes.has(language.code)) ??
+ languageOptions.find((language) => !existingCodes.has(language.code)) ??
+ languageOptions[0];
+ setLanguageDraft({ variantId, code: option.code, label: option.defaultNote });
+ }
 
-  function addVariantLanguage(variantId: string, code: string, label: string) {
-    const normalizedCode = code.trim();
-    const normalizedLabel = label.trim();
-    if (!normalizedCode || !normalizedLabel) return;
-    const variantLanguages = getVariantLanguageList(variantId);
-    if (variantLanguages.some((language) => language.code === normalizedCode)) return;
-    const nextSortOrder = Math.max(0, ...variantLanguages.map((language) => language.sortOrder)) + 1;
-    const nextLanguage: SiteLanguage = { code: normalizedCode, label: normalizedLabel, isEnabled: true, sortOrder: nextSortOrder };
-    const sourceConfig = materializeSiteConfig(config, variantId, getVariantMainLanguageCode(variantId));
-    onChange({
-      ...config,
-      settings: {
-        ...settings,
-        languages: {
-          ...settings.languages,
-          isEnabled: true
-        },
-        variants: {
-          ...settings.variants,
-          variants: settings.variants.variants.map((variant) =>
-            variant.id === variantId
-              ? {
-                  ...variant,
-                  languages: [...ensureVariantLanguages(variant), nextLanguage],
-                  languageSettings: {
-                    ...variant.languageSettings,
-                    [normalizedCode]: { isEnabled: true }
-                  }
-                }
-              : variant
-          )
-        }
-      },
-      contentVariants: {
-        ...(config.contentVariants ?? {}),
-        [getContentVariantKey(variantId, normalizedCode)]: getSiteContentSnapshot(sourceConfig)
-      }
-    });
-    setLanguageDraft(null);
-  }
+ function addVariantLanguage(variantId: string, code: string, label: string) {
+ const normalizedCode = code.trim();
+ const normalizedLabel = label.trim();
+ if (!normalizedCode || !normalizedLabel) return;
+ const variantLanguages = getVariantLanguageList(variantId);
+ if (variantLanguages.some((language) => language.code === normalizedCode)) return;
+ const nextSortOrder = Math.max(0, ...variantLanguages.map((language) => language.sortOrder)) + 1;
+ const nextLanguage: SiteLanguage = { code: normalizedCode, label: normalizedLabel, isEnabled: true, sortOrder: nextSortOrder };
+ const sourceConfig = materializeSiteConfig(config, variantId, getVariantMainLanguageCode(variantId));
+ onChange({
+ ...config,
+ settings: {
+ ...settings,
+ languages: {
+ ...settings.languages,
+ isEnabled: true
+ },
+ variants: {
+ ...settings.variants,
+ variants: settings.variants.variants.map((variant) =>
+ variant.id === variantId
+ ? {
+ ...variant,
+ languages: [...ensureVariantLanguages(variant), nextLanguage],
+ languageSettings: {
+ ...variant.languageSettings,
+ [normalizedCode]: { isEnabled: true }
+ }
+ }
+ : variant
+ )
+ }
+ },
+ contentVariants: {
+ ...(config.contentVariants ?? {}),
+ [getContentVariantKey(variantId, normalizedCode)]: getSiteContentSnapshot(sourceConfig)
+ }
+ });
+ setLanguageDraft(null);
+ }
 
-  function updateVariantLanguageLabel(variantId: string, code: string, label: string) {
-    if (!label.trim()) return;
-    onChange({
-      ...config,
-      settings: {
-        ...settings,
-        variants: {
-          ...settings.variants,
-          variants: settings.variants.variants.map((variant) =>
-            variant.id === variantId
-              ? {
-                  ...variant,
-                  languages: ensureVariantLanguages(variant).map((language) =>
-                    language.code === code ? { ...language, label } : language
-                  )
-                }
-              : variant
-          )
-        }
-      }
-    });
-  }
+ function updateVariantLanguageLabel(variantId: string, code: string, label: string) {
+ if (!label.trim()) return;
+ onChange({
+ ...config,
+ settings: {
+ ...settings,
+ variants: {
+ ...settings.variants,
+ variants: settings.variants.variants.map((variant) =>
+ variant.id === variantId
+ ? {
+ ...variant,
+ languages: ensureVariantLanguages(variant).map((language) =>
+ language.code === code ? { ...language, label } : language
+ )
+ }
+ : variant
+ )
+ }
+ }
+ });
+ }
 
-  function removeVariantLanguage(variantId: string, locale: string) {
-    if (locale === getVariantMainLanguageCode(variantId)) return;
-    const language = getVariantLanguageList(variantId).find((item) => item.code === locale);
-    const confirmation = window.prompt(copy.removeLanguagePrompt.replace("{language}", language?.label || locale));
-    if (confirmation !== copy.deleteLanguageConfirmText) return;
-    const nextContentVariants = { ...(config.contentVariants ?? {}) };
-    delete nextContentVariants[getContentVariantKey(variantId, locale)];
-    onChange({
-      ...config,
-      settings: {
-        ...settings,
-        variants: {
-          ...settings.variants,
-          variants: settings.variants.variants.map((variant) => {
-            if (variant.id !== variantId) return variant;
-            const nextLanguageSettings = { ...variant.languageSettings };
-            delete nextLanguageSettings[locale];
-            return {
-              ...variant,
-              languages: ensureVariantLanguages(variant).filter((language) => language.code !== locale),
-              languageSettings: nextLanguageSettings
-            };
-          })
-        }
-      },
-      contentVariants: nextContentVariants
-    });
-  }
+ function removeVariantLanguage(variantId: string, locale: string) {
+ if (locale === getVariantMainLanguageCode(variantId)) return;
+ const language = getVariantLanguageList(variantId).find((item) => item.code === locale);
+ const confirmation = window.prompt(copy.removeLanguagePrompt.replace("{language}", language?.label || locale));
+ if (confirmation !== copy.deleteLanguageConfirmText) return;
+ const nextContentVariants = { ...(config.contentVariants ?? {}) };
+ delete nextContentVariants[getContentVariantKey(variantId, locale)];
+ onChange({
+ ...config,
+ settings: {
+ ...settings,
+ variants: {
+ ...settings.variants,
+ variants: settings.variants.variants.map((variant) => {
+ if (variant.id !== variantId) return variant;
+ const nextLanguageSettings = { ...variant.languageSettings };
+ delete nextLanguageSettings[locale];
+ return {
+ ...variant,
+ languages: ensureVariantLanguages(variant).filter((language) => language.code !== locale),
+ languageSettings: nextLanguageSettings
+ };
+ })
+ }
+ },
+ contentVariants: nextContentVariants
+ });
+ }
 
-  function setVariantMainLanguage(variantId: string, locale: string) {
-    const language = getVariantLanguageList(variantId).find((item) => item.code === locale);
-    const message =
-      editorLanguage === "zh-CN"
-        ? `把「${language?.label || locale}」设为这个版本的主语言？`
-        : `Set "${language?.label || locale}" as the main language for this version?`;
-    if (!window.confirm(message)) return;
-    applyVariantMainLanguage(variantId, locale);
-  }
+ function setVariantMainLanguage(variantId: string, locale: string) {
+ const language = getVariantLanguageList(variantId).find((item) => item.code === locale);
+ const message =
+ editorLanguage === "zh-CN"
+ ? `把「${language?.label || locale}」设为这个版本的主语言？`
+ : `Set "${language?.label || locale}" as the main language for this version?`;
+ if (!window.confirm(message)) return;
+ applyVariantMainLanguage(variantId, locale);
+ }
 
-  function applyVariantMainLanguage(variantId: string, locale: string) {
-    const key = getContentVariantKey(variantId, locale);
-    const currentMainLocale = getVariantMainLanguageCode(variantId);
-    const nextContentVariants = { ...(config.contentVariants ?? {}) };
-    if (locale !== currentMainLocale && !nextContentVariants[key]) {
-      nextContentVariants[key] = getSiteContentSnapshot(materializeSiteConfig(config, variantId, currentMainLocale));
-    }
-    onChange({
-      ...config,
-      settings: {
-        ...settings,
-        languages: {
-          ...settings.languages,
-          mainLocale: variantId === settings.variants.mainVariantId ? locale : settings.languages.mainLocale,
-          isEnabled: settings.languages.isEnabled || locale !== settings.languages.mainLocale,
-          languages:
-            variantId === settings.variants.mainVariantId
-              ? getVariantLanguageList(variantId).map((language) => (language.code === locale ? { ...language, isEnabled: true } : language))
-              : settings.languages.languages
-        },
-        variants: {
-          ...settings.variants,
-          variants: settings.variants.variants.map((variant) =>
-            variant.id === variantId
-              ? {
-                  ...variant,
-                  mainLocale: locale,
-                  languages: ensureVariantLanguages(variant).map((language) =>
-                    language.code === locale ? { ...language, isEnabled: true } : language
-                  ),
-                  languageSettings: {
-                    ...variant.languageSettings,
-                    [locale]: { isEnabled: true }
-                  }
-                }
-              : variant
-          )
-        }
-      },
-      contentVariants: nextContentVariants
-    });
-  }
+ function applyVariantMainLanguage(variantId: string, locale: string) {
+ const key = getContentVariantKey(variantId, locale);
+ const currentMainLocale = getVariantMainLanguageCode(variantId);
+ const nextContentVariants = { ...(config.contentVariants ?? {}) };
+ if (locale !== currentMainLocale && !nextContentVariants[key]) {
+ nextContentVariants[key] = getSiteContentSnapshot(materializeSiteConfig(config, variantId, currentMainLocale));
+ }
+ onChange({
+ ...config,
+ settings: {
+ ...settings,
+ languages: {
+ ...settings.languages,
+ mainLocale: variantId === settings.variants.mainVariantId ? locale : settings.languages.mainLocale,
+ isEnabled: settings.languages.isEnabled || locale !== settings.languages.mainLocale,
+ languages:
+ variantId === settings.variants.mainVariantId
+ ? getVariantLanguageList(variantId).map((language) => (language.code === locale ? { ...language, isEnabled: true } : language))
+ : settings.languages.languages
+ },
+ variants: {
+ ...settings.variants,
+ variants: settings.variants.variants.map((variant) =>
+ variant.id === variantId
+ ? {
+ ...variant,
+ mainLocale: locale,
+ languages: ensureVariantLanguages(variant).map((language) =>
+ language.code === locale ? { ...language, isEnabled: true } : language
+ ),
+ languageSettings: {
+ ...variant.languageSettings,
+ [locale]: { isEnabled: true }
+ }
+ }
+ : variant
+ )
+ }
+ },
+ contentVariants: nextContentVariants
+ });
+ }
 
-  function getLanguageIsEnabledForVariant(variantId: string, locale: string) {
-    if (locale === getVariantMainLanguageCode(variantId)) return true;
-    const variant = settings.variants.variants.find((item) => item.id === variantId);
-    const state = variant?.languageSettings?.[locale];
-    if (state) return state.isEnabled;
-    return Boolean(config.contentVariants?.[getContentVariantKey(variantId, locale)]);
-  }
+ function getLanguageIsEnabledForVariant(variantId: string, locale: string) {
+ if (locale === getVariantMainLanguageCode(variantId)) return true;
+ const variant = settings.variants.variants.find((item) => item.id === variantId);
+ const state = variant?.languageSettings?.[locale];
+ if (state) return state.isEnabled;
+ return Boolean(config.contentVariants?.[getContentVariantKey(variantId, locale)]);
+ }
 
-  function getVariantLanguageList(variantId: string) {
-    return getVariantLanguages(config, variantId);
-  }
+ function getVariantLanguageList(variantId: string) {
+ return getVariantLanguages(config, variantId);
+ }
 
-  function ensureVariantLanguages(variant: SiteConfig["settings"]["variants"]["variants"][number]) {
-    return variant.languages?.length ? [...variant.languages].sort(bySortOrder) : getVariantLanguageList(variant.id);
-  }
+ function ensureVariantLanguages(variant: SiteConfig["settings"]["variants"]["variants"][number]) {
+ return variant.languages?.length ? [...variant.languages].sort(bySortOrder) : getVariantLanguageList(variant.id);
+ }
 
-  function getVariantMainLanguageCode(variantId: string) {
-    return getVariantMainLocale(config, variantId);
-  }
+ function getVariantMainLanguageCode(variantId: string) {
+ return getVariantMainLocale(config, variantId);
+ }
 
-  function getVariantAccessCodeError(variantId: string, accessCode: string) {
-    const normalized = accessCode.trim().toLowerCase();
-    if (!normalized) return "";
-    if (!/^[a-z0-9-]+$/.test(normalized)) return copy.deleteAccessCodeInvalid;
-    if (reservedVariantAccessCodes.has(normalized)) return copy.reservedAccessCode.replace("{path}", normalized);
-    const isDuplicate = settings.variants.variants.some(
-      (variant) => variant.id !== variantId && variant.accessCode.trim().toLowerCase() === normalized
-    );
-    return isDuplicate ? copy.duplicateAccessCode : "";
-  }
+ function getVariantAccessCodeError(variantId: string, accessCode: string) {
+ const normalized = accessCode.trim().toLowerCase();
+ if (!normalized) return "";
+ if (!/^[a-z0-9-]+$/.test(normalized)) return copy.deleteAccessCodeInvalid;
+ if (reservedVariantAccessCodes.has(normalized)) return copy.reservedAccessCode.replace("{path}", normalized);
+ const isDuplicate = settings.variants.variants.some(
+ (variant) => variant.id !== variantId && variant.accessCode.trim().toLowerCase() === normalized
+ );
+ return isDuplicate ? copy.duplicateAccessCode : "";
+ }
 
-  const panels: { id: ProjectSettingsPanel; label: string; description: string }[] = [
-    { id: "basic", label: copy.settingsBasicTitle, description: copy.settingsBasicDescription },
-    { id: "web", label: copy.settingsWebTitle, description: copy.settingsWebDescription },
-    { id: "seo", label: copy.seoPanel, description: copy.seoPanelDescription },
-    { id: "audiences", label: copy.audiencesPanel, description: copy.audiencesPanelDescription },
-    { id: "appearance", label: copy.appearancePanel, description: copy.appearancePanelDescription },
-    { id: "config", label: copy.configPanel, description: copy.configPanelDescription }
-  ];
+ const panels: { id: ProjectSettingsPanel; label: string; description: string }[] = [
+ { id: "basic", label: copy.settingsBasicTitle, description: copy.settingsBasicDescription },
+ { id: "web", label: copy.settingsWebTitle, description: copy.settingsWebDescription },
+ { id: "seo", label: copy.seoPanel, description: copy.seoPanelDescription },
+ { id: "audiences", label: copy.audiencesPanel, description: copy.audiencesPanelDescription },
+ { id: "appearance", label: copy.appearancePanel, description: copy.appearancePanelDescription },
+ { id: "config", label: copy.configPanel, description: copy.configPanelDescription }
+ ];
 
-  return (
-    <div className="grid gap-5 text-[#333] md:grid-cols-[190px_minmax(0,1fr)]">
-      <aside className="grid content-start gap-1 border-b border-[#EEF2F7] pb-3 md:border-b-0 md:border-r md:pb-0 md:pr-3">
-        {panels.map((panel) => (
-          <button
-            key={panel.id}
-            type="button"
-            onClick={() => setActivePanel(panel.id)}
-            className={cn(
-              "grid gap-0.5 rounded-xl border px-3 py-2 text-left transition",
-              activePanel === panel.id
-                ? "border-[#E3CFC5] bg-[#F4EBE6] text-[#176B39]"
-                : "border-transparent text-[#475569] hover:bg-[#F8FAFC] hover:text-[#111]"
-            )}
-          >
-            <span className="text-sm font-semibold">{panel.label}</span>
-            <span className={cn("text-xs", activePanel === panel.id ? "text-[#5B7896]" : "text-[#94A3B8]")}>{panel.description}</span>
-          </button>
-        ))}
-      </aside>
+ return (
+ <div className="grid gap-5 text-[#201D18] md:grid-cols-[190px_minmax(0,1fr)]">
+ <aside className="grid content-start gap-1 border-b border-[#EDE8DB] pb-3 md:border-b-0 md:border-r md:pb-0 md:pr-3">
+ {panels.map((panel) => (
+ <button
+ key={panel.id}
+ type="button"
+ onClick={() => setActivePanel(panel.id)}
+ className={cn(
+ "grid gap-0.5 rounded-[5px] border px-3 py-2 text-left transition",
+ activePanel === panel.id
+ ? "border-[#E3CFC5] bg-[#F4EBE6] text-[#7E2A16]"
+ : "border-transparent text-[#6F6A5E] hover:bg-[#F6F3EC] hover:text-[#201D18]"
+ )}
+ >
+ <span className="text-sm font-semibold">{panel.label}</span>
+ <span className={cn("text-xs", activePanel === panel.id ? "text-[#6F6A5E]" : "text-[#A39C8D]")}>{panel.description}</span>
+ </button>
+ ))}
+ </aside>
 
-      <div className="min-w-0">
-        {activePanel === "basic" ? (
-          <section className="grid gap-4">
-            <Field label={copy.projectName}>
-              <Input value={settings.projectName} onChange={(event) => patchSettings({ projectName: event.target.value })} />
-            </Field>
-            <Field label={copy.editorLanguage}>
-              <div className="grid gap-1.5">
-                <Select value={editorLanguage} onChange={(event) => onEditorLanguageChange(event.target.value)}>
-                  {editorLanguageOptions.map((language) => (
-                    <option key={language.code} value={language.code}>
-                      {language.label}
-                    </option>
-                  ))}
-                </Select>
-                <p className="text-xs font-normal text-[#64748B]">{copy.editorLanguageHelp}</p>
-              </div>
-            </Field>
-            <div className="rounded-xl border border-red-100 bg-red-50/60 p-3">
-              <Button type="button" variant="ghost" size="sm" onClick={logoutAdmin} className="text-red-600 hover:bg-red-100 hover:text-red-700">
-                <LogOut className="h-4 w-4" />
-                {editorLanguage === "zh-CN" ? "退出登录管理端" : "Log Out of Admin"}
-              </Button>
-            </div>
-          </section>
-        ) : null}
+ <div className="min-w-0">
+ {activePanel === "basic" ? (
+ <section className="grid gap-4">
+ <Field label={copy.projectName}>
+ <Input value={settings.projectName} onChange={(event) => patchSettings({ projectName: event.target.value })} />
+ </Field>
+ <Field label={copy.editorLanguage}>
+ <div className="grid gap-1.5">
+ <Select value={editorLanguage} onChange={(event) => onEditorLanguageChange(event.target.value)}>
+ {editorLanguageOptions.map((language) => (
+ <option key={language.code} value={language.code}>
+ {language.label}
+ </option>
+ ))}
+ </Select>
+ <p className="text-xs font-normal text-[#6F6A5E]">{copy.editorLanguageHelp}</p>
+ </div>
+ </Field>
+ <div className="rounded-[5px] border border-red-100 bg-red-50/60 p-3">
+ <Button type="button" variant="ghost" size="sm" onClick={logoutAdmin} className="text-red-600 hover:bg-red-100 hover:text-red-700">
+ <LogOut className="h-4 w-4" />
+ {editorLanguage === "zh-CN" ? "退出登录管理端" : "Log Out of Admin"}
+ </Button>
+ </div>
+ </section>
+ ) : null}
 
-        {activePanel === "web" ? (
-          <section className="grid gap-3">
-            <ScopeBadges variantName={activeVariant?.name || activeVariantId} languageName={activeLanguage?.label || activeLocale} editorLanguage={editorLanguage} />
-            <div className="grid gap-3 md:grid-cols-2">
-              <Field label={copy.siteTitle}>
-                <Input
-                  value={contentSettings.seoTitle || contentSettings.siteTitle}
-                  onChange={(event) => patchContentSettings({ siteTitle: event.target.value, seoTitle: event.target.value })}
-                />
-              </Field>
-              <Field label={copy.publicSiteUrl}>
-                <Input
-                  value={settings.siteUrl}
-                  placeholder="https://example.com"
-                  onChange={(event) => patchSettings({ siteUrl: event.target.value })}
-                />
-              </Field>
-              <Field label={copy.siteDescription} className="md:col-span-2">
-                <Textarea
-                  value={contentSettings.seoDescription || contentSettings.siteDescription}
-                  onChange={(event) => patchContentSettings({ siteDescription: event.target.value, seoDescription: event.target.value })}
-                  className="min-h-24"
-                />
-              </Field>
-            </div>
-          </section>
-        ) : null}
+ {activePanel === "web" ? (
+ <section className="grid gap-3">
+ <ScopeBadges variantName={activeVariant?.name || activeVariantId} languageName={activeLanguage?.label || activeLocale} editorLanguage={editorLanguage} />
+ <div className="grid gap-3 md:grid-cols-2">
+ <Field label={copy.siteTitle}>
+ <Input
+ value={contentSettings.seoTitle || contentSettings.siteTitle}
+ onChange={(event) => patchContentSettings({ siteTitle: event.target.value, seoTitle: event.target.value })}
+ />
+ </Field>
+ <Field label={copy.publicSiteUrl}>
+ <Input
+ value={settings.siteUrl}
+ placeholder="https://example.com"
+ onChange={(event) => patchSettings({ siteUrl: event.target.value })}
+ />
+ </Field>
+ <Field label={copy.siteDescription} className="md:col-span-2">
+ <Textarea
+ value={contentSettings.seoDescription || contentSettings.siteDescription}
+ onChange={(event) => patchContentSettings({ siteDescription: event.target.value, seoDescription: event.target.value })}
+ className="min-h-24"
+ />
+ </Field>
+ </div>
+ </section>
+ ) : null}
 
-        {activePanel === "seo" ? (
-          <section className="grid gap-3">
-            <ScopeBadges variantName={activeVariant?.name || activeVariantId} languageName={activeLanguage?.label || activeLocale} editorLanguage={editorLanguage} />
-            <div className="grid gap-3 md:grid-cols-2">
-              <Field label="Canonical URL">
-                <Input
-                  value={contentSettings.seoCanonicalUrl ?? ""}
-                  placeholder={settings.siteUrl}
-                  onChange={(event) => patchContentSettings({ seoCanonicalUrl: event.target.value })}
-                />
-              </Field>
-              <Field label={copy.openGraphImage}>
-                <Input value={contentSettings.seoOgImage ?? ""} onChange={(event) => patchContentSettings({ seoOgImage: event.target.value })} />
-              </Field>
-            </div>
-          </section>
-        ) : null}
+ {activePanel === "seo" ? (
+ <section className="grid gap-3">
+ <ScopeBadges variantName={activeVariant?.name || activeVariantId} languageName={activeLanguage?.label || activeLocale} editorLanguage={editorLanguage} />
+ <div className="grid gap-3 md:grid-cols-2">
+ <Field label="Canonical URL">
+ <Input
+ value={contentSettings.seoCanonicalUrl ?? ""}
+ placeholder={settings.siteUrl}
+ onChange={(event) => patchContentSettings({ seoCanonicalUrl: event.target.value })}
+ />
+ </Field>
+ <Field label={copy.openGraphImage}>
+ <Input value={contentSettings.seoOgImage ?? ""} onChange={(event) => patchContentSettings({ seoOgImage: event.target.value })} />
+ </Field>
+ </div>
+ </section>
+ ) : null}
 
-        {activePanel === "audiences" ? (
-          <section className="grid gap-4">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="mt-1 text-sm text-[#64748B]">{copy.variantsHelp}</p>
-              </div>
-              <Button type="button" variant="secondary" size="sm" onClick={addVariant}>
-                <Plus className="h-4 w-4" />
-                {copy.addVersion}
-              </Button>
-            </div>
+ {activePanel === "audiences" ? (
+ <section className="grid gap-4">
+ <div className="flex items-center justify-between gap-3">
+ <div>
+ <p className="mt-1 text-sm text-[#6F6A5E]">{copy.variantsHelp}</p>
+ </div>
+ <Button type="button" variant="secondary" size="sm" onClick={addVariant}>
+ <Plus className="h-4 w-4" />
+ {copy.addVersion}
+ </Button>
+ </div>
 
-            <div className="grid gap-3 rounded-xl border border-[#EAEAEA] bg-[#FAFAFA] p-3">
-              <div className="grid gap-3 md:grid-cols-2">
-                <Field label={copy.mainVersion}>
-                  <Select
-                    value={settings.variants.mainVariantId}
-                    onChange={(event) => patchSettings({ variants: { ...settings.variants, mainVariantId: event.target.value } })}
-                  >
-                    {settings.variants.variants.map((variant) => (
-                      <option key={variant.id} value={variant.id}>
-                        {variant.name}
-                      </option>
-                    ))}
-                  </Select>
-                </Field>
-                <Field label={copy.mainLanguage}>
-                  <Select
-                    value={getVariantMainLanguageCode(settings.variants.mainVariantId)}
-                    onChange={(event) => applyVariantMainLanguage(settings.variants.mainVariantId, event.target.value)}
-                  >
-                    {getVariantLanguageList(settings.variants.mainVariantId)
-                      .sort(bySortOrder)
-                      .map((language) => (
-                        <option key={language.code} value={language.code}>
-                          {language.label}
-                        </option>
-                      ))}
-                  </Select>
-                </Field>
-              </div>
-            </div>
+ <div className="grid gap-3 rounded-[5px] border border-[#DDD6C8] bg-[#FCFAF5] p-3">
+ <div className="grid gap-3 md:grid-cols-2">
+ <Field label={copy.mainVersion}>
+ <Select
+ value={settings.variants.mainVariantId}
+ onChange={(event) => patchSettings({ variants: { ...settings.variants, mainVariantId: event.target.value } })}
+ >
+ {settings.variants.variants.map((variant) => (
+ <option key={variant.id} value={variant.id}>
+ {variant.name}
+ </option>
+ ))}
+ </Select>
+ </Field>
+ <Field label={copy.mainLanguage}>
+ <Select
+ value={getVariantMainLanguageCode(settings.variants.mainVariantId)}
+ onChange={(event) => applyVariantMainLanguage(settings.variants.mainVariantId, event.target.value)}
+ >
+ {getVariantLanguageList(settings.variants.mainVariantId)
+ .sort(bySortOrder)
+ .map((language) => (
+ <option key={language.code} value={language.code}>
+ {language.label}
+ </option>
+ ))}
+ </Select>
+ </Field>
+ </div>
+ </div>
 
-            <div className="grid gap-3">
-              {[...settings.variants.variants].sort(bySortOrder).map((variant) => {
-                const accessCodeError = getVariantAccessCodeError(variant.id, variant.accessCode);
-                const isCollapsed = collapsedVariantIds.has(variant.id);
-                const allowSeoIndex = getVariantAllowSeoIndex(config, variant.id);
-                return (
-                  <div key={variant.id} className="grid rounded-xl border border-[#EAEAEA] p-3">
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => toggleVariantCollapsed(variant.id)}
-                        className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#F8F6EF] text-[#64748B] transition hover:bg-[#F4EBE6] hover:text-[#176B39]"
-                        aria-label={isCollapsed ? copy.variantExpand : copy.variantCollapse}
-                      >
-                        <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", !isCollapsed && "rotate-180")} />
-                      </button>
-                      <div className="grid min-w-0 flex-1 gap-0.5">
-                        <p className="truncate text-sm font-semibold text-[#111]">{variant.name || copy.newVersion}</p>
-                        <p className="truncate text-xs text-[#64748B]">
-                          {copy.variantSummaryAccessCode}: {variant.accessCode.trim() ? `/${variant.accessCode.trim()}` : copy.variantAccessCodeEmpty} · SEO:{" "}
-                          {allowSeoIndex ? copy.seoAllowed : copy.noSeoIndex}
-                        </p>
-                      </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeVariant(variant.id)}
-                        disabled={settings.variants.variants.length <= 1}
-                        className="ml-auto text-red-600 hover:bg-red-50 hover:text-red-700 disabled:text-[#CBD5E1] disabled:hover:bg-transparent"
-                      >
-                        {copy.delete}
-                      </Button>
-                    </div>
-                    <div className={cn("grid transition-[grid-template-rows] duration-200 ease-out", isCollapsed ? "grid-rows-[0fr]" : "grid-rows-[1fr]")}>
-                      <div className="min-h-0 overflow-hidden">
-                        <div className="mt-3 grid gap-3 border-t border-[#EEF2F7] pt-3">
-                          <div className="grid gap-2 md:grid-cols-[1fr_0.8fr]">
-                            <div className="grid gap-1.5">
-                              <Field
-                                label={
-                                  <>
-                                    {copy.variantName} <span className="text-xs font-normal text-[#94A3B8]">{copy.variantNameHelp}</span>
-                                  </>
-                                }
-                              >
-                                <Input value={variant.name} onChange={(event) => updateVariant(variant.id, { name: event.target.value })} />
-                              </Field>
-                            </div>
-                            <div className="grid gap-1.5">
-                              <Field label={copy.variantAccessCode}>
-                                <Input
-                                  value={variant.accessCode}
-                                  placeholder={variant.id === settings.variants.mainVariantId ? copy.variantAccessCodeEmpty : variant.id}
-                                  onChange={(event) => updateVariant(variant.id, { accessCode: event.target.value })}
-                                  className={cn(accessCodeError && "border-red-300 bg-red-50/60 text-red-700 focus:border-red-400 focus:ring-red-100")}
-                                />
-                              </Field>
-                              {accessCodeError ? <p className="text-xs text-red-600">{accessCodeError}</p> : null}
-                            </div>
-                          </div>
-                          <label className="flex w-fit items-center gap-2 rounded-xl border border-[#EAEAEA] bg-[#FAFAFA] px-3 py-2 text-sm text-[#475569]">
-                            <Checkbox
-                              checked={allowSeoIndex}
-                              onChange={(event) => updateVariant(variant.id, { allowSeoIndex: event.target.checked })}
-                            />
-                            {copy.allowSeoIndex}
-                          </label>
-                          <div className="grid gap-2">
-                            <div className="flex items-center justify-between gap-3">
-                              <p className="text-xs font-semibold text-[#64748B]">{copy.variantLanguageList}</p>
-                              <Button type="button" variant="secondary" size="sm" onClick={() => openAddVariantLanguage(variant.id)} className="h-8 px-2">
-                                <Plus className="h-4 w-4" />
-                              </Button>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                              {getVariantLanguageList(variant.id)
-                                .sort(bySortOrder)
-                                .map((language) => {
-                                  const isMainLocale = language.code === getVariantMainLanguageCode(variant.id);
-                                  const isEnabled = getLanguageIsEnabledForVariant(variant.id, language.code);
-                                  return (
-                                    <div
-                                      key={`${variant.id}:${language.code}`}
-                                      className={cn(
-                                        "inline-flex w-fit max-w-full items-center gap-2 rounded-full border px-3 py-1.5 text-xs",
-                                        isEnabled ? "border-[#E3CFC5] bg-[#F4EBE6] text-[#176B39]" : "border-[#D5D0C4] bg-[#F8F6EF] text-[#64748B]"
-                                      )}
-                                    >
-                                      <Checkbox
-                                        checked={isEnabled}
-                                        disabled={isMainLocale}
-                                        onChange={(event) => setVariantLanguage(variant.id, language.code, event.target.checked)}
-                                      />
-                                      <Input
-                                        value={language.label}
-                                        onChange={(event) => updateVariantLanguageLabel(variant.id, language.code, event.target.value)}
-                                        className="h-7 min-w-[56px] max-w-[180px] border-transparent bg-transparent px-1 py-0 text-xs"
-                                        style={{ width: `${Math.max(5, Math.min(18, language.label.length + 1))}ch` }}
-                                      />
-                                      <span className="select-none rounded-full bg-white/80 px-2 py-0.5 text-[11px] font-semibold text-[#64748B]">
-                                        {language.code}
-                                      </span>
-                                      {isMainLocale ? <span className="rounded-full bg-white px-2 py-0.5 text-[11px] text-[#176B39]">{copy.mainLanguage}</span> : null}
-                                      {!isMainLocale ? (
-                                        <button
-                                          type="button"
-                                          onClick={() => setVariantMainLanguage(variant.id, language.code)}
-                                          className="text-[#5A7564] hover:text-[#176B39]"
-                                          aria-label={copy.setMainLanguage.replace("{language}", language.label)}
-                                        >
-                                          <Pin className="h-3 w-3" />
-                                        </button>
-                                      ) : null}
-                                      {!isMainLocale ? (
-                                        <button
-                                          type="button"
-                                          onClick={() => removeVariantLanguage(variant.id, language.code)}
-                                          className="text-red-500 hover:text-red-700"
-                                          aria-label={`${copy.delete} ${language.label}`}
-                                        >
-                                          <Trash2 className="h-3 w-3" />
-                                        </button>
-                                      ) : null}
-                                    </div>
-                                  );
-                                })}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        ) : null}
+ <div className="grid gap-3">
+ {[...settings.variants.variants].sort(bySortOrder).map((variant) => {
+ const accessCodeError = getVariantAccessCodeError(variant.id, variant.accessCode);
+ const isCollapsed = collapsedVariantIds.has(variant.id);
+ const allowSeoIndex = getVariantAllowSeoIndex(config, variant.id);
+ return (
+ <div key={variant.id} className="grid rounded-[5px] border border-[#DDD6C8] p-3">
+ <div className="flex items-center gap-2">
+ <button
+ type="button"
+ onClick={() => toggleVariantCollapsed(variant.id)}
+ className="grid h-9 w-9 shrink-0 place-items-center rounded-[4px] bg-[#F6F3EC] text-[#6F6A5E] transition hover:bg-[#F4EBE6] hover:text-[#7E2A16]"
+ aria-label={isCollapsed ? copy.variantExpand : copy.variantCollapse}
+ >
+ <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", !isCollapsed && "rotate-180")} />
+ </button>
+ <div className="grid min-w-0 flex-1 gap-0.5">
+ <p className="truncate text-sm font-semibold text-[#201D18]">{variant.name || copy.newVersion}</p>
+ <p className="truncate text-xs text-[#6F6A5E]">
+ {copy.variantSummaryAccessCode}: {variant.accessCode.trim() ? `/${variant.accessCode.trim()}` : copy.variantAccessCodeEmpty} · SEO:{" "}
+ {allowSeoIndex ? copy.seoAllowed : copy.noSeoIndex}
+ </p>
+ </div>
+ <Button
+ type="button"
+ variant="ghost"
+ size="sm"
+ onClick={() => removeVariant(variant.id)}
+ disabled={settings.variants.variants.length <= 1}
+ className="ml-auto text-red-600 hover:bg-red-50 hover:text-red-700 disabled:text-[#DDD6C8] disabled:hover:bg-transparent"
+ >
+ {copy.delete}
+ </Button>
+ </div>
+ <div className={cn("grid transition-[grid-template-rows] duration-200 ease-out", isCollapsed ? "grid-rows-[0fr]" : "grid-rows-[1fr]")}>
+ <div className="min-h-0 overflow-hidden">
+ <div className="mt-3 grid gap-3 border-t border-[#EDE8DB] pt-3">
+ <div className="grid gap-2 md:grid-cols-[1fr_0.8fr]">
+ <div className="grid gap-1.5">
+ <Field
+ label={
+ <>
+ {copy.variantName} <span className="text-xs font-normal text-[#A39C8D]">{copy.variantNameHelp}</span>
+ </>
+ }
+ >
+ <Input value={variant.name} onChange={(event) => updateVariant(variant.id, { name: event.target.value })} />
+ </Field>
+ </div>
+ <div className="grid gap-1.5">
+ <Field label={copy.variantAccessCode}>
+ <Input
+ value={variant.accessCode}
+ placeholder={variant.id === settings.variants.mainVariantId ? copy.variantAccessCodeEmpty : variant.id}
+ onChange={(event) => updateVariant(variant.id, { accessCode: event.target.value })}
+ className={cn(accessCodeError && "border-red-300 bg-red-50/60 text-red-700 focus:border-red-400 focus:ring-red-100")}
+ />
+ </Field>
+ {accessCodeError ? <p className="text-xs text-red-600">{accessCodeError}</p> : null}
+ </div>
+ </div>
+ <label className="flex w-fit items-center gap-2 rounded-[5px] border border-[#DDD6C8] bg-[#FCFAF5] px-3 py-2 text-sm text-[#6F6A5E]">
+ <Checkbox
+ checked={allowSeoIndex}
+ onChange={(event) => updateVariant(variant.id, { allowSeoIndex: event.target.checked })}
+ />
+ {copy.allowSeoIndex}
+ </label>
+ <div className="grid gap-2">
+ <div className="flex items-center justify-between gap-3">
+ <p className="text-xs font-semibold text-[#6F6A5E]">{copy.variantLanguageList}</p>
+ <Button type="button" variant="secondary" size="sm" onClick={() => openAddVariantLanguage(variant.id)} className="h-8 px-2">
+ <Plus className="h-4 w-4" />
+ </Button>
+ </div>
+ <div className="flex flex-wrap gap-2">
+ {getVariantLanguageList(variant.id)
+ .sort(bySortOrder)
+ .map((language) => {
+ const isMainLocale = language.code === getVariantMainLanguageCode(variant.id);
+ const isEnabled = getLanguageIsEnabledForVariant(variant.id, language.code);
+ return (
+ <div
+ key={`${variant.id}:${language.code}`}
+ className={cn(
+ "inline-flex w-fit max-w-full items-center gap-2 rounded-[4px] border px-3 py-1.5 text-xs",
+ isEnabled ? "border-[#E3CFC5] bg-[#F4EBE6] text-[#7E2A16]" : "border-[#DDD6C8] bg-[#F6F3EC] text-[#6F6A5E]"
+ )}
+ >
+ <Checkbox
+ checked={isEnabled}
+ disabled={isMainLocale}
+ onChange={(event) => setVariantLanguage(variant.id, language.code, event.target.checked)}
+ />
+ <Input
+ value={language.label}
+ onChange={(event) => updateVariantLanguageLabel(variant.id, language.code, event.target.value)}
+ className="h-7 min-w-[56px] max-w-[180px] border-transparent bg-transparent px-1 py-0 text-xs"
+ style={{ width: `${Math.max(5, Math.min(18, language.label.length + 1))}ch` }}
+ />
+ <span className="select-none rounded-[4px] bg-[#FCFAF5]/80 px-2 py-0.5 text-[11px] font-semibold text-[#6F6A5E]">
+ {language.code}
+ </span>
+ {isMainLocale ? <span className="rounded-[4px] bg-[#FCFAF5] px-2 py-0.5 text-[11px] text-[#7E2A16]">{copy.mainLanguage}</span> : null}
+ {!isMainLocale ? (
+ <button
+ type="button"
+ onClick={() => setVariantMainLanguage(variant.id, language.code)}
+ className="text-[#6F6A5E] hover:text-[#7E2A16]"
+ aria-label={copy.setMainLanguage.replace("{language}", language.label)}
+ >
+ <Pin className="h-3 w-3" />
+ </button>
+ ) : null}
+ {!isMainLocale ? (
+ <button
+ type="button"
+ onClick={() => removeVariantLanguage(variant.id, language.code)}
+ className="text-red-500 hover:text-red-700"
+ aria-label={`${copy.delete} ${language.label}`}
+ >
+ <Trash2 className="h-3 w-3" />
+ </button>
+ ) : null}
+ </div>
+ );
+ })}
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+ );
+ })}
+ </div>
+ </section>
+ ) : null}
 
-        {activePanel === "appearance" ? (
-          <section className="grid gap-3">
-            <div className="grid gap-3 md:grid-cols-2">
-              <Field label={copy.primaryColor}>
-                <Input type="color" value={theme.primaryColor} onChange={(event) => patchTheme({ primaryColor: event.target.value })} />
-              </Field>
-              <Field label={copy.background}>
-                <Input type="color" value={theme.backgroundColor} onChange={(event) => patchTheme({ backgroundColor: event.target.value })} />
-              </Field>
-              <Field label={editorLanguage === "zh-CN" ? "卡片背景" : "Card Background"}>
-                <Input type="color" value={theme.cardBackground} onChange={(event) => patchTheme({ cardBackground: event.target.value })} />
-              </Field>
-              <Field label={editorLanguage === "zh-CN" ? "文字" : "Text"}>
-                <Input type="color" value={theme.textColor} onChange={(event) => patchTheme({ textColor: event.target.value })} />
-              </Field>
-              <Field label={copy.border}>
-                <Input type="color" value={theme.borderColor} onChange={(event) => patchTheme({ borderColor: event.target.value })} />
-              </Field>
-              <Field label={copy.font}>
-                <Select value={theme.fontFamily} onChange={(event) => patchTheme({ fontFamily: event.target.value as SiteConfig["theme"]["fontFamily"] })}>
-                  <option value="system">system</option>
-                  <option value="rounded">rounded</option>
-                  <option value="mono">mono</option>
-                </Select>
-              </Field>
-            </div>
-            <div className="flex flex-wrap gap-4 text-sm text-[#475569]">
-              <label className="flex items-center gap-2">
-                <Checkbox checked={settings.enableAnimation} onChange={(event) => patchSettings({ enableAnimation: event.target.checked })} />
-                {editorLanguage === "zh-CN" ? "动画" : "Animation"}
-              </label>
-              <label className="flex items-center gap-2">
-                <Checkbox checked={settings.enableImagePreview} onChange={(event) => patchSettings({ enableImagePreview: event.target.checked })} />
-                {copy.imagePreviewEnabled}
-              </label>
-              <label className="flex items-center gap-2">
-                <Checkbox checked={settings.enablePublicShare} onChange={(event) => patchSettings({ enablePublicShare: event.target.checked })} />
-                {copy.publicShare}
-              </label>
-            </div>
-          </section>
-        ) : null}
+ {activePanel === "appearance" ? (
+ <section className="grid gap-3">
+ <div className="grid gap-3 md:grid-cols-2">
+ <Field label={copy.primaryColor}>
+ <Input type="color" value={theme.primaryColor} onChange={(event) => patchTheme({ primaryColor: event.target.value })} />
+ </Field>
+ <Field label={copy.background}>
+ <Input type="color" value={theme.backgroundColor} onChange={(event) => patchTheme({ backgroundColor: event.target.value })} />
+ </Field>
+ <Field label={editorLanguage === "zh-CN" ? "卡片背景" : "Card Background"}>
+ <Input type="color" value={theme.cardBackground} onChange={(event) => patchTheme({ cardBackground: event.target.value })} />
+ </Field>
+ <Field label={editorLanguage === "zh-CN" ? "文字" : "Text"}>
+ <Input type="color" value={theme.textColor} onChange={(event) => patchTheme({ textColor: event.target.value })} />
+ </Field>
+ <Field label={copy.border}>
+ <Input type="color" value={theme.borderColor} onChange={(event) => patchTheme({ borderColor: event.target.value })} />
+ </Field>
+ <Field label={copy.font}>
+ <Select value={theme.fontFamily} onChange={(event) => patchTheme({ fontFamily: event.target.value as SiteConfig["theme"]["fontFamily"] })}>
+ <option value="system">system</option>
+ <option value="rounded">rounded</option>
+ <option value="mono">mono</option>
+ </Select>
+ </Field>
+ </div>
+ <div className="flex flex-wrap gap-4 text-sm text-[#6F6A5E]">
+ <label className="flex items-center gap-2">
+ <Checkbox checked={settings.enableAnimation} onChange={(event) => patchSettings({ enableAnimation: event.target.checked })} />
+ {editorLanguage === "zh-CN" ? "动画" : "Animation"}
+ </label>
+ <label className="flex items-center gap-2">
+ <Checkbox checked={settings.enableImagePreview} onChange={(event) => patchSettings({ enableImagePreview: event.target.checked })} />
+ {copy.imagePreviewEnabled}
+ </label>
+ <label className="flex items-center gap-2">
+ <Checkbox checked={settings.enablePublicShare} onChange={(event) => patchSettings({ enablePublicShare: event.target.checked })} />
+ {copy.publicShare}
+ </label>
+ </div>
+ </section>
+ ) : null}
 
-        {activePanel === "config" ? (
-          <section className="grid gap-3 rounded-xl border border-[#EAEAEA] bg-[#FAFAFA] p-4">
-            <ScopeBadges variantName={activeVariant?.name || activeVariantId} languageName={activeLanguage?.label || activeLocale} editorLanguage={editorLanguage} />
-            <div>
-              <p className="mt-1 text-sm text-[#64748B]">
-                {copy.configPanelHelp}
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="secondary" size="sm" onClick={onExport}>
-                <Download className="h-4 w-4" />
-                {copy.exportCurrentScope}
-              </Button>
-              <Button type="button" variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()}>
-                <Upload className="h-4 w-4" />
-                {copy.importCurrentScope}
-              </Button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="application/json,.json"
-                className="hidden"
-                onChange={async (event) => {
-                  const file = event.target.files?.[0];
-                  event.target.value = "";
-                  if (!file) return;
-                  try {
-                    await onImport(file);
-                  } catch {
-                    toast.error(copy.importFailed, { description: copy.importFailedDescription });
-                  }
-                }}
-              />
-            </div>
-          </section>
-        ) : null}
-      </div>
-      {languageDraft ? (
-        <AddLanguageDialog
-          draft={languageDraft}
-          existingCodes={getVariantLanguageList(languageDraft.variantId).map((language) => language.code)}
-          editorLanguage={editorLanguage}
-          onChange={setLanguageDraft}
-          onClose={() => setLanguageDraft(null)}
-          onAdd={() => addVariantLanguage(languageDraft.variantId, languageDraft.code, languageDraft.label)}
-        />
-      ) : null}
-    </div>
-  );
+ {activePanel === "config" ? (
+ <section className="grid gap-3 rounded-[5px] border border-[#DDD6C8] bg-[#FCFAF5] p-4">
+ <ScopeBadges variantName={activeVariant?.name || activeVariantId} languageName={activeLanguage?.label || activeLocale} editorLanguage={editorLanguage} />
+ <div>
+ <p className="mt-1 text-sm text-[#6F6A5E]">
+ {copy.configPanelHelp}
+ </p>
+ </div>
+ <div className="flex flex-wrap gap-2">
+ <Button type="button" variant="secondary" size="sm" onClick={onExport}>
+ <Download className="h-4 w-4" />
+ {copy.exportCurrentScope}
+ </Button>
+ <Button type="button" variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()}>
+ <Upload className="h-4 w-4" />
+ {copy.importCurrentScope}
+ </Button>
+ <input
+ ref={fileInputRef}
+ type="file"
+ accept="application/json,.json"
+ className="hidden"
+ onChange={async (event) => {
+ const file = event.target.files?.[0];
+ event.target.value = "";
+ if (!file) return;
+ try {
+ await onImport(file);
+ } catch {
+ toast.error(copy.importFailed, { description: copy.importFailedDescription });
+ }
+ }}
+ />
+ </div>
+ </section>
+ ) : null}
+ </div>
+ {languageDraft ? (
+ <AddLanguageDialog
+ draft={languageDraft}
+ existingCodes={getVariantLanguageList(languageDraft.variantId).map((language) => language.code)}
+ editorLanguage={editorLanguage}
+ onChange={setLanguageDraft}
+ onClose={() => setLanguageDraft(null)}
+ onAdd={() => addVariantLanguage(languageDraft.variantId, languageDraft.code, languageDraft.label)}
+ />
+ ) : null}
+ </div>
+ );
 }
 
 function isSpecialModuleSourceId(value: unknown): value is SpecialModuleType {
-  return value === "experience" || value === "travel" || value === "projects" || value === "now" || value === "media" || value === "photos";
+ return value === "experience" || value === "travel" || value === "projects" || value === "now" || value === "media" || value === "photos";
 }
 
 function getSpecialModuleDefaults(moduleType: SpecialModuleType, editorLanguage: EditorLanguage) {
-  const isZh = editorLanguage === "zh-CN";
-  if (moduleType === "experience") return {
-    headingTitle: isZh ? "工作经历" : "Work Experience",
-    headingSubtitle: "Work Experience",
-    contentTitle: isZh ? "公司名称" : "Company",
-    description: isZh ? "补充这段工作经历的职责、成果与代表项目。" : "Add responsibilities, outcomes and representative projects.",
-    icon: "briefcase",
-    titleSize: "md" as const,
-    visible: true,
-    metadata: {
-      modalTitle: isZh ? "公司名称 · 职位名称" : "Company · Role",
-      modalSubtitle: isZh ? "2026 年 1 月 - 至今" : "Jan 2026 - Present",
-      modalBody: isZh ? "补充详细的工作职责、项目经历与成果。" : "Add detailed responsibilities, projects and outcomes."
-    }
-  };
-  if (moduleType === "travel") return {
-    headingTitle: isZh ? "旅行足迹" : "Travel Footprint",
-    headingSubtitle: "Travel Footprint",
-    contentTitle: isZh ? "走过的每一个地方，都是故事" : "Every place becomes part of the story",
-    description: isZh ? "把抵达过的地方留在地图上，也把沿途的故事慢慢写下来。" : "Pin the places you have reached and keep their stories close.",
-    icon: "map",
-    titleSize: "md" as const,
-    visible: true,
-    metadata: { travelLocations: [{ city: isZh ? "福州" : "Fuzhou", province: isZh ? "福建" : "Fujian", note: isZh ? "常驻地" : "Home base", longitude: 119.3, latitude: 26.08 }] }
-  };
-  if (moduleType === "projects") return {
-    headingTitle: isZh ? "个人项目" : "Personal Projects",
-    headingSubtitle: "Personal Projects",
-    contentTitle: isZh ? "个人项目" : "Personal Projects",
-    description: "",
-    icon: "terminal",
-    titleSize: "lg" as const,
-    visible: true,
-    metadata: { projects: [{ title: isZh ? "新项目" : "New project", description: isZh ? "补充项目简介" : "Add a short project description", eyebrow: "PROJECT · 01", href: "https://github.com/", liveHref: "", icon: "data", tone: "mint" }] }
-  };
-  if (moduleType === "now") return {
-    headingTitle: isZh ? "此刻" : "Now",
-    headingSubtitle: "Now",
-    contentTitle: isZh ? "此刻 NOW" : "Now",
-    description: "",
-    icon: "sparkle",
-    titleSize: "md" as const,
-    visible: false,
-    metadata: { nowStatus: { headline: "", body: "", mood: "", location: "", tags: [], updatedAt: new Date().toISOString().slice(0, 10) } }
-  };
-  if (moduleType === "media") return {
-    headingTitle: isZh ? "最近在看 / 玩 / 听" : "Media Shelf",
-    headingSubtitle: "Media Shelf",
-    contentTitle: isZh ? "最近在看 / 玩 / 听" : "Media Shelf",
-    description: "",
-    icon: "book-open",
-    titleSize: "md" as const,
-    visible: false,
-    metadata: { mediaItems: [] }
-  };
-  return {
-    headingTitle: isZh ? "照片故事" : "Photo Stories",
-    headingSubtitle: "Photo Stories",
-    contentTitle: isZh ? "照片故事" : "Photo Stories",
-    description: "",
-    icon: "image",
-    titleSize: "md" as const,
-    visible: false,
-    metadata: { photoStories: [] }
-  };
+ const isZh = editorLanguage === "zh-CN";
+ if (moduleType === "experience") return {
+ headingTitle: isZh ? "工作经历" : "Work Experience",
+ headingSubtitle: "Work Experience",
+ contentTitle: isZh ? "公司名称" : "Company",
+ description: isZh ? "补充这段工作经历的职责、成果与代表项目。" : "Add responsibilities, outcomes and representative projects.",
+ icon: "briefcase",
+ titleSize: "md" as const,
+ visible: true,
+ metadata: {
+ modalTitle: isZh ? "公司名称 · 职位名称" : "Company · Role",
+ modalSubtitle: isZh ? "2026 年 1 月 - 至今" : "Jan 2026 - Present",
+ modalBody: isZh ? "补充详细的工作职责、项目经历与成果。" : "Add detailed responsibilities, projects and outcomes."
+ }
+ };
+ if (moduleType === "travel") return {
+ headingTitle: isZh ? "旅行足迹" : "Travel Footprint",
+ headingSubtitle: "Travel Footprint",
+ contentTitle: isZh ? "走过的每一个地方，都是故事" : "Every place becomes part of the story",
+ description: isZh ? "把抵达过的地方留在地图上，也把沿途的故事慢慢写下来。" : "Pin the places you have reached and keep their stories close.",
+ icon: "map",
+ titleSize: "md" as const,
+ visible: true,
+ metadata: { travelLocations: [{ city: isZh ? "福州" : "Fuzhou", province: isZh ? "福建" : "Fujian", note: isZh ? "常驻地" : "Home base", longitude: 119.3, latitude: 26.08 }] }
+ };
+ if (moduleType === "projects") return {
+ headingTitle: isZh ? "个人项目" : "Personal Projects",
+ headingSubtitle: "Personal Projects",
+ contentTitle: isZh ? "个人项目" : "Personal Projects",
+ description: "",
+ icon: "terminal",
+ titleSize: "lg" as const,
+ visible: true,
+ metadata: { projects: [{ title: isZh ? "新项目" : "New project", description: isZh ? "补充项目简介" : "Add a short project description", eyebrow: "PROJECT · 01", href: "https://github.com/", liveHref: "", icon: "data", tone: "mint" }] }
+ };
+ if (moduleType === "now") return {
+ headingTitle: isZh ? "此刻" : "Now",
+ headingSubtitle: "Now",
+ contentTitle: isZh ? "此刻 NOW" : "Now",
+ description: "",
+ icon: "sparkle",
+ titleSize: "md" as const,
+ visible: false,
+ metadata: { nowStatus: { headline: "", body: "", mood: "", location: "", tags: [], updatedAt: new Date().toISOString().slice(0, 10) } }
+ };
+ if (moduleType === "media") return {
+ headingTitle: isZh ? "最近在看 / 玩 / 听" : "Media Shelf",
+ headingSubtitle: "Media Shelf",
+ contentTitle: isZh ? "最近在看 / 玩 / 听" : "Media Shelf",
+ description: "",
+ icon: "book-open",
+ titleSize: "md" as const,
+ visible: false,
+ metadata: { mediaItems: [] }
+ };
+ return {
+ headingTitle: isZh ? "照片故事" : "Photo Stories",
+ headingSubtitle: "Photo Stories",
+ contentTitle: isZh ? "照片故事" : "Photo Stories",
+ description: "",
+ icon: "image",
+ titleSize: "md" as const,
+ visible: false,
+ metadata: { photoStories: [] }
+ };
 }
 
 function normalizeBlocks(blocks: Block[]) {
-  return blocks.map((block) => ({ ...block, sectionId: topLevelBlockSectionId }));
+ return blocks.map((block) => ({ ...block, sectionId: topLevelBlockSectionId }));
 }
 
 function renameVariantContentKeys(contentVariants: SiteConfig["contentVariants"], oldVariantId: string, nextVariantId: string) {
-  return Object.fromEntries(
-    Object.entries(contentVariants ?? {}).map(([key, snapshot]) => {
-      const [variantId, locale] = key.split(":");
-      return [variantId === oldVariantId ? getContentVariantKey(nextVariantId, locale ?? "") : key, snapshot];
-    })
-  );
+ return Object.fromEntries(
+ Object.entries(contentVariants ?? {}).map(([key, snapshot]) => {
+ const [variantId, locale] = key.split(":");
+ return [variantId === oldVariantId ? getContentVariantKey(nextVariantId, locale ?? "") : key, snapshot];
+ })
+ );
 }
 
 function removeVariantContentKeys(contentVariants: SiteConfig["contentVariants"], variantIdToRemove: string) {
-  return Object.fromEntries(
-    Object.entries(contentVariants ?? {}).filter(([key]) => {
-      const [variantId] = key.split(":");
-      return variantId !== variantIdToRemove;
-    })
-  );
+ return Object.fromEntries(
+ Object.entries(contentVariants ?? {}).filter(([key]) => {
+ const [variantId] = key.split(":");
+ return variantId !== variantIdToRemove;
+ })
+ );
 }
 
 function AddLanguageDialog({
-  draft,
-  existingCodes,
-  editorLanguage,
-  onChange,
-  onClose,
-  onAdd
+ draft,
+ existingCodes,
+ editorLanguage,
+ onChange,
+ onClose,
+ onAdd
 }: {
-  draft: { variantId: string; code: string; label: string };
-  existingCodes: string[];
-  editorLanguage: EditorLanguage;
-  onChange: (draft: { variantId: string; code: string; label: string }) => void;
-  onClose: () => void;
-  onAdd: () => void;
+ draft: { variantId: string; code: string; label: string };
+ existingCodes: string[];
+ editorLanguage: EditorLanguage;
+ onChange: (draft: { variantId: string; code: string; label: string }) => void;
+ onClose: () => void;
+ onAdd: () => void;
 }) {
-  const copy = editorCopy[editorLanguage];
-  const existing = new Set(existingCodes);
-  const selectedLanguage = languageOptions.find((language) => language.code === draft.code) ?? languageOptions[0];
-  const isDuplicate = existing.has(draft.code);
-  const canAdd = Boolean(draft.label.trim()) && !isDuplicate;
+ const copy = editorCopy[editorLanguage];
+ const existing = new Set(existingCodes);
+ const selectedLanguage = languageOptions.find((language) => language.code === draft.code) ?? languageOptions[0];
+ const isDuplicate = existing.has(draft.code);
+ const canAdd = Boolean(draft.label.trim()) && !isDuplicate;
 
-  return (
-    <div className="fixed inset-0 z-[70] grid place-items-center bg-black/20 p-4" onMouseDown={onClose}>
-      <div
-        className="grid w-full max-w-sm gap-4 rounded-[24px] border border-[#D5D0C4] bg-[#F8F6EF] p-5 text-[#111] shadow-2xl"
-        onMouseDown={(event) => event.stopPropagation()}
-      >
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-sm font-bold">{copy.addLanguage}</p>
-            <p className="mt-1 text-xs text-[#64748B]">{copy.languageDialogHelp}</p>
-          </div>
-          <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-full text-[#64748B] hover:bg-[#F1F5F9]">
-            <X className="h-4 w-4" />
-          </button>
-        </div>
+ return (
+ <div className="fixed inset-0 z-[70] grid place-items-center bg-black/20 p-4" onMouseDown={onClose}>
+ <div
+ className="grid w-full max-w-sm gap-4 rounded-[8px] border border-[#DDD6C8] bg-[#F6F3EC] p-5 text-[#201D18] shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)]"
+ onMouseDown={(event) => event.stopPropagation()}
+ >
+ <div className="flex items-center justify-between gap-3">
+ <div>
+ <p className="text-sm font-bold">{copy.addLanguage}</p>
+ <p className="mt-1 text-xs text-[#6F6A5E]">{copy.languageDialogHelp}</p>
+ </div>
+ <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-[4px] text-[#6F6A5E] hover:bg-[#EDE8DB]">
+ <X className="h-4 w-4" />
+ </button>
+ </div>
 
-        <Field label={copy.languageCode}>
-          <Select
-            value={draft.code}
-            onChange={(event) => {
-              const option = languageOptions.find((language) => language.code === event.target.value) ?? selectedLanguage;
-              onChange({ ...draft, code: option.code, label: option.defaultNote });
-            }}
-          >
-            {languageOptions.map((language) => (
-              <option key={language.code} value={language.code} disabled={existing.has(language.code)}>
-                {language.label} · {language.code}
-              </option>
-            ))}
-          </Select>
-        </Field>
+ <Field label={copy.languageCode}>
+ <Select
+ value={draft.code}
+ onChange={(event) => {
+ const option = languageOptions.find((language) => language.code === event.target.value) ?? selectedLanguage;
+ onChange({ ...draft, code: option.code, label: option.defaultNote });
+ }}
+ >
+ {languageOptions.map((language) => (
+ <option key={language.code} value={language.code} disabled={existing.has(language.code)}>
+ {language.label} · {language.code}
+ </option>
+ ))}
+ </Select>
+ </Field>
 
-        <Field label={copy.languageNote}>
-          <Input
-            value={draft.label}
-            placeholder={selectedLanguage.defaultNote}
-            onChange={(event) => onChange({ ...draft, label: event.target.value })}
-            className={cn(!draft.label.trim() && "border-red-300 bg-red-50/60 focus:border-red-400 focus:ring-red-100")}
-          />
-        </Field>
+ <Field label={copy.languageNote}>
+ <Input
+ value={draft.label}
+ placeholder={selectedLanguage.defaultNote}
+ onChange={(event) => onChange({ ...draft, label: event.target.value })}
+ className={cn(!draft.label.trim() && "border-red-300 bg-red-50/60 focus:border-red-400 focus:ring-red-100")}
+ />
+ </Field>
 
-        {isDuplicate ? <p className="text-xs text-red-600">{copy.languageAlreadyExists.replace("{code}", draft.code)}</p> : null}
+ {isDuplicate ? <p className="text-xs text-red-600">{copy.languageAlreadyExists.replace("{code}", draft.code)}</p> : null}
 
-        <div className="flex justify-end gap-2">
-          <Button type="button" variant="ghost" onClick={onClose}>
-            {copy.cancel}
-          </Button>
-          <Button type="button" onClick={onAdd} disabled={!canAdd}>
-            {copy.add}
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
+ <div className="flex justify-end gap-2">
+ <Button type="button" variant="ghost" onClick={onClose}>
+ {copy.cancel}
+ </Button>
+ <Button type="button" onClick={onAdd} disabled={!canAdd}>
+ {copy.add}
+ </Button>
+ </div>
+ </div>
+ </div>
+ );
 }
 
 function VariantOverrideDialog({
-  draft,
-  variants,
-  getLanguages,
-  editorLanguage,
-  onChange,
-  onClose,
-  onApply
+ draft,
+ variants,
+ getLanguages,
+ editorLanguage,
+ onChange,
+ onClose,
+ onApply
 }: {
-  draft: { targetVariantId: string; targetLocale: string; sourceVariantId: string; sourceLocale: string };
-  variants: SiteConfig["settings"]["variants"]["variants"];
-  getLanguages: (variantId: string) => SiteLanguage[];
-  editorLanguage: EditorLanguage;
-  onChange: (draft: { targetVariantId: string; targetLocale: string; sourceVariantId: string; sourceLocale: string }) => void;
-  onClose: () => void;
-  onApply: () => void;
+ draft: { targetVariantId: string; targetLocale: string; sourceVariantId: string; sourceLocale: string };
+ variants: SiteConfig["settings"]["variants"]["variants"];
+ getLanguages: (variantId: string) => SiteLanguage[];
+ editorLanguage: EditorLanguage;
+ onChange: (draft: { targetVariantId: string; targetLocale: string; sourceVariantId: string; sourceLocale: string }) => void;
+ onClose: () => void;
+ onApply: () => void;
 }) {
-  const copy = editorCopy[editorLanguage];
-  const targetVariant = variants.find((variant) => variant.id === draft.targetVariantId);
-  const targetLanguage = getLanguages(draft.targetVariantId).find((language) => language.code === draft.targetLocale);
-  const sourceLanguages = getLanguages(draft.sourceVariantId);
-  const sourceLocale = sourceLanguages.some((language) => language.code === draft.sourceLocale)
-    ? draft.sourceLocale
-    : sourceLanguages[0]?.code ?? draft.sourceLocale;
+ const copy = editorCopy[editorLanguage];
+ const targetVariant = variants.find((variant) => variant.id === draft.targetVariantId);
+ const targetLanguage = getLanguages(draft.targetVariantId).find((language) => language.code === draft.targetLocale);
+ const sourceLanguages = getLanguages(draft.sourceVariantId);
+ const sourceLocale = sourceLanguages.some((language) => language.code === draft.sourceLocale)
+ ? draft.sourceLocale
+ : sourceLanguages[0]?.code ?? draft.sourceLocale;
 
-  return (
-    <div className="fixed inset-0 z-[70] grid place-items-center bg-black/20 p-4" onMouseDown={onClose}>
-      <div
-        className="grid w-full max-w-md gap-4 rounded-[24px] border border-[#D5D0C4] bg-[#F8F6EF] p-5 text-[#111] shadow-2xl"
-        onMouseDown={(event) => event.stopPropagation()}
-      >
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-sm font-bold">{copy.variantOverride}</p>
-            <p className="mt-1 text-xs text-[#64748B]">{copy.variantOverrideHelp}</p>
-          </div>
-          <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-full text-[#64748B] hover:bg-[#F1F5F9]">
-            <X className="h-4 w-4" />
-          </button>
-        </div>
+ return (
+ <div className="fixed inset-0 z-[70] grid place-items-center bg-black/20 p-4" onMouseDown={onClose}>
+ <div
+ className="grid w-full max-w-md gap-4 rounded-[8px] border border-[#DDD6C8] bg-[#F6F3EC] p-5 text-[#201D18] shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)]"
+ onMouseDown={(event) => event.stopPropagation()}
+ >
+ <div className="flex items-center justify-between gap-3">
+ <div>
+ <p className="text-sm font-bold">{copy.variantOverride}</p>
+ <p className="mt-1 text-xs text-[#6F6A5E]">{copy.variantOverrideHelp}</p>
+ </div>
+ <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-[4px] text-[#6F6A5E] hover:bg-[#EDE8DB]">
+ <X className="h-4 w-4" />
+ </button>
+ </div>
 
-        <div className="rounded-xl border border-[#EAEAEA] bg-[#FAFAFA] px-3 py-2 text-xs text-[#64748B]">
-          {copy.variantOverrideTarget}
-          <span className="ml-2 rounded-full border border-[#E3CFC5] bg-[#F4EBE6] px-2 py-0.5 font-semibold text-[#176B39]">
-            {targetVariant?.name || draft.targetVariantId}
-          </span>
-          <span className="ml-2 rounded-full border border-[#E3CFC5] bg-white px-2 py-0.5 font-semibold text-[#176B39]">
-            {targetLanguage?.label || draft.targetLocale}
-          </span>
-        </div>
+ <div className="rounded-[5px] border border-[#DDD6C8] bg-[#FCFAF5] px-3 py-2 text-xs text-[#6F6A5E]">
+ {copy.variantOverrideTarget}
+ <span className="ml-2 rounded-[4px] border border-[#E3CFC5] bg-[#F4EBE6] px-2 py-0.5 font-semibold text-[#7E2A16]">
+ {targetVariant?.name || draft.targetVariantId}
+ </span>
+ <span className="ml-2 rounded-[4px] border border-[#E3CFC5] bg-[#FCFAF5] px-2 py-0.5 font-semibold text-[#7E2A16]">
+ {targetLanguage?.label || draft.targetLocale}
+ </span>
+ </div>
 
-        <div className="grid gap-3 md:grid-cols-2">
-          <Field label={copy.variantSourceVersion}>
-            <Select
-              value={draft.sourceVariantId}
-              onChange={(event) => {
-                const nextVariantId = event.target.value;
-                const nextLanguages = getLanguages(nextVariantId);
-                onChange({
-                  ...draft,
-                  sourceVariantId: nextVariantId,
-                  sourceLocale: nextLanguages[0]?.code ?? draft.sourceLocale
-                });
-              }}
-            >
-              {variants.map((variant) => (
-                <option key={variant.id} value={variant.id}>
-                  {variant.name}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <Field label={copy.variantSourceLanguage}>
-            <Select value={sourceLocale} onChange={(event) => onChange({ ...draft, sourceLocale: event.target.value })}>
-              {sourceLanguages.map((language) => (
-                <option key={language.code} value={language.code}>
-                  {language.label}
-                </option>
-              ))}
-            </Select>
-          </Field>
-        </div>
+ <div className="grid gap-3 md:grid-cols-2">
+ <Field label={copy.variantSourceVersion}>
+ <Select
+ value={draft.sourceVariantId}
+ onChange={(event) => {
+ const nextVariantId = event.target.value;
+ const nextLanguages = getLanguages(nextVariantId);
+ onChange({
+ ...draft,
+ sourceVariantId: nextVariantId,
+ sourceLocale: nextLanguages[0]?.code ?? draft.sourceLocale
+ });
+ }}
+ >
+ {variants.map((variant) => (
+ <option key={variant.id} value={variant.id}>
+ {variant.name}
+ </option>
+ ))}
+ </Select>
+ </Field>
+ <Field label={copy.variantSourceLanguage}>
+ <Select value={sourceLocale} onChange={(event) => onChange({ ...draft, sourceLocale: event.target.value })}>
+ {sourceLanguages.map((language) => (
+ <option key={language.code} value={language.code}>
+ {language.label}
+ </option>
+ ))}
+ </Select>
+ </Field>
+ </div>
 
-        <p className="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-700">
-          {copy.variantOverrideWarning}
-        </p>
+ <p className="rounded-[5px] border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-700">
+ {copy.variantOverrideWarning}
+ </p>
 
-        <div className="flex justify-end gap-2">
-          <Button type="button" variant="ghost" onClick={onClose}>
-            {copy.cancel}
-          </Button>
-          <Button type="button" onClick={onApply} className="bg-red-600 hover:bg-red-700">
-            {copy.confirmOverwrite}
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
+ <div className="flex justify-end gap-2">
+ <Button type="button" variant="ghost" onClick={onClose}>
+ {copy.cancel}
+ </Button>
+ <Button type="button" onClick={onApply} className="bg-red-600 hover:bg-red-700">
+ {copy.confirmOverwrite}
+ </Button>
+ </div>
+ </div>
+ </div>
+ );
 }
 
 function ScopeBadges({ variantName, languageName, editorLanguage }: { variantName: string; languageName: string; editorLanguage: EditorLanguage }) {
-  const copy = editorCopy[editorLanguage];
-  return (
-    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[#EAEAEA] bg-[#FAFAFA] px-3 py-2 text-xs text-[#64748B]">
-      <span>{copy.currentScope}</span>
-      <span className="rounded-full border border-[#E3CFC5] bg-[#F4EBE6] px-2.5 py-1 font-semibold text-[#176B39]">{variantName}</span>
-      <span className="rounded-full border border-[#E3CFC5] bg-white px-2.5 py-1 font-semibold text-[#176B39]">{languageName}</span>
-    </div>
-  );
+ const copy = editorCopy[editorLanguage];
+ return (
+ <div className="flex flex-wrap items-center gap-2 rounded-[5px] border border-[#DDD6C8] bg-[#FCFAF5] px-3 py-2 text-xs text-[#6F6A5E]">
+ <span>{copy.currentScope}</span>
+ <span className="rounded-[4px] border border-[#E3CFC5] bg-[#F4EBE6] px-2.5 py-1 font-semibold text-[#7E2A16]">{variantName}</span>
+ <span className="rounded-[4px] border border-[#E3CFC5] bg-[#FCFAF5] px-2.5 py-1 font-semibold text-[#7E2A16]">{languageName}</span>
+ </div>
+ );
 }
 
 function modalTitle(modal: NonNullable<ModalState>, editorLanguage: EditorLanguage) {
-  const copy = editorCopy[editorLanguage];
-  if (modal.type === "tags") return copy.tagsEdit;
-  if (modal.type === "social") return copy.socialEdit;
-  if (modal.type === "block") return copy.blockEdit;
-  if (modal.type === "special-module") return editorLanguage === "zh-CN" ? "编辑模块" : "Edit module";
-  if (modal.type === "add-block") return copy.addBlock;
-  return copy.projectSettings;
+ const copy = editorCopy[editorLanguage];
+ if (modal.type === "tags") return copy.tagsEdit;
+ if (modal.type === "social") return copy.socialEdit;
+ if (modal.type === "block") return copy.blockEdit;
+ if (modal.type === "special-module") return editorLanguage === "zh-CN" ? "编辑模块" : "Edit module";
+ if (modal.type === "add-block") return copy.addBlock;
+ return copy.projectSettings;
 }

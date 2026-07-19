@@ -142,6 +142,10 @@ select {
 
 .admin-studio ::selection { background: color-mix(in srgb, var(--seal) 18%, transparent); color: var(--ink); }
 
+.admin-studio h1,
+.admin-studio h2,
+.admin-studio h3 { font-family: var(--font-serif); letter-spacing: 0.01em; }
+
 .admin-studio__topbar {
   border-bottom: 1px solid var(--rule);
   background: color-mix(in srgb, var(--paper) 88%, transparent);

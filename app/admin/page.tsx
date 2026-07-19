@@ -10,13 +10,13 @@ export const revalidate = 0;
 export const fetchCache = "force-no-store";
 
 export default async function AdminPage() {
-  if (!(await getCurrentSessionIsValid())) {
-    redirect("/admin/login");
-  }
+ if (!(await getCurrentSessionIsValid())) {
+ redirect("/admin/login");
+ }
 
-  const acceptLanguage = (await headers()).get("accept-language");
-  const config = await getSiteConfig(acceptLanguage);
-  const initialLanguage = resolveEditorLanguageFromLanguageTag(acceptLanguage);
+ const acceptLanguage = (await headers()).get("accept-language");
+ const config = await getSiteConfig(acceptLanguage);
+ const initialLanguage = resolveEditorLanguageFromLanguageTag(acceptLanguage);
 
-  return <AdminShell initialConfig={config} initialLanguage={initialLanguage} />;
+ return <AdminShell initialConfig={config} initialLanguage={initialLanguage} />;
 }
