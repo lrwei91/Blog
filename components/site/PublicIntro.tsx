@@ -9,11 +9,9 @@ const EXIT_MS = 560;
 type Phase = "loading" | "welcome" | "exit" | "done";
 
 export function PublicIntro({
-  displayName,
-  tagline
+  displayName
 }: {
   displayName: string;
-  tagline?: string;
 }) {
   const [phase, setPhase] = useState<Phase>("loading");
   const timersRef = useRef<number[]>([]);
@@ -59,22 +57,34 @@ export function PublicIntro({
   return (
     <div className="public-intro" data-phase={phase} role="dialog" aria-modal="true" aria-label="欢迎页">
       <div className="public-intro__inner">
-        <span className="public-intro__seal">
-          <img src="/brand-seal.png" alt="" />
-        </span>
-        <span className="public-intro__progress" aria-hidden="true">
-          <i />
-        </span>
-        <span className="public-intro__label">LOADING · 载入中</span>
+        <header className="public-intro__masthead">
+          <span className="public-intro__monogram">LRW.</span>
+          <span>EST. 2026</span>
+        </header>
+
+        <div className="public-intro__loading" aria-hidden="true">
+          <span className="public-intro__progress"><i /></span>
+          <span className="public-intro__label">OPENING THE ARCHIVE</span>
+        </div>
+
         <div className="public-intro__welcome">
-          <span className="public-intro__name">{displayName}</span>
-          <span className="public-intro__rule" aria-hidden="true" />
-          {tagline ? <span className="public-intro__tagline">{tagline}</span> : null}
+          <p className="public-intro__kicker">A PERSONAL ARCHIVE · 01</p>
+          <h1 className="public-intro__statement">
+            把复杂的事理清，
+            <br />
+            把喜欢的事做久。
+          </h1>
+          <p className="public-intro__topics">Testing · AI · Games · Life</p>
           <button type="button" className="public-intro__enter" onClick={enter}>
-            进入主页
+            <span><b>ENTER</b><small>进入</small></span>
             <ArrowRight aria-hidden="true" />
           </button>
         </div>
+
+        <footer className="public-intro__footer">
+          <span>{displayName} · PERSONAL ARCHIVE</span>
+          <span>FUZHOU · CN</span>
+        </footer>
       </div>
     </div>
   );

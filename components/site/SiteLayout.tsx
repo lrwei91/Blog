@@ -56,10 +56,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
     >
       <PublicSiteEffects enabled={config.settings.enableAnimation} />
       {config.settings.enableAnimation ? (
-        <PublicIntro
-          displayName={renderModel.profile.displayName}
-          tagline={renderModel.profile.headline.trim() || undefined}
-        />
+        <PublicIntro displayName={renderModel.profile.displayName} />
       ) : null}
       <div className="public-site__wash" aria-hidden="true" />
 
