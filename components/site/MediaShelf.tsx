@@ -17,14 +17,13 @@ export function MediaShelf({ block }: { block: Block }) {
     <section className="media-shelf" aria-label="最近在看、玩、听">
       {items.length > 0 ? (
         <div className="media-shelf__grid">
-          {items.map((item, index) => {
+          {items.map((item) => {
             const meta = categoryMeta[item.category];
             const Icon = meta.icon;
             return (
-              <article className="media-shelf__card" data-tone={String(index % 4)} key={item.id}>
+              <article className="media-shelf__card" key={item.id}>
                 <div className="media-shelf__visual">
                   {item.coverImage ? <img src={item.coverImage} alt={`${item.title}封面`} /> : <Icon aria-hidden="true" />}
-                  <span><Icon aria-hidden="true" /> {meta.label}</span>
                 </div>
                 <div className="media-shelf__body">
                   <p className="media-shelf__status">{item.status}</p>

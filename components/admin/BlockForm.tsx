@@ -43,7 +43,7 @@ export function BlockForm({
   const modalBody = typeof block.metadata?.modalBody === "string" ? block.metadata.modalBody : "";
   const isSectionBlock = isSectionTextBlock(block);
   const isPlainTextBlock = block.metadata?.textVariant === "plain";
-  const iconColorValue = typeof block.metadata?.iconColor === "string" ? block.metadata.iconColor : "#21B95B";
+  const iconColorValue = typeof block.metadata?.iconColor === "string" ? block.metadata.iconColor : "#B23C22";
   const iconPreviewColor = getBlockIconColor(iconColorValue);
 
   function patchHref(value: string) {
@@ -164,7 +164,7 @@ export function BlockForm({
                 onClick={() => onPatch({ icon: "" })}
                 className={cn(
                   "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-full border px-3 text-sm transition",
-                  !block.icon ? "border-[#21B95B] bg-[#5EDB88] text-[#101619]" : "border-[#D5D0C4] bg-white text-[#475569] hover:border-[#21B95B]/40"
+                  !block.icon ? "border-[#B23C22] bg-[#B23C22] text-[#FCFAF5]" : "border-[#D5D0C4] bg-white text-[#475569] hover:border-[#B23C22]/40"
                 )}
               >
                 <Minus className="h-4 w-4" />
@@ -178,7 +178,7 @@ export function BlockForm({
                   onClick={() => onPatch({ icon })}
                   className={cn(
                     "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-full border px-3 text-sm transition",
-                    block.icon === icon ? "border-[#21B95B] bg-[#5EDB88] text-[#101619]" : "border-[#D5D0C4] bg-white text-[#475569] hover:border-[#21B95B]/40"
+                    block.icon === icon ? "border-[#B23C22] bg-[#B23C22] text-[#FCFAF5]" : "border-[#D5D0C4] bg-white text-[#475569] hover:border-[#B23C22]/40"
                   )}
                 >
                   <BlockIcon name={icon} className="h-4 w-4" style={{ color: block.icon === icon ? undefined : iconPreviewColor }} />
@@ -204,7 +204,7 @@ export function BlockForm({
                 <Input
                   value={iconColorValue}
                   onChange={(event) => patchMetadata({ iconColor: event.target.value })}
-                  placeholder="#21B95B"
+                  placeholder="#B23C22"
                   maxLength={7}
                   spellCheck={false}
                   className="w-32 font-mono uppercase"
@@ -418,7 +418,7 @@ function ToggleButton({
       onClick={onClick}
       className={cn(
         "grid h-12 w-12 place-items-center rounded-full border text-[#475569] transition",
-        active ? "border-[#21B95B] bg-[#5EDB88] text-[#101619]" : "border-[#D9DEE8] bg-white hover:border-[#21B95B]/40"
+        active ? "border-[#B23C22] bg-[#B23C22] text-[#FCFAF5]" : "border-[#D9DEE8] bg-white hover:border-[#B23C22]/40"
       )}
     >
       {children}

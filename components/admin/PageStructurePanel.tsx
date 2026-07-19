@@ -128,7 +128,7 @@ export function PageStructurePanel({
           </button>
         </div>
 
-        <label className="mt-4 flex h-10 items-center gap-2 rounded-xl border border-[#DDDAD0] bg-white px-3 text-[#77746C] focus-within:border-[#21B95B] focus-within:ring-4 focus-within:ring-[#5EDB88]/15">
+        <label className="mt-4 flex h-10 items-center gap-2 rounded-xl border border-[#DDDAD0] bg-white px-3 text-[#77746C] focus-within:border-[#B23C22] focus-within:ring-4 focus-within:ring-[#B23C22]/15">
           <Search className="h-4 w-4" />
           <input value={query} onChange={(event) => setQuery(event.target.value)} className="admin-structure-panel__search-input min-w-0 flex-1 border-0 bg-transparent text-sm outline-none" placeholder={isZh ? "搜索模块" : "Search modules"} />
         </label>
@@ -238,7 +238,7 @@ function SortableOutlineGroup({
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
         "overflow-hidden rounded-2xl border bg-white transition",
-        selected ? "border-[#21B95B] ring-4 ring-[#5EDB88]/12" : "border-[#E2DFD5]",
+        selected ? "border-[#B23C22] ring-4 ring-[#B23C22]/12" : "border-[#E2DFD5]",
         isDragging && "z-10 opacity-55 shadow-xl"
       )}
     >

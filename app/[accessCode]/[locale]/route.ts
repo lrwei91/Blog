@@ -3,7 +3,8 @@ import { getSiteConfig } from "@/lib/site-config";
 import {
   publicLanguageTransitionCookieName,
   publicLocaleCookieName,
-  publicVariantCookieName
+  publicVariantCookieName,
+  publicVariantViewLimit
 } from "@/lib/public-variant-cookies";
 import { findAvailableLocaleForVariant, findVariantByAccessCode } from "@/lib/utils";
 import { signVariantCookie, getVariantCookieExpiresAt, getVariantCookieMaxAge } from "@/lib/variant-auth";
@@ -31,7 +32,7 @@ export async function GET(
 
   // 2026-07-17 P0: variant Cookie 使用 HMAC 签名
   const expiresAt = getVariantCookieExpiresAt();
-  const remaining = 10;
+  const remaining = publicVariantViewLimit;
   const signedCookie = signVariantCookie(variant.id, remaining, expiresAt);
 
   const response = NextResponse.redirect(new URL("/", request.url));

@@ -25,7 +25,7 @@ export function NowStatus({ block }: { block: Block }) {
         <p className="life-module-empty">还没有写下此刻的状态。</p>
       )}
       {status.tags.length > 0 ? (
-        <div className="now-status__tags">{status.tags.map((tag) => <span key={tag}># {tag}</span>)}</div>
+        <div className="now-status__tags">{status.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
       ) : null}
     </section>
   );

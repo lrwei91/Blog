@@ -85,7 +85,7 @@ export function AdminLoginForm({ projectName, initialLanguage }: AdminLoginFormP
     <section lang={language} className="admin-login__panel w-full max-w-[440px]">
       <div className="mb-8">
         <div className="mb-8 flex items-center justify-between gap-4">
-          <span className="admin-login__mark" aria-hidden="true"><i /><i /><i /></span>
+          <span className="admin-login__mark" aria-hidden="true"><img src="/brand-seal.png" alt="" /></span>
           <span className="admin-login__secure"><ShieldCheck className="h-3.5 w-3.5" /> {copy.secure}</span>
         </div>
         <p className="admin-login__eyebrow mb-3">01 / {copy.eyebrow}</p>
@@ -113,7 +113,7 @@ export function AdminLoginForm({ projectName, initialLanguage }: AdminLoginFormP
               "h-12 w-full rounded-[14px] border bg-white px-4 text-[15px] text-[#111111] outline-none transition duration-200 placeholder:text-[#9C988E] focus:ring-4",
               hasError
                 ? "border-[#D85C5C] focus:border-[#C94343] focus:ring-[#D85C5C]/10"
-                : "border-[#D5D0C4] hover:border-[#A9A397] focus:border-[#21B95B] focus:ring-[#5EDB88]/15"
+                : "border-[#D5D0C4] hover:border-[#A9A397] focus:border-[#B23C22] focus:ring-[#B23C22]/15"
             )}
           />
         </label>

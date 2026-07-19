@@ -64,7 +64,7 @@ export function SpecialModuleForm({
     <div className="admin-special-form grid gap-6 text-[#333]">
       <section className="grid gap-4 rounded-2xl border border-[#E6EDF7] bg-[#F8FAFD] p-4">
         <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-white text-[#21B95B] shadow-sm">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-white text-[#B23C22] shadow-sm">
             <SpecialModuleIcon type={moduleType} />
           </span>
           <div>
@@ -171,7 +171,7 @@ export function SpecialModulePreview({ block }: { block: Block }) {
                 <path
                   key={province.adcode}
                   d={province.d}
-                  fill={locations.some((location) => province.name.includes(location.province)) ? "#5EDB88" : "#DDEDDD"}
+                  fill={locations.some((location) => province.name.includes(location.province)) ? "#B23C22" : "#EDE8DC"}
                   stroke="#6AA77A"
                   strokeWidth="1.2"
                 />

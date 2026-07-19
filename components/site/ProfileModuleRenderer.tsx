@@ -125,7 +125,7 @@ export function ProfileModuleRenderer({ module, profile }: { module: ProfileModu
         </button>
       ) : null;
     case "latestPosts":
-      return <p className="profile-module profile-module--posts" data-profile-module="latestPosts">Latest posts will appear here.</p>;
+      return null;
     default:
       return null;
   }

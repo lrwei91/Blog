@@ -254,7 +254,7 @@ export function ImageCropUploader({
             }}
             className={cn(
               "group relative grid aspect-square w-full cursor-pointer place-items-center overflow-hidden rounded-[28px] border border-dashed border-[#C8C2B5] bg-[#F3F0E7] text-center outline-none transition",
-              "hover:border-[#21B95B]/60 hover:bg-[#EDF8EA] focus:border-[#21B95B] focus:ring-4 focus:ring-[#5EDB88]/15",
+              "hover:border-[#B23C22]/60 hover:bg-[#F4EBE6] focus:border-[#B23C22] focus:ring-4 focus:ring-[#B23C22]/15",
               previewClassName
             )}
           >
@@ -268,7 +268,7 @@ export function ImageCropUploader({
                 value ? "opacity-0 group-hover:opacity-100 group-focus:opacity-100" : "opacity-100"
               )}
             >
-              <span className="grid h-12 w-12 place-items-center rounded-2xl border border-[#BFE7C9] bg-white text-[#21B95B] shadow-soft">
+              <span className="grid h-12 w-12 place-items-center rounded-2xl border border-[#E3CFC5] bg-white text-[#B23C22] shadow-soft">
                 <ImageUp className="h-6 w-6" />
               </span>
               <span className="text-sm font-semibold text-[#176B39]">点击选择，或直接在此区域粘贴图片</span>
@@ -367,7 +367,7 @@ export function ImageCropUploader({
                               aria-label={`resize ${handle}`}
                               onPointerDown={(event) => startCropDrag(event, handle)}
                               className={cn(
-                                "absolute h-6 w-6 touch-none rounded-full border-2 border-white bg-[#21B95B] shadow-soft",
+                                "absolute h-6 w-6 touch-none rounded-full border-2 border-white bg-[#B23C22] shadow-soft",
                                 handle === "nw" && "-left-3 -top-3 cursor-nwse-resize",
                                 handle === "ne" && "-right-3 -top-3 cursor-nesw-resize",
                                 handle === "sw" && "-bottom-3 -left-3 cursor-nesw-resize",
@@ -397,7 +397,7 @@ export function ImageCropUploader({
                                 onClick={() => updateRatio(item)}
                                 className={cn(
                                   "rounded-full border px-3 py-1.5 text-sm font-medium transition",
-                                  activeRatio === item ? "border-[#21B95B] bg-[#5EDB88] text-[#101619]" : "border-[#E5E7EB] bg-white text-[#475569] hover:border-[#21B95B]/40"
+                                  activeRatio === item ? "border-[#B23C22] bg-[#B23C22] text-[#FCFAF5]" : "border-[#E5E7EB] bg-white text-[#475569] hover:border-[#B23C22]/40"
                                 )}
                               >
                                 {item === "custom" ? "自定义" : item}

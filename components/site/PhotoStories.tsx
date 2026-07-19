@@ -1,26 +1,26 @@
 "use client";
 
 import { ChevronLeft, ChevronRight, Images, MapPin, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Block } from "@/types/block";
 import { readPhotoStories } from "@/lib/life-modules";
 
 type Selection = { storyIndex: number; photoIndex: number } | null;
 
 export function PhotoStories({ block, enablePreview }: { block: Block; enablePreview: boolean }) {
-  const stories = readPhotoStories(block.metadata?.photoStories);
+  const stories = useMemo(() => readPhotoStories(block.metadata?.photoStories), [block]);
   const [selection, setSelection] = useState<Selection>(null);
   const selectedStory = selection ? stories[selection.storyIndex] : null;
   const selectedPhoto = selectedStory && selection ? selectedStory.photos[selection.photoIndex] : null;
 
-  function movePhoto(direction: -1 | 1) {
+  const movePhoto = useCallback((direction: -1 | 1) => {
     setSelection((current) => {
       if (!current) return null;
       const photos = stories[current.storyIndex]?.photos ?? [];
       if (photos.length < 2) return current;
       return { ...current, photoIndex: (current.photoIndex + direction + photos.length) % photos.length };
     });
-  }
+  }, [stories]);
 
   useEffect(() => {
     if (!selection) return;
@@ -35,7 +35,7 @@ export function PhotoStories({ block, enablePreview }: { block: Block; enablePre
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKeyDown);
     };
-  });
+  }, [selection, movePhoto]);
 
   return (
     <section className="photo-stories" aria-label="照片故事">

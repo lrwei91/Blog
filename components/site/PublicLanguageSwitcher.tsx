@@ -91,7 +91,7 @@ export function PublicLanguageSwitcher({
         aria-label="选择语言"
         title="选择语言"
         className={cn(
-          "public-language-switcher__button inline-flex h-10 w-10 items-center justify-center rounded-full border transition",
+          "public-language-switcher__button inline-flex h-10 w-10 items-center justify-center rounded-[4px] border transition",
           buttonClassName
         )}
       >
@@ -100,7 +100,7 @@ export function PublicLanguageSwitcher({
 
       <div
         className={cn(
-          "public-language-switcher__menu absolute left-0 top-full mt-2 w-[220px] origin-top-left rounded-[18px] border p-2 backdrop-blur transition duration-200",
+          "public-language-switcher__menu absolute left-0 top-full mt-2 w-[220px] origin-top-left rounded-[6px] border p-2 backdrop-blur transition duration-200",
           isOpen ? "pointer-events-auto translate-y-0 scale-100 opacity-100" : "pointer-events-none -translate-y-2 scale-95 opacity-0"
         )}
       >
@@ -115,7 +115,7 @@ export function PublicLanguageSwitcher({
                 disabled={Boolean(preparingTransition)}
                 data-active={isActive ? "true" : undefined}
                 className={cn(
-                  "public-language-switcher__option flex items-center justify-between rounded-2xl border px-3 py-2 text-left text-sm font-medium transition"
+                  "public-language-switcher__option flex items-center justify-between rounded-[4px] border px-3 py-2 text-left text-sm font-medium transition"
                 )}
               >
                 <span>{language.label}</span>

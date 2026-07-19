@@ -19,10 +19,10 @@ import { getExperienceTimelineMeta } from "@/lib/experience-timeline";
 import { cn } from "@/lib/utils";
 
 const experienceTones = [
-  { tone: "#5EDB88", deep: "#25A956", tint: "#E2F5DF" },
-  { tone: "#4EA5FF", deep: "#1677FF", tint: "#E4F1FF" },
-  { tone: "#F3C900", deep: "#D5A900", tint: "#FFF7CF" },
-  { tone: "#FF6680", deep: "#E8405C", tint: "#FFE8EC" }
+  { tone: "#B23C22", deep: "#7E2A16", tint: "#F4EBE6" },
+  { tone: "#B23C22", deep: "#B23C22", tint: "#F4EBE6" },
+  { tone: "#B23C22", deep: "#7E2A16", tint: "#F4EBE6" },
+  { tone: "#B23C22", deep: "#7E2A16", tint: "#F4EBE6" }
 ];
 
 export function ExperienceModuleForm({
@@ -84,7 +84,7 @@ export function ExperienceModuleForm({
     <div className="admin-experience-form grid gap-6 text-[#333]">
       <section className="grid gap-4 rounded-2xl border border-[#DADDD4] bg-[#F7F7F2] p-4">
         <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-xl border border-[#CFE8D5] bg-[#E2F5DF] text-[#21A655] shadow-sm">
+          <span className="grid h-10 w-10 place-items-center rounded-xl border border-[#CFE8D5] bg-[#F4EBE6] text-[#21A655] shadow-sm">
             <BriefcaseBusiness className="h-5 w-5" />
           </span>
           <div>

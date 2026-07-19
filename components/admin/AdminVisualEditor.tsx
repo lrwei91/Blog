@@ -1508,7 +1508,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
         <div className="mx-auto grid max-w-[1180px] gap-2 px-5 py-3 md:flex md:items-center md:justify-between">
           <div className="flex items-center justify-between gap-3 md:contents">
             <div className="flex min-w-0 items-center gap-3 md:order-1">
-              <span className="admin-studio__mark" aria-hidden="true"><i /><i /><i /></span>
+              <span className="admin-studio__mark" aria-hidden="true"><img src="/brand-seal.png" alt="" /></span>
               <div className="min-w-0">
                 <p className="admin-studio__eyebrow">CONTENT STUDIO</p>
                 <p className="truncate text-sm font-bold">{baseConfig.settings.projectName}</p>
@@ -1536,7 +1536,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
                   variant="secondary"
                   size="sm"
                   onClick={openTopBarOverrideDialog}
-                  className="h-9 rounded-full border-[#BFE7C9] bg-[#E2F5DF] px-3 text-xs text-[#176B39] hover:bg-[#D4F0D8]"
+                  className="h-9 rounded-full border-[#E3CFC5] bg-[#F4EBE6] px-3 text-xs text-[#176B39] hover:bg-[#D4F0D8]"
                 >
                   {copy.variantOverride}
                 </Button>
@@ -2286,7 +2286,7 @@ function DragOverlayBlockPreview({ block, width, height }: { block: Block; width
 
   return (
     <div
-      className="relative box-border overflow-hidden rounded-[20px] border border-[#111] bg-white p-4 ring-2 ring-[#21B95B]/25"
+      className="relative box-border overflow-hidden rounded-[20px] border border-[#111] bg-white p-4 ring-2 ring-[#B23C22]/25"
       style={{ width, height }}
     >
       {block.coverImage ? (
@@ -2328,7 +2328,7 @@ function DragOverlayTextBlockPreview({ block, width, height }: { block: Block; w
   return (
     <div
       className={cn(
-        "flex box-border h-full w-full flex-col justify-center overflow-hidden rounded-[20px] border border-[#111] bg-white px-3.5 py-2.5 ring-2 ring-[#21B95B]/25",
+        "flex box-border h-full w-full flex-col justify-center overflow-hidden rounded-[20px] border border-[#111] bg-white px-3.5 py-2.5 ring-2 ring-[#B23C22]/25",
         titleAlign === "center" && "items-center text-center",
         titleAlign === "right" && "items-end text-right",
         titleAlign === "left" && "items-start text-left"
@@ -2337,7 +2337,7 @@ function DragOverlayTextBlockPreview({ block, width, height }: { block: Block; w
     >
       <h3 className={cn("max-w-full truncate font-bold leading-tight tracking-normal text-[#111]", titleClass)}>
         {block.title.trim()}
-        {block.icon ? <span className="ml-1 text-[#21B95B]">{block.icon}</span> : null}
+        {block.icon ? <span className="ml-1 text-[#B23C22]">{block.icon}</span> : null}
       </h3>
       {subtitle ? <p className="mt-1 max-w-full truncate text-sm leading-5 text-[#64748B]">{subtitle}</p> : null}
     </div>
@@ -3332,7 +3332,7 @@ function EditableExperienceModule({
       data-admin-block-id={group.primaryEditBlockId}
       className={cn(
         "group relative rounded-[24px] p-2 transition",
-        selected && "ring-4 ring-[#5EDB88]/20",
+        selected && "ring-4 ring-[#B23C22]/20",
         !group.isVisible && "opacity-55 grayscale-[0.18]"
       )}
       onClick={onSelect}
@@ -3487,7 +3487,7 @@ function EditableSection({
             <button type="button" onClick={onEditSection} className="min-w-0 rounded-xl px-1 text-left">
               <h2 className="text-2xl font-bold tracking-normal">
                 {section.title}
-                {section.emoji ? <span className="ml-1 text-[#21B95B]">{section.emoji}</span> : null}
+                {section.emoji ? <span className="ml-1 text-[#B23C22]">{section.emoji}</span> : null}
               </h2>
               {section.description ? <p className="mt-1 text-sm text-[#64748B]">{section.description}</p> : null}
             </button>
@@ -3593,7 +3593,7 @@ function BlockDropPreview({
     <div
       style={placementStyle}
       className={cn(
-        "pointer-events-none rounded-[20px] border-2 border-dashed border-[#21b95b]/55 bg-[#e2f5df]/75 shadow-[inset_0_0_0_1px_rgba(33,185,91,0.12)]",
+        "pointer-events-none rounded-[20px] border-2 border-dashed border-[#B23C22]/55 bg-[#F4EBE6]/75 shadow-[inset_0_0_0_1px_rgba(33,185,91,0.12)]",
         blockSizeClassByDevice[device][displaySize]
       )}
     >
@@ -3606,7 +3606,7 @@ function BlockDropPreview({
 
 function TextBlockDropPreview({ block }: { block: Block }) {
   return (
-    <div className="pointer-events-none rounded-[20px] border-2 border-dashed border-[#21b95b]/45 bg-[#e2f5df]/65 px-2 py-2">
+    <div className="pointer-events-none rounded-[20px] border-2 border-dashed border-[#B23C22]/45 bg-[#F4EBE6]/65 px-2 py-2">
       <BlockCard block={block} disableActions withLayout={false} className="min-h-0 opacity-50" />
     </div>
   );
@@ -3659,7 +3659,7 @@ function SortableTextBlock({
       className={cn(
         "admin-draggable group relative rounded-[20px] px-0 py-1 transition-all duration-200 ease-out",
         disableDrag ? "cursor-default" : "cursor-grab active:cursor-grabbing",
-        selected ? "ring-4 ring-[#5EDB88]/20" : "",
+        selected ? "ring-4 ring-[#B23C22]/20" : "",
         isDragging || isDragOverlayActive ? "z-20 opacity-20" : "",
         !block.isVisible ? "opacity-55 grayscale-[0.18]" : ""
       )}
@@ -3839,7 +3839,7 @@ function SortableBlock({
       className={cn(
         "admin-draggable group relative will-change-transform transition-all duration-200 ease-out",
         isSpecialModule ? "cursor-default" : "cursor-grab active:cursor-grabbing",
-        selected ? "rounded-[20px] ring-4 ring-[#5EDB88]/20" : "",
+        selected ? "rounded-[20px] ring-4 ring-[#B23C22]/20" : "",
         blockSizeClassByDevice[device][activeDisplaySize],
         removeFromFlowDuringDrag ? "absolute left-0 top-0 z-20 h-px w-px overflow-hidden opacity-0" : "",
         hideOriginalDuringDrag ? "opacity-0" : isDragging || isDragOverlayActive ? "z-20 opacity-20" : "",
@@ -3854,7 +3854,7 @@ function SortableBlock({
         {getSpecialModuleType(block) ? (
           <SpecialModulePreview block={block} />
         ) : (
-          <BlockCard block={block} disableActions withLayout={false} className="h-full w-full select-none ring-0 group-hover:ring-2 group-hover:ring-[#21B95B]/20" />
+          <BlockCard block={block} disableActions withLayout={false} className="h-full w-full select-none ring-0 group-hover:ring-2 group-hover:ring-[#B23C22]/20" />
         )}
       </div>
       <div className={cn("pointer-events-none absolute inset-0 z-30 transition", device === "mobile" ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
@@ -4168,7 +4168,7 @@ function ResizePreview({ activeSize, editorLanguage }: { activeSize: BlockSize; 
           title={getLocalizedBlockSizeLabel(preset.size, editorLanguage)}
           className={`grid h-11 w-11 place-items-center rounded-xl border transition [&>span>svg]:h-6 [&>span>svg]:w-6 ${
             activeSize === preset.size
-              ? "border-[#21b95b] bg-[#5edb88] text-[#101619]"
+              ? "border-[#B23C22] bg-[#B23C22] text-[#FCFAF5]"
               : "border-transparent bg-white/70 text-[#8A887F]"
           }`}
         >
@@ -4376,13 +4376,13 @@ function SocialLinksQuickForm({
                       return next;
                     })
                   }
-                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#F8F6EF] text-[#64748B] transition hover:bg-[#E2F5DF] hover:text-[#176B39]"
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#F8F6EF] text-[#64748B] transition hover:bg-[#F4EBE6] hover:text-[#176B39]"
                   aria-label={isExpanded ? (editorLanguage === "zh-CN" ? "折叠社交媒体标签" : "Collapse social link") : (editorLanguage === "zh-CN" ? "展开社交媒体标签" : "Expand social link")}
                 >
                   <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isExpanded && "rotate-180")} />
                 </button>
                 <div className="inline-flex min-w-0 flex-1 items-center gap-2 rounded-xl text-left">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#E2F5DF] text-[#21B95B]">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#F4EBE6] text-[#B23C22]">
                     <SocialIcon name={link.icon} />
                   </span>
                   <span className="grid min-w-0 gap-0.5">
@@ -4440,8 +4440,8 @@ function SocialLinksQuickForm({
                           className={cn(
                             "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-full border px-3 text-sm transition",
                             link.icon === icon
-                              ? "border-[#21B95B] bg-[#5EDB88] text-[#101619]"
-                              : "border-[#D5D0C4] bg-white text-[#475569] hover:border-[#21B95B]/40"
+                              ? "border-[#B23C22] bg-[#B23C22] text-[#FCFAF5]"
+                              : "border-[#D5D0C4] bg-white text-[#475569] hover:border-[#B23C22]/40"
                           )}
                         >
                           <SocialIcon name={icon} />
@@ -4576,7 +4576,7 @@ function AddBlockDialog({ onAdd, editorLanguage }: { onAdd: (template: BlockTemp
           <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
             {group.items.map((item) => (
               <button key={`${group.group}-${item.label}`} type="button" onClick={() => onAdd(item)} className="grid justify-items-center gap-2 rounded-2xl p-3 text-center hover:bg-[#F8FBFF]">
-                <span className="grid h-12 w-12 place-items-center rounded-xl border border-[#D5D0C4] bg-white text-[#21B95B] [&>svg]:h-6 [&>svg]:w-6">
+                <span className="grid h-12 w-12 place-items-center rounded-xl border border-[#D5D0C4] bg-white text-[#B23C22] [&>svg]:h-6 [&>svg]:w-6">
                   {item.icon}
                 </span>
                 <span className="text-xs font-medium">{getLocalizedTemplateLabel(item, editorLanguage)}</span>
@@ -4981,7 +4981,7 @@ function ProjectSettingsForm({
             className={cn(
               "grid gap-0.5 rounded-xl border px-3 py-2 text-left transition",
               activePanel === panel.id
-                ? "border-[#BFE7C9] bg-[#E2F5DF] text-[#176B39]"
+                ? "border-[#E3CFC5] bg-[#F4EBE6] text-[#176B39]"
                 : "border-transparent text-[#475569] hover:bg-[#F8FAFC] hover:text-[#111]"
             )}
           >
@@ -5118,7 +5118,7 @@ function ProjectSettingsForm({
                       <button
                         type="button"
                         onClick={() => toggleVariantCollapsed(variant.id)}
-                        className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#F8F6EF] text-[#64748B] transition hover:bg-[#E2F5DF] hover:text-[#176B39]"
+                        className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#F8F6EF] text-[#64748B] transition hover:bg-[#F4EBE6] hover:text-[#176B39]"
                         aria-label={isCollapsed ? copy.variantExpand : copy.variantCollapse}
                       >
                         <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", !isCollapsed && "rotate-180")} />
@@ -5193,7 +5193,7 @@ function ProjectSettingsForm({
                                       key={`${variant.id}:${language.code}`}
                                       className={cn(
                                         "inline-flex w-fit max-w-full items-center gap-2 rounded-full border px-3 py-1.5 text-xs",
-                                        isEnabled ? "border-[#BFE7C9] bg-[#E2F5DF] text-[#176B39]" : "border-[#D5D0C4] bg-[#F8F6EF] text-[#64748B]"
+                                        isEnabled ? "border-[#E3CFC5] bg-[#F4EBE6] text-[#176B39]" : "border-[#D5D0C4] bg-[#F8F6EF] text-[#64748B]"
                                       )}
                                     >
                                       <Checkbox
@@ -5554,10 +5554,10 @@ function VariantOverrideDialog({
 
         <div className="rounded-xl border border-[#EAEAEA] bg-[#FAFAFA] px-3 py-2 text-xs text-[#64748B]">
           {copy.variantOverrideTarget}
-          <span className="ml-2 rounded-full border border-[#BFE7C9] bg-[#E2F5DF] px-2 py-0.5 font-semibold text-[#176B39]">
+          <span className="ml-2 rounded-full border border-[#E3CFC5] bg-[#F4EBE6] px-2 py-0.5 font-semibold text-[#176B39]">
             {targetVariant?.name || draft.targetVariantId}
           </span>
-          <span className="ml-2 rounded-full border border-[#BFE7C9] bg-white px-2 py-0.5 font-semibold text-[#176B39]">
+          <span className="ml-2 rounded-full border border-[#E3CFC5] bg-white px-2 py-0.5 font-semibold text-[#176B39]">
             {targetLanguage?.label || draft.targetLocale}
           </span>
         </div>
@@ -5616,8 +5616,8 @@ function ScopeBadges({ variantName, languageName, editorLanguage }: { variantNam
   return (
     <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[#EAEAEA] bg-[#FAFAFA] px-3 py-2 text-xs text-[#64748B]">
       <span>{copy.currentScope}</span>
-      <span className="rounded-full border border-[#BFE7C9] bg-[#E2F5DF] px-2.5 py-1 font-semibold text-[#176B39]">{variantName}</span>
-      <span className="rounded-full border border-[#BFE7C9] bg-white px-2.5 py-1 font-semibold text-[#176B39]">{languageName}</span>
+      <span className="rounded-full border border-[#E3CFC5] bg-[#F4EBE6] px-2.5 py-1 font-semibold text-[#176B39]">{variantName}</span>
+      <span className="rounded-full border border-[#E3CFC5] bg-white px-2.5 py-1 font-semibold text-[#176B39]">{languageName}</span>
     </div>
   );
 }

@@ -172,8 +172,7 @@ export function BlockCard({
               <b>{timelineMeta.tenure}</b>
             </span>
             <div className="experience-timeline__art" aria-hidden="true">
-              <BlockIcon name={block.icon || "briefcase"} />
-              <i /><i /><i />
+              <span>{block.title.trim().charAt(0) || "·"}</span>
             </div>
           </div>
         ) : null}
