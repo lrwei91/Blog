@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import { CHINA_MAP_VIEW_BOX, chinaProvincePaths } from "@/lib/china-map-paths";
 import type { Block } from "@/types/block";
 
@@ -66,24 +65,6 @@ export function TravelFootprint({ block }: { block: Block }) {
             </g>
           </svg>
 
-          {locations.map((location, index) => {
-            const position = projectLocation(location.longitude, location.latitude);
-            return (
-              <span
-                key={`${index}-${location.province}-${location.city}`}
-                className="travel-footprint__marker"
-                aria-hidden="true"
-                style={
-                  {
-                    "--travel-x": `${position.x}%`,
-                    "--travel-y": `${position.y}%`
-                  } as CSSProperties
-                }
-              >
-                <i />
-              </span>
-            );
-          })}
         </div>
 
         <div className="travel-footprint__legend" aria-hidden="true">
@@ -119,10 +100,4 @@ function getTravelLocations(block: Block) {
   });
 
   return validLocations;
-}
-
-function projectLocation(longitude: number, latitude: number) {
-  const mapX = 30 + ((longitude - 73) / (135 - 73)) * 940;
-  const mapY = 10 + ((54 - latitude) / (54 - 17)) * 680;
-  return { mapX, mapY, x: mapX / 10, y: mapY / 7 };
 }

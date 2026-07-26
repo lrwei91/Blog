@@ -39,6 +39,7 @@ export function BlockCard({
 }) {
  const [previewOpen, setPreviewOpen] = useState(false);
  const [modalOpen, setModalOpen] = useState(false);
+ const [dialogContainer, setDialogContainer] = useState<Element | null>(null);
  const displayBlock = hidePlaceholderContent ? getDisplayBlock(block) : block;
 
  if (isSectionTextBlock(displayBlock)) {
@@ -54,16 +55,18 @@ export function BlockCard({
  );
  }
 
- function runAction() {
+ function runAction(source: HTMLElement) {
  if (disableActions) return;
  if (block.actionType === "none") return;
  if (block.actionType === "link" && block.href) {
  window.open(block.href, block.openInNewTab === false ? "_self" : "_blank", "noreferrer");
  }
  if (block.actionType === "image-preview") {
+ setDialogContainer(source.closest(".public-site, .admin-studio"));
  setPreviewOpen(true);
  }
  if (block.actionType === "modal") {
+ setDialogContainer(source.closest(".public-site, .admin-studio"));
  setModalOpen(true);
  }
  if (block.actionType === "copy") {
@@ -94,11 +97,11 @@ export function BlockCard({
  <article
  role={clickable ? "button" : undefined}
  tabIndex={clickable ? 0 : undefined}
- onClick={runAction}
+ onClick={(event) => runAction(event.currentTarget)}
  onKeyDown={(event) => {
  if (clickable && (event.key === "Enter" || event.key === " ")) {
  event.preventDefault();
- runAction();
+ runAction(event.currentTarget);
  }
  }}
  style={{
@@ -179,7 +182,10 @@ export function BlockCard({
  </article>
 
  {previewOpen ? (
- <Dialog onClose={() => setPreviewOpen(false)}>
+ <Dialog
+ onClose={() => setPreviewOpen(false)}
+ container={dialogContainer}
+ >
  {block.coverImage ? (
  <img src={block.coverImage} alt={block.title} className="max-h-[78vh] w-full rounded-[8px] object-contain" />
  ) : (
@@ -188,7 +194,11 @@ export function BlockCard({
  </Dialog>
  ) : null}
  {modalOpen ? (
- <Dialog onClose={() => setModalOpen(false)} variant="content">
+ <Dialog
+ onClose={() => setModalOpen(false)}
+ variant="content"
+ container={dialogContainer}
+ >
  <article className="public-dialog__content">
  <header className="public-dialog__header">
  <p className="public-dialog__eyebrow">工作经历 <span>WORK EXPERIENCE</span></p>
@@ -282,11 +292,13 @@ function SectionTextCard({
 function Dialog({
  children,
  onClose,
- variant = "media"
+ variant = "media",
+ container
 }: {
  children: React.ReactNode;
  onClose: () => void;
  variant?: "content" | "media";
+ container?: Element | null;
 }) {
  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -321,7 +333,7 @@ function Dialog({
  {children}
  </div>
  </div>,
- document.body
+ container ?? document.body
  );
 }
 
