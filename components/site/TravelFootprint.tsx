@@ -72,6 +72,7 @@ export function TravelFootprint({ block }: { block: Block }) {
               <span
                 key={`${index}-${location.province}-${location.city}`}
                 className="travel-footprint__marker"
+                aria-hidden="true"
                 style={
                   {
                     "--travel-x": `${position.x}%`,
@@ -80,7 +81,6 @@ export function TravelFootprint({ block }: { block: Block }) {
                 }
               >
                 <i />
-                <b>{location.city}</b>
               </span>
             );
           })}

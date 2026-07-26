@@ -1,6 +1,7 @@
 import { readConfigFromBlob, BlobConfigError } from "@/lib/blob-config";
 import { readConfigFromLocal } from "@/lib/local-config";
 import { defaultSiteConfig, getDefaultSiteConfig } from "@/lib/default-site-config";
+import { restoreMissingPersonalProjectLiveLinks } from "@/lib/personal-projects";
 import { normalizeContentFlowConfig } from "@/lib/utils";
 import type { SiteConfig } from "@/types/site-config";
 
@@ -80,7 +81,7 @@ export async function getSiteConfig(languageTag?: string | null) {
 }
 
 function normalizeSiteConfig(config: SiteConfig): SiteConfig {
-  return normalizeContentFlowConfig({
+  const normalizedConfig = normalizeContentFlowConfig({
     ...config,
     settings: {
       ...defaultSiteConfig.settings,
@@ -102,4 +103,6 @@ function normalizeSiteConfig(config: SiteConfig): SiteConfig {
     },
     contentVariants: config.contentVariants ?? {}
   });
+
+  return restoreMissingPersonalProjectLiveLinks(normalizedConfig, defaultSiteConfig);
 }

@@ -1260,19 +1260,6 @@ select {
   animation: travel-marker-pulse 2.6s ease-out infinite;
 }
 
-.travel-footprint__marker b {
-  padding: 0.32rem 0.55rem;
-  border: 1px solid var(--rule);
-  border-radius: 3px;
-  background: color-mix(in srgb, var(--card) 94%, transparent);
-  color: var(--ink);
-  font-size: 0.62rem;
-  font-weight: 500;
-  line-height: 1;
-  white-space: nowrap;
-  backdrop-filter: blur(8px);
-}
-
 .travel-footprint__legend {
   position: absolute;
   z-index: 5;
