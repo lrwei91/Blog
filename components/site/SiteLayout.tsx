@@ -7,7 +7,7 @@ import { ProfilePanel } from "@/components/site/ProfilePanel";
 import { PublicLanguageSwitcher } from "@/components/site/PublicLanguageSwitcher";
 import { PublicSiteEffects } from "@/components/site/PublicSiteEffects";
 import { PublicIntro } from "@/components/site/PublicIntro";
-import { getPublicDesktopContentColumns, getPublicDesktopContentWidth } from "@/lib/public-content-layout";
+import { getPublicDesktopContentColumns } from "@/lib/public-content-layout";
 import { PublicFloatingTools } from "@/components/site/PublicFloatingTools";
 import { getThemeStyleVariables } from "@/constants/theme";
 
@@ -30,7 +30,7 @@ type SiteLayoutProps = {
 export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayoutProps) {
   const theme = config.theme;
   const desktopContentColumns = getPublicDesktopContentColumns(renderModel.orderedContentItems);
-  const desktopContentWidth = getPublicDesktopContentWidth(desktopContentColumns);
+  const desktopPageWidth = "960px";
   const navItems = renderModel.orderedContentItems
     .filter((item): item is Extract<ContentOrderItem, { type: "text-block" }> => item.type === "text-block")
     .filter((item) => item.block.title.trim());
@@ -44,8 +44,8 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
       style={
         {
           ...getThemeStyleVariables(theme),
-          "--site-content-max-width": desktopContentWidth,
-          "--site-shell-max-width": `max(960px, ${desktopContentWidth})`
+          "--site-content-max-width": desktopPageWidth,
+          "--site-shell-max-width": desktopPageWidth
         } as React.CSSProperties
       }
       className="public-site min-h-screen text-[var(--site-text)]"

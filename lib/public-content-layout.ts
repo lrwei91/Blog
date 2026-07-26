@@ -15,10 +15,6 @@ import {
 export type PublicDesktopContentColumns = 2 | 3;
 
 const desktopGridSpanPerLogicalColumn = 4;
-const desktopContentWidthByColumns: Record<PublicDesktopContentColumns, string> = {
-  2: "536px",
-  3: "812px"
-};
 
 export function getPublicDesktopContentColumns(contentItems: ContentOrderItem[]): PublicDesktopContentColumns {
   const usedColumns = contentItems.reduce((maxColumns, item) => {
@@ -27,10 +23,6 @@ export function getPublicDesktopContentColumns(contentItems: ContentOrderItem[])
   }, 0);
 
   return usedColumns >= 3 ? 3 : 2;
-}
-
-export function getPublicDesktopContentWidth(columns: PublicDesktopContentColumns) {
-  return desktopContentWidthByColumns[columns];
 }
 
 export function getPublicCompactedBlockGridStyles(

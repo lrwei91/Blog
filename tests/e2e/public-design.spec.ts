@@ -47,11 +47,28 @@ test("连续动效只在对应区域可见时运行", async ({ page }) => {
 });
 
 test.describe("公开页视觉回归", () => {
-  test("章节标题与对应模块共享同一水平边界", async ({ page }) => {
+  test("个人信息、章节标题与对应模块共享同一水平边界", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
     await page.locator(".public-intro__enter").click();
+
+    const pageRegions = await page.evaluate(() => {
+      const profile = document.querySelector<HTMLElement>(".profile-hero");
+      const content = document.querySelector<HTMLElement>(".public-content");
+      if (!profile || !content) return null;
+
+      const profileRect = profile.getBoundingClientRect();
+      const contentRect = content.getBoundingClientRect();
+      return {
+        leftDelta: Math.abs(profileRect.left - contentRect.left),
+        rightDelta: Math.abs(profileRect.right - contentRect.right)
+      };
+    });
+
+    expect(pageRegions).not.toBeNull();
+    expect(pageRegions!.leftDelta, "个人信息与章节左边界未对齐").toBeLessThanOrEqual(1);
+    expect(pageRegions!.rightDelta, "个人信息与章节右边界未对齐").toBeLessThanOrEqual(1);
 
     const alignments = await page.evaluate(() =>
       Array.from(document.querySelectorAll<HTMLElement>(".public-section-heading")).flatMap((heading) => {
