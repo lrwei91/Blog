@@ -1,15 +1,19 @@
 "use client";
 
 import { ChevronLeft, ChevronRight, Images, MapPin, X } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Block } from "@/types/block";
+import type { PhotoStory, PhotoStoryImage } from "@/types/life-modules";
 import { readPhotoStories } from "@/lib/life-modules";
+import { useAccessibleDialog } from "@/components/ui/useAccessibleDialog";
 
 type Selection = { storyIndex: number; photoIndex: number } | null;
 
 export function PhotoStories({ block, enablePreview }: { block: Block; enablePreview: boolean }) {
   const stories = useMemo(() => readPhotoStories(block.metadata?.photoStories), [block]);
   const [selection, setSelection] = useState<Selection>(null);
+  const [dialogContainer, setDialogContainer] = useState<Element | null>(null);
   const selectedStory = selection ? stories[selection.storyIndex] : null;
   const selectedPhoto = selectedStory && selection ? selectedStory.photos[selection.photoIndex] : null;
 
@@ -21,21 +25,6 @@ export function PhotoStories({ block, enablePreview }: { block: Block; enablePre
       return { ...current, photoIndex: (current.photoIndex + direction + photos.length) % photos.length };
     });
   }, [stories]);
-
-  useEffect(() => {
-    if (!selection) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelection(null);
-      if (event.key === "ArrowLeft") movePhoto(-1);
-      if (event.key === "ArrowRight") movePhoto(1);
-    };
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [selection, movePhoto]);
 
   return (
     <section className="photo-stories" aria-label="照片故事">
@@ -60,7 +49,15 @@ export function PhotoStories({ block, enablePreview }: { block: Block; enablePre
               </>
             );
             return enablePreview && cover ? (
-              <button className="photo-stories__card" key={story.id} type="button" onClick={() => setSelection({ storyIndex, photoIndex: 0 })}>
+              <button
+                className="photo-stories__card"
+                key={story.id}
+                type="button"
+                onClick={(event) => {
+                  setDialogContainer(event.currentTarget.closest(".public-site"));
+                  setSelection({ storyIndex, photoIndex: 0 });
+                }}
+              >
                 {content}
               </button>
             ) : <article className="photo-stories__card" key={story.id}>{content}</article>;
@@ -69,23 +66,87 @@ export function PhotoStories({ block, enablePreview }: { block: Block; enablePre
       ) : <p className="life-module-empty">照片故事还没有内容。</p>}
 
       {selection && selectedStory && selectedPhoto ? (
-        <div className="photo-lightbox" role="dialog" aria-modal="true" aria-label={selectedStory.title} onMouseDown={(event) => event.target === event.currentTarget && setSelection(null)}>
-          <button className="photo-lightbox__close" type="button" onClick={() => setSelection(null)} aria-label="关闭预览"><X /></button>
-          <div className="photo-lightbox__panel">
-            <img src={selectedPhoto.url} alt={selectedPhoto.alt} />
-            <div className="photo-lightbox__caption">
-              <span><b>{selectedStory.title}</b><small>{selectedPhoto.caption || selectedPhoto.alt}</small></span>
-              <em>{selection.photoIndex + 1} / {selectedStory.photos.length}</em>
-            </div>
-          </div>
-          {selectedStory.photos.length > 1 ? (
-            <>
-              <button className="photo-lightbox__nav photo-lightbox__nav--prev" type="button" onClick={() => movePhoto(-1)} aria-label="上一张"><ChevronLeft /></button>
-              <button className="photo-lightbox__nav photo-lightbox__nav--next" type="button" onClick={() => movePhoto(1)} aria-label="下一张"><ChevronRight /></button>
-            </>
-          ) : null}
-        </div>
+        <PhotoLightbox
+          story={selectedStory}
+          photo={selectedPhoto}
+          photoIndex={selection.photoIndex}
+          container={dialogContainer}
+          onClose={() => setSelection(null)}
+          onMove={movePhoto}
+        />
       ) : null}
     </section>
+  );
+}
+
+function PhotoLightbox({
+  story,
+  photo,
+  photoIndex,
+  container,
+  onClose,
+  onMove
+}: {
+  story: PhotoStory;
+  photo: PhotoStoryImage;
+  photoIndex: number;
+  container: Element | null;
+  onClose: () => void;
+  onMove: (direction: -1 | 1) => void;
+}) {
+  const titleId = useId();
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const { overlayRef, dialogRef } = useAccessibleDialog({
+    onClose,
+    portalRoot: container,
+    initialFocusRef: closeButtonRef
+  });
+
+  useEffect(() => {
+    function moveWithArrowKeys(event: KeyboardEvent) {
+      if (event.key === "ArrowLeft") onMove(-1);
+      if (event.key === "ArrowRight") onMove(1);
+    }
+
+    document.addEventListener("keydown", moveWithArrowKeys);
+    return () => document.removeEventListener("keydown", moveWithArrowKeys);
+  }, [onMove]);
+
+  return createPortal(
+    <div
+      ref={overlayRef}
+      className="photo-lightbox"
+      role="presentation"
+      onMouseDown={(event) => event.target === event.currentTarget && onClose()}
+    >
+      <div
+        ref={dialogRef}
+        className="photo-lightbox__panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+      >
+        <button ref={closeButtonRef} className="photo-lightbox__close" type="button" onClick={onClose} aria-label="关闭预览">
+          <X aria-hidden="true" />
+        </button>
+        <img src={photo.url} alt={photo.alt} />
+        <div className="photo-lightbox__caption">
+          <span><b id={titleId}>{story.title}</b><small>{photo.caption || photo.alt}</small></span>
+          <em>{photoIndex + 1} / {story.photos.length}</em>
+        </div>
+        {story.photos.length > 1 ? (
+          <>
+            <button className="photo-lightbox__nav photo-lightbox__nav--prev" type="button" onClick={() => onMove(-1)} aria-label="上一张">
+              <ChevronLeft aria-hidden="true" />
+            </button>
+            <button className="photo-lightbox__nav photo-lightbox__nav--next" type="button" onClick={() => onMove(1)} aria-label="下一张">
+              <ChevronRight aria-hidden="true" />
+            </button>
+          </>
+        ) : null}
+      </div>
+    </div>,
+    container ?? document.body
   );
 }

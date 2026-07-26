@@ -9,6 +9,7 @@ import { PublicSiteEffects } from "@/components/site/PublicSiteEffects";
 import { PublicIntro } from "@/components/site/PublicIntro";
 import { getPublicDesktopContentColumns, getPublicDesktopContentWidth } from "@/lib/public-content-layout";
 import { PublicFloatingTools } from "@/components/site/PublicFloatingTools";
+import { getThemeStyleVariables } from "@/constants/theme";
 
 type RenderModel = {
   profile: SiteConfig["profile"];
@@ -42,12 +43,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
       id="top"
       style={
         {
-          "--site-bg": theme.backgroundColor,
-          "--site-card": theme.cardBackground,
-          "--site-text": theme.textColor,
-          "--site-muted": theme.mutedTextColor,
-          "--site-border": theme.borderColor,
-          "--site-primary": theme.primaryColor,
+          ...getThemeStyleVariables(theme),
           "--site-content-max-width": desktopContentWidth,
           "--site-shell-max-width": `max(960px, ${desktopContentWidth})`
         } as React.CSSProperties
@@ -55,9 +51,11 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
       className="public-site min-h-screen text-[var(--site-text)]"
     >
       <PublicSiteEffects enabled={config.settings.enableAnimation} />
-      {config.settings.enableAnimation ? (
-        <PublicIntro />
-      ) : null}
+      <PublicIntro
+        displayName={renderModel.profile.displayName}
+        headline={renderModel.profile.headline}
+        enableMotion={config.settings.enableAnimation}
+      />
       <div className="public-site__wash" aria-hidden="true" />
 
       <header className="public-nav" data-public-nav>
@@ -95,7 +93,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
               />
             ) : null}
             {email ? (
-              <a className="public-nav__cta" href={`mailto:${email}`}>
+              <a className="public-nav__cta" href={`mailto:${email}`} aria-label={`发送邮件给 ${renderModel.profile.displayName}`}>
                 <span>联系我</span>
                 <ArrowUpRight aria-hidden="true" />
               </a>

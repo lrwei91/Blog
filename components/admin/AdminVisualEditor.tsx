@@ -128,6 +128,7 @@ import {
  subscribeToEditorLanguage,
  type EditorLanguage
 } from "@/components/admin/editor-i18n";
+import { getThemeStyleVariables } from "@/constants/theme";
 
 type ModalState =
  | { type: "tags" }
@@ -1608,12 +1609,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  <div
  style={
  {
- "--site-bg": config.theme.backgroundColor,
- "--site-card": config.theme.cardBackground,
- "--site-text": config.theme.textColor,
- "--site-muted": config.theme.mutedTextColor,
- "--site-border": config.theme.borderColor,
- "--site-primary": config.theme.primaryColor,
+ ...getThemeStyleVariables(config.theme),
  width: `${canvasWidth}px`,
  zoom: canvasScale
  } as React.CSSProperties & { zoom: number }
@@ -5261,6 +5257,9 @@ function ProjectSettingsForm({
  <Field label={editorLanguage === "zh-CN" ? "文字" : "Text"}>
  <Input type="color" value={theme.textColor} onChange={(event) => patchTheme({ textColor: event.target.value })} />
  </Field>
+ <Field label={editorLanguage === "zh-CN" ? "次要文字" : "Muted Text"}>
+ <Input type="color" value={theme.mutedTextColor} onChange={(event) => patchTheme({ mutedTextColor: event.target.value })} />
+ </Field>
  <Field label={copy.border}>
  <Input type="color" value={theme.borderColor} onChange={(event) => patchTheme({ borderColor: event.target.value })} />
  </Field>
@@ -5269,6 +5268,21 @@ function ProjectSettingsForm({
  <option value="system">system</option>
  <option value="rounded">rounded</option>
  <option value="mono">mono</option>
+ </Select>
+ </Field>
+ <Field label={editorLanguage === "zh-CN" ? "卡片圆角" : "Card Radius"}>
+ <Select value={theme.cardRadius} onChange={(event) => patchTheme({ cardRadius: event.target.value as SiteConfig["theme"]["cardRadius"] })}>
+ <option value="md">6px</option>
+ <option value="lg">8px</option>
+ <option value="xl">12px</option>
+ <option value="2xl">16px</option>
+ </Select>
+ </Field>
+ <Field label={editorLanguage === "zh-CN" ? "卡片阴影" : "Card Shadow"}>
+ <Select value={theme.cardShadow} onChange={(event) => patchTheme({ cardShadow: event.target.value as SiteConfig["theme"]["cardShadow"] })}>
+ <option value="none">{editorLanguage === "zh-CN" ? "无" : "None"}</option>
+ <option value="soft">{editorLanguage === "zh-CN" ? "轻" : "Soft"}</option>
+ <option value="medium">{editorLanguage === "zh-CN" ? "中" : "Medium"}</option>
  </Select>
  </Field>
  </div>

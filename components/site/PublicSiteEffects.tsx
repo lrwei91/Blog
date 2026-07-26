@@ -4,6 +4,8 @@ import { useEffect, useLayoutEffect } from "react";
 
 export function PublicSiteEffects({ enabled }: { enabled: boolean }) {
   useLayoutEffect(() => {
+    if (window.location.hash) return;
+
     const previousScrollRestoration = window.history.scrollRestoration;
     const resetScrollPosition = () => window.scrollTo({ top: 0, left: 0, behavior: "auto" });
 
@@ -23,12 +25,17 @@ export function PublicSiteEffects({ enabled }: { enabled: boolean }) {
     const root = document.documentElement;
     const nav = document.querySelector<HTMLElement>("[data-public-nav]");
     const backToTop = document.querySelector<HTMLElement>("[data-back-to-top]");
+    const floatingTools = document.querySelector<HTMLElement>("[data-floating-tools]");
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const revealItems = Array.from(document.querySelectorAll<HTMLElement>(".public-site [data-reveal]"));
+    const continuousMotionItems = Array.from(
+      document.querySelectorAll<HTMLElement>(".public-site [data-continuous-motion]")
+    );
 
     const updateScrollUi = () => {
       nav?.classList.toggle("is-floating", window.scrollY > 18);
       backToTop?.classList.toggle("is-visible", window.scrollY > 520);
+      floatingTools?.classList.toggle("is-page-ready", window.scrollY > Math.max(180, window.innerHeight * 0.45));
     };
     const scrollToAnchor = (event: MouseEvent) => {
       const link = event.target instanceof Element
@@ -53,25 +60,48 @@ export function PublicSiteEffects({ enabled }: { enabled: boolean }) {
 
     if (!enabled || reduceMotion || !("IntersectionObserver" in window)) {
       revealItems.forEach((item) => item.classList.add("is-visible"));
+      continuousMotionItems.forEach((item) => item.classList.remove("is-motion-active"));
       return cleanupBaseEffects;
     }
 
     root.classList.add("site-motion-ready");
-    const observer = new IntersectionObserver(
+    const revealObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
           entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
+          revealObserver.unobserve(entry.target);
         });
       },
       { rootMargin: "0px 0px -8%", threshold: 0.08 }
     );
+    const visibleMotionItems = new Set<Element>();
+    const syncContinuousMotion = () => {
+      const pageIsVisible = document.visibilityState === "visible";
+      continuousMotionItems.forEach((item) => {
+        item.classList.toggle("is-motion-active", pageIsVisible && visibleMotionItems.has(item));
+      });
+    };
+    const motionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) visibleMotionItems.add(entry.target);
+          else visibleMotionItems.delete(entry.target);
+        });
+        syncContinuousMotion();
+      },
+      { threshold: 0.05 }
+    );
 
-    revealItems.forEach((item) => observer.observe(item));
+    revealItems.forEach((item) => revealObserver.observe(item));
+    continuousMotionItems.forEach((item) => motionObserver.observe(item));
+    document.addEventListener("visibilitychange", syncContinuousMotion);
 
     return () => {
-      observer.disconnect();
+      revealObserver.disconnect();
+      motionObserver.disconnect();
+      document.removeEventListener("visibilitychange", syncContinuousMotion);
+      continuousMotionItems.forEach((item) => item.classList.remove("is-motion-active"));
       root.classList.remove("site-motion-ready");
       cleanupBaseEffects();
     };

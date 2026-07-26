@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Languages } from "lucide-react";
+import { toast } from "sonner";
 import type { SiteLanguage } from "@/types/site-config";
 import { publicLanguageTransitionCookieName } from "@/lib/public-variant-cookies";
 import { cn } from "@/lib/utils";
@@ -31,6 +32,8 @@ export function PublicLanguageSwitcher({
     initialPreparingLocale ? { locale: initialPreparingLocale, isExiting: false } : null
   );
   const switcherRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const navigationTimerRef = useRef<number | null>(null);
   const visibleLanguages = languages.filter((language) => language.isEnabled).sort((a, b) => a.sortOrder - b.sortOrder);
   const currentLanguage = visibleLanguages.find((language) => language.code === currentLocale) ?? visibleLanguages[0];
 
@@ -42,10 +45,23 @@ export function PublicLanguageSwitcher({
         setIsOpen(false);
       }
     }
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      setIsOpen(false);
+      triggerRef.current?.focus();
+    }
 
     window.addEventListener("pointerdown", closeOnOutsidePointer);
-    return () => window.removeEventListener("pointerdown", closeOnOutsidePointer);
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      window.removeEventListener("pointerdown", closeOnOutsidePointer);
+      window.removeEventListener("keydown", closeOnEscape);
+    };
   }, [isOpen]);
+
+  useEffect(() => () => {
+    if (navigationTimerRef.current !== null) window.clearTimeout(navigationTimerRef.current);
+  }, []);
 
   useEffect(() => {
     if (!initialPreparingLocale) return;
@@ -64,7 +80,7 @@ export function PublicLanguageSwitcher({
 
   if (visibleLanguages.length <= 1 || !currentLanguage) return null;
 
-  function selectLanguage(locale: string) {
+  async function selectLanguage(locale: string) {
     if (locale === currentLanguage.code || preparingTransition) {
       setIsOpen(false);
       return;
@@ -74,21 +90,30 @@ export function PublicLanguageSwitcher({
     setIsOpen(false);
     // 2026-07-17 P0: 语言切换通过 POST /api/public/locale 设 Cookie 后刷新首页
     // 不再使用 accessCode URL 路径（accessCode 不再暴露给客户端）
-    fetch("/api/public/locale", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ locale })
-    }).finally(() => {
-      window.setTimeout(() => window.location.assign("/"), 180);
-    });
+    try {
+      const response = await fetch("/api/public/locale", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locale })
+      });
+      if (!response.ok) throw new Error(`Locale switch failed with ${response.status}`);
+      navigationTimerRef.current = window.setTimeout(() => window.location.assign("/"), 180);
+    } catch {
+      setPreparingTransition(null);
+      toast.error("语言切换失败，请重试");
+    }
   }
 
   return (
     <div ref={switcherRef} className={cn("relative", className)}>
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setIsOpen((current) => !current)}
         aria-label="选择语言"
+        aria-haspopup="menu"
+        aria-expanded={isOpen}
+        aria-controls="public-language-menu"
         title="选择语言"
         className={cn(
           "public-language-switcher__button inline-flex h-10 w-10 items-center justify-center rounded-[4px] border transition",
@@ -98,21 +123,23 @@ export function PublicLanguageSwitcher({
         <Languages className="h-[18px] w-[18px]" />
       </button>
 
-      <div
-        className={cn(
-          "public-language-switcher__menu absolute left-0 top-full mt-2 w-[220px] origin-top-left rounded-[6px] border p-2 backdrop-blur transition duration-200",
-          isOpen ? "pointer-events-auto translate-y-0 scale-100 opacity-100" : "pointer-events-none -translate-y-2 scale-95 opacity-0"
-        )}
-      >
-        <div className="grid gap-1.5">
+      {isOpen ? (
+        <div
+          id="public-language-menu"
+          role="menu"
+          className="public-language-switcher__menu absolute left-0 top-full mt-2 w-[220px] origin-top-left rounded-[6px] border p-2 backdrop-blur"
+        >
+          <div className="grid gap-1.5">
           {visibleLanguages.map((language) => {
             const isActive = language.code === currentLanguage.code;
             return (
               <button
                 key={language.code}
                 type="button"
-                onClick={() => selectLanguage(language.code)}
+                onClick={() => void selectLanguage(language.code)}
                 disabled={Boolean(preparingTransition)}
+                role="menuitemradio"
+                aria-checked={isActive}
                 data-active={isActive ? "true" : undefined}
                 className={cn(
                   "public-language-switcher__option flex items-center justify-between rounded-[4px] border px-3 py-2 text-left text-sm font-medium transition"
@@ -123,13 +150,14 @@ export function PublicLanguageSwitcher({
               </button>
             );
           })}
+          </div>
         </div>
-      </div>
+      ) : null}
 
       {preparingTransition ? (
         <div
           className={cn(
-            "public-language-switcher__overlay fixed inset-0 z-[100] flex flex-col items-center justify-center backdrop-blur-[2px] transition-[opacity,backdrop-filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+            "public-language-switcher__overlay fixed inset-0 z-[100] flex flex-col items-center justify-center backdrop-blur-[2px] transition-[opacity,backdrop-filter] duration-500 ease-out",
             initialPreparingLocale ? "" : "animate-in fade-in duration-300",
             preparingTransition.isExiting ? "pointer-events-none opacity-0 backdrop-blur-0" : "opacity-100"
           )}
@@ -139,7 +167,7 @@ export function PublicLanguageSwitcher({
         >
           <div
             className={cn(
-              "flex flex-col items-center transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+              "flex flex-col items-center transition duration-500 ease-out",
               preparingTransition.isExiting ? "translate-y-1 scale-[0.98] opacity-0" : "translate-y-0 scale-100 opacity-100"
             )}
           >

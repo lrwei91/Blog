@@ -11,3 +11,56 @@ export const defaultTheme: ThemeConfig = {
   cardShadow: "none",
   fontFamily: "system"
 };
+
+const legacyBlueTheme: ThemeConfig = {
+  primaryColor: "#1677FF",
+  backgroundColor: "#FFFFFF",
+  cardBackground: "#FFFFFF",
+  textColor: "#111111",
+  mutedTextColor: "#666666",
+  borderColor: "#EAEAEA",
+  cardRadius: "2xl",
+  cardShadow: "soft",
+  fontFamily: "system"
+};
+
+const radiusByTheme: Record<ThemeConfig["cardRadius"], string> = {
+  md: "6px",
+  lg: "8px",
+  xl: "12px",
+  "2xl": "16px"
+};
+
+const shadowByTheme: Record<ThemeConfig["cardShadow"], string> = {
+  none: "none",
+  soft: "0 16px 36px -28px color-mix(in srgb, var(--site-text) 34%, transparent)",
+  medium: "0 22px 54px -28px color-mix(in srgb, var(--site-text) 46%, transparent)"
+};
+
+const fontByTheme: Record<ThemeConfig["fontFamily"], string> = {
+  system: 'var(--font-display), "PingFang SC", "Microsoft YaHei", sans-serif',
+  rounded: '"Nunito Sans", "Arial Rounded MT Bold", "PingFang SC", sans-serif',
+  mono: 'var(--font-label), "SFMono-Regular", Consolas, monospace'
+};
+
+export function getThemeStyleVariables(theme: ThemeConfig) {
+  return {
+    "--site-bg": theme.backgroundColor,
+    "--site-card": theme.cardBackground,
+    "--site-text": theme.textColor,
+    "--site-muted": theme.mutedTextColor,
+    "--site-border": theme.borderColor,
+    "--site-primary": theme.primaryColor,
+    "--site-radius-card": radiusByTheme[theme.cardRadius],
+    "--site-shadow-card": shadowByTheme[theme.cardShadow],
+    "--site-font-family": fontByTheme[theme.fontFamily]
+  };
+}
+
+export function normalizeThemeConfig(theme: ThemeConfig): ThemeConfig {
+  const isLegacyBlueTheme = Object.entries(legacyBlueTheme).every(
+    ([key, value]) => theme[key as keyof ThemeConfig].toLowerCase() === value.toLowerCase()
+  );
+
+  return isLegacyBlueTheme ? { ...defaultTheme } : theme;
+}

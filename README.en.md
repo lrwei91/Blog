@@ -748,7 +748,10 @@ Importing JSON only replaces the current editing draft. It will not write to Ver
 ```bash
 npm run lint
 npm run typecheck
+npm test
 npm run build
+npx playwright install chromium
+npm run test:e2e
 npm audit --audit-level=moderate
 ```
 
@@ -759,6 +762,8 @@ npm audit --audit-level=moderate
 * [Admin editor notes](docs/admin-editor-notes.md)
 * [Project background for AI agents](docs/project-background.md)
 * [Security and deployment notes](docs/security-and-deployment.md)
+* [Design brief](docs/design-brief.md)
+* [Asset register](docs/asset-register.md)
 
 ---
 

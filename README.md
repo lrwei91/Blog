@@ -79,7 +79,7 @@ Personal Site Studio 适合希望长期维护个人主页、又不想为每次�
 | 交互与排序 | dnd-kit、CSS / Web Animations API |
 | 生产存储 | Vercel Blob |
 | 本地存储 | JSON 文件与本地图片目录 |
-| 测试 | Vitest |
+| 测试 | Vitest、Playwright |
 | 持续集成 | GitHub Actions |
 
 ## 工作原理
@@ -276,8 +276,16 @@ ADMIN_PASSWORD_HASH=$2b$12$...
 | `npm run lint` | 运行 ESLint |
 | `npm run typecheck` | 运行 TypeScript 类型检查 |
 | `npm test` | 运行 Vitest 测试 |
+| `npm run test:e2e` | 运行公开页 Playwright 浏览器回归 |
+| `npm run generate:og` | 从 `assets/source/og.svg` 生成默认分享图 |
 | `npm run build` | 创建生产构建 |
 | `npm start` | 启动生产服务器 |
+
+首次运行浏览器回归前安装 Chromium：
+
+```bash
+npx playwright install chromium
+```
 
 GitHub Actions 会在推送到 `main` 或创建 Pull Request 时依次执行：
 
@@ -286,6 +294,7 @@ GitHub Actions 会在推送到 `main` 或创建 Pull Request 时依次执行：
 3. `npm run typecheck`
 4. `npm test`
 5. `npm run build`
+6. 安装 Chromium 并运行 `npm run test:e2e`
 
 ## 目录结构
 
@@ -304,8 +313,12 @@ lib/
   site-config.ts          配置加载与生产存储
   validators.ts           Zod 与 URL 校验
 types/                    TypeScript 数据类型
+assets/source/            可重复生成的素材原稿
+docs/design-brief.md      设计目标、主题、参考边界与验收
+docs/asset-register.md    素材清单、交付规格与回退
 public/images/            本地图片
-tests/                    单元测试
+scripts/                  可复验的素材生成脚本
+tests/                    单元测试与浏览器回归
 ```
 
 ## 开发约定
@@ -324,6 +337,7 @@ npm run lint
 npm run typecheck
 npm test
 npm run build
+npm run test:e2e
 ```
 
 ## License

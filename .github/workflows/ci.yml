@@ -36,3 +36,11 @@ jobs:
         run: npm run build
         env:
           NEXT_PUBLIC_SITE_URL: "https://example.com"
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Browser regression
+        run: npm run test:e2e
+        env:
+          NEXT_PUBLIC_SITE_URL: "https://example.com"

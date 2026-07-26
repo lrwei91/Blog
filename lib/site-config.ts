@@ -3,6 +3,7 @@ import { readConfigFromLocal } from "@/lib/local-config";
 import { defaultSiteConfig, getDefaultSiteConfig } from "@/lib/default-site-config";
 import { restoreMissingPersonalProjectLiveLinks } from "@/lib/personal-projects";
 import { normalizeContentFlowConfig } from "@/lib/utils";
+import { normalizeThemeConfig } from "@/constants/theme";
 import type { SiteConfig } from "@/types/site-config";
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -81,8 +82,20 @@ export async function getSiteConfig(languageTag?: string | null) {
 }
 
 function normalizeSiteConfig(config: SiteConfig): SiteConfig {
+  const normalizedContentVariants = Object.fromEntries(
+    Object.entries(config.contentVariants ?? {}).map(([key, snapshot]) => [
+      key,
+      {
+        ...snapshot,
+        profile: normalizeProfile(snapshot.profile),
+        theme: normalizeThemeConfig(snapshot.theme)
+      }
+    ])
+  );
   const normalizedConfig = normalizeContentFlowConfig({
     ...config,
+    profile: normalizeProfile(config.profile),
+    theme: normalizeThemeConfig(config.theme),
     settings: {
       ...defaultSiteConfig.settings,
       ...config.settings,
@@ -101,8 +114,19 @@ function normalizeSiteConfig(config: SiteConfig): SiteConfig {
           : defaultSiteConfig.settings.variants.variants
       }
     },
-    contentVariants: config.contentVariants ?? {}
+    contentVariants: normalizedContentVariants
   });
 
   return restoreMissingPersonalProjectLiveLinks(normalizedConfig, defaultSiteConfig);
+}
+
+function normalizeProfile(profile: SiteConfig["profile"]): SiteConfig["profile"] {
+  return {
+    ...profile,
+    socialLinks: profile.socialLinks
+      .filter((link) => link.href.trim() !== "https://12345")
+      .map((link) => link.actionType === "copy" && link.href.trim() === "https://"
+        ? { ...link, href: "" }
+        : link)
+  };
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUpRight, Download, ExternalLink, ImageIcon, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import type { Block } from "@/types/block";
@@ -11,6 +11,7 @@ import { getPublicBlockPlacementStyle, getPublicBlockSizeClass } from "@/constan
 import { BlockIcon } from "@/components/blocks/BlockIcon";
 import { ProjectBlock } from "@/components/blocks/ProjectBlock";
 import { TextBlock } from "@/components/blocks/TextBlock";
+import { useAccessibleDialog } from "@/components/ui/useAccessibleDialog";
 
 export function BlockCard({
  block,
@@ -62,18 +63,19 @@ export function BlockCard({
  window.open(block.href, block.openInNewTab === false ? "_self" : "_blank", "noreferrer");
  }
  if (block.actionType === "image-preview") {
+ source.focus({ preventScroll: true });
  setDialogContainer(source.closest(".public-site, .admin-studio"));
  setPreviewOpen(true);
  }
  if (block.actionType === "modal") {
+ source.focus({ preventScroll: true });
  setDialogContainer(source.closest(".public-site, .admin-studio"));
  setModalOpen(true);
  }
  if (block.actionType === "copy") {
  const copyText =
  typeof block.metadata?.copyText === "string" ? block.metadata.copyText : block.href ?? block.title;
- void navigator.clipboard.writeText(copyText);
- toast.success("Copied");
+ void copyToClipboard(copyText);
  }
  if (block.actionType === "download" && block.href) {
  const link = document.createElement("a");
@@ -185,6 +187,7 @@ export function BlockCard({
  <Dialog
  onClose={() => setPreviewOpen(false)}
  container={dialogContainer}
+ ariaLabel={`${block.title} 图片预览`}
  >
  {block.coverImage ? (
  <img src={block.coverImage} alt={block.title} className="max-h-[78vh] w-full rounded-[8px] object-contain" />
@@ -198,6 +201,7 @@ export function BlockCard({
  onClose={() => setModalOpen(false)}
  variant="content"
  container={dialogContainer}
+ ariaLabel={`${getModalTitle(displayBlock)} 详情`}
  >
  <article className="public-dialog__content">
  <header className="public-dialog__header">
@@ -293,39 +297,32 @@ function Dialog({
  children,
  onClose,
  variant = "media",
- container
+ container,
+ ariaLabel
 }: {
  children: React.ReactNode;
  onClose: () => void;
  variant?: "content" | "media";
  container?: Element | null;
+ ariaLabel: string;
 }) {
  const closeButtonRef = useRef<HTMLButtonElement>(null);
-
- useEffect(() => {
- const previousOverflow = document.body.style.overflow;
- document.body.style.overflow = "hidden";
- closeButtonRef.current?.focus();
-
- function closeOnEscape(event: KeyboardEvent) {
- if (event.key === "Escape") onClose();
- }
-
- window.addEventListener("keydown", closeOnEscape);
- return () => {
- document.body.style.overflow = previousOverflow;
- window.removeEventListener("keydown", closeOnEscape);
- };
- }, [onClose]);
+ const { overlayRef, dialogRef } = useAccessibleDialog({
+ onClose,
+ portalRoot: container,
+ initialFocusRef: closeButtonRef
+ });
 
  return createPortal(
- <div className="public-dialog fixed inset-0 z-50 grid place-items-center p-5" onClick={onClose} role="presentation">
+ <div ref={overlayRef} className="public-dialog fixed inset-0 z-50 grid place-items-center p-5" onClick={onClose} role="presentation">
  <div
+ ref={dialogRef}
  className={cn("public-dialog__panel", `public-dialog__panel--${variant}`)}
  onClick={(event) => event.stopPropagation()}
  role="dialog"
  aria-modal="true"
- aria-label="详情"
+ aria-label={ariaLabel}
+ tabIndex={-1}
  >
  <button ref={closeButtonRef} type="button" onClick={onClose} className="public-dialog__close" aria-label="关闭详情">
  <X />
@@ -335,6 +332,15 @@ function Dialog({
  </div>,
  container ?? document.body
  );
+}
+
+async function copyToClipboard(value: string) {
+ try {
+ await navigator.clipboard.writeText(value);
+ toast.success("已复制");
+ } catch {
+ toast.error("复制失败，请手动复制");
+ }
 }
 
 function ModalBody({ body }: { body: string }) {

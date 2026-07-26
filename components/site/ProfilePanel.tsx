@@ -7,7 +7,7 @@ export function ProfilePanel({ profile }: { profile: Profile }) {
   const visibleModules = profile.moduleOrder.filter((module) => module !== "avatar" && profile.visibleModules[module]);
 
   return (
-    <section className="profile-hero" aria-labelledby="profile-name">
+    <section id="profile" className="profile-hero" aria-labelledby="profile-name">
       <div className="profile-hero__content" data-reveal>
         <div className="profile-hero__modules">
           {visibleModules.map((module) => (

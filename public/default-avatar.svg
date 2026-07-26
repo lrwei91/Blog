@@ -1,8 +1,10 @@
-<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="256" height="256" rx="128" fill="#F1F5F9"/>
-  <circle cx="128" cy="98" r="44" fill="#CBD5E1"/>
-  <path d="M54 222c10-42 39-68 74-68s64 26 74 68" fill="#CBD5E1"/>
-  <circle cx="104" cy="94" r="6" fill="#64748B"/>
-  <circle cx="152" cy="94" r="6" fill="#64748B"/>
-  <path d="M105 122c15 12 31 12 46 0" stroke="#64748B" stroke-width="8" stroke-linecap="round"/>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="256" fill="#F6F3EC"/>
+  <circle cx="256" cy="256" r="206" stroke="#DDD6C8" stroke-width="2"/>
+  <circle cx="256" cy="256" r="168" stroke="#A39C8D" stroke-width="2" stroke-dasharray="6 12"/>
+  <path d="M112 256H400M256 112V400" stroke="#DDD6C8" stroke-width="2"/>
+  <circle cx="256" cy="256" r="118" fill="#FCFAF5" stroke="#201D18" stroke-width="3"/>
+  <text x="256" y="286" fill="#201D18" font-family="Georgia, 'Songti SC', serif" font-size="92" font-weight="600" text-anchor="middle">LR</text>
+  <rect x="344" y="344" width="60" height="60" rx="8" fill="#B23C22"/>
+  <path d="M356 376C369 363 383 363 396 376C383 372 369 372 356 376Z" fill="#FCFAF5"/>
 </svg>

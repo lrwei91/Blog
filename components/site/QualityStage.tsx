@@ -8,7 +8,7 @@ export function QualityStage({
   showAvatar: boolean;
 }) {
   return (
-    <div className="quality-stage" data-reveal>
+    <div className="quality-stage" data-reveal data-continuous-motion>
       <div className="quality-stage__orbit" aria-hidden="true">
         <span className="quality-stage__ring" />
         <div className="quality-stage__portrait">

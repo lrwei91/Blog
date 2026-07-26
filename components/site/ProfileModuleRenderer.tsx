@@ -80,10 +80,7 @@ export function ProfileModuleRenderer({ module, profile }: { module: ProfileModu
                   <button
                     key={link.id}
                     type="button"
-                    onClick={() => {
-                      void navigator.clipboard.writeText(link.copyText || link.href || link.label);
-                      toast.success("Copied");
-                    }}
+                    onClick={() => void copyToClipboard(link.copyText || link.href || link.label, `${link.label} 已复制`)}
                     className={className}
                   >
                     <Icon name={link.icon} />
@@ -112,10 +109,7 @@ export function ProfileModuleRenderer({ module, profile }: { module: ProfileModu
       return profile.email && profile.email !== "example@example.com" ? (
         <button
           type="button"
-          onClick={() => {
-            void navigator.clipboard.writeText(profile.email ?? "");
-            toast.success("Email copied");
-          }}
+          onClick={() => void copyToClipboard(profile.email ?? "", "邮箱地址已复制")}
           className={cn("profile-module profile-module--contact profile-module__action")}
           data-profile-module="contact"
         >
@@ -133,4 +127,13 @@ export function ProfileModuleRenderer({ module, profile }: { module: ProfileModu
 
 function isPlaceholderHandle(value?: string) {
   return value?.trim().replace(/^@/, "").toLowerCase() === "your-handle";
+}
+
+async function copyToClipboard(value: string, successMessage: string) {
+  try {
+    await navigator.clipboard.writeText(value);
+    toast.success(successMessage);
+  } catch {
+    toast.error("复制失败，请手动复制");
+  }
 }
