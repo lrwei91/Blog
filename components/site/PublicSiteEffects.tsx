@@ -1,8 +1,24 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 
 export function PublicSiteEffects({ enabled }: { enabled: boolean }) {
+  useLayoutEffect(() => {
+    const previousScrollRestoration = window.history.scrollRestoration;
+    const resetScrollPosition = () => window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
+    window.history.scrollRestoration = "manual";
+    resetScrollPosition();
+    const frame = window.requestAnimationFrame(resetScrollPosition);
+    window.addEventListener("pageshow", resetScrollPosition);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("pageshow", resetScrollPosition);
+      window.history.scrollRestoration = previousScrollRestoration;
+    };
+  }, []);
+
   useEffect(() => {
     const root = document.documentElement;
     const nav = document.querySelector<HTMLElement>("[data-public-nav]");
