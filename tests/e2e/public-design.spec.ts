@@ -33,10 +33,12 @@ test("欢迎页在禁用 JavaScript 时仍可识别并进入主页", async ({ br
 });
 
 test("连续动效只在对应区域可见时运行", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
   const intro = page.locator(".public-intro");
   const qualityStage = page.locator(".quality-stage");
 
+  await expect(page.locator("html")).toHaveClass(/site-motion-ready/);
   await expect(intro).toHaveClass(/is-motion-active/);
   await page.locator(".public-intro__enter").click();
   await expect(page).toHaveURL(/#profile$/);
@@ -45,6 +47,41 @@ test("连续动效只在对应区域可见时运行", async ({ page }) => {
 });
 
 test.describe("公开页视觉回归", () => {
+  test("章节标题与对应模块共享同一水平边界", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    await page.locator(".public-intro__enter").click();
+
+    const alignments = await page.evaluate(() =>
+      Array.from(document.querySelectorAll<HTMLElement>(".public-section-heading")).flatMap((heading) => {
+        const group = heading.nextElementSibling;
+        const content = group?.classList.contains("public-content__block-group")
+          ? group.firstElementChild
+          : null;
+        const title = heading.querySelector("h2");
+        if (!(content instanceof HTMLElement) || !(title instanceof HTMLElement)) return [];
+
+        const headingRect = heading.getBoundingClientRect();
+        const contentRect = content.getBoundingClientRect();
+        const titleRect = title.getBoundingClientRect();
+        return [{
+          title: title.textContent?.trim() || "未命名章节",
+          leftDelta: Math.abs(headingRect.left - contentRect.left),
+          rightDelta: Math.abs(headingRect.right - contentRect.right),
+          titleDelta: Math.abs(titleRect.left - contentRect.left)
+        }];
+      })
+    );
+
+    expect(alignments.length).toBeGreaterThan(0);
+    for (const alignment of alignments) {
+      expect(alignment.leftDelta, `${alignment.title} 左边界未对齐`).toBeLessThanOrEqual(1);
+      expect(alignment.rightDelta, `${alignment.title} 右边界未对齐`).toBeLessThanOrEqual(1);
+      expect(alignment.titleDelta, `${alignment.title} 标题文字未对齐`).toBeLessThanOrEqual(1);
+    }
+  });
+
   test("标准视口没有横向溢出或宽模块裁切", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     for (const viewport of viewports) {
@@ -119,10 +156,13 @@ test.describe("公开页视觉回归", () => {
   });
 
   test("详情弹层隔离背景、循环焦点并返回触发控件", async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/");
+    await expect(page.locator("html")).toHaveClass(/site-motion-ready/);
     await page.locator(".public-intro__enter").click();
-    const trigger = page.locator('[data-action="modal"]').first();
+    const triggers = page.locator('[data-action="modal"]');
+    expect(await triggers.count()).toBeGreaterThan(0);
+    const trigger = triggers.first();
 
     await trigger.click();
     const dialog = page.getByRole("dialog");

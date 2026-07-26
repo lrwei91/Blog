@@ -276,7 +276,7 @@ function SectionTextCard({
  data-reveal
  data-accent={sectionAccent}
  className={cn(
- "public-section-heading relative min-w-0 px-1 py-1",
+ "public-section-heading relative min-w-0",
  sectionTextAlign[titleAlign],
  withLayout && !compact && getPublicBlockSizeClass(),
  className
@@ -286,8 +286,8 @@ function SectionTextCard({
  <span /> <span className="min-w-0 truncate">{String(resolvedSectionNumber).padStart(2, "0")} / {subtitle || "SELECTED WORK"}</span>
  </p>
  <div className="public-section-heading__title-row">
- {block.icon ? <span className="public-section-heading__icon"><BlockIcon name={block.icon} /></span> : null}
  <h2 className={cn("font-bold leading-tight", sectionTitleSize[titleSize])}>{block.title.trim()}</h2>
+ {block.icon ? <span className="public-section-heading__icon"><BlockIcon name={block.icon} /></span> : null}
  </div>
  </article>
  );
