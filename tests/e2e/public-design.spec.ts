@@ -70,6 +70,11 @@ test.describe("公开页视觉回归", () => {
     expect(pageRegions!.leftDelta, "个人信息与章节左边界未对齐").toBeLessThanOrEqual(1);
     expect(pageRegions!.rightDelta, "个人信息与章节右边界未对齐").toBeLessThanOrEqual(1);
 
+    const unexpectedLogoFallbacks = await page.locator(".experience-timeline__art").evaluateAll((elements) =>
+      elements.filter((element) => !element.querySelector("img") && element.textContent?.trim()).length
+    );
+    expect(unexpectedLogoFallbacks, "未上传公司 Logo 时不应显示公司首字占位").toBe(0);
+
     const alignments = await page.evaluate(() =>
       Array.from(document.querySelectorAll<HTMLElement>(".public-section-heading")).flatMap((heading) => {
         const group = heading.nextElementSibling;

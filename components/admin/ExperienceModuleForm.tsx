@@ -14,7 +14,7 @@ import type { Block } from "@/types/block";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Textarea } from "@/components/ui/field";
 import type { EditorLanguage } from "@/components/admin/editor-i18n";
-import { BlockIcon } from "@/components/blocks/BlockIcon";
+import { ImageCropUploader } from "@/components/admin/ImageCropUploader";
 import { getExperienceTimelineMeta } from "@/lib/experience-timeline";
 import { cn } from "@/lib/utils";
 
@@ -67,6 +67,7 @@ export function ExperienceModuleForm({
  backgroundColor: "",
  textColor: "",
  metadata: {
+ companyLogo: "",
  modalTitle: `${company} · ${role}`,
  modalSubtitle: period,
  modalBody: isZh ? "补充详细的工作职责、项目经历与成果。" : "Add detailed responsibilities, projects and outcomes."
@@ -194,6 +195,7 @@ function ExperienceEntryEditor({
  const modalSubtitle = readMetadataText(block, "modalSubtitle");
  const modalBody = readMetadataText(block, "modalBody");
  const configuredTenure = readMetadataText(block, "timelineTenure");
+ const companyLogo = timeline.companyLogo;
 
  function patchTimeline(nextRole: string, nextPeriod: string) {
  onPatch({ subtitle: [nextRole.trim(), nextPeriod.trim()].filter(Boolean).join(" · ") });
@@ -206,7 +208,12 @@ function ExperienceEntryEditor({
  return (
  <article className="overflow-hidden rounded-[6px] border border-[#DDD6C8] bg-[#FCFAF5]">
  <div className="grid grid-cols-[5rem_minmax(0,1fr)_auto] items-center gap-3 p-3">
- <ExperienceDateNode block={block} index={index} />
+ <ExperienceLogoUploader
+ value={companyLogo}
+ isZh={isZh}
+ onUploaded={(url) => patchMetadata({ companyLogo: url })}
+ onClear={() => patchMetadata({ companyLogo: "" })}
+ />
  <button type="button" onClick={() => setExpanded((current) => !current)} className="min-w-0 text-left">
  <p className="truncate text-sm font-bold text-[#201D18]">{block.title || (isZh ? "未命名公司" : "Untitled company")}</p>
  <p className="mt-0.5 truncate text-xs font-semibold" style={{ color: experienceTones[index % experienceTones.length].deep }}>{timeline.role || (isZh ? "未填写职位" : "Role not set")}</p>
@@ -285,11 +292,38 @@ function ExperiencePreviewRow({ block, index }: { block: Block; index: number })
  <div className="flex flex-col items-end justify-between">
  <span className="rounded-[4px] border px-2.5 py-1 text-[10px] font-bold text-[#6F6A5E]" style={{ borderColor: tone.tone, backgroundColor: tone.tint }}>{timeline.tenure}</span>
  <span className="grid aspect-square w-full place-items-center overflow-hidden rounded-[6px]" style={{ backgroundColor: tone.tint, color: tone.deep }}>
- <BlockIcon name={block.icon || "briefcase"} className="h-8 w-8" />
+ {timeline.companyLogo ? <img src={timeline.companyLogo} alt="" className="h-full w-full object-contain p-3" /> : null}
  </span>
  </div>
  </div>
  </article>
+ );
+}
+
+function ExperienceLogoUploader({
+ value,
+ isZh,
+ onUploaded,
+ onClear
+}: {
+ value: string;
+ isZh: boolean;
+ onUploaded: (url: string) => void;
+ onClear: () => void;
+}) {
+ return (
+ <div className="grid justify-items-center gap-1">
+ <ImageCropUploader
+ folder="logos"
+ value={value}
+ label=""
+ buttonText={isZh ? "上传公司 Logo" : "Upload company logo"}
+ previewClassName="h-20 w-20 bg-white"
+ presentation="compactDropzone"
+ onUploaded={onUploaded}
+ onClear={onClear}
+ />
+ </div>
  );
 }
 

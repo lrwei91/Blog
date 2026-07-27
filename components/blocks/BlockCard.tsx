@@ -177,7 +177,7 @@ export function BlockCard({
  <b>{timelineMeta.tenure}</b>
  </span>
  <div className="experience-timeline__art" aria-hidden="true">
- <span>{block.title.trim().charAt(0) || "·"}</span>
+ {timelineMeta.companyLogo ? <img src={timelineMeta.companyLogo} alt="" /> : null}
  </div>
  </div>
  ) : null}

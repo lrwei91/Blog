@@ -183,6 +183,11 @@ const blockSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string()
 }).superRefine((block, ctx) => {
+  const companyLogo = block.metadata?.companyLogo;
+  if (companyLogo !== undefined) {
+    addNestedSchemaIssues(safeUrlSchema.safeParse(companyLogo), ctx, ["metadata", "companyLogo"]);
+  }
+
   const travelLocations = block.metadata?.travelLocations;
   if (travelLocations !== undefined) {
     addNestedSchemaIssues(z.array(travelLocationSchema).safeParse(travelLocations), ctx, ["metadata", "travelLocations"]);

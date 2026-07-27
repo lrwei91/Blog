@@ -1122,12 +1122,11 @@ select {
   color: var(--ink);
 }
 
-.experience-timeline__art > span {
-  font-family: var(--font-serif);
-  font-size: 2.6rem;
-  font-weight: 600;
-  line-height: 1;
-  color: var(--ink);
+.experience-timeline__art > img {
+  width: 100%;
+  height: 100%;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  object-fit: contain;
 }
 
 .travel-footprint {
@@ -1693,7 +1692,7 @@ html.site-motion-ready .public-site [data-reveal].is-visible { opacity: 1; trans
   .experience-timeline__art {
     width: 3.2rem;
   }
-  .experience-timeline__art > span { font-size: 1.35rem; }
+  .experience-timeline__art > img { padding: 0.55rem; }
   .travel-footprint { width: 100%; margin-left: 0; transform: none; }
   .travel-footprint__summary { min-height: auto; padding: 1.35rem; }
   .travel-footprint__copy h3 { font-size: 1.9rem; }

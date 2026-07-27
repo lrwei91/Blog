@@ -53,7 +53,7 @@ export function ImageCropUploader({
  buttonIconOnly?: boolean;
  buttonClassName?: string;
  previewClassName?: string;
- presentation?: "compact" | "coverDropzone";
+ presentation?: "compact" | "coverDropzone" | "compactDropzone";
  onUploaded: (url: string) => void;
  onClear?: () => void;
 }) {
@@ -71,6 +71,8 @@ export function ImageCropUploader({
  const [isUploading, setIsUploading] = useState(false);
  const [isPasteTargetActive, setIsPasteTargetActive] = useState(false);
  const objectUrlRef = useRef("");
+ const isDropzone = presentation === "coverDropzone" || presentation === "compactDropzone";
+ const isCompactDropzone = presentation === "compactDropzone";
  const activeRatio = shape === "circle" ? "1:1" : ratio;
  const isCustomRatio = activeRatio === "custom";
  const mediaAspect = mediaBounds && mediaBounds.height > 0 ? mediaBounds.width / mediaBounds.height : 1;
@@ -112,7 +114,7 @@ export function ImageCropUploader({
  }
 
  useEffect(() => {
- if (presentation !== "coverDropzone" || !isPasteTargetActive) return;
+ if (!isDropzone || !isPasteTargetActive) return;
 
  function chooseWindowPastedImage(event: ClipboardEvent) {
  const pastedFile = Array.from(event.clipboardData?.files ?? []).find((item) => item.type.startsWith("image/"));
@@ -123,7 +125,7 @@ export function ImageCropUploader({
 
  window.addEventListener("paste", chooseWindowPastedImage);
  return () => window.removeEventListener("paste", chooseWindowPastedImage);
- }, [isPasteTargetActive, presentation]);
+ }, [isDropzone, isPasteTargetActive]);
 
  useEffect(() => {
  if (!objectUrl) return;
@@ -237,10 +239,12 @@ export function ImageCropUploader({
  <>
  <div className="grid gap-2">
  {label ? <p className="text-sm font-semibold">{label}</p> : null}
- {presentation === "coverDropzone" ? (
+ {isDropzone ? (
  <div
  role="button"
  tabIndex={0}
+ aria-label={buttonText}
+ title={buttonText}
  onClick={openFilePicker}
  onMouseEnter={() => setIsPasteTargetActive(true)}
  onMouseLeave={() => setIsPasteTargetActive(false)}
@@ -253,25 +257,37 @@ export function ImageCropUploader({
  }
  }}
  className={cn(
- "group relative grid aspect-square w-full cursor-pointer place-items-center overflow-hidden rounded-[8px] border border-dashed border-[#DDD6C8] bg-[#F6F3EC] text-center outline-none transition",
+ "group relative grid aspect-square cursor-pointer place-items-center overflow-hidden rounded-[8px] border border-dashed border-[#DDD6C8] bg-[#F6F3EC] text-center outline-none transition",
+ isCompactDropzone ? "w-20" : "w-full",
  "hover:border-[#B23C22]/60 hover:bg-[#F4EBE6] focus:border-[#B23C22] focus:ring-4 focus:ring-[#B23C22]/15",
  previewClassName
  )}
  >
  {value ? (
- <img src={value} alt="" className="absolute inset-0 h-full w-full object-cover transition group-hover:opacity-35 group-focus:opacity-35" />
+ <img
+ src={value}
+ alt=""
+ className={cn(
+ "absolute inset-0 h-full w-full transition group-hover:opacity-35 group-focus:opacity-35",
+ isCompactDropzone ? "object-contain p-2" : "object-cover"
+ )}
+ />
  ) : null}
  {value ? <div className="absolute inset-0 bg-[#FCFAF5]/70 opacity-0 transition group-hover:opacity-100 group-focus:opacity-100" /> : null}
  <div
  className={cn(
- "relative z-10 grid justify-items-center gap-2 px-5 text-[#6F6A5E] transition",
+ "relative z-10 grid justify-items-center text-[#6F6A5E] transition",
+ isCompactDropzone ? "gap-0 px-2" : "gap-2 px-5",
  value ? "opacity-0 group-hover:opacity-100 group-focus:opacity-100" : "opacity-100"
  )}
  >
- <span className="grid h-12 w-12 place-items-center rounded-[6px] border border-[#E3CFC5] bg-[#FCFAF5] text-[#B23C22]">
- <ImageUp className="h-6 w-6" />
+ <span className={cn(
+ "grid place-items-center rounded-[6px] border border-[#E3CFC5] bg-[#FCFAF5] text-[#B23C22]",
+ isCompactDropzone ? "h-9 w-9" : "h-12 w-12"
+ )}>
+ <ImageUp className={isCompactDropzone ? "h-4 w-4" : "h-6 w-6"} />
  </span>
- <span className="text-sm font-semibold text-[#7E2A16]">点击选择，或直接在此区域粘贴图片</span>
+ {isCompactDropzone ? <span className="sr-only">{buttonText}</span> : <span className="text-sm font-semibold text-[#7E2A16]">点击选择，或直接在此区域粘贴图片</span>}
  </div>
  </div>
  ) : value ? (
@@ -294,7 +310,7 @@ export function ImageCropUploader({
  className="hidden"
  onChange={(event) => chooseFile(event.target.files?.[0] ?? null)}
  />
- {presentation === "coverDropzone" ? null : (
+ {isDropzone ? null : (
  <label
  htmlFor={inputId}
  className={cn(

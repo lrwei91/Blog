@@ -114,6 +114,21 @@ describe("validateSiteConfig", () => {
       expect(result.error).toMatch(/url|alt/);
     }
   });
+
+  it("requires a safe company logo URL", () => {
+    const bad = structuredClone(defaultSiteConfig);
+    const experience = bad.blocks.find((block) => block.id === "job-baismgs");
+    if (!experience) throw new Error("experience block missing");
+    experience.metadata = {
+      ...experience.metadata,
+      companyLogo: "javascript:alert(1)"
+    };
+    const result = validateSiteConfig(bad);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error).toMatch(/companyLogo/);
+    }
+  });
 });
 
 const now = defaultSiteConfig.updatedAt;

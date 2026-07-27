@@ -6,6 +6,7 @@ export type ExperienceTimelineMeta = {
   startLabel: string;
   endLabel: string;
   tenure: string;
+  companyLogo: string;
 };
 
 export function getExperienceTimelineMeta(block: Block, now = new Date()): ExperienceTimelineMeta {
@@ -19,13 +20,16 @@ export function getExperienceTimelineMeta(block: Block, now = new Date()): Exper
   const badgeTenure = /^\d+\s*年(?:\s*\d+\s*个月)?$/.test(block.badge?.trim() ?? "")
     ? block.badge?.trim() ?? ""
     : "";
+  const companyLogo =
+    typeof block.metadata?.companyLogo === "string" ? block.metadata.companyLogo.trim() : "";
 
   return {
     role,
     period,
     startLabel: dates?.startLabel ?? "任职",
     endLabel: dates?.endLabel ?? "时间",
-    tenure: configuredTenure || badgeTenure || dates?.tenure || "—"
+    tenure: configuredTenure || badgeTenure || dates?.tenure || "—",
+    companyLogo
   };
 }
 
