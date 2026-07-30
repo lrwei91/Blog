@@ -39,7 +39,7 @@ describe("normalizeContentFlowConfig", () => {
 });
 
 describe("media shelf naming migration", () => {
-  it("renames only the legacy media module titles", () => {
+  it("keeps the media heading and content on the canonical module name", () => {
     const blocks = structuredClone(defaultSiteConfig.blocks);
     const heading = blocks.find((block) => block.id === "text-media");
     const content = blocks.find((block) => block.id === "media-shelf");

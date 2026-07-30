@@ -85,6 +85,7 @@ describe("life module readers", () => {
       { id: "watched", category: "movie", title: "Watched", status: "看过", progress: "completed" }
     ]));
 
+    expect(groups[0].progress).toBe("active");
     expect(groups.find((group) => group.progress === "active")).toMatchObject({
       label: "在看",
       items: { length: 8 },

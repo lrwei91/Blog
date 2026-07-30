@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { ArrowUpRight, BookOpen, Film, Gamepad2, Headphones, List, Sparkles, Star, X } from "lucide-react";
-import { useId, useMemo, useRef, useState } from "react";
+import { useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
 import type { Block } from "@/types/block";
 import { buildDoubanWatchlistGroups, readDoubanMediaSource, readMediaItems } from "@/lib/life-modules";
@@ -20,14 +20,13 @@ const categoryMeta: Record<MediaCategory, { label: string; icon: typeof Film }> 
 export function MediaShelf({ block }: { block: Block }) {
   const items = useMemo(() => readMediaItems(block.metadata?.mediaItems), [block.metadata?.mediaItems]);
   const source = readDoubanMediaSource(block.metadata?.mediaSource);
-  const [selectedGroup, setSelectedGroup] = useState<DoubanWatchlistProgress | null>(null);
+  const [activeProgress, setActiveProgress] = useState<DoubanWatchlistProgress>("active");
+  const [dialogProgress, setDialogProgress] = useState<DoubanWatchlistProgress | null>(null);
   const [dialogContainer, setDialogContainer] = useState<Element | null>(null);
-  const groups = useMemo(
-    () => buildDoubanWatchlistGroups(items).filter((group) => group.items.length > 0),
-    [items]
-  );
+  const groups = useMemo(() => buildDoubanWatchlistGroups(items), [items]);
   const displayedCount = groups.reduce((total, group) => total + group.items.length, 0);
-  const dialogGroup = groups.find((group) => group.progress === selectedGroup);
+  const activeGroup = groups.find((group) => group.progress === activeProgress) ?? groups[0];
+  const dialogGroup = groups.find((group) => group.progress === dialogProgress);
 
   return (
     <section className="media-shelf" aria-label="我的豆瓣片单">
@@ -38,7 +37,6 @@ export function MediaShelf({ block }: { block: Block }) {
             <i aria-hidden="true" />
             <span>{String(displayedCount).padStart(2, "0")} ENTRIES</span>
           </p>
-          <h3>我的豆瓣片单</h3>
           <p className="media-shelf__intro">正在看的故事与准备打开的下一部，按最近标记时间依次陈列。</p>
         </div>
         <div className="media-shelf__source">
@@ -56,51 +54,84 @@ export function MediaShelf({ block }: { block: Block }) {
         </div>
       </header>
 
-      {groups.length > 0 ? (
-        <div className="media-shelf__groups">
-          {groups.map((group) => (
-            <section className="media-shelf__group" key={group.progress} aria-labelledby={`media-shelf-${group.progress}`}>
-              <header className="media-shelf__group-header">
-                <div>
-                  <p>{group.eyebrow} · {String(group.items.length).padStart(2, "0")}</p>
-                  <h4 id={`media-shelf-${group.progress}`}>{group.label}</h4>
-                </div>
-                {group.items.length > 6 ? (
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      setDialogContainer(event.currentTarget.closest(".public-site"));
-                      setSelectedGroup(group.progress);
-                    }}
-                  >
-                    <List aria-hidden="true" />
-                    查看更多
-                    <ArrowUpRight aria-hidden="true" />
-                  </button>
-                ) : null}
-              </header>
-              <div className="media-shelf__grid">
-                {group.visibleItems.map((item, index) => (
-                  <MediaShelfCard item={item} index={index} key={item.id} />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      ) : (
-        <p className="life-module-empty">同步豆瓣后，这里会出现你的在看和想看片单。</p>
-      )}
+      <div className="media-shelf__tabs" role="tablist" aria-label="豆瓣片单分类">
+        {groups.map((group) => (
+          <button
+            id={`media-shelf-tab-${group.progress}`}
+            key={group.progress}
+            type="button"
+            role="tab"
+            aria-selected={activeProgress === group.progress}
+            aria-controls={`media-shelf-panel-${group.progress}`}
+            tabIndex={activeProgress === group.progress ? 0 : -1}
+            data-progress={group.progress}
+            onClick={() => setActiveProgress(group.progress)}
+            onKeyDown={handleTabKeyDown}
+          >
+            <span>{group.label}</span>
+            <small>{String(group.items.length).padStart(2, "0")}</small>
+          </button>
+        ))}
+      </div>
+
+      <section
+        className="media-shelf__tab-panel"
+        id={`media-shelf-panel-${activeGroup.progress}`}
+        role="tabpanel"
+        aria-labelledby={`media-shelf-tab-${activeGroup.progress}`}
+      >
+        {activeGroup.items.length > 0 ? (
+          <>
+            <div className="media-shelf__grid">
+              {activeGroup.visibleItems.map((item, index) => (
+                <MediaShelfCard item={item} index={index} key={item.id} />
+              ))}
+            </div>
+            {activeGroup.items.length > 6 ? (
+              <footer className="media-shelf__panel-footer">
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    setDialogContainer(event.currentTarget.closest(".public-site"));
+                    setDialogProgress(activeGroup.progress);
+                  }}
+                >
+                  <List aria-hidden="true" />
+                  查看更多
+                  <ArrowUpRight aria-hidden="true" />
+                </button>
+              </footer>
+            ) : null}
+          </>
+        ) : (
+          <p className="life-module-empty">这个分类暂时没有记录。</p>
+        )}
+      </section>
 
       {dialogGroup ? (
         <MediaShelfDialog
           title={`${dialogGroup.label} · 全部记录`}
           items={dialogGroup.items}
           container={dialogContainer}
-          onClose={() => setSelectedGroup(null)}
+          onClose={() => setDialogProgress(null)}
         />
       ) : null}
     </section>
   );
+}
+
+function handleTabKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+  if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+  const tabs = Array.from(
+    event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>("[role='tab']") ?? []
+  );
+  const currentIndex = tabs.indexOf(event.currentTarget);
+  if (currentIndex < 0 || tabs.length < 2) return;
+  event.preventDefault();
+  const direction = event.key === "ArrowRight" ? 1 : -1;
+  const nextTab = tabs[(currentIndex + direction + tabs.length) % tabs.length];
+  nextTab.focus();
+  nextTab.click();
 }
 
 function MediaShelfCard({ item, index }: { item: MediaItem; index: number }) {
@@ -114,7 +145,7 @@ function MediaShelfCard({ item, index }: { item: MediaItem; index: number }) {
             src={item.coverImage}
             alt={`${item.title}封面`}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1180px) 50vw, 33vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 1180px) 50vw, 25vw"
             unoptimized
           />
         ) : (

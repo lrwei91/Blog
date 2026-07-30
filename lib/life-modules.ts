@@ -71,8 +71,8 @@ export function buildDoubanWatchlistGroups(items: MediaItem[]) {
   const movieItems = sortMediaItemsByMarkedAt(items)
     .filter((item) => item.category === "movie");
   return ([
-    { progress: "wishlist" as const, label: "想看", eyebrow: "WISHLIST" },
-    { progress: "active" as const, label: "在看", eyebrow: "WATCHING" }
+    { progress: "active" as const, label: "在看", eyebrow: "WATCHING" },
+    { progress: "wishlist" as const, label: "想看", eyebrow: "WISHLIST" }
   ]).map((group) => {
     const groupItems = movieItems.filter(
       (item) => getDoubanWatchlistProgress(item) === group.progress

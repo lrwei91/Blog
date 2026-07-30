@@ -136,14 +136,10 @@ function normalizeProfile(profile: SiteConfig["profile"]): SiteConfig["profile"]
 export function normalizeMediaShelfNames(blocks: SiteConfig["blocks"]) {
   return blocks.map((block) => {
     if (block.id !== "text-media" && block.id !== "media-shelf") return block;
-    const hasLegacyTitle = block.title.trim() === "最近在看 / 玩 / 听";
-    const hasLegacySubtitle = block.subtitle?.trim() === "Media Shelf";
-    if (!hasLegacyTitle && !hasLegacySubtitle) return block;
-
     return {
       ...block,
-      title: hasLegacyTitle ? "我的豆瓣片单" : block.title,
-      subtitle: hasLegacySubtitle ? "Douban Watchlist" : block.subtitle
+      title: "我的豆瓣片单",
+      subtitle: block.id === "text-media" ? "Douban Watchlist" : block.subtitle
     };
   });
 }
