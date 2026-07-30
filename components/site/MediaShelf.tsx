@@ -83,11 +83,11 @@ export function MediaShelf({ block }: { block: Block }) {
         {activeGroup.items.length > 0 ? (
           <>
             <div className="media-shelf__grid">
-              {activeGroup.visibleItems.map((item, index) => (
-                <MediaShelfCard item={item} index={index} key={item.id} />
+              {activeGroup.visibleItems.map((item) => (
+                <MediaShelfCard item={item} key={item.id} />
               ))}
             </div>
-            {activeGroup.items.length > 6 ? (
+            {activeGroup.items.length > 8 ? (
               <footer className="media-shelf__panel-footer">
                 <button
                   type="button"
@@ -134,7 +134,7 @@ function handleTabKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
   nextTab.click();
 }
 
-function MediaShelfCard({ item, index }: { item: MediaItem; index: number }) {
+function MediaShelfCard({ item }: { item: MediaItem }) {
   const meta = categoryMeta[item.category];
   const Icon = meta.icon;
   const content = (
@@ -151,7 +151,6 @@ function MediaShelfCard({ item, index }: { item: MediaItem; index: number }) {
         ) : (
           <Icon aria-hidden="true" />
         )}
-        <span className="media-shelf__number">{String(index + 1).padStart(2, "0")}</span>
         <span className="media-shelf__status">{item.status}</span>
       </div>
       <div className="media-shelf__body">

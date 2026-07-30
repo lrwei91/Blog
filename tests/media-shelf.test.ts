@@ -44,6 +44,7 @@ describe("MediaShelf", () => {
     expect(html).not.toContain("在看影片 1");
     expect(html).not.toContain("想看影片 9");
     expect(html.match(/media-shelf__card/g)).toHaveLength(8);
+    expect(html).not.toContain("media-shelf__number");
     expect(html).not.toContain("<h3>我的豆瓣片单</h3>");
     expect(html).toContain("查看更多");
   });
