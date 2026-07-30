@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import type { Block } from "@/types/block";
 import { cn, getSectionAnchorId, isSectionTextBlock } from "@/lib/utils";
 import type { ExperienceTimelineMeta } from "@/lib/experience-timeline";
+import { isModalSectionHeading } from "@/lib/modal-content";
 import { getPublicBlockPlacementStyle, getPublicBlockSizeClass } from "@/constants/block-layout";
 import { BlockIcon } from "@/components/blocks/BlockIcon";
 import { ProjectBlock } from "@/components/blocks/ProjectBlock";
@@ -359,7 +360,7 @@ function ModalBody({ body }: { body: string }) {
  </aside>
  );
  }
- if (!section.startsWith("•") && section.length <= 20) {
+ if (isModalSectionHeading(section)) {
  return <h4 key={key}><span />{section}</h4>;
  }
  if (section.startsWith("•")) {
