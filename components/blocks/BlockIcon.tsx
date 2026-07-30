@@ -9,22 +9,16 @@ import {
  Cpu,
  Database,
  Gamepad2,
- Github,
- Globe2,
- Instagram,
- LinkIcon,
- Mail,
  Map,
  Sparkles,
  TerminalSquare,
- Twitter,
  User,
  Users,
- Youtube,
- Linkedin,
  Zap
 } from "lucide-react";
 import type { CSSProperties } from "react";
+import { SocialIcon } from "@/components/site/SocialIcon";
+import { socialIconPresets } from "@/lib/social-links";
 
 export const blockIconPresets = [
  "build",
@@ -48,6 +42,19 @@ export const blockIconPresets = [
  "x",
  "instagram",
  "youtube",
+ "telegram",
+ "douban",
+ "bilibili",
+ "tiktok",
+ "xiaohongshu",
+ "zhihu",
+ "qq",
+ "discord",
+ "facebook",
+ "threads",
+ "bluesky",
+ "mastodon",
+ "spotify",
  "linkedin",
  "website",
  "mail"
@@ -77,12 +84,8 @@ export function BlockIcon({ name, className = "h-6 w-6", style }: { name?: strin
  if (name === "award") return <Award className={className} style={style} />;
  if (name === "map") return <Map className={className} style={style} />;
  if (name === "sparkle") return <Sparkles className={className} style={style} />;
- if (name === "github") return <Github className={className} style={style} />;
- if (name === "x" || name === "twitter") return <Twitter className={className} style={style} />;
- if (name === "instagram") return <Instagram className={className} style={style} />;
- if (name === "youtube") return <Youtube className={className} style={style} />;
- if (name === "linkedin") return <Linkedin className={className} style={style} />;
- if (name === "website" || name === "globe") return <Globe2 className={className} style={style} />;
- if (name === "mail" || name === "email") return <Mail className={className} style={style} />;
- return <LinkIcon className={className} style={style} />;
+ if (socialIconPresets.includes(name as (typeof socialIconPresets)[number]) || name === "twitter" || name === "globe" || name === "email") {
+  return <SocialIcon name={name} className={className} style={style} />;
+ }
+ return <SocialIcon name="link" className={className} style={style} />;
 }

@@ -38,7 +38,6 @@ import {
  LogOut,
  Mail,
  MapPin,
- MessagesSquare,
  Palette,
  PanelLeft,
  Pencil,
@@ -46,7 +45,6 @@ import {
  Plus,
  RectangleHorizontal,
  RectangleVertical,
- Radio,
  Save,
  Settings,
  Smartphone,
@@ -62,11 +60,18 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
 import { toast } from "sonner";
+import { SocialIcon } from "@/components/site/SocialIcon";
 import type { Block, BlockSize, LayoutDevice } from "@/types/block";
 import type { Profile, SocialLink } from "@/types/profile";
 import type { Section } from "@/types/section";
 import type { SiteConfig, SiteLanguage } from "@/types/site-config";
 import { validateSiteConfig } from "@/lib/validators";
+import {
+ getSocialIconLabel,
+ inferSocialIconFromUrl,
+ inferSocialLabelFromUrl,
+ socialIconPresets
+} from "@/lib/social-links";
 import {
  bySortOrder,
  buildRenderModel,
@@ -2161,62 +2166,6 @@ function InlineProfileText({
  </span>
  </button>
  );
-}
-
-const socialIconPresets = ["link", "github", "x", "weibo", "wechat", "instagram", "youtube", "linkedin", "website", "mail"] as const;
-
-function SocialIcon({ name }: { name?: string }) {
- const iconClass = "h-4 w-4";
- if (name === "github") return <Github className={iconClass} />;
- if (name === "twitter" || name === "x") return <Twitter className={iconClass} />;
- if (name === "weibo") return <Radio className={iconClass} />;
- if (name === "wechat") return <MessagesSquare className={iconClass} />;
- if (name === "instagram") return <Instagram className={iconClass} />;
- if (name === "youtube") return <Youtube className={iconClass} />;
- if (name === "linkedin") return <Linkedin className={iconClass} />;
- if (name === "website" || name === "globe") return <Globe2 className={iconClass} />;
- if (name === "mail" || name === "email") return <Mail className={iconClass} />;
- return <LinkIcon className={iconClass} />;
-}
-
-function inferSocialIconFromUrl(value: string, currentIcon?: string) {
- if (!value || value === "https://") return currentIcon || "link";
- const lowerValue = value.toLowerCase();
- if (lowerValue.includes("github.com")) return "github";
- if (lowerValue.includes("twitter.com") || lowerValue.includes("x.com")) return "x";
- if (lowerValue.includes("weibo.com")) return "weibo";
- if (lowerValue.includes("weixin.qq.com") || lowerValue.includes("wechat.com")) return "wechat";
- if (lowerValue.includes("instagram.com")) return "instagram";
- if (lowerValue.includes("youtube.com") || lowerValue.includes("youtu.be")) return "youtube";
- if (lowerValue.includes("linkedin.com")) return "linkedin";
- if (lowerValue.startsWith("mailto:")) return "mail";
- return currentIcon || "website";
-}
-
-function inferSocialLabelFromUrl(value: string) {
- const icon = inferSocialIconFromUrl(value);
- if (icon === "github") return "GitHub";
- if (icon === "twitter" || icon === "x") return "X";
- if (icon === "weibo") return "Weibo";
- if (icon === "wechat") return "WeChat";
- if (icon === "instagram") return "Instagram";
- if (icon === "youtube") return "YouTube";
- if (icon === "linkedin") return "LinkedIn";
- if (icon === "mail") return "Email";
- return "Website";
-}
-
-function getSocialIconLabel(icon: string) {
- if (icon === "x" || icon === "twitter") return "X";
- if (icon === "github") return "GitHub";
- if (icon === "weibo") return "Weibo";
- if (icon === "wechat") return "WeChat";
- if (icon === "youtube") return "YouTube";
- if (icon === "linkedin") return "LinkedIn";
- if (icon === "website") return "Website";
- if (icon === "mail") return "Email";
- if (icon === "instagram") return "Instagram";
- return "Link";
 }
 
 function moveItem<T>(items: T[], oldIndex: number, newIndex: number) {
