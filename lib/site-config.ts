@@ -88,6 +88,7 @@ function normalizeSiteConfig(config: SiteConfig): SiteConfig {
       {
         ...snapshot,
         profile: normalizeProfile(snapshot.profile),
+        blocks: normalizeMediaShelfNames(snapshot.blocks),
         theme: normalizeThemeConfig(snapshot.theme)
       }
     ])
@@ -95,6 +96,7 @@ function normalizeSiteConfig(config: SiteConfig): SiteConfig {
   const normalizedConfig = normalizeContentFlowConfig({
     ...config,
     profile: normalizeProfile(config.profile),
+    blocks: normalizeMediaShelfNames(config.blocks),
     theme: normalizeThemeConfig(config.theme),
     settings: {
       ...defaultSiteConfig.settings,
@@ -129,4 +131,19 @@ function normalizeProfile(profile: SiteConfig["profile"]): SiteConfig["profile"]
         ? { ...link, href: "" }
         : link)
   };
+}
+
+export function normalizeMediaShelfNames(blocks: SiteConfig["blocks"]) {
+  return blocks.map((block) => {
+    if (block.id !== "text-media" && block.id !== "media-shelf") return block;
+    const hasLegacyTitle = block.title.trim() === "最近在看 / 玩 / 听";
+    const hasLegacySubtitle = block.subtitle?.trim() === "Media Shelf";
+    if (!hasLegacyTitle && !hasLegacySubtitle) return block;
+
+    return {
+      ...block,
+      title: hasLegacyTitle ? "我的豆瓣片单" : block.title,
+      subtitle: hasLegacySubtitle ? "Douban Watchlist" : block.subtitle
+    };
+  });
 }

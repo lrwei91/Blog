@@ -30,8 +30,13 @@ These variables must stay server-only:
 - `ADMIN_PASSWORD`
 - `ADMIN_PASSWORD_HASH`
 - `SESSION_SECRET`
+- `CRON_SECRET`
 
 Do not prefix them with `NEXT_PUBLIC_`.
+
+`GET /api/cron/douban-media` only accepts `Authorization: Bearer <CRON_SECRET>`.
+Vercel invokes it once per day from `vercel.json`; the route then checks each media
+module's configured interval instead of fetching every module on every invocation.
 
 Only `NEXT_PUBLIC_SITE_URL` is safe to expose to the browser.
 
@@ -112,9 +117,10 @@ The app can run without Vercel Blob:
 4. Set `BLOB_READ_WRITE_TOKEN`.
 5. Set `ADMIN_PASSWORD` for the simplest setup, or set `ADMIN_PASSWORD_HASH` for the stronger setup.
 6. Optionally set a random `SESSION_SECRET` of at least 32 characters.
-7. Sign in at `/admin/login`, open **项目设置**, and confirm project name, public title, description, URL, SEO fields, versions, and languages inside each version.
-8. Save once so the production Blob config is initialized.
-9. Run a production build before publishing major changes.
+7. Set a random `CRON_SECRET` so the scheduled Douban refresh route can run.
+8. Sign in at `/admin/login`, open **项目设置**, and confirm project name, public title, description, URL, SEO fields, versions, and languages inside each version.
+9. Save once so the production Blob config is initialized.
+10. Run a production build before publishing major changes.
 
 ## Validation Commands
 

@@ -49,6 +49,7 @@ NEXT_PUBLIC_SITE_URL
 BLOB_READ_WRITE_TOKEN
 ADMIN_PASSWORD or ADMIN_PASSWORD_HASH
 SESSION_SECRET
+CRON_SECRET
 ```
 
 Meaning:
@@ -58,6 +59,7 @@ Meaning:
 - `ADMIN_PASSWORD`: simplest admin login secret.
 - `ADMIN_PASSWORD_HASH`: bcrypt hash. If set, it takes priority over `ADMIN_PASSWORD`.
 - `SESSION_SECRET`: server-only HMAC signing secret for admin sessions. Use at least 32 characters.
+- `CRON_SECRET`: server-only random token used by Vercel Cron for scheduled Douban refreshes.
 
 Never prefix server-only secrets with `NEXT_PUBLIC_`.
 
@@ -66,7 +68,7 @@ Never prefix server-only secrets with `NEXT_PUBLIC_`.
 Keep these two categories separate:
 
 - `VERCEL_TOKEN`: deploy credential for the AI/CLI. Put it in WorkBuddy/Codex/CI environment when unattended deployment is needed. Do not add it to the Vercel project as an app runtime variable.
-- App env vars such as `BLOB_READ_WRITE_TOKEN`, `ADMIN_PASSWORD`, and `SESSION_SECRET`: set these on the Vercel project so the deployed app can run.
+- App env vars such as `BLOB_READ_WRITE_TOKEN`, `ADMIN_PASSWORD`, `SESSION_SECRET`, and `CRON_SECRET`: set these on the Vercel project so the deployed app can run.
 
 If the AI generates an admin password, it should:
 

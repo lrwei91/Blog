@@ -724,8 +724,8 @@ export const defaultSiteConfig: SiteConfig = {
     {
       id: "text-media",
       sectionId: topLevelBlockSectionId,
-      title: "最近在看 / 玩 / 听",
-      subtitle: "Media Shelf",
+      title: "我的豆瓣片单",
+      subtitle: "Douban Watchlist",
       description: "",
       size: "section-text",
       responsiveSizes: { desktop: "section-text", mobile: "section-text" },
@@ -747,7 +747,7 @@ export const defaultSiteConfig: SiteConfig = {
     {
       id: "media-shelf",
       sectionId: topLevelBlockSectionId,
-      title: "最近在看 / 玩 / 听",
+      title: "我的豆瓣片单",
       subtitle: "",
       description: "",
       size: "full-wide",
@@ -762,7 +762,7 @@ export const defaultSiteConfig: SiteConfig = {
       textColor: "",
       metadata: {
         mediaItems: [],
-        mediaSource: { provider: "douban", profileUrl: "" }
+        mediaSource: { provider: "douban", profileUrl: "", syncIntervalDays: 1 }
       },
       isVisible: false,
       isFeatured: false,

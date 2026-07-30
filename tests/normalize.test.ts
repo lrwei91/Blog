@@ -7,6 +7,7 @@ import {
   normalizeContentFlowConfig
 } from "@/lib/utils";
 import { defaultSiteConfig } from "@/lib/default-site-config";
+import { normalizeMediaShelfNames } from "@/lib/site-config";
 
 describe("normalizeContentFlowConfig", () => {
   it("preserves profile and settings while collapsing sections into blocks", () => {
@@ -34,6 +35,26 @@ describe("normalizeContentFlowConfig", () => {
     config.settings.topLevelBlocksSortOrder = 5;
     const normalized = normalizeContentFlowConfig(config);
     expect(normalized.settings.topLevelBlocksSortOrder).toBeUndefined();
+  });
+});
+
+describe("media shelf naming migration", () => {
+  it("renames only the legacy media module titles", () => {
+    const blocks = structuredClone(defaultSiteConfig.blocks);
+    const heading = blocks.find((block) => block.id === "text-media");
+    const content = blocks.find((block) => block.id === "media-shelf");
+    if (!heading || !content) throw new Error("media blocks missing");
+    heading.title = "最近在看 / 玩 / 听";
+    heading.subtitle = "Media Shelf";
+    content.title = "最近在看 / 玩 / 听";
+
+    const normalized = normalizeMediaShelfNames(blocks);
+
+    expect(normalized.find((block) => block.id === "text-media")).toMatchObject({
+      title: "我的豆瓣片单",
+      subtitle: "Douban Watchlist"
+    });
+    expect(normalized.find((block) => block.id === "media-shelf")?.title).toBe("我的豆瓣片单");
   });
 });
 

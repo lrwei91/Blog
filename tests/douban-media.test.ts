@@ -55,8 +55,10 @@ describe("Douban media sync", () => {
   });
 
   it("syncs through the server fetcher and returns a canonical cached result", async () => {
+    const requestedUrls: string[] = [];
     const fetcher = (async (input: RequestInfo | URL) => {
       const url = String(input);
+      requestedUrls.push(url);
       return new Response(url.includes("movie.douban.com") && url.includes("/do?") ? movieItemHtml : "", {
         status: 200,
         headers: { "Content-Type": "text/html" }
@@ -67,11 +69,35 @@ describe("Douban media sync", () => {
     expect(result.items).toHaveLength(1);
     expect(result.source.profileUrl).toBe("https://www.douban.com/people/lrwei91/");
     expect(result.source.failedPages).toBe(0);
+    expect(requestedUrls).toHaveLength(2);
+    expect(requestedUrls.every((url) =>
+      url.includes("movie.douban.com") && (url.includes("/do?") || url.includes("/wish?"))
+    )).toBe(true);
+  });
+
+  it("keeps every fetched record instead of truncating the archive to the homepage limit", async () => {
+    const pageWithThirteenItems = Array.from({ length: 13 }, (_, index) =>
+      movieItemHtml
+        .replaceAll("1234567", String(2_000_000 + index))
+        .replaceAll("示例电影", `示例电影 ${index + 1}`)
+    ).join("");
+    const fetcher = (async (input: RequestInfo | URL) =>
+      new Response(
+        String(input).includes("movie.douban.com") && String(input).includes("/do?")
+          ? pageWithThirteenItems
+          : "",
+        { status: 200 }
+      )) as typeof fetch;
+
+    const result = await syncDoubanMedia("https://www.douban.com/people/lrwei91/", fetcher);
+
+    expect(result.items).toHaveLength(13);
+    expect(result.source.totalItems).toBe(13);
   });
 
   it("rejects an empty partial response so saved content is not replaced", async () => {
     const fetcher = (async (input: RequestInfo | URL) => {
-      if (String(input).includes("movie.douban.com")) {
+      if (String(input).includes("/do?")) {
         throw new Error("temporary upstream failure");
       }
       return new Response("", { status: 200 });

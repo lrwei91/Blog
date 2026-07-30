@@ -9,6 +9,7 @@ export type NowStatus = {
 
 export type MediaCategory = "movie" | "book" | "game" | "music" | "other";
 export type MediaProgress = "active" | "wishlist" | "completed";
+export type DoubanWatchlistProgress = Extract<MediaProgress, "active" | "wishlist">;
 
 export type MediaItem = {
   id: string;
@@ -29,6 +30,7 @@ export type MediaItem = {
 export type DoubanMediaSource = {
   provider: "douban";
   profileUrl: string;
+  syncIntervalDays: 0 | 1 | 3 | 7 | 14 | 30;
   lastSyncedAt?: string;
   totalItems?: number;
   failedPages?: number;

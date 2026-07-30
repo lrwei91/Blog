@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
 import type { EditorLanguage } from "@/components/admin/editor-i18n";
 import { MediaUploader } from "@/components/admin/MediaUploader";
-import { readDoubanMediaSource, readMediaItems, readNowStatus, readPhotoStories } from "@/lib/life-modules";
+import { getDoubanWatchlistProgress, readDoubanMediaSource, readMediaItems, readNowStatus, readPhotoStories, sortMediaItemsByMarkedAt } from "@/lib/life-modules";
 import { CHINA_MAP_VIEW_BOX, chinaProvincePaths } from "@/lib/china-map-paths";
 
 export type TravelLocationEditorItem = {
@@ -221,7 +221,8 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  }
 
  if (moduleType === "media") {
- const items = readMediaItems(block.metadata?.mediaItems);
+ const items = sortMediaItemsByMarkedAt(readMediaItems(block.metadata?.mediaItems))
+ .filter((item) => item.category === "movie" && getDoubanWatchlistProgress(item));
  const source = readDoubanMediaSource(block.metadata?.mediaSource);
  return (
  <div className="min-h-48 rounded-[8px] border border-[#DDD6C8] bg-[#F4EBE6] p-5">
@@ -238,7 +239,7 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  </div>
  <h3 className="line-clamp-2 p-3 text-sm font-bold text-[#201D18]">{item.title}</h3>
  </div>
- )) : <EmptyState text="暂无书影音条目" />}
+ )) : <EmptyState text="暂无豆瓣影视条目" />}
  </div>
  </div>
  );
@@ -274,7 +275,7 @@ function getModuleTitle(type: SpecialModuleType, language: EditorLanguage) {
  if (type === "travel") return isZh ? "旅行足迹设置" : "Travel footprint";
  if (type === "projects") return isZh ? "个人项目设置" : "Personal projects";
  if (type === "now") return isZh ? "此刻 NOW 设置" : "Now status";
- if (type === "media") return isZh ? "最近在看 / 玩 / 听" : "Media shelf";
+ if (type === "media") return isZh ? "我的豆瓣片单" : "Douban watchlist";
  return isZh ? "照片故事设置" : "Photo stories";
 }
 
@@ -574,7 +575,7 @@ function MediaItemsEditor({
  return;
  }
 
- onSync(body.source, body.items);
+ onSync({ ...body.source, syncIntervalDays: source.syncIntervalDays }, body.items);
  toast.success(isZh ? `已同步 ${body.items.length} 条豆瓣记录` : `Synced ${body.items.length} Douban items`);
  } catch {
  toast.error(isZh ? "豆瓣同步失败" : "Douban sync failed", {
@@ -591,17 +592,39 @@ function MediaItemsEditor({
  <div>
  <h3 className="font-bold text-[#201D18]">{isZh ? "豆瓣公开主页同步" : "Douban profile sync"}</h3>
  <p className="mt-1 text-xs leading-5 text-[#6F6A5E]">
- {isZh ? "填写豆瓣个人主页 URL，同步最近的在看、想看、看过、在读、在听和游戏记录。同步结果会保存到本站，主页访问不依赖豆瓣实时响应。" : "Enter a public Douban profile URL. Synced results are stored in this site config."}
+ {isZh ? "填写豆瓣个人主页 URL，同步影视类的在看和想看记录。同步结果会保存到本站，主页访问不依赖豆瓣实时响应。" : "Enter a public Douban profile URL to sync watching and wishlist movie records."}
  </p>
  </div>
- <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+ <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_12rem_auto] md:items-end">
  <Field label={isZh ? "豆瓣个人主页 URL" : "Douban profile URL"}>
  <Input
  type="url"
  value={source.profileUrl}
- onChange={(event) => onSourceChange({ ...source, profileUrl: event.target.value })}
+ onChange={(event) => onSourceChange({
+ ...source,
+ profileUrl: event.target.value,
+ lastSyncedAt: undefined,
+ totalItems: undefined,
+ failedPages: undefined
+ })}
  placeholder="https://www.douban.com/people/your-id/"
  />
+ </Field>
+ <Field label={isZh ? "自动抓取周期" : "Auto-sync interval"}>
+ <Select
+ value={String(source.syncIntervalDays)}
+ onChange={(event) => onSourceChange({
+ ...source,
+ syncIntervalDays: Number(event.target.value) as DoubanMediaSource["syncIntervalDays"]
+ })}
+ >
+ <option value="0">{isZh ? "不自动抓取" : "Disabled"}</option>
+ <option value="1">{isZh ? "每天" : "Daily"}</option>
+ <option value="3">{isZh ? "每 3 天" : "Every 3 days"}</option>
+ <option value="7">{isZh ? "每 7 天" : "Every 7 days"}</option>
+ <option value="14">{isZh ? "每 14 天" : "Every 14 days"}</option>
+ <option value="30">{isZh ? "每 30 天" : "Every 30 days"}</option>
+ </Select>
  </Field>
  <Button type="button" onClick={syncFromDouban} disabled={isSyncing} className="md:min-w-32">
  <RefreshCw className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`} />
@@ -610,6 +633,7 @@ function MediaItemsEditor({
  </div>
  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#6F6A5E]">
  <span>{isZh ? "当前条目" : "Items"}：{items.length}</span>
+ <span>{isZh ? "自动抓取" : "Auto sync"}：{formatSyncInterval(source.syncIntervalDays, isZh)}</span>
  {source.lastSyncedAt ? <span>{isZh ? "上次同步" : "Last sync"}：{formatAdminDate(source.lastSyncedAt)}</span> : null}
  {source.failedPages ? <span className="text-amber-700">{source.failedPages} {isZh ? "个分类页暂未读取" : "pages unavailable"}</span> : null}
  {source.profileUrl ? <a href={source.profileUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[#B23C22] hover:underline">{isZh ? "打开豆瓣主页" : "Open profile"} <ExternalLink className="h-3 w-3" /></a> : null}
@@ -623,8 +647,8 @@ function MediaItemsEditor({
  </summary>
  <div className="grid gap-4 border-t border-[#DDD6C8] p-4">
  <div className="flex items-center justify-between gap-3">
- <p className="text-xs text-[#6F6A5E]">{isZh ? "可补充游戏或调整同步后的标题、状态与短评；下次同步会替换这里的内容。" : "Add games or adjust synced content. The next sync replaces this list."}</p>
- <Button type="button" variant="secondary" size="sm" onClick={() => onChange([...items, { id: crypto.randomUUID(), category: "game", title: isZh ? "新条目" : "New item", status: isZh ? "在玩" : "Playing", source: "manual" }])}><Plus className="h-4 w-4" /> {isZh ? "添加条目" : "Add item"}</Button>
+ <p className="text-xs text-[#6F6A5E]">{isZh ? "可调整同步后的影视标题、状态与短评；下次同步会替换这里的内容。" : "Adjust synced movie content. The next sync replaces this list."}</p>
+ <Button type="button" variant="secondary" size="sm" onClick={() => onChange([...items, { id: crypto.randomUUID(), category: "movie", title: isZh ? "新条目" : "New item", status: isZh ? "想看" : "Wishlist", progress: "wishlist", source: "manual" }])}><Plus className="h-4 w-4" /> {isZh ? "添加条目" : "Add item"}</Button>
  </div>
  {items.length === 0 ? <EmptyState text={isZh ? "暂无内容，请先同步豆瓣或手动添加。" : "Sync Douban or add an item manually."} /> : null}
  {items.map((item, index) => (
@@ -632,11 +656,26 @@ function MediaItemsEditor({
  <ItemToolbar label={`${String(index + 1).padStart(2, "0")} · ${item.title}`} index={index} length={items.length} onMove={(direction) => onChange(moveItem(items, index, direction))} onDelete={() => onChange(items.filter((candidate) => candidate.id !== item.id))} editorLanguage={editorLanguage} />
  <div className="grid gap-3 md:grid-cols-2">
  <Field label={isZh ? "分类" : "Category"}>
- <Select value={item.category} onChange={(event) => updateItem(index, { category: event.target.value as MediaItem["category"] })}>
- <option value="movie">{isZh ? "电影 / 剧集" : "Movie / TV"}</option><option value="book">{isZh ? "书籍" : "Book"}</option><option value="game">{isZh ? "游戏" : "Game"}</option><option value="music">{isZh ? "音乐" : "Music"}</option><option value="other">{isZh ? "其他" : "Other"}</option>
+ <Select value="movie" disabled>
+ <option value="movie">{isZh ? "影视" : "Movie / TV"}</option>
  </Select>
  </Field>
- <Field label={isZh ? "状态" : "Status"}><Input value={item.status} onChange={(event) => updateItem(index, { status: event.target.value })} placeholder={isZh ? "例如：正在看" : "Watching"} /></Field>
+ <Field label={isZh ? "片单分类" : "Watchlist group"}>
+ <Select
+ value={getDoubanWatchlistProgress(item) ?? "wishlist"}
+ onChange={(event) => {
+ const progress = event.target.value as "active" | "wishlist";
+ updateItem(index, {
+ category: "movie",
+ progress,
+ status: progress === "active" ? "在看" : "想看"
+ });
+ }}
+ >
+ <option value="active">{isZh ? "在看" : "Watching"}</option>
+ <option value="wishlist">{isZh ? "想看" : "Wishlist"}</option>
+ </Select>
+ </Field>
  <Field label={isZh ? "名称" : "Title"}><Input value={item.title} onChange={(event) => updateItem(index, { title: event.target.value })} /></Field>
  <Field label={isZh ? "作者 / 主创（可选）" : "Creator (optional)"}><Input value={item.creator ?? ""} onChange={(event) => updateItem(index, { creator: event.target.value })} /></Field>
  <Field label={isZh ? "评分（0–5，可选）" : "Rating (0–5, optional)"}><Input type="number" min="0" max="5" step="0.1" value={item.rating ?? ""} onChange={(event) => updateItem(index, { rating: event.target.value === "" ? undefined : Number(event.target.value) })} /></Field>
@@ -714,6 +753,12 @@ function formatAdminDate(value: string) {
  hour: "2-digit",
  minute: "2-digit"
  }).format(date);
+}
+
+function formatSyncInterval(intervalDays: DoubanMediaSource["syncIntervalDays"], isZh: boolean) {
+ if (intervalDays === 0) return isZh ? "关闭" : "Disabled";
+ if (intervalDays === 1) return isZh ? "每天" : "Daily";
+ return isZh ? `每 ${intervalDays} 天` : `Every ${intervalDays} days`;
 }
 
 function ItemToolbar({

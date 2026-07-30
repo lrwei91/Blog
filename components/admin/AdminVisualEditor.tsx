@@ -240,8 +240,8 @@ const blockTemplates: {
  moduleType: "now"
  },
  {
- label: "最近在看 / 玩 / 听",
- description: "书影音与游戏清单",
+ label: "我的豆瓣片单",
+ description: "豆瓣在看与想看片单",
  size: "full-wide",
  icon: <BookOpen />,
  moduleType: "media"
@@ -287,7 +287,7 @@ const localizedTemplateText: Record<
  旅行足迹: { label: { "zh-CN": "旅行足迹", en: "Travel footprint" }, description: { "zh-CN": "中国地图与足迹列表", en: "China map and travel log" } },
  个人项目: { label: { "zh-CN": "个人项目", en: "Personal projects" }, description: { "zh-CN": "项目卡片与双链接", en: "Project cards and links" } },
  "此刻 NOW": { label: { "zh-CN": "此刻 NOW", en: "Now" }, description: { "zh-CN": "近期状态与生活关键词", en: "Current status and life keywords" } },
- "最近在看 / 玩 / 听": { label: { "zh-CN": "最近在看 / 玩 / 听", en: "Media shelf" }, description: { "zh-CN": "书影音与游戏清单", en: "Movies, books, games and music" } },
+ "我的豆瓣片单": { label: { "zh-CN": "我的豆瓣片单", en: "Douban watchlist" }, description: { "zh-CN": "豆瓣在看与想看片单", en: "Douban watching and wishlist" } },
  照片故事: { label: { "zh-CN": "照片故事", en: "Photo stories" }, description: { "zh-CN": "多图故事与灯箱预览", en: "Photo stories and lightbox" } }
 };
 
@@ -5405,14 +5405,14 @@ function getSpecialModuleDefaults(moduleType: SpecialModuleType, editorLanguage:
  metadata: { nowStatus: { headline: "", body: "", mood: "", location: "", tags: [], updatedAt: new Date().toISOString().slice(0, 10) } }
  };
  if (moduleType === "media") return {
- headingTitle: isZh ? "最近在看 / 玩 / 听" : "Media Shelf",
- headingSubtitle: "Media Shelf",
- contentTitle: isZh ? "最近在看 / 玩 / 听" : "Media Shelf",
+ headingTitle: isZh ? "我的豆瓣片单" : "Douban Watchlist",
+ headingSubtitle: "Douban Watchlist",
+ contentTitle: isZh ? "我的豆瓣片单" : "Douban Watchlist",
  description: "",
  icon: "book-open",
  titleSize: "md" as const,
  visible: false,
- metadata: { mediaItems: [], mediaSource: { provider: "douban", profileUrl: "" } }
+ metadata: { mediaItems: [], mediaSource: { provider: "douban", profileUrl: "", syncIntervalDays: 1 } }
  };
  return {
  headingTitle: isZh ? "照片故事" : "Photo Stories",

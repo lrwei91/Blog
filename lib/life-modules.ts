@@ -1,5 +1,6 @@
 import type {
   DoubanMediaSource,
+  DoubanWatchlistProgress,
   MediaCategory,
   MediaItem,
   MediaProgress,
@@ -10,6 +11,7 @@ import type {
 
 const mediaCategories = new Set<MediaCategory>(["movie", "book", "game", "music", "other"]);
 const mediaProgresses = new Set<MediaProgress>(["active", "wishlist", "completed"]);
+const doubanSyncIntervals = new Set<DoubanMediaSource["syncIntervalDays"]>([0, 1, 3, 7, 14, 30]);
 
 export function readNowStatus(value: unknown): NowStatus {
   const entry = isRecord(value) ? value : {};
@@ -49,11 +51,48 @@ export function readMediaItems(value: unknown): MediaItem[] {
   });
 }
 
+export function sortMediaItemsByMarkedAt(items: MediaItem[]) {
+  return [...items].sort((left, right) => {
+    const leftTimestamp = readMediaTimestamp(left.markedAt);
+    const rightTimestamp = readMediaTimestamp(right.markedAt);
+    return rightTimestamp - leftTimestamp;
+  });
+}
+
+export function getDoubanWatchlistProgress(item: MediaItem): DoubanWatchlistProgress | null {
+  const status = item.status.trim();
+  if (status === "在看") return "active";
+  if (status === "想看") return "wishlist";
+  if (item.progress === "active" || item.progress === "wishlist") return item.progress;
+  return null;
+}
+
+export function buildDoubanWatchlistGroups(items: MediaItem[]) {
+  const movieItems = sortMediaItemsByMarkedAt(items)
+    .filter((item) => item.category === "movie");
+  return ([
+    { progress: "wishlist" as const, label: "想看", eyebrow: "WISHLIST" },
+    { progress: "active" as const, label: "在看", eyebrow: "WATCHING" }
+  ]).map((group) => {
+    const groupItems = movieItems.filter(
+      (item) => getDoubanWatchlistProgress(item) === group.progress
+    );
+    return {
+      ...group,
+      items: groupItems,
+      visibleItems: groupItems.slice(0, 6)
+    };
+  });
+}
+
 export function readDoubanMediaSource(value: unknown): DoubanMediaSource {
   const entry = isRecord(value) ? value : {};
   return {
     provider: "douban",
     profileUrl: readString(entry.profileUrl),
+    syncIntervalDays: doubanSyncIntervals.has(entry.syncIntervalDays as DoubanMediaSource["syncIntervalDays"])
+      ? entry.syncIntervalDays as DoubanMediaSource["syncIntervalDays"]
+      : 1,
     lastSyncedAt: readOptionalString(entry.lastSyncedAt),
     totalItems: typeof entry.totalItems === "number" && Number.isFinite(entry.totalItems)
       ? Math.max(0, Math.floor(entry.totalItems))
@@ -103,6 +142,12 @@ function readString(value: unknown) {
 function readOptionalString(value: unknown) {
   const stringValue = readString(value);
   return stringValue || undefined;
+}
+
+function readMediaTimestamp(value?: string) {
+  if (!value) return Number.NEGATIVE_INFINITY;
+  const timestamp = Date.parse(value);
+  return Number.isNaN(timestamp) ? Number.NEGATIVE_INFINITY : timestamp;
 }
 
 function cryptoSafeId(prefix: string) {

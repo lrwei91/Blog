@@ -4,8 +4,8 @@ import type {
   MediaItem,
   MediaProgress
 } from "@/types/life-modules";
+import { sortMediaItemsByMarkedAt } from "@/lib/life-modules";
 
-const maxSyncedItems = 12;
 const requestTimeoutMs = 12_000;
 
 type DoubanStatusSlug = "do" | "wish" | "collect";
@@ -51,26 +51,9 @@ export async function syncDoubanMedia(
     throw new Error("豆瓣公开页暂时无法访问，请稍后重试");
   }
 
-  const progressRank: Record<MediaProgress, number> = {
-    active: 0,
-    wishlist: 1,
-    completed: 2
-  };
-  const categoryRank: Record<Exclude<MediaCategory, "other">, number> = {
-    movie: 0,
-    book: 1,
-    game: 2,
-    music: 3
-  };
-  const items = successfulPages
-    .flatMap((result) => result.value)
-    .sort((left, right) =>
-      progressRank[left.progress ?? "completed"] - progressRank[right.progress ?? "completed"] ||
-      (right.markedAt ?? "").localeCompare(left.markedAt ?? "") ||
-      categoryRank[left.category as Exclude<MediaCategory, "other">] -
-        categoryRank[right.category as Exclude<MediaCategory, "other">]
-    )
-    .slice(0, maxSyncedItems);
+  const items = sortMediaItemsByMarkedAt(
+    successfulPages.flatMap((result) => result.value)
+  );
   if (items.length === 0 && successfulPages.length < settled.length) {
     throw new Error("豆瓣公开页只返回了部分结果，已保留上次同步内容，请稍后重试");
   }
@@ -81,6 +64,7 @@ export async function syncDoubanMedia(
     source: {
       provider: "douban",
       profileUrl: canonicalProfileUrl,
+      syncIntervalDays: 1,
       lastSyncedAt: syncedAt,
       totalItems: items.length,
       failedPages: settled.length - successfulPages.length
@@ -125,56 +109,22 @@ export function parseDoubanMediaPage(
 
 function buildPageSpecs(userId: string): DoubanPageSpec[] {
   const encodedUserId = encodeURIComponent(userId);
-  const categories: Array<{
-    category: Exclude<MediaCategory, "other">;
-    host: string;
-    statuses: Record<DoubanStatusSlug, string>;
-  }> = [
-    {
-      category: "movie",
-      host: "movie.douban.com",
-      statuses: { do: "在看", wish: "想看", collect: "看过" }
-    },
-    {
-      category: "book",
-      host: "book.douban.com",
-      statuses: { do: "在读", wish: "想读", collect: "读过" }
-    },
-    {
-      category: "music",
-      host: "music.douban.com",
-      statuses: { do: "在听", wish: "想听", collect: "听过" }
-    }
-  ];
   const progressBySlug: Record<DoubanStatusSlug, MediaProgress> = {
     do: "active",
     wish: "wishlist",
     collect: "completed"
   };
-  const specs = categories.flatMap(({ category, host, statuses }) =>
-    (Object.keys(statuses) as DoubanStatusSlug[]).map((slug) => ({
-      category,
-      progress: progressBySlug[slug],
-      slug,
-      status: statuses[slug],
-      url:
-        `https://${host}/people/${encodedUserId}/${slug}` +
-        "?start=0&sort=time&rating=all&filter=all&mode=grid"
-    }))
-  );
-
-  specs.push(
-    ...(Object.entries({ do: "在玩", wish: "想玩", collect: "玩过" }) as Array<
-      [DoubanStatusSlug, string]
-    >).map(([slug, status]) => ({
-      category: "game" as const,
+  return (Object.entries({ do: "在看", wish: "想看" }) as Array<
+    [Exclude<DoubanStatusSlug, "collect">, string]
+  >).map(([slug, status]) => ({
+      category: "movie" as const,
       progress: progressBySlug[slug],
       slug,
       status,
-      url: `https://www.douban.com/people/${encodedUserId}/games?action=${slug}`
-    }))
-  );
-  return specs;
+      url:
+        `https://movie.douban.com/people/${encodedUserId}/${slug}` +
+        "?start=0&sort=time&rating=all&filter=all&mode=grid"
+    }));
 }
 
 function parseCommentItems(

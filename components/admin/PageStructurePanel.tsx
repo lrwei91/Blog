@@ -308,7 +308,7 @@ function getModuleTypeLabel(type: OutlineSpecialModuleType | null, language: Edi
  if (type === "travel") return isZh ? "旅行" : "TRAVEL";
  if (type === "projects") return isZh ? "项目" : "PROJECTS";
  if (type === "now") return "NOW";
- if (type === "media") return isZh ? "书影音" : "MEDIA";
+ if (type === "media") return isZh ? "豆瓣片单" : "DOUBAN";
  if (type === "photos") return isZh ? "照片" : "PHOTOS";
  return isZh ? "普通" : "BLOCKS";
 }

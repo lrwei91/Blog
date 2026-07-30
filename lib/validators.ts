@@ -130,6 +130,14 @@ const mediaItemSchema = z.object({
 const doubanMediaSourceSchema = z.object({
   provider: z.literal("douban"),
   profileUrl: safeUrlSchema,
+  syncIntervalDays: z.union([
+    z.literal(0),
+    z.literal(1),
+    z.literal(3),
+    z.literal(7),
+    z.literal(14),
+    z.literal(30)
+  ]).optional(),
   lastSyncedAt: z.string().optional(),
   totalItems: z.number().int().nonnegative().optional(),
   failedPages: z.number().int().nonnegative().optional()
