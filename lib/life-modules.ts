@@ -1,12 +1,15 @@
 import type {
+  DoubanMediaSource,
   MediaCategory,
   MediaItem,
+  MediaProgress,
   NowStatus,
   PhotoStory,
   PhotoStoryImage
 } from "@/types/life-modules";
 
 const mediaCategories = new Set<MediaCategory>(["movie", "book", "game", "music", "other"]);
+const mediaProgresses = new Set<MediaProgress>(["active", "wishlist", "completed"]);
 
 export function readNowStatus(value: unknown): NowStatus {
   const entry = isRecord(value) ? value : {};
@@ -37,9 +40,28 @@ export function readMediaItems(value: unknown): MediaItem[] {
       status: readString(item.status),
       rating,
       note: readOptionalString(item.note),
-      href: readOptionalString(item.href)
+      href: readOptionalString(item.href),
+      progress: mediaProgresses.has(item.progress as MediaProgress) ? item.progress as MediaProgress : undefined,
+      markedAt: readOptionalString(item.markedAt),
+      source: item.source === "douban" ? "douban" : item.source === "manual" ? "manual" : undefined,
+      sourceId: readOptionalString(item.sourceId)
     }];
   });
+}
+
+export function readDoubanMediaSource(value: unknown): DoubanMediaSource {
+  const entry = isRecord(value) ? value : {};
+  return {
+    provider: "douban",
+    profileUrl: readString(entry.profileUrl),
+    lastSyncedAt: readOptionalString(entry.lastSyncedAt),
+    totalItems: typeof entry.totalItems === "number" && Number.isFinite(entry.totalItems)
+      ? Math.max(0, Math.floor(entry.totalItems))
+      : undefined,
+    failedPages: typeof entry.failedPages === "number" && Number.isFinite(entry.failedPages)
+      ? Math.max(0, Math.floor(entry.failedPages))
+      : undefined
+  };
 }
 
 export function readPhotoStories(value: unknown): PhotoStory[] {

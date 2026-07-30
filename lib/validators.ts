@@ -120,7 +120,19 @@ const mediaItemSchema = z.object({
   status: z.string().trim().min(1, "Required"),
   rating: z.number().finite().min(0).max(5).optional(),
   note: z.string().optional(),
-  href: safeUrlSchema.optional()
+  href: safeUrlSchema.optional(),
+  progress: z.enum(["active", "wishlist", "completed"]).optional(),
+  markedAt: z.string().optional(),
+  source: z.enum(["douban", "manual"]).optional(),
+  sourceId: z.string().optional()
+});
+
+const doubanMediaSourceSchema = z.object({
+  provider: z.literal("douban"),
+  profileUrl: safeUrlSchema,
+  lastSyncedAt: z.string().optional(),
+  totalItems: z.number().int().nonnegative().optional(),
+  failedPages: z.number().int().nonnegative().optional()
 });
 
 const photoStoryImageSchema = z.object({
@@ -206,6 +218,11 @@ const blockSchema = z.object({
   const mediaItems = block.metadata?.mediaItems;
   if (mediaItems !== undefined) {
     addNestedSchemaIssues(z.array(mediaItemSchema).safeParse(mediaItems), ctx, ["metadata", "mediaItems"]);
+  }
+
+  const mediaSource = block.metadata?.mediaSource;
+  if (mediaSource !== undefined) {
+    addNestedSchemaIssues(doubanMediaSourceSchema.safeParse(mediaSource), ctx, ["metadata", "mediaSource"]);
   }
 
   const photoStories = block.metadata?.photoStories;

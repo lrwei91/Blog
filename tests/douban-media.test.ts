@@ -1,0 +1,84 @@
+import { describe, expect, it } from "vitest";
+import {
+  extractDoubanUserId,
+  parseDoubanMediaPage,
+  syncDoubanMedia
+} from "@/lib/douban-media";
+
+const movieItemHtml = `
+  <div class="grid-view">
+    <div class="item comment-item" data-cid="1">
+      <div class="pic">
+        <a title="示例电影" href="https://movie.douban.com/subject/1234567/" class="nbg">
+          <img alt="示例电影" src="https://img1.doubanio.com/poster.jpg">
+        </a>
+      </div>
+      <div class="info">
+        <ul>
+          <li class="title"><a href="https://movie.douban.com/subject/1234567/"><em>示例电影</em></a></li>
+          <li class="intro">2026-07-30 / 主演甲 / 主演乙 / 中国大陆</li>
+          <li><span class="rating4-t"></span><span class="date">2026-07-30</span></li>
+          <li><span class="comment">值得继续看</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+`;
+
+describe("Douban media sync", () => {
+  it("extracts a user id only from supported public profile URLs", () => {
+    expect(extractDoubanUserId("https://www.douban.com/people/lrwei91/")).toBe("lrwei91");
+    expect(extractDoubanUserId("https://movie.douban.com/people/lrwei91/do")).toBe("lrwei91");
+    expect(() => extractDoubanUserId("https://example.com/people/lrwei91/")).toThrow(/豆瓣/);
+  });
+
+  it("parses a public movie collection card into a media item", () => {
+    const items = parseDoubanMediaPage(movieItemHtml, {
+      category: "movie",
+      progress: "active",
+      status: "在看"
+    });
+
+    expect(items).toHaveLength(1);
+    expect(items[0]).toMatchObject({
+      id: "douban-movie-1234567",
+      title: "示例电影",
+      category: "movie",
+      status: "在看",
+      progress: "active",
+      rating: 4,
+      markedAt: "2026-07-30",
+      source: "douban",
+      sourceId: "1234567"
+    });
+    expect(items[0].coverImage).toContain("/api/douban/image?url=");
+  });
+
+  it("syncs through the server fetcher and returns a canonical cached result", async () => {
+    const fetcher = (async (input: RequestInfo | URL) => {
+      const url = String(input);
+      return new Response(url.includes("movie.douban.com") && url.includes("/do?") ? movieItemHtml : "", {
+        status: 200,
+        headers: { "Content-Type": "text/html" }
+      });
+    }) as typeof fetch;
+
+    const result = await syncDoubanMedia("https://movie.douban.com/people/lrwei91/", fetcher);
+    expect(result.items).toHaveLength(1);
+    expect(result.source.profileUrl).toBe("https://www.douban.com/people/lrwei91/");
+    expect(result.source.failedPages).toBe(0);
+  });
+
+  it("rejects an empty partial response so saved content is not replaced", async () => {
+    const fetcher = (async (input: RequestInfo | URL) => {
+      if (String(input).includes("movie.douban.com")) {
+        throw new Error("temporary upstream failure");
+      }
+      return new Response("", { status: 200 });
+    }) as typeof fetch;
+
+    await expect(
+      syncDoubanMedia("https://www.douban.com/people/lrwei91/", fetcher)
+    ).rejects.toThrow(/保留上次同步内容/);
+  });
+});

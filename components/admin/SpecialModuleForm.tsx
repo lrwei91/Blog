@@ -1,14 +1,15 @@
 "use client";
 
-import { ArrowDown, ArrowUp, BookOpen, BriefcaseBusiness, Camera, ChevronDown, ChevronRight, FolderKanban, MapPin, MapPinned, Plus, Sparkles, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, BookOpen, BriefcaseBusiness, Camera, ChevronDown, ChevronRight, ExternalLink, FolderKanban, MapPin, MapPinned, Plus, RefreshCw, Sparkles, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import type { Block } from "@/types/block";
-import type { LifeModuleType, MediaItem, NowStatus, PhotoStory } from "@/types/life-modules";
+import type { DoubanMediaSource, LifeModuleType, MediaItem, NowStatus, PhotoStory } from "@/types/life-modules";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
 import type { EditorLanguage } from "@/components/admin/editor-i18n";
 import { MediaUploader } from "@/components/admin/MediaUploader";
-import { readMediaItems, readNowStatus, readPhotoStories } from "@/lib/life-modules";
+import { readDoubanMediaSource, readMediaItems, readNowStatus, readPhotoStories } from "@/lib/life-modules";
 import { CHINA_MAP_VIEW_BOX, chinaProvincePaths } from "@/lib/china-map-paths";
 
 export type TravelLocationEditorItem = {
@@ -126,7 +127,10 @@ export function SpecialModuleForm({
  ) : moduleType === "media" ? (
  <MediaItemsEditor
  items={readMediaItems(block.metadata?.mediaItems)}
+ source={readDoubanMediaSource(block.metadata?.mediaSource)}
  onChange={(mediaItems) => patchMetadata({ mediaItems })}
+ onSourceChange={(mediaSource) => patchMetadata({ mediaSource })}
+ onSync={(mediaSource, mediaItems) => patchMetadata({ mediaSource, mediaItems })}
  editorLanguage={editorLanguage}
  />
  ) : (
@@ -218,11 +222,23 @@ export function SpecialModulePreview({ block }: { block: Block }) {
 
  if (moduleType === "media") {
  const items = readMediaItems(block.metadata?.mediaItems);
+ const source = readDoubanMediaSource(block.metadata?.mediaSource);
  return (
  <div className="min-h-48 rounded-[8px] border border-[#DDD6C8] bg-[#F4EBE6] p-5">
+ <div className="flex items-center justify-between gap-3">
  <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[#B23C22]"><BookOpen className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">MEDIA SHELF · {items.length}</span></span>
+ {source.lastSyncedAt ? <span className="text-[10px] text-[#6F6A5E]">{formatAdminDate(source.lastSyncedAt)}</span> : null}
+ </div>
  <div className="mt-5 grid gap-3 md:grid-cols-3">
- {items.length ? items.slice(0, 3).map((item) => <div key={item.id} className="rounded-[6px] bg-[#FCFAF5]/80 p-4"><p className="text-xs text-[#B23C22]">{item.status}</p><h3 className="mt-3 font-bold text-[#201D18]">{item.title}</h3></div>) : <EmptyState text="暂无书影音条目" />}
+ {items.length ? items.slice(0, 3).map((item) => (
+ <div key={item.id} className="grid min-h-36 grid-rows-[5.5rem_1fr] overflow-hidden rounded-[6px] bg-[#FCFAF5]/80">
+ <div className="relative overflow-hidden bg-[#EDE8DB]">
+ {item.coverImage ? <img src={item.coverImage} alt="" className="h-full w-full object-cover" /> : <BookOpen className="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 text-[#B23C22]" />}
+ <span className="absolute right-2 top-2 rounded-[3px] bg-[#FCFAF5]/90 px-2 py-1 text-[9px] font-bold text-[#B23C22]">{item.status}</span>
+ </div>
+ <h3 className="line-clamp-2 p-3 text-sm font-bold text-[#201D18]">{item.title}</h3>
+ </div>
+ )) : <EmptyState text="暂无书影音条目" />}
  </div>
  </div>
  );
@@ -515,22 +531,102 @@ function NowStatusEditor({
 
 function MediaItemsEditor({
  items,
+ source,
  onChange,
+ onSourceChange,
+ onSync,
  editorLanguage
 }: {
  items: MediaItem[];
+ source: DoubanMediaSource;
  onChange: (items: MediaItem[]) => void;
+ onSourceChange: (source: DoubanMediaSource) => void;
+ onSync: (source: DoubanMediaSource, items: MediaItem[]) => void;
  editorLanguage: EditorLanguage;
 }) {
  const isZh = editorLanguage === "zh-CN";
+ const [isSyncing, setIsSyncing] = useState(false);
  const updateItem = (index: number, patch: Partial<MediaItem>) => onChange(items.map((item, itemIndex) => itemIndex === index ? { ...item, ...patch } : item));
+
+ async function syncFromDouban() {
+ if (!source.profileUrl.trim()) {
+ toast.error(isZh ? "请先填写豆瓣个人主页 URL" : "Enter a Douban profile URL first");
+ return;
+ }
+
+ setIsSyncing(true);
+ try {
+ const response = await fetch("/api/admin/douban-media", {
+ method: "POST",
+ headers: { "Content-Type": "application/json" },
+ body: JSON.stringify({ profileUrl: source.profileUrl })
+ });
+ const body = (await response.json().catch(() => null)) as {
+ items?: MediaItem[];
+ source?: DoubanMediaSource;
+ error?: string;
+ } | null;
+
+ if (!response.ok || !body?.items || !body.source) {
+ toast.error(isZh ? "豆瓣同步失败" : "Douban sync failed", {
+ description: body?.error ?? (isZh ? "请稍后重试" : "Try again later")
+ });
+ return;
+ }
+
+ onSync(body.source, body.items);
+ toast.success(isZh ? `已同步 ${body.items.length} 条豆瓣记录` : `Synced ${body.items.length} Douban items`);
+ } catch {
+ toast.error(isZh ? "豆瓣同步失败" : "Douban sync failed", {
+ description: isZh ? "网络请求未完成，请稍后重试" : "The request did not complete. Try again later."
+ });
+ } finally {
+ setIsSyncing(false);
+ }
+ }
+
  return (
  <section className="grid gap-4">
- <div className="flex items-center justify-between gap-3">
- <div><h3 className="font-bold text-[#201D18]">{isZh ? "书影音与游戏" : "Media items"}</h3><p className="text-xs text-[#6F6A5E]">{isZh ? "封面和外部链接均可选，评分范围为 0–5。" : "Cover and URL are optional. Rating is 0–5."}</p></div>
- <Button type="button" variant="secondary" size="sm" onClick={() => onChange([...items, { id: crypto.randomUUID(), category: "movie", title: isZh ? "新条目" : "New item", status: isZh ? "进行中" : "In progress" }])}><Plus className="h-4 w-4" /> {isZh ? "添加条目" : "Add item"}</Button>
+ <div className="grid gap-4 rounded-[6px] border border-[#DDD6C8] bg-[#F6F3EC] p-4">
+ <div>
+ <h3 className="font-bold text-[#201D18]">{isZh ? "豆瓣公开主页同步" : "Douban profile sync"}</h3>
+ <p className="mt-1 text-xs leading-5 text-[#6F6A5E]">
+ {isZh ? "填写豆瓣个人主页 URL，同步最近的在看、想看、看过、在读、在听和游戏记录。同步结果会保存到本站，主页访问不依赖豆瓣实时响应。" : "Enter a public Douban profile URL. Synced results are stored in this site config."}
+ </p>
  </div>
- {items.length === 0 ? <EmptyState text={isZh ? "暂无内容，添加后可在主页展示。" : "No media items yet."} /> : null}
+ <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+ <Field label={isZh ? "豆瓣个人主页 URL" : "Douban profile URL"}>
+ <Input
+ type="url"
+ value={source.profileUrl}
+ onChange={(event) => onSourceChange({ ...source, profileUrl: event.target.value })}
+ placeholder="https://www.douban.com/people/your-id/"
+ />
+ </Field>
+ <Button type="button" onClick={syncFromDouban} disabled={isSyncing} className="md:min-w-32">
+ <RefreshCw className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`} />
+ {isSyncing ? (isZh ? "同步中" : "Syncing") : (isZh ? "立即同步" : "Sync now")}
+ </Button>
+ </div>
+ <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#6F6A5E]">
+ <span>{isZh ? "当前条目" : "Items"}：{items.length}</span>
+ {source.lastSyncedAt ? <span>{isZh ? "上次同步" : "Last sync"}：{formatAdminDate(source.lastSyncedAt)}</span> : null}
+ {source.failedPages ? <span className="text-amber-700">{source.failedPages} {isZh ? "个分类页暂未读取" : "pages unavailable"}</span> : null}
+ {source.profileUrl ? <a href={source.profileUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[#B23C22] hover:underline">{isZh ? "打开豆瓣主页" : "Open profile"} <ExternalLink className="h-3 w-3" /></a> : null}
+ </div>
+ </div>
+
+ <details className="rounded-[6px] border border-[#DDD6C8] bg-[#FCFAF5]">
+ <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 font-semibold text-[#201D18]">
+ <span>{isZh ? "手动调整同步结果" : "Manually edit synced items"}</span>
+ <span className="text-xs font-normal text-[#6F6A5E]">{items.length} {isZh ? "条" : "items"}</span>
+ </summary>
+ <div className="grid gap-4 border-t border-[#DDD6C8] p-4">
+ <div className="flex items-center justify-between gap-3">
+ <p className="text-xs text-[#6F6A5E]">{isZh ? "可补充游戏或调整同步后的标题、状态与短评；下次同步会替换这里的内容。" : "Add games or adjust synced content. The next sync replaces this list."}</p>
+ <Button type="button" variant="secondary" size="sm" onClick={() => onChange([...items, { id: crypto.randomUUID(), category: "game", title: isZh ? "新条目" : "New item", status: isZh ? "在玩" : "Playing", source: "manual" }])}><Plus className="h-4 w-4" /> {isZh ? "添加条目" : "Add item"}</Button>
+ </div>
+ {items.length === 0 ? <EmptyState text={isZh ? "暂无内容，请先同步豆瓣或手动添加。" : "Sync Douban or add an item manually."} /> : null}
  {items.map((item, index) => (
  <article key={item.id} className="grid gap-4 rounded-[6px] border border-[#F4EBE6] bg-[#FCFAF5] p-4">
  <ItemToolbar label={`${String(index + 1).padStart(2, "0")} · ${item.title}`} index={index} length={items.length} onMove={(direction) => onChange(moveItem(items, index, direction))} onDelete={() => onChange(items.filter((candidate) => candidate.id !== item.id))} editorLanguage={editorLanguage} />
@@ -551,6 +647,8 @@ function MediaItemsEditor({
  </div>
  </article>
  ))}
+ </div>
+ </details>
  </section>
  );
 }
@@ -604,6 +702,18 @@ function PhotoStoriesEditor({
 function toDateInputValue(value: string) {
  if (!value) return "";
  return value.slice(0, 10);
+}
+
+function formatAdminDate(value: string) {
+ const date = new Date(value);
+ if (Number.isNaN(date.getTime())) return value;
+ return new Intl.DateTimeFormat("zh-CN", {
+ year: "numeric",
+ month: "2-digit",
+ day: "2-digit",
+ hour: "2-digit",
+ minute: "2-digit"
+ }).format(date);
 }
 
 function ItemToolbar({

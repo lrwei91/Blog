@@ -760,7 +760,10 @@ export const defaultSiteConfig: SiteConfig = {
       openInNewTab: false,
       backgroundColor: "",
       textColor: "",
-      metadata: { mediaItems: [] },
+      metadata: {
+        mediaItems: [],
+        mediaSource: { provider: "douban", profileUrl: "" }
+      },
       isVisible: false,
       isFeatured: false,
       sortOrder: 14,

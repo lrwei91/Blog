@@ -8,6 +8,7 @@ export type NowStatus = {
 };
 
 export type MediaCategory = "movie" | "book" | "game" | "music" | "other";
+export type MediaProgress = "active" | "wishlist" | "completed";
 
 export type MediaItem = {
   id: string;
@@ -19,6 +20,18 @@ export type MediaItem = {
   rating?: number;
   note?: string;
   href?: string;
+  progress?: MediaProgress;
+  markedAt?: string;
+  source?: "douban" | "manual";
+  sourceId?: string;
+};
+
+export type DoubanMediaSource = {
+  provider: "douban";
+  profileUrl: string;
+  lastSyncedAt?: string;
+  totalItems?: number;
+  failedPages?: number;
 };
 
 export type PhotoStoryImage = {

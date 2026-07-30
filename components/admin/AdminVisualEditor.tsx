@@ -5412,7 +5412,7 @@ function getSpecialModuleDefaults(moduleType: SpecialModuleType, editorLanguage:
  icon: "book-open",
  titleSize: "md" as const,
  visible: false,
- metadata: { mediaItems: [] }
+ metadata: { mediaItems: [], mediaSource: { provider: "douban", profileUrl: "" } }
  };
  return {
  headingTitle: isZh ? "照片故事" : "Photo Stories",

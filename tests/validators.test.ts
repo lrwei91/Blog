@@ -97,6 +97,24 @@ describe("validateSiteConfig", () => {
     }
   });
 
+  it("validates the Douban media source URL", () => {
+    const bad = structuredClone(defaultSiteConfig);
+    const media = bad.blocks.find((block) => block.id === "media-shelf");
+    if (!media) throw new Error("media module missing");
+    media.metadata = {
+      ...media.metadata,
+      mediaSource: {
+        provider: "douban",
+        profileUrl: "javascript:alert(1)"
+      }
+    };
+    const result = validateSiteConfig(bad);
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error).toMatch(/mediaSource|profileUrl/);
+    }
+  });
+
   it("requires safe photo URLs and accessible alt text", () => {
     const bad = structuredClone(defaultSiteConfig);
     const photos = bad.blocks.find((block) => block.id === "photo-stories");
