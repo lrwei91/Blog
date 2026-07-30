@@ -151,7 +151,6 @@ function MediaShelfCard({ item }: { item: MediaItem }) {
         ) : (
           <Icon aria-hidden="true" />
         )}
-        <span className="media-shelf__status">{item.status}</span>
       </div>
       <div className="media-shelf__body">
         <p className="media-shelf__category"><Icon aria-hidden="true" /> {meta.label}</p>

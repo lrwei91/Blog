@@ -1490,16 +1490,6 @@ select {
 .media-shelf__visual > svg { width: 3.25rem; height: 3.25rem; stroke-width: 1.2; }
 .media-shelf__visual img { object-fit: cover; transition: transform 500ms var(--ease-out); }
 .media-shelf__card:hover .media-shelf__visual img { transform: scale(1.035); }
-.media-shelf__status {
-  position: absolute;
-  top: 0.85rem;
-  z-index: 2;
-  border: 1px solid color-mix(in srgb, var(--paper) 70%, transparent);
-  border-radius: 3px;
-  background: color-mix(in srgb, var(--paper) 88%, transparent);
-  backdrop-filter: blur(8px);
-}
-.media-shelf__status { right: 0.85rem; padding: 0.38rem 0.55rem; color: var(--seal-deep); font-size: 0.52rem; font-weight: 700; letter-spacing: 0.1em; }
 .media-shelf__body { min-height: 12rem; padding: 1.05rem; display: flex; flex-direction: column; }
 .media-shelf__category { margin: 0; display: flex; align-items: center; gap: 0.4rem; color: var(--seal-deep); font-size: 0.56rem; font-weight: 600; letter-spacing: 0.14em; }
 .media-shelf__category svg { width: 0.75rem; height: 0.75rem; stroke-width: 1.7; }
