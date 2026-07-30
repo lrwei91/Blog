@@ -80,7 +80,7 @@ export function buildDoubanWatchlistGroups(items: MediaItem[]) {
     return {
       ...group,
       items: groupItems,
-      visibleItems: groupItems.slice(0, 6)
+      visibleItems: groupItems.slice(0, 8)
     };
   });
 }

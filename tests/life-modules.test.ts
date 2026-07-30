@@ -63,15 +63,15 @@ describe("life module readers", () => {
       .toEqual(["new", "old", "undated"]);
   });
 
-  it("builds separate watching and wishlist groups with six-card homepage limits", () => {
-    const watching = Array.from({ length: 8 }, (_, index) => ({
+  it("builds separate watching and wishlist groups with eight-card homepage limits", () => {
+    const watching = Array.from({ length: 9 }, (_, index) => ({
       id: `watching-${index}`,
       category: "movie",
       title: `Watching ${index}`,
       status: "在看",
       markedAt: `2026-07-${String(index + 1).padStart(2, "0")}`
     }));
-    const wishlist = Array.from({ length: 7 }, (_, index) => ({
+    const wishlist = Array.from({ length: 9 }, (_, index) => ({
       id: `wishlist-${index}`,
       category: "movie",
       title: `Wishlist ${index}`,
@@ -88,13 +88,13 @@ describe("life module readers", () => {
     expect(groups[0].progress).toBe("active");
     expect(groups.find((group) => group.progress === "active")).toMatchObject({
       label: "在看",
-      items: { length: 8 },
-      visibleItems: { length: 6 }
+      items: { length: 9 },
+      visibleItems: { length: 8 }
     });
     expect(groups.find((group) => group.progress === "wishlist")).toMatchObject({
       label: "想看",
-      items: { length: 7 },
-      visibleItems: { length: 6 }
+      items: { length: 9 },
+      visibleItems: { length: 8 }
     });
     expect(getDoubanWatchlistProgress({
       id: "manual",
