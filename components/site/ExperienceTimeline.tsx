@@ -10,10 +10,15 @@ export function ExperienceTimeline({ blocks }: { blocks: Block[] }) {
         const timelineMeta = getExperienceTimelineMeta(block);
 
         return (
-          <div key={block.id} className="experience-timeline__item" data-tone={index % 4}>
+          <div
+            key={block.id}
+            className="experience-timeline__item"
+            data-tone={index % 4}
+            style={{ "--timeline-index": index } as CSSProperties}
+          >
             <div
               className="experience-timeline__rail"
-              data-reveal
+              data-reveal="timeline"
               style={{ "--reveal-index": index } as CSSProperties}
               aria-hidden="true"
             >

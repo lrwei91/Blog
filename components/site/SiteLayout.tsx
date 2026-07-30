@@ -68,14 +68,18 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
           {navItems.length > 0 ? (
             <nav className="public-nav__links" aria-label="页面导航">
               {primaryNavItems.map((item) => (
-                <a key={item.id} href={`#${getSectionAnchorId(item.block)}`}>{item.block.title.trim()}</a>
+                <a key={item.id} href={`#${getSectionAnchorId(item.block)}`} data-section-link>
+                  {item.block.title.trim()}
+                </a>
               ))}
               {overflowNavItems.length > 0 ? (
                 <details className="public-nav__more">
                   <summary>更多 <ChevronDown aria-hidden="true" /></summary>
                   <div>
                     {overflowNavItems.map((item) => (
-                      <a key={item.id} href={`#${getSectionAnchorId(item.block)}`}>{item.block.title.trim()}</a>
+                      <a key={item.id} href={`#${getSectionAnchorId(item.block)}`} data-section-link>
+                        {item.block.title.trim()}
+                      </a>
                     ))}
                   </div>
                 </details>
@@ -112,7 +116,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
         />
       </div>
 
-      <footer className="public-footer" data-reveal>
+      <footer className="public-footer" data-reveal="footer">
         <div className="public-footer__inner">
           <p className="public-footer__statement">
             把喜欢的事，<br />

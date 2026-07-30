@@ -13,6 +13,7 @@ import { BlockIcon } from "@/components/blocks/BlockIcon";
 import { ProjectBlock } from "@/components/blocks/ProjectBlock";
 import { TextBlock } from "@/components/blocks/TextBlock";
 import { useAccessibleDialog } from "@/components/ui/useAccessibleDialog";
+import { useExitTransition } from "@/components/ui/useExitTransition";
 
 export function BlockCard({
  block,
@@ -94,6 +95,7 @@ export function BlockCard({
  const showFooter = timelineMeta ? block.actionType !== "none" : Boolean(block.badge) || block.actionType !== "none";
  const accentIndex = getAccentIndex(block.id);
  const contentBlock = timelineMeta ? { ...displayBlock, subtitle: timelineMeta.role } : displayBlock;
+ const hasCompanyLogo = Boolean(timelineMeta?.companyLogo);
 
  return (
  <>
@@ -113,11 +115,12 @@ export function BlockCard({
  "--reveal-index": revealIndex,
  ...(withLayout && !compact ? layoutStyle ?? getPublicBlockPlacementStyle(block) : {})
  } as React.CSSProperties & Record<string, string | number | undefined>}
- data-reveal
+ data-reveal="card"
  data-accent={accentIndex}
  data-action={block.actionType}
  data-plain-text={isPlainTextCard ? "true" : undefined}
  data-timeline={timelineMeta ? "true" : undefined}
+ data-has-company-logo={timelineMeta ? String(hasCompanyLogo) : undefined}
  className={cn(
  "public-block-card group relative overflow-hidden rounded-[8px] border border-[var(--site-border)] p-4 transition",
  "focus:outline-none",
@@ -177,9 +180,11 @@ export function BlockCard({
  <small>在职时长</small>
  <b>{timelineMeta.tenure}</b>
  </span>
+ {timelineMeta.companyLogo ? (
  <div className="experience-timeline__art" aria-hidden="true">
- {timelineMeta.companyLogo ? <img src={timelineMeta.companyLogo} alt="" /> : null}
+ <img src={timelineMeta.companyLogo} alt="" />
  </div>
+ ) : null}
  </div>
  ) : null}
  </article>
@@ -274,7 +279,7 @@ function SectionTextCard({
  <article
  id={getSectionAnchorId(block)}
  style={withLayout && !compact ? layoutStyle ?? getPublicBlockPlacementStyle(block) : undefined}
- data-reveal
+ data-reveal="section"
  data-accent={sectionAccent}
  className={cn(
  "public-section-heading relative min-w-0",
@@ -308,14 +313,20 @@ function Dialog({
  ariaLabel: string;
 }) {
  const closeButtonRef = useRef<HTMLButtonElement>(null);
+ const { isClosing, requestClose } = useExitTransition(onClose);
  const { overlayRef, dialogRef } = useAccessibleDialog({
- onClose,
+ onClose: requestClose,
  portalRoot: container,
  initialFocusRef: closeButtonRef
  });
 
  return createPortal(
- <div ref={overlayRef} className="public-dialog fixed inset-0 z-50 grid place-items-center p-5" onClick={onClose} role="presentation">
+ <div
+ ref={overlayRef}
+ className={cn("public-dialog fixed inset-0 z-50 grid place-items-center p-5", isClosing && "is-closing")}
+ onClick={requestClose}
+ role="presentation"
+ >
  <div
  ref={dialogRef}
  className={cn("public-dialog__panel", `public-dialog__panel--${variant}`)}
@@ -325,7 +336,7 @@ function Dialog({
  aria-label={ariaLabel}
  tabIndex={-1}
  >
- <button ref={closeButtonRef} type="button" onClick={onClose} className="public-dialog__close" aria-label="关闭详情">
+ <button ref={closeButtonRef} type="button" onClick={requestClose} className="public-dialog__close" aria-label="关闭详情">
  <X />
  </button>
  {children}

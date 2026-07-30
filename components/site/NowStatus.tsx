@@ -7,7 +7,7 @@ export function NowStatus({ block }: { block: Block }) {
   const hasContent = status.headline || status.body || status.mood || status.location || status.tags.length > 0;
 
   return (
-    <section className="now-status" aria-label="此刻状态">
+    <section className="now-status" aria-label="此刻状态" data-reveal="panel">
       <div className="now-status__eyebrow"><Sparkles aria-hidden="true" /> NOW · 此刻</div>
       {hasContent ? (
         <div className="now-status__layout">

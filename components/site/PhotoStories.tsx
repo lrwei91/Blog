@@ -1,12 +1,13 @@
 "use client";
 
 import { ChevronLeft, ChevronRight, Images, MapPin, X } from "lucide-react";
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import type { Block } from "@/types/block";
 import type { PhotoStory, PhotoStoryImage } from "@/types/life-modules";
 import { readPhotoStories } from "@/lib/life-modules";
 import { useAccessibleDialog } from "@/components/ui/useAccessibleDialog";
+import { useExitTransition } from "@/components/ui/useExitTransition";
 
 type Selection = { storyIndex: number; photoIndex: number } | null;
 
@@ -53,6 +54,8 @@ export function PhotoStories({ block, enablePreview }: { block: Block; enablePre
                 className="photo-stories__card"
                 key={story.id}
                 type="button"
+                data-reveal="card"
+                style={{ "--reveal-index": storyIndex } as CSSProperties}
                 onClick={(event) => {
                   setDialogContainer(event.currentTarget.closest(".public-site"));
                   setSelection({ storyIndex, photoIndex: 0 });
@@ -60,7 +63,16 @@ export function PhotoStories({ block, enablePreview }: { block: Block; enablePre
               >
                 {content}
               </button>
-            ) : <article className="photo-stories__card" key={story.id}>{content}</article>;
+            ) : (
+              <article
+                className="photo-stories__card"
+                key={story.id}
+                data-reveal="card"
+                style={{ "--reveal-index": storyIndex } as CSSProperties}
+              >
+                {content}
+              </article>
+            );
           })}
         </div>
       ) : <p className="life-module-empty">照片故事还没有内容。</p>}
@@ -96,8 +108,9 @@ function PhotoLightbox({
 }) {
   const titleId = useId();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const { isClosing, requestClose } = useExitTransition(onClose);
   const { overlayRef, dialogRef } = useAccessibleDialog({
-    onClose,
+    onClose: requestClose,
     portalRoot: container,
     initialFocusRef: closeButtonRef
   });
@@ -115,9 +128,9 @@ function PhotoLightbox({
   return createPortal(
     <div
       ref={overlayRef}
-      className="photo-lightbox"
+      className={`photo-lightbox${isClosing ? " is-closing" : ""}`}
       role="presentation"
-      onMouseDown={(event) => event.target === event.currentTarget && onClose()}
+      onMouseDown={(event) => event.target === event.currentTarget && requestClose()}
     >
       <div
         ref={dialogRef}
@@ -127,7 +140,7 @@ function PhotoLightbox({
         aria-labelledby={titleId}
         tabIndex={-1}
       >
-        <button ref={closeButtonRef} className="photo-lightbox__close" type="button" onClick={onClose} aria-label="关闭预览">
+        <button ref={closeButtonRef} className="photo-lightbox__close" type="button" onClick={requestClose} aria-label="关闭预览">
           <X aria-hidden="true" />
         </button>
         <img src={photo.url} alt={photo.alt} />

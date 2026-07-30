@@ -211,7 +211,7 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  if (moduleType === "now") {
  const status = readNowStatus(block.metadata?.nowStatus);
  return (
- <div className="min-h-48 rounded-[8px] border border-[#DDD6C8] bg-[#F4EBE6] p-6">
+ <div className="min-h-48 rounded-[8px] border border-[#DDD6C8] bg-[#FCFAF5] p-6">
  <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[#B23C22]"><Sparkles className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">NOW · 此刻</span></span>
  <h3 className="mt-8 text-2xl font-bold text-[#201D18]">{status.headline || "尚未填写近况"}</h3>
  <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#6F6A5E]">{status.body || "填写后再发布到主页。"}</p>
@@ -225,17 +225,16 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  .filter((item) => item.category === "movie" && getDoubanWatchlistProgress(item));
  const source = readDoubanMediaSource(block.metadata?.mediaSource);
  return (
- <div className="min-h-48 rounded-[8px] border border-[#DDD6C8] bg-[#F4EBE6] p-5">
+ <div className="min-h-48 rounded-[8px] border border-[#DDD6C8] bg-[#FCFAF5] p-5">
  <div className="flex items-center justify-between gap-3">
- <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[#B23C22]"><BookOpen className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">MEDIA SHELF · {items.length}</span></span>
+ <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[#B23C22]"><BookOpen className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">DOUBAN WATCHLIST · {items.length}</span></span>
  {source.lastSyncedAt ? <span className="text-[10px] text-[#6F6A5E]">{formatAdminDate(source.lastSyncedAt)}</span> : null}
  </div>
- <div className="mt-5 grid gap-3 md:grid-cols-3">
- {items.length ? items.slice(0, 3).map((item) => (
- <div key={item.id} className="grid min-h-36 grid-rows-[5.5rem_1fr] overflow-hidden rounded-[6px] bg-[#FCFAF5]/80">
- <div className="relative overflow-hidden bg-[#EDE8DB]">
- {item.coverImage ? <img src={item.coverImage} alt="" className="h-full w-full object-cover" /> : <BookOpen className="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 text-[#B23C22]" />}
- <span className="absolute right-2 top-2 rounded-[3px] bg-[#FCFAF5]/90 px-2 py-1 text-[9px] font-bold text-[#B23C22]">{item.status}</span>
+ <div className="mt-5 grid gap-3 md:grid-cols-4">
+ {items.length ? items.slice(0, 4).map((item) => (
+ <div key={item.id} className="grid min-h-36 grid-rows-[7rem_1fr] overflow-hidden rounded-[6px] border border-[#DDD6C8] bg-[#FCFAF5]">
+ <div className="relative overflow-hidden border-b border-[#DDD6C8] bg-[#EDE8DB]">
+ {item.coverImage ? <img src={item.coverImage} alt="" className="h-full w-full object-contain" /> : <BookOpen className="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 text-[#B23C22]" />}
  </div>
  <h3 className="line-clamp-2 p-3 text-sm font-bold text-[#201D18]">{item.title}</h3>
  </div>

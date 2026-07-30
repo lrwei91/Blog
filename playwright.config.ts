@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const port = Number(process.env.PLAYWRIGHT_PORT ?? 3317);
+const baseURL = `http://127.0.0.1:${port}`;
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
@@ -8,13 +11,13 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: process.env.CI ? "github" : "list",
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL,
     trace: "retain-on-failure"
   },
   webServer: {
-    command: "npm run dev -- --hostname 127.0.0.1",
-    url: "http://127.0.0.1:3000",
-    reuseExistingServer: !process.env.CI,
+    command: `BIO_E2E_FULL_MODULES=1 npm run dev -- --hostname 127.0.0.1 --port ${port}`,
+    url: baseURL,
+    reuseExistingServer: false,
     timeout: 120_000
   },
   projects: [

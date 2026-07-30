@@ -1,4 +1,5 @@
 import { CHINA_MAP_VIEW_BOX, chinaProvincePaths } from "@/lib/china-map-paths";
+import type { CSSProperties } from "react";
 import type { Block } from "@/types/block";
 
 type TravelLocation = {
@@ -22,7 +23,7 @@ export function TravelFootprint({ block }: { block: Block }) {
   const provinceCount = new Set(locations.map((location) => location.province)).size;
 
   return (
-    <section className="travel-footprint" aria-label="旅行足迹">
+    <section className="travel-footprint" aria-label="旅行足迹" data-reveal="map">
       <div className="travel-footprint__summary">
         <div className="travel-footprint__copy">
           <p className="travel-footprint__stat">
@@ -55,11 +56,13 @@ export function TravelFootprint({ block }: { block: Block }) {
           >
             <title>中国省级行政区地图</title>
             <g>
-              {chinaProvincePaths.map((province) => (
+              {chinaProvincePaths.map((province, index) => (
                 <path
                   key={province.adcode}
                   d={province.d}
+                  pathLength={1}
                   data-visited={locations.some((location) => province.name.includes(location.province)) ? "true" : undefined}
+                  style={{ "--province-index": index } as CSSProperties}
                 />
               ))}
             </g>

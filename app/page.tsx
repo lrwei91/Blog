@@ -17,6 +17,7 @@ import {
   resolvePublicVariantId
 } from "@/lib/utils";
 import { SiteLayout } from "@/components/site/SiteLayout";
+import { buildFullModuleTestConfig } from "@/lib/full-module-test-config";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -102,7 +103,10 @@ export default async function HomePage() {
 async function getPublicSiteContext() {
   const cookieStore = await cookies();
   const requestHeaders = await headers();
-  const config = await getSiteConfig(requestHeaders.get("accept-language"));
+  const storedConfig = await getSiteConfig(requestHeaders.get("accept-language"));
+  const config = process.env.NODE_ENV !== "production" && process.env.BIO_E2E_FULL_MODULES === "1"
+    ? buildFullModuleTestConfig(storedConfig)
+    : storedConfig;
   // 2026-07-17 P0: variantId 只从已签名的 Cookie 中提取，不再信任明文 Cookie
   const verified = verifyVariantCookie(cookieStore.get(publicVariantCookieName)?.value);
   const variantId = verified

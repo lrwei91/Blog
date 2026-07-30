@@ -8,7 +8,7 @@ export function ProfilePanel({ profile }: { profile: Profile }) {
 
   return (
     <section id="profile" className="profile-hero" aria-labelledby="profile-name">
-      <div className="profile-hero__content" data-reveal>
+      <div className="profile-hero__content" data-reveal="profile-copy">
         <div className="profile-hero__modules">
           {visibleModules.map((module) => (
             <ProfileModuleRenderer key={module} module={module} profile={profile} />

@@ -1,4 +1,5 @@
 import { ArrowUpRight, ChartCandlestick, Clapperboard, Dices, Github, Globe2 } from "lucide-react";
+import type { CSSProperties } from "react";
 import type { Block } from "@/types/block";
 
 type ProjectItem = {
@@ -59,6 +60,8 @@ export function PersonalProjects({ block }: { block: Block }) {
               key={`${index}-${project.title}`}
               className="personal-projects__card"
               data-tone={project.tone}
+              data-reveal="card"
+              style={{ "--reveal-index": index } as CSSProperties}
             >
               <div className="personal-projects__card-top">
                 <span>{project.eyebrow}</span>

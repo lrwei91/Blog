@@ -282,7 +282,13 @@ function ExperiencePreviewRow({ block, index }: { block: Block; index: number })
  return (
  <article className={cn("grid min-h-40 grid-cols-[5.4rem_minmax(0,1fr)] gap-3", !block.isVisible && "opacity-50 grayscale-[0.2]")}>
  <ExperienceDateNode block={block} index={index} />
- <div className="relative grid min-w-0 grid-cols-[minmax(0,1fr)_7rem] gap-4 overflow-hidden rounded-[8px] border border-[#DDD6C8] bg-[#FCFAF5] p-4">
+ <div
+ data-has-company-logo={String(Boolean(timeline.companyLogo))}
+ className={cn(
+ "relative grid min-w-0 overflow-hidden rounded-[8px] border border-[#DDD6C8] bg-[#FCFAF5] p-4",
+ timeline.companyLogo ? "grid-cols-[minmax(0,1fr)_7rem] gap-4" : "grid-cols-[minmax(0,1fr)_auto] gap-3"
+ )}
+ >
  <div className="min-w-0">
  <h3 className="truncate text-xl font-bold tracking-[-0.035em] text-[#201D18]">{block.title}</h3>
  <p className="mt-1 text-xs font-bold" style={{ color: tone.deep }}>{timeline.role}</p>
@@ -291,9 +297,11 @@ function ExperiencePreviewRow({ block, index }: { block: Block; index: number })
  </div>
  <div className="flex flex-col items-end justify-between">
  <span className="rounded-[4px] border px-2.5 py-1 text-[10px] font-bold text-[#6F6A5E]" style={{ borderColor: tone.tone, backgroundColor: tone.tint }}>{timeline.tenure}</span>
+ {timeline.companyLogo ? (
  <span className="grid aspect-square w-full place-items-center overflow-hidden rounded-[6px]" style={{ backgroundColor: tone.tint, color: tone.deep }}>
- {timeline.companyLogo ? <img src={timeline.companyLogo} alt="" className="h-full w-full object-contain p-3" /> : null}
+ <img src={timeline.companyLogo} alt="" className="h-full w-full object-contain p-3" />
  </span>
+ ) : null}
  </div>
  </div>
  </article>

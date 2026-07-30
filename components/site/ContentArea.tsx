@@ -45,7 +45,11 @@ export function ContentArea({
           const isPhotosGroup = sourceSectionId === "photos";
 
           return (
-            <div key={item.id} className="public-content__block-group">
+            <div
+              key={item.id}
+              className="public-content__block-group"
+              data-content-group={sourceSectionId || undefined}
+            >
               {isExperienceGroup ? (
                 <ExperienceTimeline blocks={item.blocks} />
               ) : isTravelGroup ? (

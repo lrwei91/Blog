@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import { ArrowUpRight, BookOpen, Film, Gamepad2, Headphones, List, Sparkles, Star, X } from "lucide-react";
-import { useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { useId, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
 import type { Block } from "@/types/block";
 import { buildDoubanWatchlistGroups, readDoubanMediaSource, readMediaItems } from "@/lib/life-modules";
 import type { DoubanWatchlistProgress, MediaCategory, MediaItem } from "@/types/life-modules";
 import { useAccessibleDialog } from "@/components/ui/useAccessibleDialog";
+import { useExitTransition } from "@/components/ui/useExitTransition";
 
 const categoryMeta: Record<MediaCategory, { label: string; icon: typeof Film }> = {
   movie: { label: "影像", icon: Film },
@@ -29,7 +30,7 @@ export function MediaShelf({ block }: { block: Block }) {
   const dialogGroup = groups.find((group) => group.progress === dialogProgress);
 
   return (
-    <section className="media-shelf" aria-label="我的豆瓣片单">
+    <section className="media-shelf" aria-label="我的豆瓣片单" data-reveal="panel">
       <header className="media-shelf__header">
         <div>
           <p className="media-shelf__eyebrow">
@@ -75,6 +76,7 @@ export function MediaShelf({ block }: { block: Block }) {
       </div>
 
       <section
+        key={activeGroup.progress}
         className="media-shelf__tab-panel"
         id={`media-shelf-panel-${activeGroup.progress}`}
         role="tabpanel"
@@ -83,8 +85,8 @@ export function MediaShelf({ block }: { block: Block }) {
         {activeGroup.items.length > 0 ? (
           <>
             <div className="media-shelf__grid">
-              {activeGroup.visibleItems.map((item) => (
-                <MediaShelfCard item={item} key={item.id} />
+              {activeGroup.visibleItems.map((item, index) => (
+                <MediaShelfCard item={item} index={index} key={item.id} />
               ))}
             </div>
             {activeGroup.items.length > 8 ? (
@@ -134,7 +136,7 @@ function handleTabKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
   nextTab.click();
 }
 
-function MediaShelfCard({ item }: { item: MediaItem }) {
+function MediaShelfCard({ item, index }: { item: MediaItem; index: number }) {
   const meta = categoryMeta[item.category];
   const Icon = meta.icon;
   const content = (
@@ -169,7 +171,10 @@ function MediaShelfCard({ item }: { item: MediaItem }) {
   );
 
   return (
-    <article className="media-shelf__card">
+    <article
+      className="media-shelf__card"
+      style={{ "--media-card-index": index } as CSSProperties}
+    >
       {item.href ? (
         <a href={item.href} target="_blank" rel="noreferrer" aria-label={`在豆瓣查看${item.title}`}>
           {content}
@@ -194,8 +199,9 @@ function MediaShelfDialog({
 }) {
   const titleId = useId();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const { isClosing, requestClose } = useExitTransition(onClose);
   const { overlayRef, dialogRef } = useAccessibleDialog({
-    onClose,
+    onClose: requestClose,
     portalRoot: container,
     initialFocusRef: closeButtonRef
   });
@@ -203,9 +209,9 @@ function MediaShelfDialog({
   return createPortal(
     <div
       ref={overlayRef}
-      className="media-shelf-dialog"
+      className={`media-shelf-dialog${isClosing ? " is-closing" : ""}`}
       role="presentation"
-      onMouseDown={(event) => event.target === event.currentTarget && onClose()}
+      onMouseDown={(event) => event.target === event.currentTarget && requestClose()}
     >
       <div
         ref={dialogRef}
@@ -220,7 +226,7 @@ function MediaShelfDialog({
             <p>MEDIA ARCHIVE · {String(items.length).padStart(2, "0")}</p>
             <h3 id={titleId}>{title}</h3>
           </div>
-          <button ref={closeButtonRef} type="button" onClick={onClose} aria-label="关闭全部记录">
+          <button ref={closeButtonRef} type="button" onClick={requestClose} aria-label="关闭全部记录">
             <X aria-hidden="true" />
           </button>
         </header>

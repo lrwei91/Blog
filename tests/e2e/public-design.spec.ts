@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const viewports = [
   { width: 320, height: 720 },
@@ -7,6 +7,11 @@ const viewports = [
   { width: 1024, height: 768 },
   { width: 1440, height: 900 }
 ];
+
+async function expectProjectIdentity(page: Page) {
+  await expect(page.locator(".public-intro")).toHaveAttribute("aria-label", "欢迎页");
+  await expect(page.locator(".public-intro__identity")).toContainText("林荣威");
+}
 
 test("欢迎页在禁用 JavaScript 时仍可识别并进入主页", async ({ browser }) => {
   const context = await browser.newContext({
@@ -17,6 +22,7 @@ test("欢迎页在禁用 JavaScript 时仍可识别并进入主页", async ({ br
 
   await page.goto("/");
 
+  await expectProjectIdentity(page);
   await expect(page.locator(".public-intro")).toBeVisible();
   await expect(page.locator(".public-intro__identity")).toContainText("林荣威");
   await expect(page.locator(".public-intro__enter")).toBeVisible();
@@ -35,6 +41,7 @@ test("欢迎页在禁用 JavaScript 时仍可识别并进入主页", async ({ br
 test("连续动效只在对应区域可见时运行", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
+  await expectProjectIdentity(page);
   const intro = page.locator(".public-intro");
   const qualityStage = page.locator(".quality-stage");
 
@@ -46,11 +53,38 @@ test("连续动效只在对应区域可见时运行", async ({ page }) => {
   await expect(qualityStage).toHaveClass(/is-motion-active/);
 });
 
+test("Observer 不可用时直接显示静态最终状态", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, "IntersectionObserver", {
+      configurable: true,
+      value: undefined
+    });
+  });
+  await page.goto("/");
+  await expectProjectIdentity(page);
+  await page.locator(".public-intro__enter").click();
+
+  await expect(page.locator("html")).not.toHaveClass(/site-motion-ready/);
+  const hiddenRevealItems = await page.locator(".public-site [data-reveal]").evaluateAll((items) =>
+    items.filter((item) => {
+      const style = getComputedStyle(item);
+      return style.opacity === "0" || style.visibility === "hidden";
+    }).length
+  );
+  expect(hiddenRevealItems).toBe(0);
+});
+
 test.describe("公开页视觉回归", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    await expectProjectIdentity(page);
+  });
+
   test("个人信息、章节标题与对应模块共享同一水平边界", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
+    await expectProjectIdentity(page);
     await page.locator(".public-intro__enter").click();
 
     const pageRegions = await page.evaluate(() => {
@@ -70,10 +104,7 @@ test.describe("公开页视觉回归", () => {
     expect(pageRegions!.leftDelta, "个人信息与章节左边界未对齐").toBeLessThanOrEqual(1);
     expect(pageRegions!.rightDelta, "个人信息与章节右边界未对齐").toBeLessThanOrEqual(1);
 
-    const unexpectedLogoFallbacks = await page.locator(".experience-timeline__art").evaluateAll((elements) =>
-      elements.filter((element) => !element.querySelector("img") && element.textContent?.trim()).length
-    );
-    expect(unexpectedLogoFallbacks, "未上传公司 Logo 时不应显示公司首字占位").toBe(0);
+    await expect(page.locator('[data-has-company-logo="false"] .experience-timeline__art')).toHaveCount(0);
 
     const alignments = await page.evaluate(() =>
       Array.from(document.querySelectorAll<HTMLElement>(".public-section-heading")).flatMap((heading) => {
@@ -109,6 +140,7 @@ test.describe("公开页视觉回归", () => {
     for (const viewport of viewports) {
       await page.setViewportSize(viewport);
       await page.goto("/");
+      await expectProjectIdentity(page);
       await page.locator(".public-intro__enter").click();
       await page.locator("#profile").waitFor();
 
@@ -142,6 +174,7 @@ test.describe("公开页视觉回归", () => {
   test("弱文本满足普通文本对比度基线", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
+    await expectProjectIdentity(page);
     await page.locator(".public-intro__enter").click();
 
     const contrast = await page.locator(".quality-stage__signal b").evaluate((element) => {
@@ -180,6 +213,7 @@ test.describe("公开页视觉回归", () => {
   test("详情弹层隔离背景、循环焦点并返回触发控件", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/");
+    await expectProjectIdentity(page);
     await expect(page.locator("html")).toHaveClass(/site-motion-ready/);
     await page.locator(".public-intro__enter").click();
     const triggers = page.locator('[data-action="modal"]');
@@ -204,5 +238,54 @@ test.describe("公开页视觉回归", () => {
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
     await expect(trigger).toBeFocused();
+  });
+
+  test("移动端技能卡片完整展示且悬浮工具不遮挡正文", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.locator(".public-intro__enter").click();
+
+    const skills = page.locator('[data-content-group="skills"] .public-block-card');
+    expect(await skills.count()).toBeGreaterThan(0);
+    const clippedCards = await skills.evaluateAll((cards) =>
+      cards.filter((card) => card.scrollHeight > card.clientHeight + 1).length
+    );
+    expect(clippedCards, "390px 下技能卡片文字被裁切").toBe(0);
+
+    await page.evaluate(() => window.scrollTo(0, 800));
+    const tools = page.locator(".public-floating-tools");
+    await expect(tools.locator("span")).toHaveCount(2);
+    const toolLayout = await tools.evaluate((element) => {
+      const buttons = Array.from(element.querySelectorAll<HTMLElement>("button"));
+      return {
+        spanDisplays: Array.from(element.querySelectorAll<HTMLElement>("span")).map((span) => getComputedStyle(span).display),
+        widths: buttons.map((button) => button.getBoundingClientRect().width),
+        right: window.innerWidth - element.getBoundingClientRect().right
+      };
+    });
+    expect(toolLayout.spanDisplays).toEqual(["none", "none"]);
+    expect(toolLayout.widths.every((width) => width <= 41)).toBe(true);
+    expect(toolLayout.right).toBeGreaterThanOrEqual(8);
+  });
+
+  test("导航状态与豆瓣 Tab 按当前内容平滑切换", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    await page.locator(".public-intro__enter").click();
+
+    const firstSectionLink = page.locator(".public-nav__links [data-section-link]").first();
+    await firstSectionLink.click();
+    await expect(firstSectionLink).toHaveAttribute("aria-current", "location");
+
+    const mediaHeading = page.locator('[data-content-group="media"]');
+    await mediaHeading.scrollIntoViewIfNeeded();
+    await expect(page.locator('[data-section-link][href="#section-media"]').first()).toHaveAttribute("aria-current", "location");
+    await expect(page.locator('#media-shelf-tab-active')).toHaveAttribute("aria-selected", "true");
+    await expect(page.locator(".media-shelf__card")).toHaveCount(8);
+    await page.locator('#media-shelf-tab-wishlist').click();
+    await expect(page.locator('#media-shelf-tab-wishlist')).toHaveAttribute("aria-selected", "true");
+    await expect(page.locator(".media-shelf__card")).toHaveCount(8);
   });
 });
