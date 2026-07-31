@@ -110,36 +110,36 @@ export function PageStructurePanel({
  return (
  <aside
  className={cn(
- "admin-structure-panel fixed bottom-5 left-4 top-[76px] z-30 flex w-[304px] flex-col overflow-hidden rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF]/95 shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)] backdrop-blur-xl",
+ "admin-structure-panel fixed bottom-5 left-4 top-[76px] z-30 flex w-[304px] flex-col overflow-hidden rounded-[16px] border border-[var(--rule)] bg-[color-mix(in_srgb,var(--card)_95%,transparent)] shadow-[var(--shadow-pop)] backdrop-blur-xl",
  !isDocked && "z-[45]"
  )}
  aria-label={isZh ? "页面结构" : "Page structure"}
  >
- <header className="border-b border-[#F1EEE8] p-4">
+ <header className="border-b border-[var(--rule)] p-4">
  <div className="flex items-start justify-between gap-3">
  <div>
- <p className="flex items-center gap-2 whitespace-nowrap text-[10px] font-bold tracking-[0.14em] text-[#C0452A]">
+ <p className="flex items-center gap-2 whitespace-nowrap text-[10px] font-bold tracking-[0.14em] text-[var(--seal-deep)]">
  <Layers3 className="h-4 w-4 shrink-0" /> {isZh ? "页面结构" : "PAGE STRUCTURE"}
  </p>
- <p className="mt-1 text-xs text-[#62605B]">{isZh ? `${groups.length} 个模块 · 个人资料固定在顶部` : `${groups.length} modules · Profile stays first`}</p>
+ <p className="mt-1 text-xs text-[var(--ink-2)]">{isZh ? `${groups.length} 个模块 · 个人资料固定在顶部` : `${groups.length} modules · Profile stays first`}</p>
  </div>
- <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] text-[#62605B] hover:bg-[#F8F7F4]" aria-label={isZh ? "收起页面结构" : "Close page structure"}>
+ <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-[16px] border border-[var(--rule)] bg-[var(--card)] text-[var(--ink-2)] hover:bg-[var(--paper-2)]" aria-label={isZh ? "收起页面结构" : "Close page structure"}>
  <X className="h-4 w-4" />
  </button>
  </div>
 
- <label className="mt-4 flex h-10 items-center gap-2 rounded-[10px] border border-[#E7E2D9] bg-[#FFFFFF] px-3 text-[#62605B] focus-within:border-[#C0452A] focus-within:ring-4 focus-within:ring-[#C0452A]/15">
+ <label className="mt-4 flex h-10 items-center gap-2 rounded-[10px] border border-[var(--rule)] bg-[var(--card)] px-3 text-[var(--ink-2)] focus-within:border-[var(--seal-deep)] focus-within:ring-4 focus-within:ring-[color-mix(in_srgb,var(--seal-deep)_15%,transparent)]">
  <Search className="h-4 w-4" />
  <input value={query} onChange={(event) => setQuery(event.target.value)} className="admin-structure-panel__search-input min-w-0 flex-1 border-0 bg-transparent text-sm outline-none" placeholder={isZh ? "搜索模块" : "Search modules"} />
  </label>
 
- <div className="mt-3 flex items-center gap-1 rounded-[10px] bg-[#F1EEE8] p-1">
+ <div className="mt-3 flex items-center gap-1 rounded-[10px] bg-[var(--rule)] p-1">
  {(["all", "visible", "hidden"] as VisibilityFilter[]).map((value) => (
  <button
  key={value}
  type="button"
  onClick={() => setVisibility(value)}
- className={cn("flex-1 rounded-[10px] px-2 py-1.5 text-[11px] font-bold transition", visibility === value ? "bg-[#FFFFFF] text-[#1F2328]" : "text-[#62605B] hover:text-[#1F2328]")}
+ className={cn("flex-1 rounded-[10px] px-2 py-1.5 text-[11px] font-bold transition", visibility === value ? "bg-[var(--card)] text-[var(--ink)]" : "text-[var(--ink-2)] hover:text-[var(--ink)]")}
  >
  {value === "all" ? (isZh ? "全部" : "All") : value === "visible" ? (isZh ? "已发布" : "Published") : (isZh ? "已隐藏" : "Hidden")}
  </button>
@@ -148,27 +148,27 @@ export function PageStructurePanel({
 
  <div className="mt-3 flex items-center justify-between gap-2">
  <div className="flex items-center gap-1">
- <button type="button" onClick={() => setExpandedIds(new Set(groups.map((group) => group.id)))} className="rounded-[10px] px-2 py-1 text-[11px] font-semibold text-[#62605B] hover:bg-[#FFFFFF]">
+ <button type="button" onClick={() => setExpandedIds(new Set(groups.map((group) => group.id)))} className="rounded-[10px] px-2 py-1 text-[11px] font-semibold text-[var(--ink-2)] hover:bg-[var(--card)]">
  {isZh ? "全部展开" : "Expand all"}
  </button>
- <button type="button" onClick={() => setExpandedIds(new Set())} className="rounded-[10px] px-2 py-1 text-[11px] font-semibold text-[#62605B] hover:bg-[#FFFFFF]">
+ <button type="button" onClick={() => setExpandedIds(new Set())} className="rounded-[10px] px-2 py-1 text-[11px] font-semibold text-[var(--ink-2)] hover:bg-[var(--card)]">
  {isZh ? "全部收起" : "Collapse all"}
  </button>
  </div>
- <button type="button" disabled={!canUndo} onClick={onUndo} className="flex items-center gap-1 whitespace-nowrap rounded-[10px] px-2 py-1 text-[11px] font-semibold text-[#C0452A] hover:bg-[#FFF0EB] disabled:cursor-not-allowed disabled:opacity-35">
+ <button type="button" disabled={!canUndo} onClick={onUndo} className="flex items-center gap-1 whitespace-nowrap rounded-[10px] px-2 py-1 text-[11px] font-semibold text-[var(--seal-deep)] hover:bg-[var(--seal-tint)] disabled:cursor-not-allowed disabled:opacity-35">
  <RotateCcw className="h-3.5 w-3.5 shrink-0" /> {isZh ? "撤销排序" : "Undo"}
  </button>
  </div>
- {isFiltered ? <p className="mt-2 text-[10px] leading-4 text-[#C0452A]">{isZh ? "筛选中仅支持定位和编辑；清除筛选后可排序。" : "Clear filters to reorder modules."}</p> : null}
+ {isFiltered ? <p className="mt-2 text-[10px] leading-4 text-[var(--seal-deep)]">{isZh ? "筛选中仅支持定位和编辑；清除筛选后可排序。" : "Clear filters to reorder modules."}</p> : null}
  </header>
 
  <div className="min-h-0 flex-1 overflow-y-auto p-3">
  {filteredGroups.length === 0 ? (
- <div className="rounded-[12px] border border-dashed border-[#E7E2D9] px-4 py-10 text-center text-sm text-[#74716B]">{isZh ? "没有匹配的模块" : "No matching modules"}</div>
+ <div className="rounded-[12px] border border-dashed border-[var(--rule)] px-4 py-10 text-center text-sm text-[var(--ink-2)]">{isZh ? "没有匹配的模块" : "No matching modules"}</div>
  ) : (
  <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
  <SortableContext items={filteredGroups.map((group) => group.id)} strategy={verticalListSortingStrategy}>
- <div className="grid gap-2">
+ <div className="grid grid-cols-1 gap-2">
  {filteredGroups.map((group) => {
  const groupIndex = groups.findIndex((item) => item.id === group.id);
  return (
@@ -237,16 +237,16 @@ function SortableOutlineGroup({
  ref={setNodeRef}
  style={{ transform: CSS.Transform.toString(transform), transition }}
  className={cn(
- "overflow-hidden rounded-[12px] border bg-[#FFFFFF] transition",
- selected ? "border-[#C0452A] ring-4 ring-[#C0452A]/12" : "border-[#E7E2D9]",
- isDragging && "z-10 opacity-55 shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)]"
+ "overflow-hidden rounded-[12px] border bg-[var(--card)] transition",
+ selected ? "border-[var(--seal-deep)] ring-4 ring-[color-mix(in_srgb,var(--seal-deep)_12%,transparent)]" : "border-[var(--rule)]",
+ isDragging && "z-10 opacity-55 shadow-[var(--shadow-pop)]"
  )}
  >
  <div className="flex items-start gap-1.5 p-2.5">
  <button
  type="button"
  disabled={disabled}
- className="mt-0.5 grid h-8 w-7 shrink-0 touch-none place-items-center rounded-[10px] text-[#74716B] hover:bg-[#F8F7F4] hover:text-[#1F2328] disabled:cursor-not-allowed disabled:opacity-30"
+ className="mt-0.5 grid h-8 w-7 shrink-0 touch-none place-items-center rounded-[10px] text-[var(--ink-2)] hover:bg-[var(--paper-2)] hover:text-[var(--ink)] disabled:cursor-not-allowed disabled:opacity-30"
  title={disabled ? (isZh ? "清除筛选后可排序" : "Clear filters to reorder") : (isZh ? "拖动排序；也支持键盘操作" : "Drag or use keyboard to reorder")}
  {...attributes}
  {...listeners}
@@ -255,37 +255,37 @@ function SortableOutlineGroup({
  </button>
  <button type="button" onClick={onSelect} className="min-w-0 flex-1 text-left">
  <div className="flex items-center gap-2">
- <span className=" text-[10px] font-bold text-[#74716B]">{String(index + 1).padStart(2, "0")}</span>
- {group.moduleType ? <span className="rounded-[16px] bg-[#FFF0EB] px-2 py-0.5 text-[9px] font-bold tracking-[0.08em] text-[#C0452A]">{getModuleTypeLabel(group.moduleType, editorLanguage)}</span> : null}
+ <span className=" text-[10px] font-bold text-[var(--ink-2)]">{String(index + 1).padStart(2, "0")}</span>
+ {group.moduleType ? <span className="rounded-[16px] bg-[var(--seal-tint)] px-2 py-0.5 text-[9px] font-bold tracking-[0.08em] text-[var(--seal-deep)]">{getModuleTypeLabel(group.moduleType, editorLanguage)}</span> : null}
  </div>
- <p className="mt-1 truncate text-sm font-bold text-[#1F2328]">{group.title}</p>
- <p className="mt-0.5 text-[10px] text-[#74716B]">{isZh ? `${contentCount} 个内容 · ${group.visibleCount}/${group.blocks.length} 显示` : `${contentCount} items · ${group.visibleCount}/${group.blocks.length} visible`}</p>
+ <p className="mt-1 truncate text-sm font-bold text-[var(--ink)]">{group.title}</p>
+ <p className="mt-0.5 text-[10px] text-[var(--ink-2)]">{isZh ? `${contentCount} 个内容 · ${group.visibleCount}/${group.blocks.length} 显示` : `${contentCount} items · ${group.visibleCount}/${group.blocks.length} visible`}</p>
  </button>
  <div className="flex shrink-0 items-center gap-0.5">
- <button type="button" onClick={onToggleVisibility} className={cn("grid h-8 w-8 place-items-center rounded-[10px] hover:bg-[#F8F7F4]", group.isVisible ? "text-[#C0452A]" : "text-[#74716B]")} title={group.isVisible ? (isZh ? "隐藏整个模块" : "Hide module") : (isZh ? "发布整个模块" : "Publish module")}>
+ <button type="button" onClick={onToggleVisibility} className={cn("grid h-8 w-8 place-items-center rounded-[10px] hover:bg-[var(--paper-2)]", group.isVisible ? "text-[var(--seal-deep)]" : "text-[var(--ink-2)]")} title={group.isVisible ? (isZh ? "隐藏整个模块" : "Hide module") : (isZh ? "发布整个模块" : "Publish module")}>
  {group.isVisible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
  </button>
- <button type="button" onClick={onEdit} className="grid h-8 w-8 place-items-center rounded-[10px] text-[#62605B] hover:bg-[#FFF0EB] hover:text-[#C0452A]" title={isZh ? "编辑模块" : "Edit module"}>
+ <button type="button" onClick={onEdit} className="grid h-8 w-8 place-items-center rounded-[10px] text-[var(--ink-2)] hover:bg-[var(--seal-tint)] hover:text-[var(--seal-deep)]" title={isZh ? "编辑模块" : "Edit module"}>
  <Pencil className="h-4 w-4" />
  </button>
- <button type="button" onClick={onToggleExpanded} className="grid h-8 w-8 place-items-center rounded-[10px] text-[#62605B] hover:bg-[#F8F7F4]" title={expanded ? (isZh ? "收起" : "Collapse") : (isZh ? "展开" : "Expand")}>
+ <button type="button" onClick={onToggleExpanded} className="grid h-8 w-8 place-items-center rounded-[10px] text-[var(--ink-2)] hover:bg-[var(--paper-2)]" title={expanded ? (isZh ? "收起" : "Collapse") : (isZh ? "展开" : "Expand")}>
  {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
  </button>
  </div>
  </div>
 
  {expanded ? (
- <div className="border-t border-[#F1EEE8] bg-[#F8F7F4] px-3 py-2.5">
- <div className="grid gap-1">
+ <div className="border-t border-[var(--rule)] bg-[var(--paper-2)] px-3 py-2.5">
+ <div className="grid grid-cols-1 gap-1">
  {group.blocks.map((block) => (
- <button key={block.id} type="button" onClick={() => onEditBlock(block.id)} className="flex items-center justify-between gap-2 rounded-[10px] px-2 py-1.5 text-left text-[11px] text-[#62605B] hover:bg-[#FFFFFF] hover:text-[#1F2328]">
+ <button key={block.id} type="button" onClick={() => onEditBlock(block.id)} className="flex items-center justify-between gap-2 rounded-[10px] px-2 py-1.5 text-left text-[11px] text-[var(--ink-2)] hover:bg-[var(--card)] hover:text-[var(--ink)]">
  <span className="truncate">{isSectionTextBlock(block) ? (isZh ? "标题" : "Heading") : (block.title || (isZh ? "未命名内容" : "Untitled"))}</span>
  <Pencil className="h-3 w-3 shrink-0 opacity-55" />
  </button>
  ))}
  </div>
  {!disabled ? (
- <div className="mt-2 grid grid-cols-4 gap-1 border-t border-[#F1EEE8] pt-2">
+ <div className="mt-2 grid grid-cols-4 gap-1 border-t border-[var(--rule)] pt-2">
  <MoveButton icon={<ChevronsUp className="h-3.5 w-3.5" />} label={isZh ? "置顶" : "First"} disabled={index === 0} onClick={() => onMove(0)} />
  <MoveButton icon={<ArrowUp className="h-3.5 w-3.5" />} label={isZh ? "上移" : "Up"} disabled={index === 0} onClick={() => onMove(index - 1)} />
  <MoveButton icon={<ArrowDown className="h-3.5 w-3.5" />} label={isZh ? "下移" : "Down"} disabled={index === total - 1} onClick={() => onMove(index + 1)} />
@@ -299,7 +299,7 @@ function SortableOutlineGroup({
 }
 
 function MoveButton({ icon, label, disabled, onClick }: { icon: React.ReactNode; label: string; disabled: boolean; onClick: () => void }) {
- return <button type="button" disabled={disabled} onClick={onClick} className="flex flex-col items-center gap-0.5 rounded-[10px] px-1 py-1.5 text-[9px] font-semibold text-[#62605B] hover:bg-[#FFFFFF] disabled:cursor-not-allowed disabled:opacity-30">{icon}{label}</button>;
+ return <button type="button" disabled={disabled} onClick={onClick} className="flex flex-col items-center gap-0.5 rounded-[10px] px-1 py-1.5 text-[9px] font-semibold text-[var(--ink-2)] hover:bg-[var(--card)] disabled:cursor-not-allowed disabled:opacity-30">{icon}{label}</button>;
 }
 
 function getModuleTypeLabel(type: OutlineSpecialModuleType | null, language: EditorLanguage) {

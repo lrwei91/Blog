@@ -1508,9 +1508,9 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  toast.success(copy.saveSuccess);
  }
 
- return (
- <main className="admin-studio min-h-screen text-[#1F2328]">
- <header className="admin-studio__topbar sticky top-0 z-40">
+  return (
+  <main className="admin-studio min-h-screen text-[var(--ink)]" data-color-scheme={config.theme.colorScheme ?? "light"}>
+  <header className="admin-studio__topbar sticky top-0 z-40">
  <div className="mx-auto grid max-w-[1180px] gap-2 px-5 py-3 md:flex md:items-center md:justify-between">
  <div className="flex items-center justify-between gap-3 md:contents">
  <div className="flex min-w-0 items-center gap-3 md:order-1">
@@ -1542,7 +1542,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  variant="secondary"
  size="sm"
  onClick={openTopBarOverrideDialog}
- className="h-9 rounded-[16px] border-[#F3C8BA] bg-[#FFF0EB] px-3 text-xs text-[#C0452A] hover:bg-[#FFF0EB]"
+ className="h-9 rounded-[16px] border-[var(--tint-border)] bg-[var(--seal-tint)] px-3 text-xs text-[var(--seal-deep)] hover:bg-[var(--seal-tint)]"
  >
  {copy.variantOverride}
  </Button>
@@ -1883,7 +1883,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  maxWidth: dragOverlayRect.width,
  maxHeight: dragOverlayRect.height
  }}
- className="pointer-events-none box-border shrink-0 scale-[1.035] cursor-grabbing overflow-hidden rounded-[16px] opacity-95 shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)]"
+ className="pointer-events-none box-border shrink-0 scale-[1.035] cursor-grabbing overflow-hidden rounded-[16px] opacity-95 shadow-[var(--shadow-pop)]"
  >
  <DragOverlayBlockPreview
  block={activeDragBlock}
@@ -1913,14 +1913,15 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  </>
  ) : null}
 
- {modal ? (
- <EditorModal
- title={modalTitle(modal, editorLanguage)}
- onClose={() => setModal(null)}
- onSave={save}
- isSaving={isSaving}
- editorLanguage={editorLanguage}
- canSave={modal.type !== "project-settings" || validation.success}
+  {modal ? (
+  <EditorModal
+  title={modalTitle(modal, editorLanguage)}
+  onClose={() => setModal(null)}
+  onSave={save}
+  isSaving={isSaving}
+  editorLanguage={editorLanguage}
+  canSave={modal.type !== "project-settings" || validation.success}
+  size={modal.type === "project-settings" ? "xl" : "lg"}
  footerStart={
  modal.type === "block" || modal.type === "special-module" ? (
  <Button
@@ -2023,22 +2024,22 @@ function EditableProfile({
  label=""
  buttonText={editorLanguage === "zh-CN" ? "编辑" : "Edit"}
  buttonIconOnly
- buttonClassName="h-9 w-9 rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] p-0 text-black hover:bg-[#FFFFFF]"
+ buttonClassName="h-9 w-9 rounded-[16px] border border-[var(--rule)] bg-[var(--card)] p-0 text-[var(--ink)] hover:bg-[var(--card)]"
  onUploaded={(url) => onPatch({ avatarUrl: url })}
  />
  </div>
  </span>
- <div className="grid gap-3">
+ <div className="grid grid-cols-1 gap-3">
  <InlineProfileText
  value={profile.displayName}
- className="rounded-[10px] px-1 text-3xl font-bold leading-tight tracking-[-0.04em] hover:bg-[#F1EEE8]"
+ className="rounded-[10px] px-1 text-3xl font-bold leading-tight tracking-[-0.04em] hover:bg-[var(--rule)]"
  inputClassName="text-3xl font-bold"
  onChange={(displayName) => onPatch({ displayName })}
  />
  <InlineProfileText
  value={profile.headline}
  multiline
- className="rounded-[10px] px-1 text-base font-bold leading-6 hover:bg-[#F1EEE8]"
+ className="rounded-[10px] px-1 text-base font-bold leading-6 hover:bg-[var(--rule)]"
  inputClassName="min-h-20 text-base font-medium leading-6"
  onChange={(headline) => onPatch({ headline })}
  />
@@ -2046,14 +2047,14 @@ function EditableProfile({
  <InlineProfileText
  value={profile.bio}
  multiline
- className="rounded-[10px] px-1 text-sm leading-7 text-[#62605B] hover:bg-[#F1EEE8]"
+ className="rounded-[10px] px-1 text-sm leading-7 text-[var(--ink-2)] hover:bg-[var(--rule)]"
  onChange={(bio) => onPatch({ bio })}
  />
  </div>
  <InlineProfileText
  value={profile.location ?? ""}
  placeholder={editorLanguage === "zh-CN" ? "添加位置" : "Add location"}
- className="inline-flex w-fit rounded-[10px] px-1 text-sm text-[#62605B] hover:bg-[#F1EEE8]"
+ className="inline-flex w-fit rounded-[10px] px-1 text-sm text-[var(--ink-2)] hover:bg-[var(--rule)]"
  onChange={(location) => onPatch({ location })}
  prefix={<MapPin className="h-4 w-4" />}
  />
@@ -2163,7 +2164,7 @@ function InlineProfileText({
  >
  <span className={cn("inline-flex items-center gap-1.5", value && "whitespace-pre-wrap")}>
  {prefix}
- {value || <span className="text-[#74716B]">{placeholder}</span>}
+ {value || <span className="text-[var(--ink-2)]">{placeholder}</span>}
  </span>
  </button>
  );
@@ -2232,28 +2233,28 @@ function DragOverlayBlockPreview({ block, width, height }: { block: Block; width
 
  return (
  <div
- className="relative box-border overflow-hidden rounded-[16px] border border-[#1F2328] bg-[#FFFFFF] p-4 ring-2 ring-[#C0452A]/25"
+ className="relative box-border overflow-hidden rounded-[16px] border border-[var(--ink)] bg-[var(--card)] p-4 ring-2 ring-[color-mix(in_srgb,var(--seal-deep)_25%,transparent)]"
  style={{ width, height }}
  >
  {block.coverImage ? (
  <>
  <img src={block.coverImage} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
  <div className="absolute inset-x-4 bottom-4 z-10">
- <span className="line-clamp-2 inline-block max-w-full rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF]/95 px-3 py-1.5 text-sm font-semibold leading-5 text-[#1F2328]">
+ <span className="line-clamp-2 inline-block max-w-full rounded-[16px] border border-[var(--rule)] bg-[color-mix(in_srgb,var(--card)_95%,transparent)] px-3 py-1.5 text-sm font-semibold leading-5 text-[var(--ink)]">
  {block.title}
  </span>
  </div>
  </>
  ) : (
  <div className="flex h-full flex-col justify-between gap-3">
- <div className="grid gap-2">
+ <div className="grid grid-cols-1 gap-2">
  {block.icon ? <div className="flex"><BlockIcon name={block.icon} className="h-5 w-5" style={{ color: getBlockIconColor(block.metadata?.iconColor) }} /></div> : null}
  <h3 className="line-clamp-2 text-lg font-semibold leading-tight">{block.title}</h3>
- {block.subtitle ? <p className="line-clamp-2 text-sm text-[#62605B]">{block.subtitle}</p> : null}
- {block.description ? <p className="line-clamp-3 text-sm leading-6 text-[#74716B]">{block.description}</p> : null}
+ {block.subtitle ? <p className="line-clamp-2 text-sm text-[var(--ink-2)]">{block.subtitle}</p> : null}
+ {block.description ? <p className="line-clamp-3 text-sm leading-6 text-[var(--ink-2)]">{block.description}</p> : null}
  </div>
  {block.badge ? (
- <span className="line-clamp-2 w-fit max-w-full rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF]/95 px-3 py-1.5 text-xs font-semibold leading-5 text-[#62605B]">
+ <span className="line-clamp-2 w-fit max-w-full rounded-[16px] border border-[var(--rule)] bg-[color-mix(in_srgb,var(--card)_95%,transparent)] px-3 py-1.5 text-xs font-semibold leading-5 text-[var(--ink-2)]">
  {block.badge}
  </span>
  ) : null}
@@ -2274,18 +2275,18 @@ function DragOverlayTextBlockPreview({ block, width, height }: { block: Block; w
  return (
  <div
  className={cn(
- "flex box-border h-full w-full flex-col justify-center overflow-hidden rounded-[16px] border border-[#1F2328] bg-[#FFFFFF] px-3.5 py-2.5 ring-2 ring-[#C0452A]/25",
+ "flex box-border h-full w-full flex-col justify-center overflow-hidden rounded-[16px] border border-[var(--ink)] bg-[var(--card)] px-3.5 py-2.5 ring-2 ring-[color-mix(in_srgb,var(--seal-deep)_25%,transparent)]",
  titleAlign === "center" && "items-center text-center",
  titleAlign === "right" && "items-end text-right",
  titleAlign === "left" && "items-start text-left"
  )}
  style={{ width, height }}
  >
- <h3 className={cn("max-w-full truncate font-bold leading-tight tracking-normal text-[#1F2328]", titleClass)}>
+ <h3 className={cn("max-w-full truncate font-bold leading-tight tracking-normal text-[var(--ink)]", titleClass)}>
  {block.title.trim()}
- {block.icon ? <span className="ml-1 text-[#C0452A]">{block.icon}</span> : null}
+ {block.icon ? <span className="ml-1 text-[var(--seal-deep)]">{block.icon}</span> : null}
  </h3>
- {subtitle ? <p className="mt-1 max-w-full truncate text-sm leading-5 text-[#62605B]">{subtitle}</p> : null}
+ {subtitle ? <p className="mt-1 max-w-full truncate text-sm leading-5 text-[var(--ink-2)]">{subtitle}</p> : null}
  </div>
  );
 }
@@ -3278,7 +3279,7 @@ function EditableExperienceModule({
  data-admin-block-id={group.primaryEditBlockId}
  className={cn(
  "group relative rounded-[16px] p-2 transition",
- selected && "ring-4 ring-[#C0452A]/20",
+ selected && "ring-4 ring-[color-mix(in_srgb,var(--seal-deep)_20%,transparent)]",
  !group.isVisible && "opacity-55 grayscale-[0.18]"
  )}
  onClick={onSelect}
@@ -3291,7 +3292,7 @@ function EditableExperienceModule({
  event.stopPropagation();
  onDelete();
  }}
- className="pointer-events-auto absolute -left-1 -top-1 grid h-9 w-9 place-items-center rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)] transition hover:border-red-100 hover:bg-red-50"
+ className="pointer-events-auto absolute -left-1 -top-1 grid h-9 w-9 place-items-center rounded-[16px] border border-[var(--rule)] bg-[var(--card)] shadow-[var(--shadow-pop)] transition hover:border-red-100 hover:bg-red-50"
  aria-label="删除工作经历模块"
  >
  <Trash2 className="h-4 w-4 text-red-500" />
@@ -3302,7 +3303,7 @@ function EditableExperienceModule({
  event.stopPropagation();
  onEdit();
  }}
- className="pointer-events-auto absolute -right-1 -top-1 grid h-9 w-9 place-items-center rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)] transition hover:border-[#FFF0EB] hover:bg-[#FFF0EB]"
+ className="pointer-events-auto absolute -right-1 -top-1 grid h-9 w-9 place-items-center rounded-[16px] border border-[var(--rule)] bg-[var(--card)] shadow-[var(--shadow-pop)] transition hover:border-[var(--seal-tint)] hover:bg-[var(--seal-tint)]"
  aria-label="编辑工作经历模块"
  >
  <Pencil className="h-4 w-4" />
@@ -3423,7 +3424,7 @@ function EditableSection({
  <button
  type="button"
  className={cn(
- "admin-draggable absolute top-1 grid h-9 w-9 cursor-grab place-items-center rounded-[16px] bg-[#FFFFFF] text-[#74716B] transition active:cursor-grabbing",
+ "admin-draggable absolute top-1 grid h-9 w-9 cursor-grab place-items-center rounded-[16px] bg-[var(--card)] text-[var(--ink-2)] transition active:cursor-grabbing",
  device === "mobile" ? "-left-2 opacity-100" : "-left-11 opacity-0 group-hover:opacity-100"
  )}
  {...sectionHandleProps}
@@ -3433,16 +3434,16 @@ function EditableSection({
  <button type="button" onClick={onEditSection} className="min-w-0 rounded-[10px] px-1 text-left">
  <h2 className="text-2xl font-bold tracking-normal">
  {section.title}
- {section.emoji ? <span className="ml-1 text-[#C0452A]">{section.emoji}</span> : null}
+ {section.emoji ? <span className="ml-1 text-[var(--seal-deep)]">{section.emoji}</span> : null}
  </h2>
- {section.description ? <p className="mt-1 text-sm text-[#62605B]">{section.description}</p> : null}
+ {section.description ? <p className="mt-1 text-sm text-[var(--ink-2)]">{section.description}</p> : null}
  </button>
  </div>
  <div className={cn("flex gap-1 transition", device === "mobile" ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
- <button type="button" onClick={onDeleteSection} className="grid h-9 w-9 place-items-center rounded-[16px] bg-[#FFFFFF]">
+ <button type="button" onClick={onDeleteSection} className="grid h-9 w-9 place-items-center rounded-[16px] bg-[var(--card)]">
  <Trash2 className="h-4 w-4 text-red-500" />
  </button>
- <button type="button" onClick={onEditSection} className="grid h-9 w-9 place-items-center rounded-[16px] bg-[#FFFFFF]">
+ <button type="button" onClick={onEditSection} className="grid h-9 w-9 place-items-center rounded-[16px] bg-[var(--card)]">
  <Pencil className="h-4 w-4" />
  </button>
  </div>
@@ -3539,11 +3540,11 @@ function BlockDropPreview({
  <div
  style={placementStyle}
  className={cn(
- "pointer-events-none rounded-[16px] border-2 border-dashed border-[#C0452A]/55 bg-[#FFF0EB]/75 ",
+ "pointer-events-none rounded-[16px] border-2 border-dashed border-[color-mix(in_srgb,var(--seal-deep)_55%,transparent)] bg-[color-mix(in_srgb,var(--seal-tint)_75%,transparent)] ",
  blockSizeClassByDevice[device][displaySize]
  )}
  >
- <div className="grid h-full w-full place-items-center rounded-[16px] bg-[#FFFFFF]/35 text-xs font-bold text-[#C0452A]">
+ <div className="grid h-full w-full place-items-center rounded-[16px] bg-[color-mix(in_srgb,var(--card)_35%,transparent)] text-xs font-bold text-[var(--seal-deep)]">
  放到这里
  </div>
  </div>
@@ -3552,7 +3553,7 @@ function BlockDropPreview({
 
 function TextBlockDropPreview({ block }: { block: Block }) {
  return (
- <div className="pointer-events-none rounded-[16px] border-2 border-dashed border-[#C0452A]/45 bg-[#FFF0EB]/65 px-2 py-2">
+ <div className="pointer-events-none rounded-[16px] border-2 border-dashed border-[color-mix(in_srgb,var(--seal-deep)_45%,transparent)] bg-[color-mix(in_srgb,var(--seal-tint)_65%,transparent)] px-2 py-2">
  <BlockCard block={block} disableActions withLayout={false} className="min-h-0 opacity-50" />
  </div>
  );
@@ -3605,7 +3606,7 @@ function SortableTextBlock({
  className={cn(
  "admin-draggable group relative rounded-[16px] px-0 py-1 transition-all duration-200 ease-out",
  disableDrag ? "cursor-default" : "cursor-grab active:cursor-grabbing",
- selected ? "ring-4 ring-[#C0452A]/20" : "",
+ selected ? "ring-4 ring-[color-mix(in_srgb,var(--seal-deep)_20%,transparent)]" : "",
  isDragging || isDragOverlayActive ? "z-20 opacity-20" : "",
  !block.isVisible ? "opacity-55 grayscale-[0.18]" : ""
  )}
@@ -3613,7 +3614,7 @@ function SortableTextBlock({
  {...attributes}
  {...listeners}
  >
- <div className="rounded-[16px] p-2 transition-all duration-200 ease-out group-hover:bg-[#F1EEE8]/70">
+ <div className="rounded-[16px] p-2 transition-all duration-200 ease-out group-hover:bg-[color-mix(in_srgb,var(--rule)_70%,transparent)]">
  <div className="transition-transform duration-200 ease-out group-hover:scale-[0.97]">
  <BlockCard block={block} disableActions withLayout={false} className="min-h-0" />
  </div>
@@ -3627,7 +3628,7 @@ function SortableTextBlock({
  onDelete();
  }}
  className={cn(
- "pointer-events-auto absolute grid place-items-center rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)] transition hover:border-red-100 hover:bg-red-50",
+ "pointer-events-auto absolute grid place-items-center rounded-[16px] border border-[var(--rule)] bg-[var(--card)] shadow-[var(--shadow-pop)] transition hover:border-red-100 hover:bg-red-50",
  device === "mobile" ? "-left-2 -top-2 h-[30px] w-[30px]" : "-left-3 -top-3 h-9 w-9"
  )}
  >
@@ -3641,7 +3642,7 @@ function SortableTextBlock({
  onEdit();
  }}
  className={cn(
- "pointer-events-auto absolute grid place-items-center rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)] transition hover:border-[#FFF0EB] hover:bg-[#FFF0EB]",
+ "pointer-events-auto absolute grid place-items-center rounded-[16px] border border-[var(--rule)] bg-[var(--card)] shadow-[var(--shadow-pop)] transition hover:border-[var(--seal-tint)] hover:bg-[var(--seal-tint)]",
  device === "mobile" ? "-right-2 -top-2 h-[30px] w-[30px]" : "-right-3 -top-3 h-9 w-9"
  )}
  >
@@ -3785,7 +3786,7 @@ function SortableBlock({
  className={cn(
  "admin-draggable group relative will-change-transform transition-all duration-200 ease-out",
  isSpecialModule ? "cursor-default" : "cursor-grab active:cursor-grabbing",
- selected ? "rounded-[16px] ring-4 ring-[#C0452A]/20" : "",
+ selected ? "rounded-[16px] ring-4 ring-[color-mix(in_srgb,var(--seal-deep)_20%,transparent)]" : "",
  blockSizeClassByDevice[device][activeDisplaySize],
  removeFromFlowDuringDrag ? "absolute left-0 top-0 z-20 h-px w-px overflow-hidden opacity-0" : "",
  hideOriginalDuringDrag ? "opacity-0" : isDragging || isDragOverlayActive ? "z-20 opacity-20" : "",
@@ -3800,7 +3801,7 @@ function SortableBlock({
  {getSpecialModuleType(block) ? (
  <SpecialModulePreview block={block} />
  ) : (
- <BlockCard block={block} disableActions withLayout={false} className="h-full w-full select-none ring-0 group-hover:ring-2 group-hover:ring-[#C0452A]/20" />
+ <BlockCard block={block} disableActions withLayout={false} className="h-full w-full select-none ring-0 group-hover:ring-2 group-hover:ring-[color-mix(in_srgb,var(--seal-deep)_20%,transparent)]" />
  )}
  </div>
  <div className={cn("pointer-events-none absolute inset-0 z-30 transition", device === "mobile" ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
@@ -3812,7 +3813,7 @@ function SortableBlock({
  onDelete();
  }}
  className={cn(
- "pointer-events-auto absolute grid place-items-center rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)] transition hover:border-red-100 hover:bg-red-50",
+ "pointer-events-auto absolute grid place-items-center rounded-[16px] border border-[var(--rule)] bg-[var(--card)] shadow-[var(--shadow-pop)] transition hover:border-red-100 hover:bg-red-50",
  device === "mobile" ? "-left-2 -top-2 h-[30px] w-[30px]" : "-left-3 -top-3 h-9 w-9"
  )}
  >
@@ -3826,7 +3827,7 @@ function SortableBlock({
  onEdit();
  }}
  className={cn(
- "pointer-events-auto absolute grid place-items-center rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)] transition hover:border-[#FFF0EB] hover:bg-[#FFF0EB]",
+ "pointer-events-auto absolute grid place-items-center rounded-[16px] border border-[var(--rule)] bg-[var(--card)] shadow-[var(--shadow-pop)] transition hover:border-[var(--seal-tint)] hover:bg-[var(--seal-tint)]",
  device === "mobile" ? "-right-2 -top-2 h-[30px] w-[30px]" : "-right-3 -top-3 h-9 w-9"
  )}
  >
@@ -3841,7 +3842,7 @@ function SortableBlock({
  event.stopPropagation();
  onSelect();
  }}
- className="absolute -bottom-1 -right-1 z-30 grid h-12 w-12 touch-none cursor-nwse-resize place-items-center rounded-br-[8px] rounded-tl-[8px] bg-[#C0452A] text-white opacity-0 shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)] transition group-hover:opacity-100"
+ className="absolute -bottom-1 -right-1 z-30 grid h-12 w-12 touch-none cursor-nwse-resize place-items-center rounded-br-[8px] rounded-tl-[8px] bg-[var(--seal-deep)] text-[var(--seal-contrast)] opacity-0 shadow-[var(--shadow-pop)] transition group-hover:opacity-100"
  >
  <span className="grid h-7 w-7 place-items-end">
  <span className="h-4 w-4 rounded-br-[5px] border-b-[3px] border-r-[3px] border-current" />
@@ -4063,7 +4064,7 @@ function FloatingToolbar({
  onClick={onToggleStructure}
  className={cn(
  "flex h-10 items-center gap-2 rounded-[12px] px-3 text-xs font-bold transition",
- isStructureOpen ? "admin-floating-toolbar__device--active" : "text-[#62605B] hover:bg-[#FFFFFF]/70"
+ isStructureOpen ? "admin-floating-toolbar__device--active" : "text-[var(--ink-2)] hover:bg-[color-mix(in_srgb,var(--card)_70%,transparent)]"
  )}
  title={editorLanguage === "zh-CN" ? "页面结构" : "Page structure"}
  >
@@ -4079,8 +4080,8 @@ function FloatingToolbar({
  device === "desktop"
  ? "admin-floating-toolbar__device--active"
  : canEditDesktop
- ? "text-[#62605B] hover:bg-[#FFFFFF]/70"
- : "cursor-not-allowed text-[#E7E2D9]"
+ ? "text-[var(--ink-2)] hover:bg-[color-mix(in_srgb,var(--card)_70%,transparent)]"
+ : "cursor-not-allowed text-[var(--rule)]"
  }`}
  title={canEditDesktop ? copy.desktop : copy.desktopDisabled}
  >
@@ -4090,7 +4091,7 @@ function FloatingToolbar({
  type="button"
  onClick={() => onDeviceChange("mobile")}
  className={`grid h-10 w-10 place-items-center rounded-[12px] transition ${
- device === "mobile" ? "admin-floating-toolbar__device--active" : "text-[#62605B] hover:bg-[#FFFFFF]/70"
+ device === "mobile" ? "admin-floating-toolbar__device--active" : "text-[var(--ink-2)] hover:bg-[color-mix(in_srgb,var(--card)_70%,transparent)]"
  }`}
  title={copy.mobile}
  >
@@ -4114,8 +4115,8 @@ function ResizePreview({ activeSize, editorLanguage }: { activeSize: BlockSize; 
  title={getLocalizedBlockSizeLabel(preset.size, editorLanguage)}
  className={`grid h-11 w-11 place-items-center rounded-[10px] border transition [&>span>svg]:h-6 [&>span>svg]:w-6 ${
  activeSize === preset.size
- ? "border-[#C0452A] bg-[#C0452A] text-[#FFFFFF]"
- : "border-transparent bg-[#FFFFFF]/70 text-[#74716B]"
+ ? "border-[var(--seal-deep)] bg-[var(--seal-deep)] text-[var(--seal-contrast)]"
+ : "border-transparent bg-[color-mix(in_srgb,var(--card)_70%,transparent)] text-[var(--ink-2)]"
  }`}
  >
  <span>{preset.icon}</span>
@@ -4126,63 +4127,62 @@ function ResizePreview({ activeSize, editorLanguage }: { activeSize: BlockSize; 
 }
 
 function EditorModal({
- title,
- children,
- onClose,
- onSave,
- isSaving,
- editorLanguage,
- canSave = true,
- tone = "light",
- footerStart
+  title,
+  children,
+  onClose,
+  onSave,
+  isSaving,
+  editorLanguage,
+  canSave = true,
+  size = "lg",
+  footerStart
 }: {
- title: string;
- children: React.ReactNode;
- onClose: () => void;
- onSave: () => Promise<void>;
- isSaving: boolean;
- editorLanguage: EditorLanguage;
- canSave?: boolean;
- tone?: "light" | "dark";
- footerStart?: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+  onClose: () => void;
+  onSave: () => Promise<void>;
+  isSaving: boolean;
+  editorLanguage: EditorLanguage;
+  canSave?: boolean;
+  size?: "lg" | "xl";
+  footerStart?: React.ReactNode;
 }) {
- const isDark = tone === "dark";
- const copy = editorCopy[editorLanguage];
- return (
- <div className="admin-editor-modal fixed inset-0 z-50 grid place-items-center p-4" onMouseDown={onClose}>
- <div
- className={cn(
- "admin-editor-modal__panel flex max-h-[86vh] w-full max-w-3xl flex-col overflow-hidden",
- isDark ? "bg-[#1F2328] text-white" : "bg-[#FFFFFF] text-[#1F2328]"
- )}
- onMouseDown={(event) => event.stopPropagation()}
- >
- <div className={cn("admin-editor-modal__header flex items-center justify-between border-b px-6 py-5", isDark ? "border-white/10" : "border-[#E7E2D9]")}>
- <div><p>EDIT CONTENT</p><h3 className="text-xl font-bold tracking-[-0.03em]">{title}</h3></div>
- <button type="button" onClick={onClose} className={cn("admin-editor-modal__close grid h-9 w-9 place-items-center rounded-[16px]", isDark ? "hover:bg-[#FFFFFF]/10" : "hover:bg-[#F1EEE8]")}>
- <X className="h-4 w-4" />
- </button>
- </div>
- <div className="admin-editor-modal__body overflow-auto p-6">{children}</div>
- <div className={cn("admin-editor-modal__footer flex items-center justify-between gap-3 border-t px-6 py-4", isDark ? "border-white/10" : "border-[#E7E2D9]")}>
- <div className="min-w-0">{footerStart}</div>
- <div className="flex justify-end gap-2">
- <Button variant="ghost" onClick={onClose} className={cn(isDark && "text-white hover:bg-[#FFFFFF]/10")}>{copy.cancel}</Button>
- <Button
- onClick={async () => {
- await onSave();
- onClose();
- }}
- disabled={isSaving || !canSave}
- className={cn(isDark ? "rounded-[16px] bg-[#FFFFFF] text-black hover:bg-[#FFFFFF]/90" : "admin-editor-modal__save")}
- >
- {isSaving ? copy.saving : copy.save}
- </Button>
- </div>
- </div>
- </div>
- </div>
- );
+  const copy = editorCopy[editorLanguage];
+  return (
+  <div className="admin-editor-modal fixed inset-0 z-50 grid place-items-center p-4" onMouseDown={onClose}>
+  <div
+  className={cn(
+  "admin-editor-modal__panel flex max-h-[86vh] w-full flex-col overflow-hidden",
+  size === "xl" ? "max-w-4xl" : "max-w-3xl"
+  )}
+  onMouseDown={(event) => event.stopPropagation()}
+  >
+  <div className="admin-editor-modal__header flex items-center justify-between border-b px-6 py-5">
+  <div><p>EDIT CONTENT</p><h3 className="text-xl font-bold tracking-[-0.03em]">{title}</h3></div>
+  <button type="button" onClick={onClose} className="admin-editor-modal__close grid h-9 w-9 place-items-center rounded-[16px] hover:bg-[var(--rule)]">
+  <X className="h-4 w-4" />
+  </button>
+  </div>
+  <div className="admin-editor-modal__body overflow-auto p-6">{children}</div>
+  <div className="admin-editor-modal__footer flex items-center justify-between gap-3 border-t px-6 py-4">
+  <div className="min-w-0">{footerStart}</div>
+  <div className="flex justify-end gap-2">
+  <Button variant="ghost" onClick={onClose}>{copy.cancel}</Button>
+  <Button
+  onClick={async () => {
+  await onSave();
+  onClose();
+  }}
+  disabled={isSaving || !canSave}
+  className="admin-editor-modal__save"
+  >
+  {isSaving ? copy.saving : copy.save}
+  </Button>
+  </div>
+  </div>
+  </div>
+  </div>
+  );
 }
 
 function TagsQuickForm({
@@ -4200,17 +4200,17 @@ function TagsQuickForm({
  }
 
  return (
- <div className="grid gap-4">
+ <div className="grid grid-cols-1 gap-4">
  <div className="flex items-center justify-between">
- <p className="text-sm text-[#62605B]">{copy.tagsHelp}</p>
+ <p className="text-sm text-[var(--ink-2)]">{copy.tagsHelp}</p>
  <Button type="button" variant="secondary" size="sm" onClick={() => onPatch({ tags: [...profile.tags, editorLanguage === "zh-CN" ? "新标签" : "New Tag"] })}>
  <Plus className="h-4 w-4" />
  {copy.addTag}
  </Button>
  </div>
- <div className="grid gap-2">
+ <div className="grid grid-cols-1 gap-2">
  {profile.tags.map((tag, index) => (
- <div key={`tag-editor-${index}`} className="grid gap-2 rounded-[12px] border border-[#E7E2D9] p-3 sm:grid-cols-[1fr_auto]">
+ <div key={`tag-editor-${index}`} className="grid grid-cols-1 gap-2 rounded-[12px] border border-[var(--rule)] p-3 sm:grid-cols-[1fr_auto]">
  <Input value={tag} onChange={(event) => updateTag(index, event.target.value)} />
  <div className="flex gap-1">
  <Button
@@ -4267,9 +4267,9 @@ function SocialLinksQuickForm({
  }
 
  return (
- <div className="grid gap-5 text-[#1F2328]">
+ <div className="grid grid-cols-1 gap-5 text-[var(--ink)]">
  <div className="flex flex-wrap items-center justify-between gap-2">
- <p className="text-sm text-[#62605B]">{copy.socialButtonsHelp}</p>
+ <p className="text-sm text-[var(--ink-2)]">{copy.socialButtonsHelp}</p>
  <div className="flex flex-wrap items-center gap-2">
  <Button
  type="button"
@@ -4303,11 +4303,11 @@ function SocialLinksQuickForm({
  </Button>
  </div>
  </div>
- <div className="grid gap-3">
+ <div className="grid grid-cols-1 gap-3">
  {orderedLinks.map((link, index) => {
  const isExpanded = expandedLinkIds.has(link.id);
  return (
- <div key={link.id} className="grid rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] p-3">
+ <div key={link.id} className="grid rounded-[16px] border border-[var(--rule)] bg-[var(--card)] p-3">
  <div className="flex flex-wrap items-center justify-between gap-2">
  <button
  type="button"
@@ -4322,18 +4322,18 @@ function SocialLinksQuickForm({
  return next;
  })
  }
- className="grid h-9 w-9 shrink-0 place-items-center rounded-[16px] bg-[#F8F7F4] text-[#62605B] transition hover:bg-[#FFF0EB] hover:text-[#C0452A]"
+ className="grid h-9 w-9 shrink-0 place-items-center rounded-[16px] bg-[var(--paper-2)] text-[var(--ink-2)] transition hover:bg-[var(--seal-tint)] hover:text-[var(--seal-deep)]"
  aria-label={isExpanded ? (editorLanguage === "zh-CN" ? "折叠社交媒体标签" : "Collapse social link") : (editorLanguage === "zh-CN" ? "展开社交媒体标签" : "Expand social link")}
  >
  <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isExpanded && "rotate-180")} />
  </button>
  <div className="inline-flex min-w-0 flex-1 items-center gap-2 rounded-[10px] text-left">
- <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[16px] bg-[#FFF0EB] text-[#C0452A]">
+ <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[16px] bg-[var(--seal-tint)] text-[var(--seal-deep)]">
  <SocialIcon name={link.icon} />
  </span>
  <span className="grid min-w-0 gap-0.5">
- <span className="truncate text-sm font-semibold text-[#1F2328]">{link.label || copy.newLink}</span>
- <span className="truncate text-xs text-[#62605B]">
+ <span className="truncate text-sm font-semibold text-[var(--ink)]">{link.label || copy.newLink}</span>
+ <span className="truncate text-xs text-[var(--ink-2)]">
  {link.actionType === "copy" ? link.copyText || copy.blockCopyText : link.href || "link"}
  </span>
  </span>
@@ -4352,8 +4352,8 @@ function SocialLinksQuickForm({
  </div>
  <div className={cn("grid transition-[grid-template-rows] duration-200 ease-out", isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
  <div className="min-h-0 overflow-hidden">
- <div className="mt-3 grid gap-3 border-t border-[#F1EEE8] pt-3">
- <div className="grid gap-3 md:grid-cols-2">
+ <div className="mt-3 grid gap-3 border-t border-[var(--rule)] pt-3">
+ <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
  <Field label={editorLanguage === "zh-CN" ? "名称" : "Label"}>
  <Input value={link.label} onChange={(event) => updateSocial(link.id, { label: event.target.value })} />
  </Field>
@@ -4386,8 +4386,8 @@ function SocialLinksQuickForm({
  className={cn(
  "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-[16px] border px-3 text-sm transition",
  link.icon === icon
- ? "border-[#C0452A] bg-[#C0452A] text-[#FFFFFF]"
- : "border-[#E7E2D9] bg-[#FFFFFF] text-[#62605B] hover:border-[#C0452A]/40"
+ ? "border-[var(--seal-deep)] bg-[var(--seal-deep)] text-[var(--seal-contrast)]"
+ : "border-[var(--rule)] bg-[var(--card)] text-[var(--ink-2)] hover:border-[color-mix(in_srgb,var(--seal-deep)_40%,transparent)]"
  )}
  >
  <SocialIcon name={icon} />
@@ -4396,7 +4396,7 @@ function SocialLinksQuickForm({
  ))}
  </div>
  </Field>
- <div className="flex flex-wrap gap-4 text-sm text-[#62605B]">
+ <div className="flex flex-wrap gap-4 text-sm text-[var(--ink-2)]">
  <label className="flex items-center gap-2">
  <Checkbox checked={link.isVisible} onChange={(event) => updateSocial(link.id, { isVisible: event.target.checked })} />
  {copy.visible}
@@ -4419,8 +4419,8 @@ function SocialLinksQuickForm({
 
 function ProfileQuickForm({ profile, onPatch }: { profile: Profile; onPatch: (patch: Partial<Profile>) => void }) {
  return (
- <div className="grid gap-4">
- <div className="grid gap-3 md:grid-cols-2">
+ <div className="grid grid-cols-1 gap-4">
+ <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
  <Field label="头像 URL">
  <Input value={profile.avatarUrl} onChange={(event) => onPatch({ avatarUrl: event.target.value })} />
  </Field>
@@ -4512,17 +4512,17 @@ function SpecialModuleModalBody({
 function AddBlockDialog({ onAdd, editorLanguage }: { onAdd: (template: BlockTemplate) => void; editorLanguage: EditorLanguage }) {
  const copy = editorCopy[editorLanguage];
  return (
- <div className="grid gap-5">
- <div className="rounded-[10px] bg-[#F1EEE8] px-4 py-3 text-sm text-[#62605B]">
+ <div className="grid grid-cols-1 gap-5">
+ <div className="rounded-[10px] bg-[var(--rule)] px-4 py-3 text-sm text-[var(--ink-2)]">
  {copy.blockTemplatesNote}
  </div>
  {blockTemplates.map((group) => (
- <section key={group.group} className="grid gap-3">
+ <section key={group.group} className="grid grid-cols-1 gap-3">
  <h4 className="font-bold">{getLocalizedTemplateGroup(group.group, editorLanguage)}</h4>
  <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
  {group.items.map((item) => (
- <button key={`${group.group}-${item.label}`} type="button" onClick={() => onAdd(item)} className="grid justify-items-center gap-2 rounded-[12px] p-3 text-center hover:bg-[#FFF0EB]">
- <span className="grid h-12 w-12 place-items-center rounded-[10px] border border-[#E7E2D9] bg-[#FFFFFF] text-[#C0452A] [&>svg]:h-6 [&>svg]:w-6">
+ <button key={`${group.group}-${item.label}`} type="button" onClick={() => onAdd(item)} className="grid justify-items-center gap-2 rounded-[12px] p-3 text-center hover:bg-[var(--seal-tint)]">
+ <span className="grid h-12 w-12 place-items-center rounded-[10px] border border-[var(--rule)] bg-[var(--card)] text-[var(--seal-deep)] [&>svg]:h-6 [&>svg]:w-6">
  {item.icon}
  </span>
  <span className="text-xs font-medium">{getLocalizedTemplateLabel(item, editorLanguage)}</span>
@@ -4917,34 +4917,34 @@ function ProjectSettingsForm({
  ];
 
  return (
- <div className="grid gap-5 text-[#1F2328] md:grid-cols-[190px_minmax(0,1fr)]">
- <aside className="grid content-start gap-1 border-b border-[#F1EEE8] pb-3 md:border-b-0 md:border-r md:pb-0 md:pr-3">
+ <div className="grid grid-cols-1 gap-5 text-[var(--ink)] md:grid-cols-[190px_minmax(0,1fr)]">
+ <aside className="grid content-start gap-1 border-b border-[var(--rule)] pb-3 md:border-b-0 md:border-r md:pb-0 md:pr-3">
  {panels.map((panel) => (
  <button
  key={panel.id}
  type="button"
  onClick={() => setActivePanel(panel.id)}
  className={cn(
- "grid gap-0.5 rounded-[10px] border px-3 py-2 text-left transition",
+ "grid grid-cols-1 gap-0.5 rounded-[10px] border px-3 py-2 text-left transition",
  activePanel === panel.id
- ? "border-[#F3C8BA] bg-[#FFF0EB] text-[#C0452A]"
- : "border-transparent text-[#62605B] hover:bg-[#F8F7F4] hover:text-[#1F2328]"
+ ? "border-[var(--tint-border)] bg-[var(--seal-tint)] text-[var(--seal-deep)]"
+ : "border-transparent text-[var(--ink-2)] hover:bg-[var(--paper-2)] hover:text-[var(--ink)]"
  )}
  >
  <span className="text-sm font-semibold">{panel.label}</span>
- <span className={cn("text-xs", activePanel === panel.id ? "text-[#62605B]" : "text-[#74716B]")}>{panel.description}</span>
+ <span className={cn("text-xs", activePanel === panel.id ? "text-[var(--ink-2)]" : "text-[var(--ink-2)]")}>{panel.description}</span>
  </button>
  ))}
  </aside>
 
  <div className="min-w-0">
  {activePanel === "basic" ? (
- <section className="grid gap-4">
+ <section className="grid grid-cols-1 gap-4">
  <Field label={copy.projectName}>
  <Input value={settings.projectName} onChange={(event) => patchSettings({ projectName: event.target.value })} />
  </Field>
  <Field label={copy.editorLanguage}>
- <div className="grid gap-1.5">
+ <div className="grid grid-cols-1 gap-1.5">
  <Select value={editorLanguage} onChange={(event) => onEditorLanguageChange(event.target.value)}>
  {editorLanguageOptions.map((language) => (
  <option key={language.code} value={language.code}>
@@ -4952,7 +4952,7 @@ function ProjectSettingsForm({
  </option>
  ))}
  </Select>
- <p className="text-xs font-normal text-[#62605B]">{copy.editorLanguageHelp}</p>
+ <p className="text-xs font-normal text-[var(--ink-2)]">{copy.editorLanguageHelp}</p>
  </div>
  </Field>
  <div className="rounded-[10px] border border-red-100 bg-red-50/60 p-3">
@@ -4965,9 +4965,9 @@ function ProjectSettingsForm({
  ) : null}
 
  {activePanel === "web" ? (
- <section className="grid gap-3">
+ <section className="grid grid-cols-1 gap-3">
  <ScopeBadges variantName={activeVariant?.name || activeVariantId} languageName={activeLanguage?.label || activeLocale} editorLanguage={editorLanguage} />
- <div className="grid gap-3 md:grid-cols-2">
+ <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
  <Field label={copy.siteTitle}>
  <Input
  value={contentSettings.seoTitle || contentSettings.siteTitle}
@@ -4993,9 +4993,9 @@ function ProjectSettingsForm({
  ) : null}
 
  {activePanel === "seo" ? (
- <section className="grid gap-3">
+ <section className="grid grid-cols-1 gap-3">
  <ScopeBadges variantName={activeVariant?.name || activeVariantId} languageName={activeLanguage?.label || activeLocale} editorLanguage={editorLanguage} />
- <div className="grid gap-3 md:grid-cols-2">
+ <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
  <Field label="Canonical URL">
  <Input
  value={contentSettings.seoCanonicalUrl ?? ""}
@@ -5011,10 +5011,10 @@ function ProjectSettingsForm({
  ) : null}
 
  {activePanel === "audiences" ? (
- <section className="grid gap-4">
+ <section className="grid grid-cols-1 gap-4">
  <div className="flex items-center justify-between gap-3">
  <div>
- <p className="mt-1 text-sm text-[#62605B]">{copy.variantsHelp}</p>
+ <p className="mt-1 text-sm text-[var(--ink-2)]">{copy.variantsHelp}</p>
  </div>
  <Button type="button" variant="secondary" size="sm" onClick={addVariant}>
  <Plus className="h-4 w-4" />
@@ -5022,8 +5022,8 @@ function ProjectSettingsForm({
  </Button>
  </div>
 
- <div className="grid gap-3 rounded-[10px] border border-[#E7E2D9] bg-[#FFFFFF] p-3">
- <div className="grid gap-3 md:grid-cols-2">
+ <div className="grid grid-cols-1 gap-3 rounded-[10px] border border-[var(--rule)] bg-[var(--card)] p-3">
+ <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
  <Field label={copy.mainVersion}>
  <Select
  value={settings.variants.mainVariantId}
@@ -5053,25 +5053,25 @@ function ProjectSettingsForm({
  </div>
  </div>
 
- <div className="grid gap-3">
+ <div className="grid grid-cols-1 gap-3">
  {[...settings.variants.variants].sort(bySortOrder).map((variant) => {
  const accessCodeError = getVariantAccessCodeError(variant.id, variant.accessCode);
  const isCollapsed = collapsedVariantIds.has(variant.id);
  const allowSeoIndex = getVariantAllowSeoIndex(config, variant.id);
  return (
- <div key={variant.id} className="grid rounded-[10px] border border-[#E7E2D9] p-3">
+ <div key={variant.id} className="grid rounded-[10px] border border-[var(--rule)] p-3">
  <div className="flex items-center gap-2">
  <button
  type="button"
  onClick={() => toggleVariantCollapsed(variant.id)}
- className="grid h-9 w-9 shrink-0 place-items-center rounded-[16px] bg-[#F8F7F4] text-[#62605B] transition hover:bg-[#FFF0EB] hover:text-[#C0452A]"
+ className="grid h-9 w-9 shrink-0 place-items-center rounded-[16px] bg-[var(--paper-2)] text-[var(--ink-2)] transition hover:bg-[var(--seal-tint)] hover:text-[var(--seal-deep)]"
  aria-label={isCollapsed ? copy.variantExpand : copy.variantCollapse}
  >
  <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", !isCollapsed && "rotate-180")} />
  </button>
  <div className="grid min-w-0 flex-1 gap-0.5">
- <p className="truncate text-sm font-semibold text-[#1F2328]">{variant.name || copy.newVersion}</p>
- <p className="truncate text-xs text-[#62605B]">
+ <p className="truncate text-sm font-semibold text-[var(--ink)]">{variant.name || copy.newVersion}</p>
+ <p className="truncate text-xs text-[var(--ink-2)]">
  {copy.variantSummaryAccessCode}: {variant.accessCode.trim() ? `/${variant.accessCode.trim()}` : copy.variantAccessCodeEmpty} · SEO:{" "}
  {allowSeoIndex ? copy.seoAllowed : copy.noSeoIndex}
  </p>
@@ -5082,27 +5082,27 @@ function ProjectSettingsForm({
  size="sm"
  onClick={() => removeVariant(variant.id)}
  disabled={settings.variants.variants.length <= 1}
- className="ml-auto text-red-600 hover:bg-red-50 hover:text-red-700 disabled:text-[#E7E2D9] disabled:hover:bg-transparent"
+ className="ml-auto text-red-600 hover:bg-red-50 hover:text-red-700 disabled:text-[var(--rule)] disabled:hover:bg-transparent"
  >
  {copy.delete}
  </Button>
  </div>
  <div className={cn("grid transition-[grid-template-rows] duration-200 ease-out", isCollapsed ? "grid-rows-[0fr]" : "grid-rows-[1fr]")}>
  <div className="min-h-0 overflow-hidden">
- <div className="mt-3 grid gap-3 border-t border-[#F1EEE8] pt-3">
- <div className="grid gap-2 md:grid-cols-[1fr_0.8fr]">
- <div className="grid gap-1.5">
+ <div className="mt-3 grid gap-3 border-t border-[var(--rule)] pt-3">
+ <div className="grid grid-cols-1 gap-2 md:grid-cols-[1fr_0.8fr]">
+ <div className="grid grid-cols-1 gap-1.5">
  <Field
  label={
  <>
- {copy.variantName} <span className="text-xs font-normal text-[#74716B]">{copy.variantNameHelp}</span>
+ {copy.variantName} <span className="text-xs font-normal text-[var(--ink-2)]">{copy.variantNameHelp}</span>
  </>
  }
  >
  <Input value={variant.name} onChange={(event) => updateVariant(variant.id, { name: event.target.value })} />
  </Field>
  </div>
- <div className="grid gap-1.5">
+ <div className="grid grid-cols-1 gap-1.5">
  <Field label={copy.variantAccessCode}>
  <Input
  value={variant.accessCode}
@@ -5114,16 +5114,16 @@ function ProjectSettingsForm({
  {accessCodeError ? <p className="text-xs text-red-600">{accessCodeError}</p> : null}
  </div>
  </div>
- <label className="flex w-fit items-center gap-2 rounded-[10px] border border-[#E7E2D9] bg-[#FFFFFF] px-3 py-2 text-sm text-[#62605B]">
+ <label className="flex w-fit items-center gap-2 rounded-[10px] border border-[var(--rule)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--ink-2)]">
  <Checkbox
  checked={allowSeoIndex}
  onChange={(event) => updateVariant(variant.id, { allowSeoIndex: event.target.checked })}
  />
  {copy.allowSeoIndex}
  </label>
- <div className="grid gap-2">
+ <div className="grid grid-cols-1 gap-2">
  <div className="flex items-center justify-between gap-3">
- <p className="text-xs font-semibold text-[#62605B]">{copy.variantLanguageList}</p>
+ <p className="text-xs font-semibold text-[var(--ink-2)]">{copy.variantLanguageList}</p>
  <Button type="button" variant="secondary" size="sm" onClick={() => openAddVariantLanguage(variant.id)} className="h-8 px-2">
  <Plus className="h-4 w-4" />
  </Button>
@@ -5139,7 +5139,7 @@ function ProjectSettingsForm({
  key={`${variant.id}:${language.code}`}
  className={cn(
  "inline-flex w-fit max-w-full items-center gap-2 rounded-[16px] border px-3 py-1.5 text-xs",
- isEnabled ? "border-[#F3C8BA] bg-[#FFF0EB] text-[#C0452A]" : "border-[#E7E2D9] bg-[#F8F7F4] text-[#62605B]"
+ isEnabled ? "border-[var(--tint-border)] bg-[var(--seal-tint)] text-[var(--seal-deep)]" : "border-[var(--rule)] bg-[var(--paper-2)] text-[var(--ink-2)]"
  )}
  >
  <Checkbox
@@ -5153,15 +5153,15 @@ function ProjectSettingsForm({
  className="h-7 min-w-[56px] max-w-[180px] border-transparent bg-transparent px-1 py-0 text-xs"
  style={{ width: `${Math.max(5, Math.min(18, language.label.length + 1))}ch` }}
  />
- <span className="select-none rounded-[16px] bg-[#FFFFFF]/80 px-2 py-0.5 text-[11px] font-semibold text-[#62605B]">
+ <span className="select-none rounded-[16px] bg-[color-mix(in_srgb,var(--card)_80%,transparent)] px-2 py-0.5 text-[11px] font-semibold text-[var(--ink-2)]">
  {language.code}
  </span>
- {isMainLocale ? <span className="rounded-[16px] bg-[#FFFFFF] px-2 py-0.5 text-[11px] text-[#C0452A]">{copy.mainLanguage}</span> : null}
+ {isMainLocale ? <span className="rounded-[16px] bg-[var(--card)] px-2 py-0.5 text-[11px] text-[var(--seal-deep)]">{copy.mainLanguage}</span> : null}
  {!isMainLocale ? (
  <button
  type="button"
  onClick={() => setVariantMainLanguage(variant.id, language.code)}
- className="text-[#62605B] hover:text-[#C0452A]"
+ className="text-[var(--ink-2)] hover:text-[var(--seal-deep)]"
  aria-label={copy.setMainLanguage.replace("{language}", language.label)}
  >
  <Pin className="h-3 w-3" />
@@ -5193,8 +5193,8 @@ function ProjectSettingsForm({
  ) : null}
 
  {activePanel === "appearance" ? (
- <section className="grid gap-3">
-<div className="grid gap-3 md:grid-cols-2">
+ <section className="grid grid-cols-1 gap-3">
+<div className="grid grid-cols-1 gap-3 md:grid-cols-2">
   <Field label={editorLanguage === "zh-CN" ? "外观模式" : "Color Scheme"}>
     <Select value={theme.colorScheme ?? "light"} onChange={(event) => patchTheme({ colorScheme: event.target.value as SiteConfig["theme"]["colorScheme"] })}>
       <option value="light">{editorLanguage === "zh-CN" ? "浅色" : "Light"}</option>
@@ -5242,7 +5242,7 @@ function ProjectSettingsForm({
     </Select>
   </Field>
 </div>
-<div className="grid gap-2">
+<div className="grid grid-cols-1 gap-2">
   <Field label={editorLanguage === "zh-CN" ? "欢迎页图片" : "Intro Image"}>
     <Input
       value={settings.introImage ?? ""}
@@ -5250,9 +5250,15 @@ function ProjectSettingsForm({
       onChange={(event) => patchSettings({ introImage: event.target.value })}
     />
   </Field>
-  <MediaUploader folder="intro" onUploaded={(url) => patchSettings({ introImage: url })} />
+  <MediaUploader
+  folder="intro"
+  label={editorLanguage === "zh-CN" ? "上传" : "Upload"}
+  uploadingLabel={editorLanguage === "zh-CN" ? "上传中…" : "Uploading..."}
+  help={editorLanguage === "zh-CN" ? "上传的图片将直接填入上方输入框。" : "Uploaded images are filled into the field above."}
+  onUploaded={(url) => patchSettings({ introImage: url })}
+  />
 </div>
- <div className="flex flex-wrap gap-4 text-sm text-[#62605B]">
+ <div className="flex flex-wrap gap-4 text-sm text-[var(--ink-2)]">
  <label className="flex items-center gap-2">
  <Checkbox checked={settings.enableAnimation} onChange={(event) => patchSettings({ enableAnimation: event.target.checked })} />
  {editorLanguage === "zh-CN" ? "动画" : "Animation"}
@@ -5270,10 +5276,10 @@ function ProjectSettingsForm({
  ) : null}
 
  {activePanel === "config" ? (
- <section className="grid gap-3 rounded-[10px] border border-[#E7E2D9] bg-[#FFFFFF] p-4">
+ <section className="grid grid-cols-1 gap-3 rounded-[10px] border border-[var(--rule)] bg-[var(--card)] p-4">
  <ScopeBadges variantName={activeVariant?.name || activeVariantId} languageName={activeLanguage?.label || activeLocale} editorLanguage={editorLanguage} />
  <div>
- <p className="mt-1 text-sm text-[#62605B]">
+ <p className="mt-1 text-sm text-[var(--ink-2)]">
  {copy.configPanelHelp}
  </p>
  </div>
@@ -5438,15 +5444,15 @@ function AddLanguageDialog({
  return (
  <div className="fixed inset-0 z-[70] grid place-items-center bg-black/20 p-4" onMouseDown={onClose}>
  <div
- className="grid w-full max-w-sm gap-4 rounded-[16px] border border-[#E7E2D9] bg-[#F8F7F4] p-5 text-[#1F2328] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)]"
+ className="grid w-full max-w-sm gap-4 rounded-[16px] border border-[var(--rule)] bg-[var(--paper-2)] p-5 text-[var(--ink)] shadow-[var(--shadow-pop)]"
  onMouseDown={(event) => event.stopPropagation()}
  >
  <div className="flex items-center justify-between gap-3">
  <div>
  <p className="text-sm font-bold">{copy.addLanguage}</p>
- <p className="mt-1 text-xs text-[#62605B]">{copy.languageDialogHelp}</p>
+ <p className="mt-1 text-xs text-[var(--ink-2)]">{copy.languageDialogHelp}</p>
  </div>
- <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-[16px] text-[#62605B] hover:bg-[#F1EEE8]">
+ <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-[16px] text-[var(--ink-2)] hover:bg-[var(--rule)]">
  <X className="h-4 w-4" />
  </button>
  </div>
@@ -5519,30 +5525,30 @@ function VariantOverrideDialog({
  return (
  <div className="fixed inset-0 z-[70] grid place-items-center bg-black/20 p-4" onMouseDown={onClose}>
  <div
- className="grid w-full max-w-md gap-4 rounded-[16px] border border-[#E7E2D9] bg-[#F8F7F4] p-5 text-[#1F2328] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)]"
+ className="grid w-full max-w-md gap-4 rounded-[16px] border border-[var(--rule)] bg-[var(--paper-2)] p-5 text-[var(--ink)] shadow-[var(--shadow-pop)]"
  onMouseDown={(event) => event.stopPropagation()}
  >
  <div className="flex items-center justify-between gap-3">
  <div>
  <p className="text-sm font-bold">{copy.variantOverride}</p>
- <p className="mt-1 text-xs text-[#62605B]">{copy.variantOverrideHelp}</p>
+ <p className="mt-1 text-xs text-[var(--ink-2)]">{copy.variantOverrideHelp}</p>
  </div>
- <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-[16px] text-[#62605B] hover:bg-[#F1EEE8]">
+ <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-[16px] text-[var(--ink-2)] hover:bg-[var(--rule)]">
  <X className="h-4 w-4" />
  </button>
  </div>
 
- <div className="rounded-[10px] border border-[#E7E2D9] bg-[#FFFFFF] px-3 py-2 text-xs text-[#62605B]">
+ <div className="rounded-[10px] border border-[var(--rule)] bg-[var(--card)] px-3 py-2 text-xs text-[var(--ink-2)]">
  {copy.variantOverrideTarget}
- <span className="ml-2 whitespace-nowrap rounded-[16px] border border-[#F3C8BA] bg-[#FFF0EB] px-2 py-0.5 font-semibold text-[#C0452A]">
+ <span className="ml-2 whitespace-nowrap rounded-[16px] border border-[var(--tint-border)] bg-[var(--seal-tint)] px-2 py-0.5 font-semibold text-[var(--seal-deep)]">
  {targetVariant?.name || draft.targetVariantId}
  </span>
- <span className="ml-2 whitespace-nowrap rounded-[16px] border border-[#F3C8BA] bg-[#FFFFFF] px-2 py-0.5 font-semibold text-[#C0452A]">
+ <span className="ml-2 whitespace-nowrap rounded-[16px] border border-[var(--tint-border)] bg-[var(--card)] px-2 py-0.5 font-semibold text-[var(--seal-deep)]">
  {targetLanguage?.label || draft.targetLocale}
  </span>
  </div>
 
- <div className="grid gap-3 md:grid-cols-2">
+ <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
  <Field label={copy.variantSourceVersion}>
  <Select
  value={draft.sourceVariantId}
@@ -5594,10 +5600,10 @@ function VariantOverrideDialog({
 function ScopeBadges({ variantName, languageName, editorLanguage }: { variantName: string; languageName: string; editorLanguage: EditorLanguage }) {
  const copy = editorCopy[editorLanguage];
  return (
- <div className="flex flex-wrap items-center gap-2 rounded-[10px] border border-[#E7E2D9] bg-[#FFFFFF] px-3 py-2 text-xs text-[#62605B]">
+ <div className="flex flex-wrap items-center gap-2 rounded-[10px] border border-[var(--rule)] bg-[var(--card)] px-3 py-2 text-xs text-[var(--ink-2)]">
  <span>{copy.currentScope}</span>
- <span className="whitespace-nowrap rounded-[16px] border border-[#F3C8BA] bg-[#FFF0EB] px-2.5 py-1 font-semibold text-[#C0452A]">{variantName}</span>
- <span className="whitespace-nowrap rounded-[16px] border border-[#F3C8BA] bg-[#FFFFFF] px-2.5 py-1 font-semibold text-[#C0452A]">{languageName}</span>
+ <span className="whitespace-nowrap rounded-[16px] border border-[var(--tint-border)] bg-[var(--seal-tint)] px-2.5 py-1 font-semibold text-[var(--seal-deep)]">{variantName}</span>
+ <span className="whitespace-nowrap rounded-[16px] border border-[var(--tint-border)] bg-[var(--card)] px-2.5 py-1 font-semibold text-[var(--seal-deep)]">{languageName}</span>
  </div>
  );
 }

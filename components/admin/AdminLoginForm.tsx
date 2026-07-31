@@ -89,12 +89,12 @@ export function AdminLoginForm({ projectName, initialLanguage }: AdminLoginFormP
  <span className="admin-login__secure"><ShieldCheck className="h-3.5 w-3.5" /> {copy.secure}</span>
  </div>
  <p className="admin-login__eyebrow mb-3">01 / {copy.eyebrow}</p>
- <h1 className="text-[38px] font-bold leading-[1.02] tracking-[-0.055em] text-[#1F2328]">{projectName}</h1>
- <p className="mt-4 max-w-[360px] text-[15px] leading-7 text-[#62605B]">{copy.description}</p>
+ <h1 className="text-[38px] font-bold leading-[1.02] tracking-[-0.055em] text-[var(--ink)]">{projectName}</h1>
+ <p className="mt-4 max-w-[360px] text-[15px] leading-7 text-[var(--ink-2)]">{copy.description}</p>
  </div>
 
- <form onSubmit={submit} className="grid gap-5">
- <label className="grid gap-2 text-[13px] font-bold text-[#1F2328]" htmlFor="admin-password">
+ <form onSubmit={submit} className="grid grid-cols-1 gap-5">
+ <label className="grid grid-cols-1 gap-2 text-[13px] font-bold text-[var(--ink)]" htmlFor="admin-password">
  <span>{copy.password}</span>
  <input
  id="admin-password"
@@ -110,16 +110,16 @@ export function AdminLoginForm({ projectName, initialLanguage }: AdminLoginFormP
  aria-invalid={hasError}
  aria-describedby={hasError ? "admin-login-error" : undefined}
  className={cn(
- "h-12 w-full rounded-[12px] border bg-[#FFFFFF] px-4 text-[15px] text-[#1F2328] outline-none transition duration-200 placeholder:text-[#74716B] focus:ring-4",
+ "h-12 w-full rounded-[12px] border bg-[var(--card)] px-4 text-[15px] text-[var(--ink)] outline-none transition duration-200 placeholder:text-[var(--ink-2)] focus:ring-4",
  hasError
- ? "border-[#D85C5C] focus:border-[#C94343] focus:ring-[#D85C5C]/10"
- : "border-[#E7E2D9] hover:border-[#74716B] focus:border-[#C0452A] focus:ring-[#C0452A]/15"
+ ? "border-[var(--danger)] focus:border-[var(--danger-deep)] focus:ring-[color-mix(in_srgb,var(--danger)_10%,transparent)]"
+ : "border-[var(--rule)] hover:border-[var(--ink-2)] focus:border-[var(--seal-deep)] focus:ring-[color-mix(in_srgb,var(--seal-deep)_15%,transparent)]"
  )}
  />
  </label>
 
  {hasError ? (
- <p id="admin-login-error" role="alert" className="-mt-2 text-[13px] leading-5 text-[#B83D3D]">
+ <p id="admin-login-error" role="alert" className="-mt-2 text-[13px] leading-5 text-[var(--danger-text)]">
  {copy.error}
  </p>
  ) : null}

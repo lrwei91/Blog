@@ -16,9 +16,9 @@ export function Button({ className, variant = "primary", size = "md", ...props }
  size === "sm" && "h-9 px-3 text-sm",
  size === "md" && "h-10 px-4 text-sm",
  size === "icon" && "h-10 w-10",
- variant === "primary" && "border-transparent bg-[#C0452A] text-white hover:brightness-95",
- variant === "secondary" && "border-[#E7E2D9] bg-[#FFFFFF] text-[#1F2328] hover:bg-[#F8F7F4]",
- variant === "ghost" && "border-transparent bg-transparent text-[#1F2328] hover:bg-[#F1EEE8]",
+ variant === "primary" && "border-transparent bg-[var(--seal-deep)] text-[var(--seal-contrast)] hover:brightness-95",
+ variant === "secondary" && "border-[var(--rule)] bg-[var(--card)] text-[var(--ink)] hover:bg-[var(--paper-2)]",
+ variant === "ghost" && "border-transparent bg-transparent text-[var(--ink)] hover:bg-[var(--rule)]",
  variant === "danger" && "border-transparent bg-red-600 text-white hover:bg-red-700",
  className
  )}

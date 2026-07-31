@@ -237,7 +237,7 @@ export function ImageCropUploader({
 
  return (
  <>
- <div className="grid gap-2">
+ <div className="grid grid-cols-1 gap-2">
  {label ? <p className="text-sm font-semibold">{label}</p> : null}
  {isDropzone ? (
  <div
@@ -257,9 +257,9 @@ export function ImageCropUploader({
  }
  }}
  className={cn(
- "group relative grid aspect-square cursor-pointer place-items-center overflow-hidden rounded-[16px] border border-dashed border-[#E7E2D9] bg-[#F8F7F4] text-center outline-none transition",
+ "group relative grid aspect-square cursor-pointer place-items-center overflow-hidden rounded-[16px] border border-dashed border-[var(--rule)] bg-[var(--paper-2)] text-center outline-none transition",
  isCompactDropzone ? "w-20" : "w-full",
- "hover:border-[#C0452A]/60 hover:bg-[#FFF0EB] focus:border-[#C0452A] focus:ring-4 focus:ring-[#C0452A]/15",
+ "hover:border-[color-mix(in_srgb,var(--seal-deep)_60%,transparent)] hover:bg-[var(--seal-tint)] focus:border-[var(--seal-deep)] focus:ring-4 focus:ring-[color-mix(in_srgb,var(--seal-deep)_15%,transparent)]",
  previewClassName
  )}
  >
@@ -273,21 +273,21 @@ export function ImageCropUploader({
  )}
  />
  ) : null}
- {value ? <div className="absolute inset-0 bg-[#FFFFFF]/70 opacity-0 transition group-hover:opacity-100 group-focus:opacity-100" /> : null}
+ {value ? <div className="absolute inset-0 bg-[color-mix(in_srgb,var(--card)_70%,transparent)] opacity-0 transition group-hover:opacity-100 group-focus:opacity-100" /> : null}
  <div
  className={cn(
- "relative z-10 grid justify-items-center text-[#62605B] transition",
+ "relative z-10 grid justify-items-center text-[var(--ink-2)] transition",
  isCompactDropzone ? "gap-0 px-2" : "gap-2 px-5",
  value ? "opacity-0 group-hover:opacity-100 group-focus:opacity-100" : "opacity-100"
  )}
  >
  <span className={cn(
- "grid place-items-center rounded-[12px] border border-[#F3C8BA] bg-[#FFFFFF] text-[#C0452A]",
+ "grid place-items-center rounded-[12px] border border-[var(--tint-border)] bg-[var(--card)] text-[var(--seal-deep)]",
  isCompactDropzone ? "h-9 w-9" : "h-12 w-12"
  )}>
  <ImageUp className={isCompactDropzone ? "h-4 w-4" : "h-6 w-6"} />
  </span>
- {isCompactDropzone ? <span className="sr-only">{buttonText}</span> : <span className="text-sm font-semibold text-[#C0452A]">点击选择，或直接在此区域粘贴图片</span>}
+ {isCompactDropzone ? <span className="sr-only">{buttonText}</span> : <span className="text-sm font-semibold text-[var(--seal-deep)]">点击选择，或直接在此区域粘贴图片</span>}
  </div>
  </div>
  ) : value ? (
@@ -295,7 +295,7 @@ export function ImageCropUploader({
  src={value}
  alt=""
  className={cn(
- "h-28 w-28 border border-[#E7E2D9] object-cover",
+ "h-28 w-28 border border-[var(--rule)] object-cover",
  shape === "circle" ? "rounded-[16px]" : "rounded-[16px]",
  previewClassName
  )}
@@ -314,7 +314,7 @@ export function ImageCropUploader({
  <label
  htmlFor={inputId}
  className={cn(
- "inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-[16px] border border-transparent bg-[#C0452A] px-4 text-sm font-semibold text-white transition hover:bg-[#C0452A]",
+ "inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-[16px] border border-transparent bg-[var(--seal-deep)] px-4 text-sm font-semibold text-[var(--seal-contrast)] transition hover:bg-[var(--seal-deep)]",
  buttonIconOnly && "h-9 w-9 px-0",
  buttonClassName
  )}
@@ -325,7 +325,7 @@ export function ImageCropUploader({
  </label>
  )}
  {onClear && value ? (
- <button type="button" onClick={onClear} className="text-sm font-medium text-[#62605B] hover:text-red-500">
+ <button type="button" onClick={onClear} className="text-sm font-medium text-[var(--ink-2)] hover:text-red-500">
  清除
  </button>
  ) : null}
@@ -335,15 +335,15 @@ export function ImageCropUploader({
  {objectUrl && typeof document !== "undefined"
  ? createPortal(
  <div className="fixed inset-0 z-[9999] grid place-items-center bg-black/35 p-4 backdrop-blur-sm">
- <div className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-[16px] border border-[#E7E2D9] bg-[#F8F7F4] text-[#1F2328] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)]">
- <div className="flex items-center justify-between border-b border-[#E7E2D9] px-5 py-4">
+ <div className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-[16px] border border-[var(--rule)] bg-[var(--paper-2)] text-[var(--ink)] shadow-[var(--shadow-pop)]">
+ <div className="flex items-center justify-between border-b border-[var(--rule)] px-5 py-4">
  <h3 className="text-base font-bold">裁剪图片 / crop</h3>
- <button type="button" onClick={() => chooseFile(null)} className="grid h-8 w-8 place-items-center rounded-[16px] hover:bg-[#F1EEE8]">
+ <button type="button" onClick={() => chooseFile(null)} className="grid h-8 w-8 place-items-center rounded-[16px] hover:bg-[var(--rule)]">
  <X className="h-4 w-4" />
  </button>
  </div>
- <div className="grid gap-5 overflow-auto p-5">
- <div className="relative overflow-hidden rounded-[16px] border border-[#E7E2D9] bg-[#F8F7F4]">
+ <div className="grid grid-cols-1 gap-5 overflow-auto p-5">
+ <div className="relative overflow-hidden rounded-[16px] border border-[var(--rule)] bg-[var(--paper-2)]">
  <div ref={stageRef} className="relative mx-auto h-[42vh] min-h-72 max-h-[440px] w-full select-none touch-none">
  <img
  ref={imageRef}
@@ -383,7 +383,7 @@ export function ImageCropUploader({
  aria-label={`resize ${handle}`}
  onPointerDown={(event) => startCropDrag(event, handle)}
  className={cn(
- "absolute h-6 w-6 touch-none rounded-[16px] border-2 border-white bg-[#C0452A]",
+ "absolute h-6 w-6 touch-none rounded-[16px] border-2 border-white bg-[var(--seal-deep)]",
  handle === "nw" && "-left-3 -top-3 cursor-nwse-resize",
  handle === "ne" && "-right-3 -top-3 cursor-nesw-resize",
  handle === "sw" && "-bottom-3 -left-3 cursor-nesw-resize",
@@ -397,14 +397,14 @@ export function ImageCropUploader({
  </div>
 
  <div className="flex flex-wrap items-start justify-between gap-4">
- <div className="grid gap-2">
- <p className="text-sm font-semibold text-[#62605B]">拖拽裁剪框 / drag crop box</p>
- <p className="text-xs text-[#74716B]">拖动框移动位置，拖拽四角调整裁剪范围。</p>
+ <div className="grid grid-cols-1 gap-2">
+ <p className="text-sm font-semibold text-[var(--ink-2)]">拖拽裁剪框 / drag crop box</p>
+ <p className="text-xs text-[var(--ink-2)]">拖动框移动位置，拖拽四角调整裁剪范围。</p>
  </div>
- <div className="grid gap-3">
+ <div className="grid grid-cols-1 gap-3">
  {shape !== "circle" ? (
- <div className="grid gap-2">
- <p className="text-sm font-semibold text-[#62605B]">比例/aspect</p>
+ <div className="grid grid-cols-1 gap-2">
+ <p className="text-sm font-semibold text-[var(--ink-2)]">比例/aspect</p>
  <div className="flex flex-wrap gap-2">
  {(["1:1", "4:3", "16:9", "3:4", "custom"] as CropRatio[]).map((item) => (
  <button
@@ -413,7 +413,7 @@ export function ImageCropUploader({
  onClick={() => updateRatio(item)}
  className={cn(
  "rounded-[16px] border px-3 py-1.5 text-sm font-medium transition",
- activeRatio === item ? "border-[#C0452A] bg-[#C0452A] text-[#FFFFFF]" : "border-[#E7E2D9] bg-[#FFFFFF] text-[#62605B] hover:border-[#C0452A]/40"
+ activeRatio === item ? "border-[var(--seal-deep)] bg-[var(--seal-deep)] text-[var(--seal-contrast)]" : "border-[var(--rule)] bg-[var(--card)] text-[var(--ink-2)] hover:border-[color-mix(in_srgb,var(--seal-deep)_40%,transparent)]"
  )}
  >
  {item === "custom" ? "自定义" : item}
@@ -437,11 +437,11 @@ export function ImageCropUploader({
  </div>
  </div>
  </div>
- <div className="flex justify-end gap-2 border-t border-[#E7E2D9] bg-[#F1EEE8] px-5 py-4">
+ <div className="flex justify-end gap-2 border-t border-[var(--rule)] bg-[var(--rule)] px-5 py-4">
  <Button type="button" variant="ghost" onClick={() => chooseFile(null)}>
  取消
  </Button>
- <Button type="button" className="rounded-[16px] bg-[#C0452A] text-white hover:bg-[#C0452A]" onClick={confirmCrop} disabled={isUploading}>
+ <Button type="button" className="rounded-[16px] bg-[var(--seal-deep)] text-[var(--seal-contrast)] hover:bg-[var(--seal-deep)]" onClick={confirmCrop} disabled={isUploading}>
  {isUploading ? "上传中" : "保存"}
  </Button>
  </div>

@@ -82,21 +82,21 @@ export function ExperienceModuleForm({
  }
 
  return (
- <div className="admin-experience-form grid gap-6 text-[#1F2328]">
- <section className="grid gap-4 rounded-[12px] border border-[#E7E2D9] bg-[#F8F7F4] p-4">
+ <div className="admin-experience-form grid gap-6 text-[var(--ink)]">
+ <section className="grid grid-cols-1 gap-4 rounded-[12px] border border-[var(--rule)] bg-[var(--paper-2)] p-4">
  <div className="flex items-center gap-3">
- <span className="grid h-10 w-10 place-items-center rounded-[10px] border border-[#FFF0EB] bg-[#FFF0EB] text-[#C0452A]">
+ <span className="grid h-10 w-10 place-items-center rounded-[10px] border border-[var(--seal-tint)] bg-[var(--seal-tint)] text-[var(--seal-deep)]">
  <BriefcaseBusiness className="h-5 w-5" />
  </span>
  <div>
- <h3 className="font-bold text-[#1F2328]">{isZh ? "工作经历设置" : "Work experience"}</h3>
- <p className="text-xs text-[#62605B]">
+ <h3 className="font-bold text-[var(--ink)]">{isZh ? "工作经历设置" : "Work experience"}</h3>
+ <p className="text-xs text-[var(--ink-2)]">
  {isZh ? "整组维护时间轴标题、任职时间、职位、摘要与详情。" : "Manage the timeline heading, dates, roles, summaries and details as one module."}
  </p>
  </div>
  </div>
 
- <div className="grid gap-3 rounded-[12px] border border-[#E7E2D9] bg-[#FFFFFF] p-4 md:grid-cols-2">
+ <div className="grid grid-cols-1 gap-3 rounded-[12px] border border-[var(--rule)] bg-[var(--card)] p-4 md:grid-cols-2">
  <Field label={isZh ? "主页模块标题" : "Homepage module title"}>
  <Input value={heading.title} onChange={(event) => onPatchHeading({ title: event.target.value })} />
  </Field>
@@ -105,17 +105,17 @@ export function ExperienceModuleForm({
  </Field>
  </div>
 
- <label className="flex items-center gap-2 text-sm font-medium text-[#62605B]">
+ <label className="flex items-center gap-2 text-sm font-medium text-[var(--ink-2)]">
  <Checkbox checked={isVisible} onChange={(event) => onSetVisibility(event.target.checked)} />
  {isZh ? "在主页显示整个工作经历模块" : "Show the complete work experience module"}
  </label>
  </section>
 
- <section className="grid gap-4">
+ <section className="grid grid-cols-1 gap-4">
  <div className="flex items-center justify-between gap-3">
  <div>
- <h3 className="font-bold text-[#1F2328]">{isZh ? "经历时间轴" : "Experience timeline"}</h3>
- <p className="text-xs text-[#62605B]">
+ <h3 className="font-bold text-[var(--ink)]">{isZh ? "经历时间轴" : "Experience timeline"}</h3>
+ <p className="text-xs text-[var(--ink-2)]">
  {isZh ? `${experiences.length} 段经历 · 列表顺序就是主页展示顺序` : `${experiences.length} entries · list order matches the homepage`}
  </p>
  </div>
@@ -125,12 +125,12 @@ export function ExperienceModuleForm({
  </div>
 
  {experiences.length === 0 ? (
- <div className="rounded-[12px] border border-dashed border-[#E7E2D9] bg-[#FFFFFF] px-4 py-10 text-center text-sm text-[#74716B]">
+ <div className="rounded-[12px] border border-dashed border-[var(--rule)] bg-[var(--card)] px-4 py-10 text-center text-sm text-[var(--ink-2)]">
  {isZh ? "暂无工作经历，添加后会生成第一段时间轴。" : "No experience entries yet."}
  </div>
  ) : null}
 
- <div className="grid gap-3">
+ <div className="grid grid-cols-1 gap-3">
  {experiences.map((block, index) => (
  <ExperienceEntryEditor
  key={block.id}
@@ -152,19 +152,19 @@ export function ExperienceModuleForm({
 export function ExperienceModulePreview({ blocks }: { blocks: Block[] }) {
  if (blocks.length === 0) {
  return (
- <div className="rounded-[16px] border border-dashed border-[#E7E2D9] bg-[#F8F7F4] px-5 py-12 text-center text-sm text-[#74716B]">
+ <div className="rounded-[16px] border border-dashed border-[var(--rule)] bg-[var(--paper-2)] px-5 py-12 text-center text-sm text-[var(--ink-2)]">
  暂无工作经历
  </div>
  );
  }
 
  return (
- <div className="grid gap-3 rounded-[16px] border border-[#E7E2D9] bg-[#F8F7F4] p-4">
- <div className="flex items-center justify-between gap-3 px-1 text-[10px] font-bold tracking-[0.14em] text-[#62605B]">
- <span className="flex min-w-0 items-center gap-2"><BriefcaseBusiness className="h-4 w-4 shrink-0 text-[#C0452A]" /> <span className="truncate">WORK EXPERIENCE</span></span>
- <span className="shrink-0 whitespace-nowrap rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF]/85 px-2.5 py-1">{String(blocks.length).padStart(2, "0")} ROLES</span>
+ <div className="grid grid-cols-1 gap-3 rounded-[16px] border border-[var(--rule)] bg-[var(--paper-2)] p-4">
+ <div className="flex items-center justify-between gap-3 px-1 text-[10px] font-bold tracking-[0.14em] text-[var(--ink-2)]">
+ <span className="flex min-w-0 items-center gap-2"><BriefcaseBusiness className="h-4 w-4 shrink-0 text-[var(--seal-deep)]" /> <span className="truncate">WORK EXPERIENCE</span></span>
+ <span className="shrink-0 whitespace-nowrap rounded-[16px] border border-[var(--rule)] bg-[color-mix(in_srgb,var(--card)_85%,transparent)] px-2.5 py-1">{String(blocks.length).padStart(2, "0")} ROLES</span>
  </div>
- <div className="grid gap-3">
+ <div className="grid grid-cols-1 gap-3">
  {blocks.map((block, index) => <ExperiencePreviewRow key={block.id} block={block} index={index} />)}
  </div>
  </div>
@@ -206,7 +206,7 @@ function ExperienceEntryEditor({
  }
 
  return (
- <article className="overflow-hidden rounded-[12px] border border-[#E7E2D9] bg-[#FFFFFF]">
+ <article className="overflow-hidden rounded-[12px] border border-[var(--rule)] bg-[var(--card)]">
  <div className="grid grid-cols-[5rem_minmax(0,1fr)_auto] items-center gap-3 p-3">
  <ExperienceLogoUploader
  value={companyLogo}
@@ -215,23 +215,23 @@ function ExperienceEntryEditor({
  onClear={() => patchMetadata({ companyLogo: "" })}
  />
  <button type="button" onClick={() => setExpanded((current) => !current)} className="min-w-0 text-left">
- <p className="truncate text-sm font-bold text-[#1F2328]">{block.title || (isZh ? "未命名公司" : "Untitled company")}</p>
+ <p className="truncate text-sm font-bold text-[var(--ink)]">{block.title || (isZh ? "未命名公司" : "Untitled company")}</p>
  <p className="mt-0.5 truncate text-xs font-semibold" style={{ color: experienceTones[index % experienceTones.length].deep }}>{timeline.role || (isZh ? "未填写职位" : "Role not set")}</p>
- <p className="mt-1 line-clamp-1 text-xs text-[#62605B]">{block.description || (isZh ? "尚未填写经历摘要" : "No summary yet")}</p>
+ <p className="mt-1 line-clamp-1 text-xs text-[var(--ink-2)]">{block.description || (isZh ? "尚未填写经历摘要" : "No summary yet")}</p>
  </button>
  <div className="flex items-center gap-1">
- <button type="button" disabled={index === 0} onClick={() => onMove(-1)} className="grid h-8 w-8 place-items-center rounded-[10px] text-[#62605B] hover:bg-[#FFFFFF] disabled:opacity-25" title={isZh ? "上移" : "Move up"}><ArrowUp className="h-3.5 w-3.5" /></button>
- <button type="button" disabled={index === length - 1} onClick={() => onMove(1)} className="grid h-8 w-8 place-items-center rounded-[10px] text-[#62605B] hover:bg-[#FFFFFF] disabled:opacity-25" title={isZh ? "下移" : "Move down"}><ArrowDown className="h-3.5 w-3.5" /></button>
+ <button type="button" disabled={index === 0} onClick={() => onMove(-1)} className="grid h-8 w-8 place-items-center rounded-[10px] text-[var(--ink-2)] hover:bg-[var(--card)] disabled:opacity-25" title={isZh ? "上移" : "Move up"}><ArrowUp className="h-3.5 w-3.5" /></button>
+ <button type="button" disabled={index === length - 1} onClick={() => onMove(1)} className="grid h-8 w-8 place-items-center rounded-[10px] text-[var(--ink-2)] hover:bg-[var(--card)] disabled:opacity-25" title={isZh ? "下移" : "Move down"}><ArrowDown className="h-3.5 w-3.5" /></button>
  <button type="button" onClick={onDelete} className="grid h-8 w-8 place-items-center rounded-[10px] text-red-500 hover:bg-red-50" title={isZh ? "删除经历" : "Delete experience"}><Trash2 className="h-3.5 w-3.5" /></button>
- <button type="button" onClick={() => setExpanded((current) => !current)} className="grid h-8 w-8 place-items-center rounded-[10px] text-[#62605B] hover:bg-[#FFFFFF]" aria-label={expanded ? (isZh ? "收起经历" : "Collapse experience") : (isZh ? "展开经历" : "Expand experience")}>
+ <button type="button" onClick={() => setExpanded((current) => !current)} className="grid h-8 w-8 place-items-center rounded-[10px] text-[var(--ink-2)] hover:bg-[var(--card)]" aria-label={expanded ? (isZh ? "收起经历" : "Collapse experience") : (isZh ? "展开经历" : "Expand experience")}>
  {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
  </button>
  </div>
  </div>
 
  {expanded ? (
- <div className="grid gap-4 border-t border-[#E7E2D9] bg-[#FFFFFF] p-4">
- <div className="grid gap-3 md:grid-cols-2">
+ <div className="grid grid-cols-1 gap-4 border-t border-[var(--rule)] bg-[var(--card)] p-4">
+ <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
  <Field label={isZh ? "公司名称" : "Company"}>
  <Input value={block.title} onChange={(event) => onPatch({ title: event.target.value })} />
  </Field>
@@ -250,10 +250,10 @@ function ExperienceEntryEditor({
  <Textarea value={block.description ?? ""} onChange={(event) => onPatch({ description: event.target.value })} className="min-h-28" />
  </Field>
 
- <section className="grid gap-3 rounded-[12px] border border-[#FFF0EB] bg-[#FFF0EB] p-4">
+ <section className="grid grid-cols-1 gap-3 rounded-[12px] border border-[var(--seal-tint)] bg-[var(--seal-tint)] p-4">
  <div>
- <h4 className="font-bold text-[#1F2328]">{isZh ? "Details 详情弹窗" : "Details modal"}</h4>
- <p className="mt-1 text-xs text-[#62605B]">{isZh ? "对应前台卡片左下角的 Details 按钮。" : "Shown by the Details button on the homepage card."}</p>
+ <h4 className="font-bold text-[var(--ink)]">{isZh ? "Details 详情弹窗" : "Details modal"}</h4>
+ <p className="mt-1 text-xs text-[var(--ink-2)]">{isZh ? "对应前台卡片左下角的 Details 按钮。" : "Shown by the Details button on the homepage card."}</p>
  </div>
  <Field label={isZh ? "弹窗标题" : "Modal title"}>
  <Input value={modalTitle} onChange={(event) => patchMetadata({ modalTitle: event.target.value })} />
@@ -266,7 +266,7 @@ function ExperienceEntryEditor({
  </Field>
  </section>
 
- <label className="flex items-center gap-2 text-sm font-medium text-[#62605B]">
+ <label className="flex items-center gap-2 text-sm font-medium text-[var(--ink-2)]">
  <Checkbox checked={block.isVisible} onChange={(event) => onPatch({ isVisible: event.target.checked })} />
  {isZh ? "显示这段经历" : "Show this experience"}
  </label>
@@ -285,18 +285,18 @@ function ExperiencePreviewRow({ block, index }: { block: Block; index: number })
  <div
  data-has-company-logo={String(Boolean(timeline.companyLogo))}
  className={cn(
- "relative grid min-w-0 overflow-hidden rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] p-4",
+ "relative grid min-w-0 overflow-hidden rounded-[16px] border border-[var(--rule)] bg-[var(--card)] p-4",
  timeline.companyLogo ? "grid-cols-[minmax(0,1fr)_7rem] gap-4" : "grid-cols-[minmax(0,1fr)_auto] gap-3"
  )}
  >
  <div className="min-w-0">
- <h3 className="truncate text-xl font-bold tracking-[-0.035em] text-[#1F2328]">{block.title}</h3>
+ <h3 className="truncate text-xl font-bold tracking-[-0.035em] text-[var(--ink)]">{block.title}</h3>
  <p className="mt-1 text-xs font-bold" style={{ color: tone.deep }}>{timeline.role}</p>
- <p className="mt-4 line-clamp-3 text-xs leading-5 text-[#62605B]">{block.description}</p>
+ <p className="mt-4 line-clamp-3 text-xs leading-5 text-[var(--ink-2)]">{block.description}</p>
  <span className="mt-4 inline-flex whitespace-nowrap rounded-[16px] px-3 py-1 text-[9px] font-bold tracking-[0.12em]" style={{ backgroundColor: tone.tint, color: tone.deep }}>DETAILS ↗</span>
  </div>
  <div className="flex flex-col items-end justify-between">
- <span className="rounded-[16px] border px-2.5 py-1 text-[10px] font-bold text-[#62605B]" style={{ borderColor: tone.tone, backgroundColor: tone.tint }}>{timeline.tenure}</span>
+ <span className="rounded-[16px] border px-2.5 py-1 text-[10px] font-bold text-[var(--ink-2)]" style={{ borderColor: tone.tone, backgroundColor: tone.tint }}>{timeline.tenure}</span>
  {timeline.companyLogo ? (
  <span className="grid aspect-square w-full place-items-center overflow-hidden rounded-[12px]" style={{ backgroundColor: tone.tint, color: tone.deep }}>
  <img src={timeline.companyLogo} alt="" className="h-full w-full object-contain p-3" />

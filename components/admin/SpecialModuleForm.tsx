@@ -62,24 +62,24 @@ export function SpecialModuleForm({
  onPatch({ metadata: { ...(block.metadata ?? {}), ...patch } });
 
  return (
- <div className="admin-special-form grid gap-6 text-[#1F2328]">
- <section className="grid gap-4 rounded-[12px] border border-[#FFF0EB] bg-[#FFF0EB] p-4">
+ <div className="admin-special-form grid gap-6 text-[var(--ink)]">
+ <section className="grid grid-cols-1 gap-4 rounded-[12px] border border-[var(--seal-tint)] bg-[var(--seal-tint)] p-4">
  <div className="flex items-center gap-3">
- <span className="grid h-10 w-10 place-items-center rounded-[10px] bg-[#FFFFFF] text-[#C0452A]">
+ <span className="grid h-10 w-10 place-items-center rounded-[10px] bg-[var(--card)] text-[var(--seal-deep)]">
  <SpecialModuleIcon type={moduleType} />
  </span>
  <div>
- <h3 className="font-bold text-[#1F2328]">
+ <h3 className="font-bold text-[var(--ink)]">
  {getModuleTitle(moduleType, editorLanguage)}
  </h3>
- <p className="text-xs text-[#62605B]">
+ <p className="text-xs text-[var(--ink-2)]">
  {isZh ? "这里的修改会直接同步到主页对应模块。" : "Changes here are reflected in the matching homepage module."}
  </p>
  </div>
  </div>
 
  {heading && onPatchHeading ? (
- <div className="grid gap-3 rounded-[12px] border border-[#E7E2D9] bg-[#FFFFFF] p-4 md:grid-cols-2">
+ <div className="grid grid-cols-1 gap-3 rounded-[12px] border border-[var(--rule)] bg-[var(--card)] p-4 md:grid-cols-2">
  <Field label={isZh ? "主页模块标题" : "Homepage module title"}>
  <Input value={heading.title} onChange={(event) => onPatchHeading({ title: event.target.value })} />
  </Field>
@@ -100,7 +100,7 @@ export function SpecialModuleForm({
  </>
  ) : null}
 
- <label className="flex items-center gap-2 text-sm font-medium text-[#62605B]">
+ <label className="flex items-center gap-2 text-sm font-medium text-[var(--ink-2)]">
  <Checkbox checked={block.isVisible} onChange={(event) => onPatch({ isVisible: event.target.checked })} />
  {isZh ? "在主页显示此模块" : "Show this module on the homepage"}
  </label>
@@ -149,37 +149,37 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  if (moduleType === "travel") {
  const locations = readTravelLocations(block.metadata?.travelLocations);
  return (
- <div className="relative flex h-full min-h-48 overflow-hidden rounded-[16px] border border-[#F1EEE8] bg-[#F1EEE8] p-5 text-[#1F2328]">
+ <div className="relative flex h-full min-h-48 overflow-hidden rounded-[16px] border border-[var(--rule)] bg-[var(--rule)] p-5 text-[var(--ink)]">
  <div className="relative z-10 flex min-w-0 flex-1 flex-col justify-between pr-4">
- <div className="flex items-center justify-between gap-3 text-[10px] font-bold tracking-[0.16em] text-[#C0452A]">
+ <div className="flex items-center justify-between gap-3 text-[10px] font-bold tracking-[0.16em] text-[var(--seal-deep)]">
  <span className="flex min-w-0 items-center gap-2"><MapPinned className="h-4 w-4 shrink-0" /> <span className="truncate">TRAVEL FOOTPRINT</span></span>
- <span className="shrink-0 whitespace-nowrap rounded-[16px] border border-[#FFF0EB] bg-[#FFFFFF]/80 px-2.5 py-1">{String(locations.length).padStart(2, "0")} PLACES</span>
+ <span className="shrink-0 whitespace-nowrap rounded-[16px] border border-[var(--seal-tint)] bg-[color-mix(in_srgb,var(--card)_80%,transparent)] px-2.5 py-1">{String(locations.length).padStart(2, "0")} PLACES</span>
  </div>
  <div>
  <h3 className="mt-5 line-clamp-2 text-2xl font-bold tracking-[-0.03em]">{block.title}</h3>
- <p className="mt-2 line-clamp-2 max-w-xl text-sm leading-6 text-[#62605B]">{block.description}</p>
+ <p className="mt-2 line-clamp-2 max-w-xl text-sm leading-6 text-[var(--ink-2)]">{block.description}</p>
  </div>
  <div className="mt-5 flex flex-wrap gap-1.5">
  {locations.length > 0 ? locations.slice(0, 5).map((location, index) => (
- <span key={`${index}-${location.city}`} className="whitespace-nowrap rounded-[16px] border border-[#F1EEE8] bg-[#FFFFFF]/85 px-2.5 py-1 text-[10px] font-bold text-[#62605B]">
+ <span key={`${index}-${location.city}`} className="whitespace-nowrap rounded-[16px] border border-[var(--rule)] bg-[color-mix(in_srgb,var(--card)_85%,transparent)] px-2.5 py-1 text-[10px] font-bold text-[var(--ink-2)]">
  {location.city} · {location.province}
  </span>
- )) : <span className="text-sm text-[#62605B]">暂无地点</span>}
+ )) : <span className="text-sm text-[var(--ink-2)]">暂无地点</span>}
  </div>
  </div>
- <div className="relative hidden w-[34%] min-w-[180px] items-center justify-center overflow-hidden rounded-[12px] border border-[#F1EEE8] bg-[#FFFFFF]/65 md:flex">
- <div className="absolute inset-0 opacity-45 [background-image:linear-gradient(#F3C8BA_1px,transparent_1px),linear-gradient(90deg,#F3C8BA_1px,transparent_1px)] [background-size:22px_22px]" />
- <svg viewBox={CHINA_MAP_VIEW_BOX} className="relative z-10 w-[88%] drop-" aria-hidden="true">
- <g>
- {chinaProvincePaths.map((province) => (
- <path
- key={province.adcode}
- d={province.d}
- fill={locations.some((location) => province.name.includes(location.province)) ? "#E45435" : "#F1EEE8"}
- stroke="#62605B"
- strokeWidth="1.2"
- />
- ))}
+ <div className="relative hidden w-[34%] min-w-[180px] items-center justify-center overflow-hidden rounded-[12px] border border-[var(--rule)] bg-[var(--card)]/65 md:flex">
+  <div className="absolute inset-0 opacity-45 [background-image:linear-gradient(var(--tint-border)_1px,transparent_1px),linear-gradient(90deg,var(--tint-border)_1px,transparent_1px)] [background-size:22px_22px]" />
+  <svg viewBox={CHINA_MAP_VIEW_BOX} className="relative z-10 w-[88%] drop-" aria-hidden="true">
+  <g>
+  {chinaProvincePaths.map((province) => (
+  <path
+  key={province.adcode}
+  d={province.d}
+  fill={locations.some((location) => province.name.includes(location.province)) ? "var(--seal)" : "var(--rule)"}
+  stroke="var(--ink-2)"
+  strokeWidth="1.2"
+  />
+  ))}
  </g>
  </svg>
  </div>
@@ -190,19 +190,19 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  if (moduleType === "projects") {
  const projects = readPersonalProjects(block.metadata?.projects);
  return (
- <div className="h-full min-h-48 rounded-[16px] border border-[#FFF0EB] bg-[#F8F7F4] p-5">
+ <div className="h-full min-h-48 rounded-[16px] border border-[var(--seal-tint)] bg-[var(--paper-2)] p-5">
  <div className="flex items-center justify-between gap-3">
- <span className="flex min-w-0 items-center gap-2 text-xs tracking-[0.16em] text-[#62605B]"><FolderKanban className="h-4 w-4 shrink-0" /> <span className="truncate">PERSONAL PROJECTS</span></span>
- <span className="shrink-0 whitespace-nowrap rounded-[16px] bg-[#FFFFFF] px-3 py-1 text-xs font-bold text-[#62605B]">{projects.length} 项</span>
+ <span className="flex min-w-0 items-center gap-2 text-xs tracking-[0.16em] text-[var(--ink-2)]"><FolderKanban className="h-4 w-4 shrink-0" /> <span className="truncate">PERSONAL PROJECTS</span></span>
+ <span className="shrink-0 whitespace-nowrap rounded-[16px] bg-[var(--card)] px-3 py-1 text-xs font-bold text-[var(--ink-2)]">{projects.length} 项</span>
  </div>
  <div className="mt-5 grid gap-3 md:grid-cols-3">
  {projects.length > 0 ? projects.map((project, index) => (
- <div key={`${index}-${project.title}`} className="min-w-0 rounded-[12px] border border-black/10 bg-[#FFFFFF]/70 p-4">
- <p className="truncate text-[10px] tracking-[0.12em] text-[#62605B]">{project.eyebrow}</p>
- <h3 className="mt-4 line-clamp-2 min-h-12 text-lg font-bold text-[#1F2328]">{project.title}</h3>
- <p className="mt-2 line-clamp-2 text-xs leading-5 text-[#62605B]">{project.description}</p>
+ <div key={`${index}-${project.title}`} className="min-w-0 rounded-[12px] border border-[var(--rule)] bg-[color-mix(in_srgb,var(--card)_70%,transparent)] p-4">
+ <p className="truncate text-[10px] tracking-[0.12em] text-[var(--ink-2)]">{project.eyebrow}</p>
+ <h3 className="mt-4 line-clamp-2 min-h-12 text-lg font-bold text-[var(--ink)]">{project.title}</h3>
+ <p className="mt-2 line-clamp-2 text-xs leading-5 text-[var(--ink-2)]">{project.description}</p>
  </div>
- )) : <div className="md:col-span-3 rounded-[12px] border border-dashed border-[#E7E2D9] py-8 text-center text-sm text-[#62605B]">暂无项目</div>}
+ )) : <div className="md:col-span-3 rounded-[12px] border border-dashed border-[var(--rule)] py-8 text-center text-sm text-[var(--ink-2)]">暂无项目</div>}
  </div>
  </div>
  );
@@ -211,11 +211,11 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  if (moduleType === "now") {
  const status = readNowStatus(block.metadata?.nowStatus);
  return (
- <div className="min-h-48 rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] p-6">
- <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[#C0452A]"><Sparkles className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">NOW · 此刻</span></span>
- <h3 className="mt-8 text-2xl font-bold text-[#1F2328]">{status.headline || "尚未填写近况"}</h3>
- <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#62605B]">{status.body || "填写后再发布到主页。"}</p>
- <div className="mt-5 flex flex-wrap gap-2">{status.tags.map((tag) => <span key={tag} className="rounded-[16px] bg-[#FFFFFF] px-3 py-1 text-xs"># {tag}</span>)}</div>
+ <div className="min-h-48 rounded-[16px] border border-[var(--rule)] bg-[var(--card)] p-6">
+ <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[var(--seal-deep)]"><Sparkles className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">NOW · 此刻</span></span>
+ <h3 className="mt-8 text-2xl font-bold text-[var(--ink)]">{status.headline || "尚未填写近况"}</h3>
+ <p className="mt-3 line-clamp-3 text-sm leading-6 text-[var(--ink-2)]">{status.body || "填写后再发布到主页。"}</p>
+ <div className="mt-5 flex flex-wrap gap-2">{status.tags.map((tag) => <span key={tag} className="rounded-[16px] bg-[var(--card)] px-3 py-1 text-xs"># {tag}</span>)}</div>
  </div>
  );
  }
@@ -225,18 +225,18 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  .filter((item) => item.category === "movie" && getDoubanWatchlistProgress(item));
  const source = readDoubanMediaSource(block.metadata?.mediaSource);
  return (
- <div className="min-h-48 rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] p-5">
+ <div className="min-h-48 rounded-[16px] border border-[var(--rule)] bg-[var(--card)] p-5">
  <div className="flex items-center justify-between gap-3">
- <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[#C0452A]"><BookOpen className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">DOUBAN WATCHLIST · {items.length}</span></span>
- {source.lastSyncedAt ? <span className="text-[10px] text-[#62605B]">{formatAdminDate(source.lastSyncedAt)}</span> : null}
+ <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[var(--seal-deep)]"><BookOpen className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">DOUBAN WATCHLIST · {items.length}</span></span>
+ {source.lastSyncedAt ? <span className="text-[10px] text-[var(--ink-2)]">{formatAdminDate(source.lastSyncedAt)}</span> : null}
  </div>
  <div className="mt-5 grid gap-3 md:grid-cols-4">
  {items.length ? items.slice(0, 4).map((item) => (
- <div key={item.id} className="grid min-h-36 grid-rows-[7rem_1fr] overflow-hidden rounded-[12px] border border-[#E7E2D9] bg-[#FFFFFF]">
- <div className="relative overflow-hidden border-b border-[#E7E2D9] bg-[#F1EEE8]">
- {item.coverImage ? <img src={item.coverImage} alt="" className="h-full w-full object-contain" /> : <BookOpen className="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 text-[#C0452A]" />}
+ <div key={item.id} className="grid min-h-36 grid-rows-[7rem_1fr] overflow-hidden rounded-[12px] border border-[var(--rule)] bg-[var(--card)]">
+ <div className="relative overflow-hidden border-b border-[var(--rule)] bg-[var(--rule)]">
+ {item.coverImage ? <img src={item.coverImage} alt="" className="h-full w-full object-contain" /> : <BookOpen className="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 text-[var(--seal-deep)]" />}
  </div>
- <h3 className="line-clamp-2 p-3 text-sm font-bold text-[#1F2328]">{item.title}</h3>
+ <h3 className="line-clamp-2 p-3 text-sm font-bold text-[var(--ink)]">{item.title}</h3>
  </div>
  )) : <EmptyState text="暂无豆瓣影视条目" />}
  </div>
@@ -247,10 +247,10 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  if (moduleType === "photos") {
  const stories = readPhotoStories(block.metadata?.photoStories);
  return (
- <div className="min-h-48 rounded-[16px] border border-[#E7E2D9] bg-[#FFF0EB] p-5">
- <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[#C0452A]"><Camera className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">PHOTO STORIES · {stories.length}</span></span>
+ <div className="min-h-48 rounded-[16px] border border-[var(--rule)] bg-[var(--seal-tint)] p-5">
+ <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[var(--seal-deep)]"><Camera className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">PHOTO STORIES · {stories.length}</span></span>
  <div className="mt-5 grid gap-3 md:grid-cols-2">
- {stories.length ? stories.slice(0, 2).map((story) => <div key={story.id} className="rounded-[12px] bg-[#FFFFFF]/80 p-4"><p className="text-xs text-[#C0452A]">{story.date || "未填写日期"}</p><h3 className="mt-3 font-bold text-[#1F2328]">{story.title}</h3><p className="mt-2 text-xs text-[#62605B]">{story.photos.length} 张照片</p></div>) : <EmptyState text="暂无照片故事" />}
+ {stories.length ? stories.slice(0, 2).map((story) => <div key={story.id} className="rounded-[12px] bg-[color-mix(in_srgb,var(--card)_80%,transparent)] p-4"><p className="text-xs text-[var(--seal-deep)]">{story.date || "未填写日期"}</p><h3 className="mt-3 font-bold text-[var(--ink)]">{story.title}</h3><p className="mt-2 text-xs text-[var(--ink-2)]">{story.photos.length} 张照片</p></div>) : <EmptyState text="暂无照片故事" />}
  </div>
  </div>
  );
@@ -292,11 +292,11 @@ function TravelLocationsEditor({
  onChange(locations.map((location, itemIndex) => (itemIndex === index ? { ...location, ...patch } : location)));
 
  return (
- <section className="grid gap-4">
+ <section className="grid grid-cols-1 gap-4">
  <div className="flex items-center justify-between gap-3">
  <div>
- <h3 className="font-bold text-[#1F2328]">{isZh ? "地点列表" : "Locations"}</h3>
- <p className="text-xs text-[#62605B]">{isZh ? "经纬度用于在中国地图上定位标记。" : "Coordinates place each marker on the China map."}</p>
+ <h3 className="font-bold text-[var(--ink)]">{isZh ? "地点列表" : "Locations"}</h3>
+ <p className="text-xs text-[var(--ink-2)]">{isZh ? "经纬度用于在中国地图上定位标记。" : "Coordinates place each marker on the China map."}</p>
  </div>
  <Button
  type="button"
@@ -354,27 +354,27 @@ function TravelLocationCard({
  const [expanded, setExpanded] = useState(index === 0);
 
  return (
- <article className="overflow-hidden rounded-[12px] border border-[#E7E2D9] bg-[#FFFFFF]">
+ <article className="overflow-hidden rounded-[12px] border border-[var(--rule)] bg-[var(--card)]">
  <div className="flex items-center gap-3 p-3">
- <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] border border-[#FFF0EB] bg-[#FFF0EB] text-[#C0452A]">
+ <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] border border-[var(--seal-tint)] bg-[var(--seal-tint)] text-[var(--seal-deep)]">
  <MapPin className="h-4 w-4" />
  </span>
  <button type="button" onClick={() => setExpanded((current) => !current)} className="min-w-0 flex-1 text-left">
- <p className="truncate text-sm font-bold text-[#1F2328]">{String(index + 1).padStart(2, "0")} · {location.city || (isZh ? "未命名地点" : "Untitled location")}</p>
- <p className="mt-0.5 truncate text-xs text-[#62605B]">{location.province}{location.note ? ` · ${location.note}` : ""}</p>
+ <p className="truncate text-sm font-bold text-[var(--ink)]">{String(index + 1).padStart(2, "0")} · {location.city || (isZh ? "未命名地点" : "Untitled location")}</p>
+ <p className="mt-0.5 truncate text-xs text-[var(--ink-2)]">{location.province}{location.note ? ` · ${location.note}` : ""}</p>
  </button>
  <div className="flex items-center gap-1">
- <button type="button" disabled={index === 0} onClick={() => onMove(-1)} className="grid h-8 w-8 place-items-center rounded-[10px] text-[#62605B] hover:bg-[#FFFFFF] disabled:opacity-25" title={isZh ? "上移" : "Move up"}><ArrowUp className="h-3.5 w-3.5" /></button>
- <button type="button" disabled={index === length - 1} onClick={() => onMove(1)} className="grid h-8 w-8 place-items-center rounded-[10px] text-[#62605B] hover:bg-[#FFFFFF] disabled:opacity-25" title={isZh ? "下移" : "Move down"}><ArrowDown className="h-3.5 w-3.5" /></button>
+ <button type="button" disabled={index === 0} onClick={() => onMove(-1)} className="grid h-8 w-8 place-items-center rounded-[10px] text-[var(--ink-2)] hover:bg-[var(--card)] disabled:opacity-25" title={isZh ? "上移" : "Move up"}><ArrowUp className="h-3.5 w-3.5" /></button>
+ <button type="button" disabled={index === length - 1} onClick={() => onMove(1)} className="grid h-8 w-8 place-items-center rounded-[10px] text-[var(--ink-2)] hover:bg-[var(--card)] disabled:opacity-25" title={isZh ? "下移" : "Move down"}><ArrowDown className="h-3.5 w-3.5" /></button>
  <button type="button" onClick={onDelete} className="grid h-8 w-8 place-items-center rounded-[10px] text-red-500 hover:bg-red-50" title={isZh ? "删除地点" : "Delete location"}><Trash2 className="h-3.5 w-3.5" /></button>
- <button type="button" onClick={() => setExpanded((current) => !current)} className="grid h-8 w-8 place-items-center rounded-[10px] text-[#62605B] hover:bg-[#FFFFFF]" aria-label={expanded ? (isZh ? "收起地点" : "Collapse location") : (isZh ? "展开地点" : "Expand location")}>
+ <button type="button" onClick={() => setExpanded((current) => !current)} className="grid h-8 w-8 place-items-center rounded-[10px] text-[var(--ink-2)] hover:bg-[var(--card)]" aria-label={expanded ? (isZh ? "收起地点" : "Collapse location") : (isZh ? "展开地点" : "Expand location")}>
  {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
  </button>
  </div>
  </div>
 
  {expanded ? (
- <div className="grid gap-3 border-t border-[#E7E2D9] bg-[#FFFFFF] p-4 md:grid-cols-2">
+ <div className="grid grid-cols-1 gap-3 border-t border-[var(--rule)] bg-[var(--card)] p-4 md:grid-cols-2">
  <Field label={isZh ? "城市 / 地区" : "City / Area"}>
  <Input value={location.city} onChange={(event) => onChange({ city: event.target.value })} />
  </Field>
@@ -410,11 +410,11 @@ function PersonalProjectsEditor({
  onChange(projects.map((project, itemIndex) => (itemIndex === index ? { ...project, ...patch } : project)));
 
  return (
- <section className="grid gap-4">
+ <section className="grid grid-cols-1 gap-4">
  <div className="flex items-center justify-between gap-3">
  <div>
- <h3 className="font-bold text-[#1F2328]">{isZh ? "项目列表" : "Projects"}</h3>
- <p className="text-xs text-[#62605B]">{isZh ? "GitHub 链接必填，在线地址可选。" : "GitHub URL is required; live URL is optional."}</p>
+ <h3 className="font-bold text-[var(--ink)]">{isZh ? "项目列表" : "Projects"}</h3>
+ <p className="text-xs text-[var(--ink-2)]">{isZh ? "GitHub 链接必填，在线地址可选。" : "GitHub URL is required; live URL is optional."}</p>
  </div>
  <Button
  type="button"
@@ -442,7 +442,7 @@ function PersonalProjectsEditor({
  {projects.length === 0 ? <EmptyState text={isZh ? "暂无项目，添加后会显示为主页项目卡片。" : "No projects yet."} /> : null}
 
  {projects.map((project, index) => (
- <article key={`${index}-${project.title}`} className="grid gap-4 rounded-[12px] border border-[#FFF0EB] bg-[#FFFFFF] p-4">
+ <article key={`${index}-${project.title}`} className="grid grid-cols-1 gap-4 rounded-[12px] border border-[var(--seal-tint)] bg-[var(--card)] p-4">
  <ItemToolbar
  label={`${String(index + 1).padStart(2, "0")} · ${project.title || (isZh ? "未命名项目" : "Untitled project")}`}
  index={index}
@@ -451,7 +451,7 @@ function PersonalProjectsEditor({
  onDelete={() => onChange(projects.filter((_, itemIndex) => itemIndex !== index))}
  editorLanguage={editorLanguage}
  />
- <div className="grid gap-3 md:grid-cols-2">
+ <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
  <Field label={isZh ? "项目名称" : "Project name"}>
  <Input value={project.title} onChange={(event) => updateProject(index, { title: event.target.value })} />
  </Field>
@@ -500,12 +500,12 @@ function NowStatusEditor({
  const isZh = editorLanguage === "zh-CN";
  const patch = (next: Partial<NowStatus>) => onChange({ ...status, ...next });
  return (
- <section className="grid gap-4 rounded-[12px] border border-[#FFF0EB] bg-[#FFFFFF] p-4">
+ <section className="grid grid-cols-1 gap-4 rounded-[12px] border border-[var(--seal-tint)] bg-[var(--card)] p-4">
  <div>
- <h3 className="font-bold text-[#1F2328]">{isZh ? "近况内容" : "Current status"}</h3>
- <p className="text-xs text-[#62605B]">{isZh ? "适合记录近期状态、关注事项和生活关键词。" : "Share a concise current update."}</p>
+ <h3 className="font-bold text-[var(--ink)]">{isZh ? "近况内容" : "Current status"}</h3>
+ <p className="text-xs text-[var(--ink-2)]">{isZh ? "适合记录近期状态、关注事项和生活关键词。" : "Share a concise current update."}</p>
  </div>
- <div className="grid gap-3 md:grid-cols-2">
+ <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
  <Field label={isZh ? "近况标题" : "Headline"} className="md:col-span-2">
  <Input value={status.headline} onChange={(event) => patch({ headline: event.target.value })} placeholder={isZh ? "填写真实的近期状态" : "What is happening now?"} />
  </Field>
@@ -586,15 +586,15 @@ function MediaItemsEditor({
  }
 
  return (
- <section className="grid gap-4">
- <div className="grid gap-4 rounded-[12px] border border-[#E7E2D9] bg-[#F8F7F4] p-4">
+ <section className="grid grid-cols-1 gap-4">
+ <div className="grid grid-cols-1 gap-4 rounded-[12px] border border-[var(--rule)] bg-[var(--paper-2)] p-4">
  <div>
- <h3 className="font-bold text-[#1F2328]">{isZh ? "豆瓣公开主页同步" : "Douban profile sync"}</h3>
- <p className="mt-1 text-xs leading-5 text-[#62605B]">
+ <h3 className="font-bold text-[var(--ink)]">{isZh ? "豆瓣公开主页同步" : "Douban profile sync"}</h3>
+ <p className="mt-1 text-xs leading-5 text-[var(--ink-2)]">
  {isZh ? "填写豆瓣个人主页 URL，同步影视类的在看和想看记录。同步结果会保存到本站，主页访问不依赖豆瓣实时响应。" : "Enter a public Douban profile URL to sync watching and wishlist movie records."}
  </p>
  </div>
- <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_12rem_auto] md:items-end">
+ <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_12rem_auto] md:items-end">
  <Field label={isZh ? "豆瓣个人主页 URL" : "Douban profile URL"}>
  <Input
  type="url"
@@ -630,30 +630,30 @@ function MediaItemsEditor({
  {isSyncing ? (isZh ? "同步中" : "Syncing") : (isZh ? "立即同步" : "Sync now")}
  </Button>
  </div>
- <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#62605B]">
+ <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[var(--ink-2)]">
  <span>{isZh ? "当前条目" : "Items"}：{items.length}</span>
  <span>{isZh ? "自动抓取" : "Auto sync"}：{formatSyncInterval(source.syncIntervalDays, isZh)}</span>
  {source.lastSyncedAt ? <span>{isZh ? "上次同步" : "Last sync"}：{formatAdminDate(source.lastSyncedAt)}</span> : null}
  {source.failedPages ? <span className="text-amber-700">{source.failedPages} {isZh ? "个分类页暂未读取" : "pages unavailable"}</span> : null}
- {source.profileUrl ? <a href={source.profileUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[#C0452A] hover:underline">{isZh ? "打开豆瓣主页" : "Open profile"} <ExternalLink className="h-3 w-3" /></a> : null}
+ {source.profileUrl ? <a href={source.profileUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[var(--seal-deep)] hover:underline">{isZh ? "打开豆瓣主页" : "Open profile"} <ExternalLink className="h-3 w-3" /></a> : null}
  </div>
  </div>
 
- <details className="rounded-[12px] border border-[#E7E2D9] bg-[#FFFFFF]">
- <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 font-semibold text-[#1F2328]">
+ <details className="rounded-[12px] border border-[var(--rule)] bg-[var(--card)]">
+ <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 font-semibold text-[var(--ink)]">
  <span>{isZh ? "手动调整同步结果" : "Manually edit synced items"}</span>
- <span className="text-xs font-normal text-[#62605B]">{items.length} {isZh ? "条" : "items"}</span>
+ <span className="text-xs font-normal text-[var(--ink-2)]">{items.length} {isZh ? "条" : "items"}</span>
  </summary>
- <div className="grid gap-4 border-t border-[#E7E2D9] p-4">
+ <div className="grid grid-cols-1 gap-4 border-t border-[var(--rule)] p-4">
  <div className="flex items-center justify-between gap-3">
- <p className="text-xs text-[#62605B]">{isZh ? "可调整同步后的影视标题、状态与短评；下次同步会替换这里的内容。" : "Adjust synced movie content. The next sync replaces this list."}</p>
+ <p className="text-xs text-[var(--ink-2)]">{isZh ? "可调整同步后的影视标题、状态与短评；下次同步会替换这里的内容。" : "Adjust synced movie content. The next sync replaces this list."}</p>
  <Button type="button" variant="secondary" size="sm" onClick={() => onChange([...items, { id: crypto.randomUUID(), category: "movie", title: isZh ? "新条目" : "New item", status: isZh ? "想看" : "Wishlist", progress: "wishlist", source: "manual" }])}><Plus className="h-4 w-4" /> {isZh ? "添加条目" : "Add item"}</Button>
  </div>
  {items.length === 0 ? <EmptyState text={isZh ? "暂无内容，请先同步豆瓣或手动添加。" : "Sync Douban or add an item manually."} /> : null}
  {items.map((item, index) => (
- <article key={item.id} className="grid gap-4 rounded-[12px] border border-[#FFF0EB] bg-[#FFFFFF] p-4">
+ <article key={item.id} className="grid grid-cols-1 gap-4 rounded-[12px] border border-[var(--seal-tint)] bg-[var(--card)] p-4">
  <ItemToolbar label={`${String(index + 1).padStart(2, "0")} · ${item.title}`} index={index} length={items.length} onMove={(direction) => onChange(moveItem(items, index, direction))} onDelete={() => onChange(items.filter((candidate) => candidate.id !== item.id))} editorLanguage={editorLanguage} />
- <div className="grid gap-3 md:grid-cols-2">
+ <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
  <Field label={isZh ? "分类" : "Category"}>
  <Select value="movie" disabled>
  <option value="movie">{isZh ? "影视" : "Movie / TV"}</option>
@@ -703,30 +703,30 @@ function PhotoStoriesEditor({
  const isZh = editorLanguage === "zh-CN";
  const updateStory = (index: number, patch: Partial<PhotoStory>) => onChange(stories.map((story, itemIndex) => itemIndex === index ? { ...story, ...patch } : story));
  return (
- <section className="grid gap-4">
+ <section className="grid grid-cols-1 gap-4">
  <div className="flex items-center justify-between gap-3">
- <div><h3 className="font-bold text-[#1F2328]">{isZh ? "故事列表" : "Stories"}</h3><p className="text-xs text-[#62605B]">{isZh ? "每个故事可以上传多张图片并单独填写说明。" : "Each story can contain multiple captioned photos."}</p></div>
+ <div><h3 className="font-bold text-[var(--ink)]">{isZh ? "故事列表" : "Stories"}</h3><p className="text-xs text-[var(--ink-2)]">{isZh ? "每个故事可以上传多张图片并单独填写说明。" : "Each story can contain multiple captioned photos."}</p></div>
  <Button type="button" variant="secondary" size="sm" onClick={() => onChange([...stories, { id: crypto.randomUUID(), title: isZh ? "新照片故事" : "New photo story", photos: [] }])}><Plus className="h-4 w-4" /> {isZh ? "添加故事" : "Add story"}</Button>
  </div>
  {stories.length === 0 ? <EmptyState text={isZh ? "暂无照片故事，添加后再上传真实照片。" : "No stories yet."} /> : null}
  {stories.map((story, storyIndex) => (
- <article key={story.id} className="grid gap-4 rounded-[12px] border border-[#FFF0EB] bg-[#FFFFFF] p-4">
+ <article key={story.id} className="grid grid-cols-1 gap-4 rounded-[12px] border border-[var(--seal-tint)] bg-[var(--card)] p-4">
  <ItemToolbar label={`${String(storyIndex + 1).padStart(2, "0")} · ${story.title}`} index={storyIndex} length={stories.length} onMove={(direction) => onChange(moveItem(stories, storyIndex, direction))} onDelete={() => onChange(stories.filter((candidate) => candidate.id !== story.id))} editorLanguage={editorLanguage} />
- <div className="grid gap-3 md:grid-cols-2">
+ <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
  <Field label={isZh ? "故事标题" : "Story title"}><Input value={story.title} onChange={(event) => updateStory(storyIndex, { title: event.target.value })} /></Field>
  <Field label={isZh ? "日期（可选）" : "Date (optional)"}><Input type="date" value={story.date ?? ""} onChange={(event) => updateStory(storyIndex, { date: event.target.value })} /></Field>
  <Field label={isZh ? "地点（可选）" : "Location (optional)"}><Input value={story.location ?? ""} onChange={(event) => updateStory(storyIndex, { location: event.target.value })} /></Field>
  <Field label={isZh ? "简介（可选）" : "Summary (optional)"} className="md:col-span-2"><Textarea value={story.summary ?? ""} onChange={(event) => updateStory(storyIndex, { summary: event.target.value })} /></Field>
  </div>
- <div className="grid gap-3 rounded-[12px] bg-[#FFF0EB] p-4">
- <div className="flex items-center justify-between"><div><h4 className="font-bold text-[#1F2328]">{isZh ? "照片" : "Photos"}</h4><p className="text-xs text-[#62605B]">{story.photos.length} {isZh ? "张" : "photos"}</p></div></div>
+ <div className="grid grid-cols-1 gap-3 rounded-[12px] bg-[var(--seal-tint)] p-4">
+ <div className="flex items-center justify-between"><div><h4 className="font-bold text-[var(--ink)]">{isZh ? "照片" : "Photos"}</h4><p className="text-xs text-[var(--ink-2)]">{story.photos.length} {isZh ? "张" : "photos"}</p></div></div>
  <MediaUploader folder="gallery" onUploaded={(url) => updateStory(storyIndex, { photos: [...story.photos, { id: crypto.randomUUID(), url, alt: story.title || (isZh ? "照片" : "Photo"), caption: "" }] })} />
  {story.photos.map((photo, photoIndex) => (
- <div key={photo.id} className="grid gap-3 rounded-[10px] border border-[#FFF0EB] bg-[#FFFFFF] p-3 md:grid-cols-[88px_1fr]">
+ <div key={photo.id} className="grid grid-cols-1 gap-3 rounded-[10px] border border-[var(--seal-tint)] bg-[var(--card)] p-3 md:grid-cols-[88px_1fr]">
  <img src={photo.url} alt="" className="h-[88px] w-[88px] rounded-[10px] object-cover" />
- <div className="grid gap-2">
+ <div className="grid grid-cols-1 gap-2">
  <ItemToolbar label={`${isZh ? "照片" : "Photo"} ${photoIndex + 1}`} index={photoIndex} length={story.photos.length} onMove={(direction) => updateStory(storyIndex, { photos: moveItem(story.photos, photoIndex, direction) })} onDelete={() => updateStory(storyIndex, { photos: story.photos.filter((candidate) => candidate.id !== photo.id) })} editorLanguage={editorLanguage} />
- <div className="grid gap-2 md:grid-cols-2"><Field label={isZh ? "替代文本" : "Alt text"}><Input value={photo.alt} onChange={(event) => updateStory(storyIndex, { photos: story.photos.map((candidate) => candidate.id === photo.id ? { ...candidate, alt: event.target.value } : candidate) })} /></Field><Field label={isZh ? "图片说明（可选）" : "Caption (optional)"}><Input value={photo.caption ?? ""} onChange={(event) => updateStory(storyIndex, { photos: story.photos.map((candidate) => candidate.id === photo.id ? { ...candidate, caption: event.target.value } : candidate) })} /></Field></div>
+ <div className="grid grid-cols-1 gap-2 md:grid-cols-2"><Field label={isZh ? "替代文本" : "Alt text"}><Input value={photo.alt} onChange={(event) => updateStory(storyIndex, { photos: story.photos.map((candidate) => candidate.id === photo.id ? { ...candidate, alt: event.target.value } : candidate) })} /></Field><Field label={isZh ? "图片说明（可选）" : "Caption (optional)"}><Input value={photo.caption ?? ""} onChange={(event) => updateStory(storyIndex, { photos: story.photos.map((candidate) => candidate.id === photo.id ? { ...candidate, caption: event.target.value } : candidate) })} /></Field></div>
  </div>
  </div>
  ))}
@@ -777,8 +777,8 @@ function ItemToolbar({
 }) {
  const isZh = editorLanguage === "zh-CN";
  return (
- <div className="flex items-center justify-between gap-3 border-b border-[#F1EEE8] pb-3">
- <strong className="min-w-0 truncate text-sm text-[#1F2328]">{label}</strong>
+ <div className="flex items-center justify-between gap-3 border-b border-[var(--rule)] pb-3">
+ <strong className="min-w-0 truncate text-sm text-[var(--ink)]">{label}</strong>
  <div className="flex shrink-0 items-center gap-1">
  <Button type="button" variant="ghost" size="icon" disabled={index === 0} title={isZh ? "上移" : "Move up"} onClick={() => onMove(-1)}>
  <ArrowUp className="h-4 w-4" />
@@ -795,7 +795,7 @@ function ItemToolbar({
 }
 
 function EmptyState({ text }: { text: string }) {
- return <div className="rounded-[12px] border border-dashed border-[#FFF0EB] bg-[#FFF0EB] px-4 py-8 text-center text-sm text-[#62605B]">{text}</div>;
+ return <div className="rounded-[12px] border border-dashed border-[var(--seal-tint)] bg-[var(--seal-tint)] px-4 py-8 text-center text-sm text-[var(--ink-2)]">{text}</div>;
 }
 
 function moveItem<T>(items: T[], index: number, direction: -1 | 1) {

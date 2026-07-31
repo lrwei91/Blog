@@ -67,7 +67,7 @@ export function BlockForm({
  }
 
  return (
- <div className="grid gap-5 text-[#1F2328]">
+ <div className="grid grid-cols-1 gap-5 text-[var(--ink)]">
  {!isSectionBlock ? (
  <ImageCropUploader
  folder="blocks"
@@ -81,7 +81,7 @@ export function BlockForm({
  />
  ) : null}
 
- <div className="grid gap-3">
+ <div className="grid grid-cols-1 gap-3">
  <Field label={copy.blockTitle}>
  <Input
  value={block.title}
@@ -113,7 +113,7 @@ export function BlockForm({
  </Field> : null}
 
  {isSectionBlock ? (
- <div className="grid gap-3 md:grid-cols-2">
+ <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
  <Field label={editorLanguage === "zh-CN" ? "标题对齐" : "Title Alignment"}>
  <Select
  value={getSectionMetadataValue(block.metadata?.titleAlign, ["left", "center", "right"], "left")}
@@ -136,7 +136,7 @@ export function BlockForm({
  </Field>
  </div>
  ) : (
- <div className="grid gap-3 md:grid-cols-2">
+ <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
  <Field label={copy.blockAction}>
  <Select
  value={block.actionType}
@@ -164,7 +164,7 @@ export function BlockForm({
  onClick={() => onPatch({ icon: "" })}
  className={cn(
  "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-[16px] border px-3 text-sm transition",
- !block.icon ? "border-[#C0452A] bg-[#C0452A] text-[#FFFFFF]" : "border-[#E7E2D9] bg-[#FFFFFF] text-[#62605B] hover:border-[#C0452A]/40"
+ !block.icon ? "border-[var(--seal-deep)] bg-[var(--seal-deep)] text-[var(--seal-contrast)]" : "border-[var(--rule)] bg-[var(--card)] text-[var(--ink-2)] hover:border-[color-mix(in_srgb,var(--seal-deep)_40%,transparent)]"
  )}
  >
  <Minus className="h-4 w-4" />
@@ -178,7 +178,7 @@ export function BlockForm({
  onClick={() => onPatch({ icon })}
  className={cn(
  "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-[16px] border px-3 text-sm transition",
- block.icon === icon ? "border-[#C0452A] bg-[#C0452A] text-[#FFFFFF]" : "border-[#E7E2D9] bg-[#FFFFFF] text-[#62605B] hover:border-[#C0452A]/40"
+ block.icon === icon ? "border-[var(--seal-deep)] bg-[var(--seal-deep)] text-[var(--seal-contrast)]" : "border-[var(--rule)] bg-[var(--card)] text-[var(--ink-2)] hover:border-[color-mix(in_srgb,var(--seal-deep)_40%,transparent)]"
  )}
  >
  <BlockIcon name={icon} className="h-4 w-4" style={{ color: block.icon === icon ? undefined : iconPreviewColor }} />
@@ -187,12 +187,12 @@ export function BlockForm({
  ))}
  </div>
  {block.icon ? (
- <div className="mt-3 flex flex-wrap items-center gap-3 rounded-[12px] border border-[#FFF0EB] bg-[#FFF0EB] px-3 py-2.5">
- <span className="grid h-10 w-10 place-items-center rounded-[10px] border border-[#F3C8BA] bg-[#FFFFFF]">
+ <div className="mt-3 flex flex-wrap items-center gap-3 rounded-[12px] border border-[var(--seal-tint)] bg-[var(--seal-tint)] px-3 py-2.5">
+ <span className="grid h-10 w-10 place-items-center rounded-[10px] border border-[var(--tint-border)] bg-[var(--card)]">
  <BlockIcon name={block.icon} className="h-5 w-5" style={{ color: iconPreviewColor }} />
  </span>
- <label className="relative grid h-10 w-10 cursor-pointer place-items-center overflow-hidden rounded-[10px] border border-[#FFF0EB] bg-[#FFFFFF]">
- <span className="h-6 w-6 rounded-[10px] border border-black/10" style={{ backgroundColor: iconPreviewColor }} />
+ <label className="relative grid h-10 w-10 cursor-pointer place-items-center overflow-hidden rounded-[10px] border border-[var(--seal-tint)] bg-[var(--card)]">
+ <span className="h-6 w-6 rounded-[10px] border border-[var(--rule)]" style={{ backgroundColor: iconPreviewColor }} />
  <input
  type="color"
  value={iconPreviewColor}
@@ -210,7 +210,7 @@ export function BlockForm({
  className="w-32 font-mono uppercase"
  aria-label={editorLanguage === "zh-CN" ? "图标颜色 HEX" : "Icon color HEX"}
  />
- <span className="text-xs font-medium text-[#62605B]">{editorLanguage === "zh-CN" ? "图标颜色（HEX）" : "Icon color (HEX)"}</span>
+ <span className="text-xs font-medium text-[var(--ink-2)]">{editorLanguage === "zh-CN" ? "图标颜色（HEX）" : "Icon color (HEX)"}</span>
  </div>
  ) : null}
  </Field>
@@ -223,10 +223,10 @@ export function BlockForm({
  </Field>
  ) : null}
  {block.actionType === "modal" ? (
- <div className="grid gap-3 rounded-[12px] border border-[#FFF0EB] bg-[#FFF0EB] p-4 md:col-span-2">
+ <div className="grid grid-cols-1 gap-3 rounded-[12px] border border-[var(--seal-tint)] bg-[var(--seal-tint)] p-4 md:col-span-2">
  <div>
- <h4 className="font-bold text-[#1F2328]">{editorLanguage === "zh-CN" ? "详情弹窗内容" : "Detail modal content"}</h4>
- <p className="mt-1 text-xs text-[#62605B]">
+ <h4 className="font-bold text-[var(--ink)]">{editorLanguage === "zh-CN" ? "详情弹窗内容" : "Detail modal content"}</h4>
+ <p className="mt-1 text-xs text-[var(--ink-2)]">
  {editorLanguage === "zh-CN" ? "用于工作经历等卡片的 Details 弹窗。正文支持多行文本。" : "Used by Details modals such as work experience cards."}
  </p>
  </div>
@@ -244,7 +244,7 @@ export function BlockForm({
  </div>
  )}
 
- <div className="flex flex-wrap gap-4 text-sm text-[#62605B]">
+ <div className="flex flex-wrap gap-4 text-sm text-[var(--ink-2)]">
  <label className="flex items-center gap-2">
  <Checkbox checked={block.isVisible} onChange={(event) => onPatch({ isVisible: event.target.checked })} />
  {copy.visible}
@@ -323,13 +323,13 @@ function PlainTextBlockForm({
  const textColor = block.textColor || "#1F2328";
 
  return (
- <div className="grid gap-6 text-[#1F2328]">
+ <div className="grid grid-cols-1 gap-6 text-[var(--ink)]">
  <Field label={`${copy.textContent} *`}>
  <Textarea
  value={block.description || block.title}
  onChange={(event) => onPatch({ title: event.target.value, description: event.target.value })}
  className={cn(
- "min-h-40 resize-y rounded-[16px] border-[#E7E2D9] bg-[#FFF0EB] px-5 py-8 text-lg font-semibold leading-8",
+ "min-h-40 resize-y rounded-[16px] border-[var(--rule)] bg-[var(--seal-tint)] px-5 py-8 text-lg font-semibold leading-8",
  textAlign === "left" && "text-left",
  textAlign === "center" && "text-center",
  textAlign === "right" && "text-right",
@@ -342,8 +342,8 @@ function PlainTextBlockForm({
  />
  </Field>
 
- <section className="grid gap-3">
- <h4 className="text-base font-bold text-[#1F2328]">{copy.textStyle}</h4>
+ <section className="grid grid-cols-1 gap-3">
+ <h4 className="text-base font-bold text-[var(--ink)]">{copy.textStyle}</h4>
  <div className="flex flex-wrap gap-3">
  <ToggleButton active={textBold} title={copy.textBold} onClick={() => onPatchMetadata({ textBold: !textBold })}>
  <Bold className="h-4 w-4" />
@@ -363,8 +363,8 @@ function PlainTextBlockForm({
  <ToggleButton active={textAlign === "right"} title={copy.textAlignRight} onClick={() => onPatchMetadata({ textAlign: "right" })}>
  <AlignRight className="h-4 w-4" />
  </ToggleButton>
- <label className="flex h-12 items-center gap-2 rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] px-4 text-sm font-semibold text-[#62605B]">
- <span className="grid h-6 w-6 place-items-center rounded-[16px] border border-[#E7E2D9]" style={{ backgroundColor: textColor }} />
+ <label className="flex h-12 items-center gap-2 rounded-[16px] border border-[var(--rule)] bg-[var(--card)] px-4 text-sm font-semibold text-[var(--ink-2)]">
+ <span className="grid h-6 w-6 place-items-center rounded-[16px] border border-[var(--rule)]" style={{ backgroundColor: textColor }} />
  {copy.color}
  <input
  type="color"
@@ -377,8 +377,8 @@ function PlainTextBlockForm({
  </div>
  </section>
 
- <section className="grid gap-3">
- <h4 className="text-base font-bold text-[#1F2328]">{copy.verticalAlign}</h4>
+ <section className="grid grid-cols-1 gap-3">
+ <h4 className="text-base font-bold text-[var(--ink)]">{copy.verticalAlign}</h4>
  <div className="flex flex-wrap gap-3">
  <ToggleButton active={verticalAlign === "top"} title={copy.verticalTop} onClick={() => onPatchMetadata({ verticalAlign: "top" })}>
  <Baseline className="h-4 w-4 -translate-y-1" />
@@ -394,12 +394,12 @@ function PlainTextBlockForm({
 
  <Field label={copy.blockHref}>
  <div className="relative">
- <LinkIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#74716B]" />
+ <LinkIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--ink-2)]" />
  <Input value={block.href ?? ""} onChange={(event) => onPatchHref(event.target.value)} placeholder={editorLanguage === "zh-CN" ? "填入链接" : "Enter link"} className="pl-9" />
  </div>
  </Field>
 
- <div className="flex flex-wrap gap-4 text-sm text-[#62605B]">
+ <div className="flex flex-wrap gap-4 text-sm text-[var(--ink-2)]">
  <label className="flex items-center gap-2">
  <Checkbox checked={block.isVisible} onChange={(event) => onPatch({ isVisible: event.target.checked })} />
  {copy.visible}
@@ -430,8 +430,8 @@ function ToggleButton({
  title={title}
  onClick={onClick}
  className={cn(
- "grid h-12 w-12 place-items-center rounded-[16px] border text-[#62605B] transition",
- active ? "border-[#C0452A] bg-[#C0452A] text-[#FFFFFF]" : "border-[#E7E2D9] bg-[#FFFFFF] hover:border-[#C0452A]/40"
+ "grid h-12 w-12 place-items-center rounded-[16px] border text-[var(--ink-2)] transition",
+ active ? "border-[var(--seal-deep)] bg-[var(--seal-deep)] text-[var(--seal-contrast)]" : "border-[var(--rule)] bg-[var(--card)] hover:border-[color-mix(in_srgb,var(--seal-deep)_40%,transparent)]"
  )}
  >
  {children}
