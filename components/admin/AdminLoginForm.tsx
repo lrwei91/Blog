@@ -89,12 +89,12 @@ export function AdminLoginForm({ projectName, initialLanguage }: AdminLoginFormP
  <span className="admin-login__secure"><ShieldCheck className="h-3.5 w-3.5" /> {copy.secure}</span>
  </div>
  <p className="admin-login__eyebrow mb-3">01 / {copy.eyebrow}</p>
- <h1 className="text-[38px] font-bold leading-[1.02] tracking-[-0.055em] text-[#201D18]">{projectName}</h1>
- <p className="mt-4 max-w-[360px] text-[15px] leading-7 text-[#6F6A5E]">{copy.description}</p>
+ <h1 className="text-[38px] font-bold leading-[1.02] tracking-[-0.055em] text-[#1F2328]">{projectName}</h1>
+ <p className="mt-4 max-w-[360px] text-[15px] leading-7 text-[#62605B]">{copy.description}</p>
  </div>
 
  <form onSubmit={submit} className="grid gap-5">
- <label className="grid gap-2 text-[13px] font-bold text-[#201D18]" htmlFor="admin-password">
+ <label className="grid gap-2 text-[13px] font-bold text-[#1F2328]" htmlFor="admin-password">
  <span>{copy.password}</span>
  <input
  id="admin-password"
@@ -110,10 +110,10 @@ export function AdminLoginForm({ projectName, initialLanguage }: AdminLoginFormP
  aria-invalid={hasError}
  aria-describedby={hasError ? "admin-login-error" : undefined}
  className={cn(
- "h-12 w-full rounded-[6px] border bg-[#FCFAF5] px-4 text-[15px] text-[#201D18] outline-none transition duration-200 placeholder:text-[#A39C8D] focus:ring-4",
+ "h-12 w-full rounded-[12px] border bg-[#FFFFFF] px-4 text-[15px] text-[#1F2328] outline-none transition duration-200 placeholder:text-[#74716B] focus:ring-4",
  hasError
  ? "border-[#D85C5C] focus:border-[#C94343] focus:ring-[#D85C5C]/10"
- : "border-[#DDD6C8] hover:border-[#A39C8D] focus:border-[#B23C22] focus:ring-[#B23C22]/15"
+ : "border-[#E7E2D9] hover:border-[#74716B] focus:border-[#C0452A] focus:ring-[#C0452A]/15"
  )}
  />
  </label>
@@ -127,7 +127,7 @@ export function AdminLoginForm({ projectName, initialLanguage }: AdminLoginFormP
  <button
  type="submit"
  disabled={isLoading || !password}
- className="admin-login__submit group inline-flex h-12 items-center justify-center gap-2 rounded-[6px] px-4 text-sm font-bold transition duration-200 disabled:cursor-not-allowed disabled:opacity-50"
+ className="admin-login__submit group inline-flex h-12 items-center justify-center gap-2 rounded-[12px] px-4 text-sm font-bold transition duration-200 disabled:cursor-not-allowed disabled:opacity-50"
  >
  {isLoading ? (
  <>

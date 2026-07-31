@@ -80,6 +80,71 @@ test.describe("公开页视觉回归", () => {
     await expectProjectIdentity(page);
   });
 
+  test("轻纸墨视觉契约使用亮色、无衬线标题和朱橙白卡", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    await expectProjectIdentity(page);
+
+    const introContract = await page.locator(".public-intro").evaluate((intro) => {
+      const site = intro.closest<HTMLElement>(".public-site");
+      if (!site) return null;
+      const siteStyle = getComputedStyle(site);
+      return {
+        background: siteStyle.getPropertyValue("--site-bg").trim().toLowerCase(),
+        card: siteStyle.getPropertyValue("--site-card").trim().toLowerCase(),
+        primary: siteStyle.getPropertyValue("--site-primary").trim().toLowerCase(),
+        viewportHeightDelta: Math.abs(intro.getBoundingClientRect().height - window.innerHeight),
+        hasBrightComposition: getComputedStyle(intro).backgroundImage !== "none"
+      };
+    });
+
+    expect(introContract).toEqual({
+      background: "#f8f7f4",
+      card: "#ffffff",
+      primary: "#e45435",
+      viewportHeightDelta: 0,
+      hasBrightComposition: true
+    });
+
+    await page.locator(".public-intro__enter").click();
+
+    const visualContract = await page.evaluate(() => {
+      const serifFamily = (value: string) => value.split(",").some((entry) => {
+        const family = entry.trim().replaceAll("\"", "").replaceAll("'", "").toLowerCase();
+        return family === "serif"
+          || family.includes("songti")
+          || family.includes("stsong")
+          || family.includes("noto serif")
+          || family.includes("source han serif");
+      });
+      const font = (selector: string) => getComputedStyle(document.querySelector<HTMLElement>(selector)!).fontFamily;
+      const cardStyle = getComputedStyle(document.querySelector<HTMLElement>(".public-content .public-block-card")!);
+      const serifUsers = Array.from(document.querySelectorAll<HTMLElement>(".public-site *"))
+        .filter((element) => serifFamily(getComputedStyle(element).fontFamily))
+        .map((element) => element.matches(".quality-stage__signal small"));
+
+      return {
+        titleFonts: [
+          font(".profile-module--name h1"),
+          font(".public-section-heading h2"),
+          font(".public-content .public-block-card h3")
+        ],
+        mottoFont: font(".quality-stage__signal small"),
+        serifUsers,
+        cardRadius: cardStyle.borderRadius,
+        cardShadow: cardStyle.boxShadow
+      };
+    });
+
+    expect(visualContract.titleFonts.every((font) => !/songti|stsong|serif/i.test(font.replaceAll("sans-serif", "")))).toBe(true);
+    expect(visualContract.mottoFont.replaceAll("sans-serif", "")).toMatch(/songti|stsong|serif/i);
+    expect(visualContract.serifUsers.length).toBeGreaterThan(0);
+    expect(visualContract.serifUsers.every(Boolean)).toBe(true);
+    expect(visualContract.cardRadius).toBe("12px");
+    expect(visualContract.cardShadow).not.toBe("none");
+  });
+
   test("个人信息、章节标题与对应模块共享同一水平边界", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width: 1440, height: 900 });

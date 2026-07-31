@@ -1,51 +1,57 @@
 <svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <pattern id="paper-grid" width="24" height="24" patternUnits="userSpaceOnUse">
-      <path d="M24 0H0V24" stroke="#201D18" stroke-opacity=".035"/>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" stroke="#E45435" stroke-opacity=".045"/>
     </pattern>
-    <linearGradient id="seal-wash" x1="950" y1="54" x2="706" y2="520" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#B23C22" stop-opacity=".14"/>
-      <stop offset="1" stop-color="#B23C22" stop-opacity="0"/>
-    </linearGradient>
+    <filter id="card-shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#1F2328" flood-opacity=".11"/>
+    </filter>
   </defs>
-  <rect width="1200" height="630" fill="#F6F3EC"/>
-  <rect width="1200" height="630" fill="url(#paper-grid)"/>
-  <circle cx="1030" cy="34" r="300" fill="url(#seal-wash)"/>
-  <path d="M68 72H1132" stroke="#DDD6C8" stroke-width="2"/>
-  <rect x="68" y="44" width="30" height="30" rx="5" fill="#B23C22"/>
-  <path d="M75 61C81 55 88 55 94 61C88 59 81 59 75 61Z" fill="#FCFAF5"/>
-  <text x="112" y="66" fill="#6F6A5E" font-family="Arial, 'PingFang SC', sans-serif" font-size="15" font-weight="700" letter-spacing="3">PERSONAL ARCHIVE · 2026</text>
 
-  <text x="68" y="200" fill="#201D18" font-family="Georgia, 'Songti SC', serif" font-size="92" font-weight="700">林荣威</text>
-  <text x="72" y="257" fill="#7E2A16" font-family="Arial, 'PingFang SC', sans-serif" font-size="25" font-weight="700" letter-spacing="2">游戏 / WEB 测试 · AI 自动化</text>
-  <text x="72" y="326" fill="#6F6A5E" font-family="Arial, 'PingFang SC', sans-serif" font-size="24">把复杂的事理清，把喜欢的事做久。</text>
+  <rect width="1200" height="630" fill="#F8F7F4"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <circle cx="1120" cy="20" r="330" fill="#E45435" fill-opacity=".10"/>
 
-  <path d="M72 386H620" stroke="#DDD6C8" stroke-width="2"/>
-  <g font-family="Arial, 'PingFang SC', sans-serif" font-size="16" font-weight="700" letter-spacing="2">
-    <rect x="72" y="418" width="126" height="42" rx="6" fill="#FCFAF5" stroke="#DDD6C8" stroke-width="2"/>
-    <text x="94" y="445" fill="#201D18">TESTING</text>
-    <rect x="214" y="418" width="92" height="42" rx="6" fill="#FCFAF5" stroke="#DDD6C8" stroke-width="2"/>
-    <text x="239" y="445" fill="#201D18">AI QA</text>
-    <rect x="322" y="418" width="166" height="42" rx="6" fill="#FCFAF5" stroke="#DDD6C8" stroke-width="2"/>
-    <text x="345" y="445" fill="#201D18">AUTOMATION</text>
+  <g transform="translate(64 48)">
+    <rect width="36" height="36" rx="10" fill="#E45435"/>
+    <path d="M8 21C14 14 22 14 28 21C22 18.5 14 18.5 8 21Z" fill="white"/>
+    <text x="52" y="25" fill="#62605B" font-family="Arial, 'PingFang SC', sans-serif" font-size="15" font-weight="700" letter-spacing="2.7">BIO BLOCKS · QUALITY PORTFOLIO</text>
   </g>
 
-  <g transform="translate(760 122)">
-    <circle cx="154" cy="154" r="150" fill="#FCFAF5" stroke="#201D18" stroke-width="3"/>
-    <circle cx="154" cy="154" r="112" stroke="#A39C8D" stroke-width="2" stroke-dasharray="7 12"/>
-    <circle cx="154" cy="154" r="68" fill="#F4EBE6" stroke="#B23C22" stroke-width="3"/>
-    <path d="M124 155L146 177L190 128" stroke="#7E2A16" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
-    <rect x="119" y="-17" width="70" height="34" rx="5" fill="#201D18"/>
-    <text x="154" y="6" fill="#FCFAF5" font-family="Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="2">DEFINE</text>
-    <rect x="288" y="137" width="70" height="34" rx="5" fill="#B23C22"/>
-    <text x="323" y="160" fill="#FCFAF5" font-family="Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="2">VERIFY</text>
-    <rect x="119" y="291" width="70" height="34" rx="5" fill="#201D18"/>
-    <text x="154" y="314" fill="#FCFAF5" font-family="Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="2">SHIP</text>
-    <rect x="-50" y="137" width="82" height="34" rx="5" fill="#B23C22"/>
-    <text x="-9" y="160" fill="#FCFAF5" font-family="Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="2">AUTOMATE</text>
+  <g transform="translate(64 150)">
+    <text x="0" y="82" fill="#1F2328" font-family="Arial, 'PingFang SC', sans-serif" font-size="100" font-weight="800" letter-spacing="-6">林荣威</text>
+    <rect x="2" y="111" width="384" height="36" rx="18" fill="#FFF0EB" stroke="#F3C8BA"/>
+    <text x="20" y="135" fill="#C0452A" font-family="Arial, 'PingFang SC', sans-serif" font-size="16" font-weight="700" letter-spacing="1.6">游戏 / WEB 测试 · AI 自动化</text>
+    <text x="2" y="204" fill="#62605B" font-family="Arial, 'PingFang SC', sans-serif" font-size="25" font-weight="500">把复杂的事理清，把喜欢的事做久。</text>
+
+    <g transform="translate(2 258)" font-family="Arial, 'PingFang SC', sans-serif" font-size="14" font-weight="700" letter-spacing="1.5">
+      <rect width="118" height="42" rx="21" fill="white" stroke="#E7E2D9"/>
+      <text x="23" y="27" fill="#62605B">TESTING</text>
+      <rect x="130" width="92" height="42" rx="21" fill="white" stroke="#E7E2D9"/>
+      <text x="154" y="27" fill="#62605B">AI QA</text>
+      <rect x="234" width="158" height="42" rx="21" fill="white" stroke="#E7E2D9"/>
+      <text x="257" y="27" fill="#62605B">AUTOMATION</text>
+    </g>
   </g>
 
-  <path d="M68 558H1132" stroke="#DDD6C8" stroke-width="2"/>
-  <text x="68" y="594" fill="#6F6A5E" font-family="Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="3">QUALITY ENGINEERING · FUZHOU, CN</text>
-  <text x="1132" y="594" fill="#7E2A16" font-family="Georgia, serif" font-size="16" font-weight="700" text-anchor="end">lrwei91</text>
+  <g transform="translate(744 112)" filter="url(#card-shadow)">
+    <rect width="392" height="390" rx="32" fill="white" stroke="#E7E2D9" stroke-width="2"/>
+    <circle cx="352" cy="345" r="142" fill="#E45435"/>
+    <circle cx="286" cy="102" r="80" stroke="#E45435" stroke-opacity=".38" stroke-width="2"/>
+    <circle cx="286" cy="102" r="54" stroke="#1F2328" stroke-opacity=".12" stroke-width="2" stroke-dasharray="6 9"/>
+    <circle cx="286" cy="21" r="6" fill="#C0452A"/>
+
+    <g transform="translate(36 42)">
+      <rect width="42" height="42" rx="11" fill="#E45435"/>
+      <path d="M10 25C17 17 25 17 32 25C25 22 17 22 10 25Z" fill="white"/>
+      <text x="0" y="104" fill="#C0452A" font-family="'Courier New', monospace" font-size="13" font-weight="700" letter-spacing="2">QUALITY SYSTEMS</text>
+      <text x="0" y="153" fill="#1F2328" font-family="Arial, 'PingFang SC', sans-serif" font-size="48" font-weight="800" letter-spacing="-3">Test.</text>
+      <text x="0" y="199" fill="#1F2328" font-family="Arial, 'PingFang SC', sans-serif" font-size="48" font-weight="800" letter-spacing="-3">Automate.</text>
+      <text x="0" y="245" fill="#1F2328" font-family="Arial, 'PingFang SC', sans-serif" font-size="48" font-weight="800" letter-spacing="-3">Ship.</text>
+    </g>
+  </g>
+
+  <path d="M64 558H1136" stroke="#E7E2D9" stroke-width="2"/>
+  <text x="64" y="596" fill="#62605B" font-family="'Courier New', monospace" font-size="14" font-weight="700" letter-spacing="2.6">QUALITY ENGINEERING · FUZHOU, CN</text>
+  <text x="1136" y="596" fill="white" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="end">lrwei91</text>
 </svg>

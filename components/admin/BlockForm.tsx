@@ -43,7 +43,7 @@ export function BlockForm({
  const modalBody = typeof block.metadata?.modalBody === "string" ? block.metadata.modalBody : "";
  const isSectionBlock = isSectionTextBlock(block);
  const isPlainTextBlock = block.metadata?.textVariant === "plain";
- const iconColorValue = typeof block.metadata?.iconColor === "string" ? block.metadata.iconColor : "#B23C22";
+ const iconColorValue = typeof block.metadata?.iconColor === "string" ? block.metadata.iconColor : "#C0452A";
  const iconPreviewColor = getBlockIconColor(iconColorValue);
 
  function patchHref(value: string) {
@@ -67,7 +67,7 @@ export function BlockForm({
  }
 
  return (
- <div className="grid gap-5 text-[#201D18]">
+ <div className="grid gap-5 text-[#1F2328]">
  {!isSectionBlock ? (
  <ImageCropUploader
  folder="blocks"
@@ -163,8 +163,8 @@ export function BlockForm({
  aria-pressed={!block.icon}
  onClick={() => onPatch({ icon: "" })}
  className={cn(
- "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-[4px] border px-3 text-sm transition",
- !block.icon ? "border-[#B23C22] bg-[#B23C22] text-[#FCFAF5]" : "border-[#DDD6C8] bg-[#FCFAF5] text-[#6F6A5E] hover:border-[#B23C22]/40"
+ "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-[16px] border px-3 text-sm transition",
+ !block.icon ? "border-[#C0452A] bg-[#C0452A] text-[#FFFFFF]" : "border-[#E7E2D9] bg-[#FFFFFF] text-[#62605B] hover:border-[#C0452A]/40"
  )}
  >
  <Minus className="h-4 w-4" />
@@ -177,8 +177,8 @@ export function BlockForm({
  aria-pressed={block.icon === icon}
  onClick={() => onPatch({ icon })}
  className={cn(
- "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-[4px] border px-3 text-sm transition",
- block.icon === icon ? "border-[#B23C22] bg-[#B23C22] text-[#FCFAF5]" : "border-[#DDD6C8] bg-[#FCFAF5] text-[#6F6A5E] hover:border-[#B23C22]/40"
+ "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-[16px] border px-3 text-sm transition",
+ block.icon === icon ? "border-[#C0452A] bg-[#C0452A] text-[#FFFFFF]" : "border-[#E7E2D9] bg-[#FFFFFF] text-[#62605B] hover:border-[#C0452A]/40"
  )}
  >
  <BlockIcon name={icon} className="h-4 w-4" style={{ color: block.icon === icon ? undefined : iconPreviewColor }} />
@@ -187,12 +187,12 @@ export function BlockForm({
  ))}
  </div>
  {block.icon ? (
- <div className="mt-3 flex flex-wrap items-center gap-3 rounded-[6px] border border-[#F4EBE6] bg-[#F4EBE6] px-3 py-2.5">
- <span className="grid h-10 w-10 place-items-center rounded-[5px] border border-[#E3CFC5] bg-[#FCFAF5]">
+ <div className="mt-3 flex flex-wrap items-center gap-3 rounded-[12px] border border-[#FFF0EB] bg-[#FFF0EB] px-3 py-2.5">
+ <span className="grid h-10 w-10 place-items-center rounded-[10px] border border-[#F3C8BA] bg-[#FFFFFF]">
  <BlockIcon name={block.icon} className="h-5 w-5" style={{ color: iconPreviewColor }} />
  </span>
- <label className="relative grid h-10 w-10 cursor-pointer place-items-center overflow-hidden rounded-[5px] border border-[#F4EBE6] bg-[#FCFAF5]">
- <span className="h-6 w-6 rounded-[5px] border border-black/10" style={{ backgroundColor: iconPreviewColor }} />
+ <label className="relative grid h-10 w-10 cursor-pointer place-items-center overflow-hidden rounded-[10px] border border-[#FFF0EB] bg-[#FFFFFF]">
+ <span className="h-6 w-6 rounded-[10px] border border-black/10" style={{ backgroundColor: iconPreviewColor }} />
  <input
  type="color"
  value={iconPreviewColor}
@@ -204,13 +204,13 @@ export function BlockForm({
  <Input
  value={iconColorValue}
  onChange={(event) => patchMetadata({ iconColor: event.target.value })}
- placeholder="#B23C22"
+ placeholder="#C0452A"
  maxLength={7}
  spellCheck={false}
  className="w-32 font-mono uppercase"
  aria-label={editorLanguage === "zh-CN" ? "图标颜色 HEX" : "Icon color HEX"}
  />
- <span className="text-xs font-medium text-[#6F6A5E]">{editorLanguage === "zh-CN" ? "图标颜色（HEX）" : "Icon color (HEX)"}</span>
+ <span className="text-xs font-medium text-[#62605B]">{editorLanguage === "zh-CN" ? "图标颜色（HEX）" : "Icon color (HEX)"}</span>
  </div>
  ) : null}
  </Field>
@@ -223,10 +223,10 @@ export function BlockForm({
  </Field>
  ) : null}
  {block.actionType === "modal" ? (
- <div className="grid gap-3 rounded-[6px] border border-[#F4EBE6] bg-[#F4EBE6] p-4 md:col-span-2">
+ <div className="grid gap-3 rounded-[12px] border border-[#FFF0EB] bg-[#FFF0EB] p-4 md:col-span-2">
  <div>
- <h4 className="font-bold text-[#201D18]">{editorLanguage === "zh-CN" ? "详情弹窗内容" : "Detail modal content"}</h4>
- <p className="mt-1 text-xs text-[#6F6A5E]">
+ <h4 className="font-bold text-[#1F2328]">{editorLanguage === "zh-CN" ? "详情弹窗内容" : "Detail modal content"}</h4>
+ <p className="mt-1 text-xs text-[#62605B]">
  {editorLanguage === "zh-CN" ? "用于工作经历等卡片的 Details 弹窗。正文支持多行文本。" : "Used by Details modals such as work experience cards."}
  </p>
  </div>
@@ -244,7 +244,7 @@ export function BlockForm({
  </div>
  )}
 
- <div className="flex flex-wrap gap-4 text-sm text-[#6F6A5E]">
+ <div className="flex flex-wrap gap-4 text-sm text-[#62605B]">
  <label className="flex items-center gap-2">
  <Checkbox checked={block.isVisible} onChange={(event) => onPatch({ isVisible: event.target.checked })} />
  {copy.visible}
@@ -320,16 +320,16 @@ function PlainTextBlockForm({
  const textBold = block.metadata?.textBold === true;
  const textItalic = block.metadata?.textItalic === true;
  const textUnderline = block.metadata?.textUnderline === true;
- const textColor = block.textColor || "#201D18";
+ const textColor = block.textColor || "#1F2328";
 
  return (
- <div className="grid gap-6 text-[#201D18]">
+ <div className="grid gap-6 text-[#1F2328]">
  <Field label={`${copy.textContent} *`}>
  <Textarea
  value={block.description || block.title}
  onChange={(event) => onPatch({ title: event.target.value, description: event.target.value })}
  className={cn(
- "min-h-40 resize-y rounded-[8px] border-[#DDD6C8] bg-[#F4EBE6] px-5 py-8 text-lg font-semibold leading-8",
+ "min-h-40 resize-y rounded-[16px] border-[#E7E2D9] bg-[#FFF0EB] px-5 py-8 text-lg font-semibold leading-8",
  textAlign === "left" && "text-left",
  textAlign === "center" && "text-center",
  textAlign === "right" && "text-right",
@@ -343,7 +343,7 @@ function PlainTextBlockForm({
  </Field>
 
  <section className="grid gap-3">
- <h4 className="text-base font-bold text-[#201D18]">{copy.textStyle}</h4>
+ <h4 className="text-base font-bold text-[#1F2328]">{copy.textStyle}</h4>
  <div className="flex flex-wrap gap-3">
  <ToggleButton active={textBold} title={copy.textBold} onClick={() => onPatchMetadata({ textBold: !textBold })}>
  <Bold className="h-4 w-4" />
@@ -363,8 +363,8 @@ function PlainTextBlockForm({
  <ToggleButton active={textAlign === "right"} title={copy.textAlignRight} onClick={() => onPatchMetadata({ textAlign: "right" })}>
  <AlignRight className="h-4 w-4" />
  </ToggleButton>
- <label className="flex h-12 items-center gap-2 rounded-[8px] border border-[#DDD6C8] bg-[#FCFAF5] px-4 text-sm font-semibold text-[#6F6A5E]">
- <span className="grid h-6 w-6 place-items-center rounded-[4px] border border-[#DDD6C8]" style={{ backgroundColor: textColor }} />
+ <label className="flex h-12 items-center gap-2 rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] px-4 text-sm font-semibold text-[#62605B]">
+ <span className="grid h-6 w-6 place-items-center rounded-[16px] border border-[#E7E2D9]" style={{ backgroundColor: textColor }} />
  {copy.color}
  <input
  type="color"
@@ -378,7 +378,7 @@ function PlainTextBlockForm({
  </section>
 
  <section className="grid gap-3">
- <h4 className="text-base font-bold text-[#201D18]">{copy.verticalAlign}</h4>
+ <h4 className="text-base font-bold text-[#1F2328]">{copy.verticalAlign}</h4>
  <div className="flex flex-wrap gap-3">
  <ToggleButton active={verticalAlign === "top"} title={copy.verticalTop} onClick={() => onPatchMetadata({ verticalAlign: "top" })}>
  <Baseline className="h-4 w-4 -translate-y-1" />
@@ -394,12 +394,12 @@ function PlainTextBlockForm({
 
  <Field label={copy.blockHref}>
  <div className="relative">
- <LinkIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A39C8D]" />
+ <LinkIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#74716B]" />
  <Input value={block.href ?? ""} onChange={(event) => onPatchHref(event.target.value)} placeholder={editorLanguage === "zh-CN" ? "填入链接" : "Enter link"} className="pl-9" />
  </div>
  </Field>
 
- <div className="flex flex-wrap gap-4 text-sm text-[#6F6A5E]">
+ <div className="flex flex-wrap gap-4 text-sm text-[#62605B]">
  <label className="flex items-center gap-2">
  <Checkbox checked={block.isVisible} onChange={(event) => onPatch({ isVisible: event.target.checked })} />
  {copy.visible}
@@ -430,8 +430,8 @@ function ToggleButton({
  title={title}
  onClick={onClick}
  className={cn(
- "grid h-12 w-12 place-items-center rounded-[4px] border text-[#6F6A5E] transition",
- active ? "border-[#B23C22] bg-[#B23C22] text-[#FCFAF5]" : "border-[#DDD6C8] bg-[#FCFAF5] hover:border-[#B23C22]/40"
+ "grid h-12 w-12 place-items-center rounded-[16px] border text-[#62605B] transition",
+ active ? "border-[#C0452A] bg-[#C0452A] text-[#FFFFFF]" : "border-[#E7E2D9] bg-[#FFFFFF] hover:border-[#C0452A]/40"
  )}
  >
  {children}

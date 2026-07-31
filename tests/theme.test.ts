@@ -17,7 +17,21 @@ describe("theme mapping", () => {
     });
   });
 
-  it("migrates the historical blue starter theme to the adopted paper-ink theme", () => {
+  it("migrates the historical paper-ink theme to the light paper theme", () => {
+    expect(normalizeThemeConfig({
+      primaryColor: "#B23C22",
+      backgroundColor: "#F6F3EC",
+      cardBackground: "#FCFAF5",
+      textColor: "#201D18",
+      mutedTextColor: "#6F6A5E",
+      borderColor: "#DDD6C8",
+      cardRadius: "md",
+      cardShadow: "none",
+      fontFamily: "system"
+    })).toEqual(defaultTheme);
+  });
+
+  it("migrates the historical blue starter theme to the light paper theme", () => {
     expect(normalizeThemeConfig({
       primaryColor: "#1677FF",
       backgroundColor: "#FFFFFF",

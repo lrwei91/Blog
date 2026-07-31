@@ -28,17 +28,38 @@ export function PublicIntro({
           <span>EST. 2026</span>
         </header>
 
-        <div className="public-intro__welcome">
-          <p className="public-intro__statement" aria-label="把复杂的事理清，把喜欢的事做久。">
-            <span className="public-intro__line" aria-hidden="true"><span>把复杂的事理清，</span></span>
-            <span className="public-intro__line" aria-hidden="true"><span>把喜欢的事做久。</span></span>
-          </p>
-          {identity ? <p className="public-intro__identity">{identity}</p> : null}
-          <p className="public-intro__topics">Testing · AI · Games · Life</p>
-          <a href="#profile" className="public-intro__enter">
-            <span><b>ENTER</b><small>进入主页</small></span>
-            <ArrowRight aria-hidden="true" />
-          </a>
+        <div className="public-intro__layout">
+          <div className="public-intro__welcome">
+            <p className="public-intro__statement" aria-label="把复杂的事理清，把喜欢的事做久。">
+              <span className="public-intro__line" aria-hidden="true"><span>把复杂的事理清，</span></span>
+              <span className="public-intro__line" aria-hidden="true"><span>把喜欢的事做久。</span></span>
+            </p>
+            {identity ? <p className="public-intro__identity">{identity}</p> : null}
+            <p className="public-intro__topics">Testing · AI · Games · Life</p>
+            <a href="#profile" className="public-intro__enter">
+              <span><b>ENTER</b><small>进入主页</small></span>
+              <ArrowRight aria-hidden="true" />
+            </a>
+          </div>
+
+          <div className="public-intro__visual" aria-hidden="true">
+            <span className="public-intro__visual-grid" />
+            <span className="public-intro__visual-orbit" />
+            <span className="public-intro__visual-dot public-intro__visual-dot--one" />
+            <span className="public-intro__visual-dot public-intro__visual-dot--two" />
+            <div className="public-intro__visual-card">
+              <span className="public-intro__visual-label">QUALITY SYSTEMS</span>
+              <strong>Test.<br />Automate.<br />Ship.</strong>
+              <div>
+                <span>AI QA</span>
+                <span>PLAYWRIGHT</span>
+                <span>QUALITY</span>
+              </div>
+            </div>
+            <span className="public-intro__visual-seal">
+              <img src="/brand-seal.png" alt="" />
+            </span>
+          </div>
         </div>
 
         <footer className="public-intro__footer">

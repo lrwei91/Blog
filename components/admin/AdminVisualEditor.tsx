@@ -1509,7 +1509,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  }
 
  return (
- <main className="admin-studio min-h-screen text-[#201D18]">
+ <main className="admin-studio min-h-screen text-[#1F2328]">
  <header className="admin-studio__topbar sticky top-0 z-40">
  <div className="mx-auto grid max-w-[1180px] gap-2 px-5 py-3 md:flex md:items-center md:justify-between">
  <div className="flex items-center justify-between gap-3 md:contents">
@@ -1542,7 +1542,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  variant="secondary"
  size="sm"
  onClick={openTopBarOverrideDialog}
- className="h-9 rounded-[4px] border-[#E3CFC5] bg-[#F4EBE6] px-3 text-xs text-[#7E2A16] hover:bg-[#F4EBE6]"
+ className="h-9 rounded-[16px] border-[#F3C8BA] bg-[#FFF0EB] px-3 text-xs text-[#C0452A] hover:bg-[#FFF0EB]"
  >
  {copy.variantOverride}
  </Button>
@@ -1882,7 +1882,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  maxWidth: dragOverlayRect.width,
  maxHeight: dragOverlayRect.height
  }}
- className="pointer-events-none box-border shrink-0 scale-[1.035] cursor-grabbing overflow-hidden rounded-[8px] opacity-95 shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)]"
+ className="pointer-events-none box-border shrink-0 scale-[1.035] cursor-grabbing overflow-hidden rounded-[16px] opacity-95 shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)]"
  >
  <DragOverlayBlockPreview
  block={activeDragBlock}
@@ -2011,9 +2011,9 @@ function EditableProfile({
  const copy = editorCopy[editorLanguage];
  return (
  <aside className={cn("admin-profile-panel", device === "desktop" && "sticky top-24 self-start")}>
- <div className="admin-profile-panel__card grid w-full gap-5 rounded-[8px] p-6 text-left">
+ <div className="admin-profile-panel__card grid w-full gap-5 rounded-[16px] p-6 text-left">
  <span className="group/avatar relative w-fit">
- <img src={profile.avatarUrl || "/default-avatar.svg"} alt="" className="h-36 w-36 rounded-[4px] object-cover" />
+ <img src={profile.avatarUrl || "/default-avatar.svg"} alt="" className="h-36 w-36 rounded-[16px] object-cover" />
  <div className="absolute right-1 top-1 opacity-0 transition group-hover/avatar:opacity-100">
  <ImageCropUploader
  folder="avatar"
@@ -2022,7 +2022,7 @@ function EditableProfile({
  label=""
  buttonText={editorLanguage === "zh-CN" ? "编辑" : "Edit"}
  buttonIconOnly
- buttonClassName="h-9 w-9 rounded-[4px] border border-[#DDD6C8] bg-[#FCFAF5] p-0 text-black hover:bg-[#FCFAF5]"
+ buttonClassName="h-9 w-9 rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] p-0 text-black hover:bg-[#FFFFFF]"
  onUploaded={(url) => onPatch({ avatarUrl: url })}
  />
  </div>
@@ -2030,14 +2030,14 @@ function EditableProfile({
  <div className="grid gap-3">
  <InlineProfileText
  value={profile.displayName}
- className="rounded-[5px] px-1 text-3xl font-bold leading-tight tracking-[-0.04em] hover:bg-[#EDE8DB]"
+ className="rounded-[10px] px-1 text-3xl font-bold leading-tight tracking-[-0.04em] hover:bg-[#F1EEE8]"
  inputClassName="text-3xl font-bold"
  onChange={(displayName) => onPatch({ displayName })}
  />
  <InlineProfileText
  value={profile.headline}
  multiline
- className="rounded-[5px] px-1 text-base font-bold leading-6 hover:bg-[#EDE8DB]"
+ className="rounded-[10px] px-1 text-base font-bold leading-6 hover:bg-[#F1EEE8]"
  inputClassName="min-h-20 text-base font-medium leading-6"
  onChange={(headline) => onPatch({ headline })}
  />
@@ -2045,25 +2045,25 @@ function EditableProfile({
  <InlineProfileText
  value={profile.bio}
  multiline
- className="rounded-[5px] px-1 text-sm leading-7 text-[#6F6A5E] hover:bg-[#EDE8DB]"
+ className="rounded-[10px] px-1 text-sm leading-7 text-[#62605B] hover:bg-[#F1EEE8]"
  onChange={(bio) => onPatch({ bio })}
  />
  </div>
  <InlineProfileText
  value={profile.location ?? ""}
  placeholder={editorLanguage === "zh-CN" ? "添加位置" : "Add location"}
- className="inline-flex w-fit rounded-[5px] px-1 text-sm text-[#6F6A5E] hover:bg-[#EDE8DB]"
+ className="inline-flex w-fit rounded-[10px] px-1 text-sm text-[#62605B] hover:bg-[#F1EEE8]"
  onChange={(location) => onPatch({ location })}
  prefix={<MapPin className="h-4 w-4" />}
  />
  <div className="flex flex-wrap gap-2">
  {profile.tags.map((tag) => (
- <span key={tag} className="admin-profile-panel__chip whitespace-nowrap rounded-[4px] px-3 py-1.5 text-sm">
+ <span key={tag} className="admin-profile-panel__chip whitespace-nowrap rounded-[16px] px-3 py-1.5 text-sm">
  {tag}
  </span>
  ))}
  </div>
- <button type="button" onClick={onEditTags} className="admin-profile-panel__add w-fit rounded-[4px] border border-dashed px-3 py-1.5 text-sm font-bold">
+ <button type="button" onClick={onEditTags} className="admin-profile-panel__add w-fit rounded-[16px] border border-dashed px-3 py-1.5 text-sm font-bold">
  <Pencil className="mr-1 inline h-3.5 w-3.5" />
  {editorLanguage === "zh-CN" ? `修改或添加${copy.tag}` : `Edit or Add ${copy.tag}`}
  </button>
@@ -2076,13 +2076,13 @@ function EditableProfile({
  key={link.id}
  type="button"
  onClick={onEditSocial}
- className="admin-profile-panel__social inline-flex items-center gap-2 whitespace-nowrap rounded-[4px] border px-3 py-2 text-sm font-bold transition"
+ className="admin-profile-panel__social inline-flex items-center gap-2 whitespace-nowrap rounded-[16px] border px-3 py-2 text-sm font-bold transition"
  >
  <SocialIcon name={link.icon} />
  {link.label}
  </button>
  ))}
- <button type="button" onClick={onEditSocial} className="admin-profile-panel__add inline-flex items-center gap-2 whitespace-nowrap rounded-[4px] border border-dashed px-3 py-2 text-sm font-bold">
+ <button type="button" onClick={onEditSocial} className="admin-profile-panel__add inline-flex items-center gap-2 whitespace-nowrap rounded-[16px] border border-dashed px-3 py-2 text-sm font-bold">
  <Plus className="h-3.5 w-3.5" />
  {editorLanguage === "zh-CN" ? "社交按钮" : "Social Buttons"}
  </button>
@@ -2162,7 +2162,7 @@ function InlineProfileText({
  >
  <span className={cn("inline-flex items-center gap-1.5", value && "whitespace-pre-wrap")}>
  {prefix}
- {value || <span className="text-[#A39C8D]">{placeholder}</span>}
+ {value || <span className="text-[#74716B]">{placeholder}</span>}
  </span>
  </button>
  );
@@ -2231,14 +2231,14 @@ function DragOverlayBlockPreview({ block, width, height }: { block: Block; width
 
  return (
  <div
- className="relative box-border overflow-hidden rounded-[8px] border border-[#201D18] bg-[#FCFAF5] p-4 ring-2 ring-[#B23C22]/25"
+ className="relative box-border overflow-hidden rounded-[16px] border border-[#1F2328] bg-[#FFFFFF] p-4 ring-2 ring-[#C0452A]/25"
  style={{ width, height }}
  >
  {block.coverImage ? (
  <>
  <img src={block.coverImage} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
  <div className="absolute inset-x-4 bottom-4 z-10">
- <span className="line-clamp-2 inline-block max-w-full rounded-[8px] border border-[#DDD6C8] bg-[#FCFAF5]/95 px-3 py-1.5 text-sm font-semibold leading-5 text-[#201D18]">
+ <span className="line-clamp-2 inline-block max-w-full rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF]/95 px-3 py-1.5 text-sm font-semibold leading-5 text-[#1F2328]">
  {block.title}
  </span>
  </div>
@@ -2248,11 +2248,11 @@ function DragOverlayBlockPreview({ block, width, height }: { block: Block; width
  <div className="grid gap-2">
  {block.icon ? <div className="flex"><BlockIcon name={block.icon} className="h-5 w-5" style={{ color: getBlockIconColor(block.metadata?.iconColor) }} /></div> : null}
  <h3 className="line-clamp-2 text-lg font-semibold leading-tight">{block.title}</h3>
- {block.subtitle ? <p className="line-clamp-2 text-sm text-[#6F6A5E]">{block.subtitle}</p> : null}
- {block.description ? <p className="line-clamp-3 text-sm leading-6 text-[#A39C8D]">{block.description}</p> : null}
+ {block.subtitle ? <p className="line-clamp-2 text-sm text-[#62605B]">{block.subtitle}</p> : null}
+ {block.description ? <p className="line-clamp-3 text-sm leading-6 text-[#74716B]">{block.description}</p> : null}
  </div>
  {block.badge ? (
- <span className="line-clamp-2 w-fit max-w-full rounded-[8px] border border-[#DDD6C8] bg-[#FCFAF5]/95 px-3 py-1.5 text-xs font-semibold leading-5 text-[#6F6A5E]">
+ <span className="line-clamp-2 w-fit max-w-full rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF]/95 px-3 py-1.5 text-xs font-semibold leading-5 text-[#62605B]">
  {block.badge}
  </span>
  ) : null}
@@ -2273,18 +2273,18 @@ function DragOverlayTextBlockPreview({ block, width, height }: { block: Block; w
  return (
  <div
  className={cn(
- "flex box-border h-full w-full flex-col justify-center overflow-hidden rounded-[8px] border border-[#201D18] bg-[#FCFAF5] px-3.5 py-2.5 ring-2 ring-[#B23C22]/25",
+ "flex box-border h-full w-full flex-col justify-center overflow-hidden rounded-[16px] border border-[#1F2328] bg-[#FFFFFF] px-3.5 py-2.5 ring-2 ring-[#C0452A]/25",
  titleAlign === "center" && "items-center text-center",
  titleAlign === "right" && "items-end text-right",
  titleAlign === "left" && "items-start text-left"
  )}
  style={{ width, height }}
  >
- <h3 className={cn("max-w-full truncate font-bold leading-tight tracking-normal text-[#201D18]", titleClass)}>
+ <h3 className={cn("max-w-full truncate font-bold leading-tight tracking-normal text-[#1F2328]", titleClass)}>
  {block.title.trim()}
- {block.icon ? <span className="ml-1 text-[#B23C22]">{block.icon}</span> : null}
+ {block.icon ? <span className="ml-1 text-[#C0452A]">{block.icon}</span> : null}
  </h3>
- {subtitle ? <p className="mt-1 max-w-full truncate text-sm leading-5 text-[#6F6A5E]">{subtitle}</p> : null}
+ {subtitle ? <p className="mt-1 max-w-full truncate text-sm leading-5 text-[#62605B]">{subtitle}</p> : null}
  </div>
  );
 }
@@ -3276,8 +3276,8 @@ function EditableExperienceModule({
  data-admin-block="true"
  data-admin-block-id={group.primaryEditBlockId}
  className={cn(
- "group relative rounded-[8px] p-2 transition",
- selected && "ring-4 ring-[#B23C22]/20",
+ "group relative rounded-[16px] p-2 transition",
+ selected && "ring-4 ring-[#C0452A]/20",
  !group.isVisible && "opacity-55 grayscale-[0.18]"
  )}
  onClick={onSelect}
@@ -3290,7 +3290,7 @@ function EditableExperienceModule({
  event.stopPropagation();
  onDelete();
  }}
- className="pointer-events-auto absolute -left-1 -top-1 grid h-9 w-9 place-items-center rounded-[4px] border border-[#DDD6C8] bg-[#FCFAF5] shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)] transition hover:border-red-100 hover:bg-red-50"
+ className="pointer-events-auto absolute -left-1 -top-1 grid h-9 w-9 place-items-center rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)] transition hover:border-red-100 hover:bg-red-50"
  aria-label="删除工作经历模块"
  >
  <Trash2 className="h-4 w-4 text-red-500" />
@@ -3301,7 +3301,7 @@ function EditableExperienceModule({
  event.stopPropagation();
  onEdit();
  }}
- className="pointer-events-auto absolute -right-1 -top-1 grid h-9 w-9 place-items-center rounded-[4px] border border-[#DDD6C8] bg-[#FCFAF5] shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)] transition hover:border-[#F4EBE6] hover:bg-[#F4EBE6]"
+ className="pointer-events-auto absolute -right-1 -top-1 grid h-9 w-9 place-items-center rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)] transition hover:border-[#FFF0EB] hover:bg-[#FFF0EB]"
  aria-label="编辑工作经历模块"
  >
  <Pencil className="h-4 w-4" />
@@ -3410,7 +3410,7 @@ function EditableSection({
  ref={setNodeRef}
  data-admin-section-id={section.id}
  data-admin-droppable-id={droppableId}
- className="admin-grid-container grid gap-6 rounded-[8px] p-2 transition"
+ className="admin-grid-container grid gap-6 rounded-[16px] p-2 transition"
  >
  {hideHeader ? null : (
  <div
@@ -3422,26 +3422,26 @@ function EditableSection({
  <button
  type="button"
  className={cn(
- "admin-draggable absolute top-1 grid h-9 w-9 cursor-grab place-items-center rounded-[4px] bg-[#FCFAF5] text-[#A39C8D] transition active:cursor-grabbing",
+ "admin-draggable absolute top-1 grid h-9 w-9 cursor-grab place-items-center rounded-[16px] bg-[#FFFFFF] text-[#74716B] transition active:cursor-grabbing",
  device === "mobile" ? "-left-2 opacity-100" : "-left-11 opacity-0 group-hover:opacity-100"
  )}
  {...sectionHandleProps}
  >
  <GripVertical className="h-4 w-4" />
  </button>
- <button type="button" onClick={onEditSection} className="min-w-0 rounded-[5px] px-1 text-left">
+ <button type="button" onClick={onEditSection} className="min-w-0 rounded-[10px] px-1 text-left">
  <h2 className="text-2xl font-bold tracking-normal">
  {section.title}
- {section.emoji ? <span className="ml-1 text-[#B23C22]">{section.emoji}</span> : null}
+ {section.emoji ? <span className="ml-1 text-[#C0452A]">{section.emoji}</span> : null}
  </h2>
- {section.description ? <p className="mt-1 text-sm text-[#6F6A5E]">{section.description}</p> : null}
+ {section.description ? <p className="mt-1 text-sm text-[#62605B]">{section.description}</p> : null}
  </button>
  </div>
  <div className={cn("flex gap-1 transition", device === "mobile" ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
- <button type="button" onClick={onDeleteSection} className="grid h-9 w-9 place-items-center rounded-[4px] bg-[#FCFAF5]">
+ <button type="button" onClick={onDeleteSection} className="grid h-9 w-9 place-items-center rounded-[16px] bg-[#FFFFFF]">
  <Trash2 className="h-4 w-4 text-red-500" />
  </button>
- <button type="button" onClick={onEditSection} className="grid h-9 w-9 place-items-center rounded-[4px] bg-[#FCFAF5]">
+ <button type="button" onClick={onEditSection} className="grid h-9 w-9 place-items-center rounded-[16px] bg-[#FFFFFF]">
  <Pencil className="h-4 w-4" />
  </button>
  </div>
@@ -3501,7 +3501,7 @@ function StandaloneBlockDropPreview({
  placement?: BlockPlacementDraft;
 }) {
  return (
- <section className="admin-grid-container grid gap-6 rounded-[8px] p-2 transition">
+ <section className="admin-grid-container grid gap-6 rounded-[16px] p-2 transition">
  <div
  className={cn("relative", blockGridClassByDevice[device])}
  data-device={device}
@@ -3538,11 +3538,11 @@ function BlockDropPreview({
  <div
  style={placementStyle}
  className={cn(
- "pointer-events-none rounded-[8px] border-2 border-dashed border-[#B23C22]/55 bg-[#F4EBE6]/75 ",
+ "pointer-events-none rounded-[16px] border-2 border-dashed border-[#C0452A]/55 bg-[#FFF0EB]/75 ",
  blockSizeClassByDevice[device][displaySize]
  )}
  >
- <div className="grid h-full w-full place-items-center rounded-[8px] bg-[#FCFAF5]/35 text-xs font-bold text-[#B23C22]">
+ <div className="grid h-full w-full place-items-center rounded-[16px] bg-[#FFFFFF]/35 text-xs font-bold text-[#C0452A]">
  放到这里
  </div>
  </div>
@@ -3551,7 +3551,7 @@ function BlockDropPreview({
 
 function TextBlockDropPreview({ block }: { block: Block }) {
  return (
- <div className="pointer-events-none rounded-[8px] border-2 border-dashed border-[#B23C22]/45 bg-[#F4EBE6]/65 px-2 py-2">
+ <div className="pointer-events-none rounded-[16px] border-2 border-dashed border-[#C0452A]/45 bg-[#FFF0EB]/65 px-2 py-2">
  <BlockCard block={block} disableActions withLayout={false} className="min-h-0 opacity-50" />
  </div>
  );
@@ -3602,9 +3602,9 @@ function SortableTextBlock({
  data-admin-block-id={block.id}
  style={{ transform: visualTransform, transition: visualTransition, ...removeFromFlowStyle }}
  className={cn(
- "admin-draggable group relative rounded-[8px] px-0 py-1 transition-all duration-200 ease-out",
+ "admin-draggable group relative rounded-[16px] px-0 py-1 transition-all duration-200 ease-out",
  disableDrag ? "cursor-default" : "cursor-grab active:cursor-grabbing",
- selected ? "ring-4 ring-[#B23C22]/20" : "",
+ selected ? "ring-4 ring-[#C0452A]/20" : "",
  isDragging || isDragOverlayActive ? "z-20 opacity-20" : "",
  !block.isVisible ? "opacity-55 grayscale-[0.18]" : ""
  )}
@@ -3612,7 +3612,7 @@ function SortableTextBlock({
  {...attributes}
  {...listeners}
  >
- <div className="rounded-[8px] p-2 transition-all duration-200 ease-out group-hover:bg-[#EDE8DB]/70">
+ <div className="rounded-[16px] p-2 transition-all duration-200 ease-out group-hover:bg-[#F1EEE8]/70">
  <div className="transition-transform duration-200 ease-out group-hover:scale-[0.97]">
  <BlockCard block={block} disableActions withLayout={false} className="min-h-0" />
  </div>
@@ -3626,7 +3626,7 @@ function SortableTextBlock({
  onDelete();
  }}
  className={cn(
- "pointer-events-auto absolute grid place-items-center rounded-[4px] border border-[#DDD6C8] bg-[#FCFAF5] shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)] transition hover:border-red-100 hover:bg-red-50",
+ "pointer-events-auto absolute grid place-items-center rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)] transition hover:border-red-100 hover:bg-red-50",
  device === "mobile" ? "-left-2 -top-2 h-[30px] w-[30px]" : "-left-3 -top-3 h-9 w-9"
  )}
  >
@@ -3640,7 +3640,7 @@ function SortableTextBlock({
  onEdit();
  }}
  className={cn(
- "pointer-events-auto absolute grid place-items-center rounded-[4px] border border-[#DDD6C8] bg-[#FCFAF5] shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)] transition hover:border-[#F4EBE6] hover:bg-[#F4EBE6]",
+ "pointer-events-auto absolute grid place-items-center rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)] transition hover:border-[#FFF0EB] hover:bg-[#FFF0EB]",
  device === "mobile" ? "-right-2 -top-2 h-[30px] w-[30px]" : "-right-3 -top-3 h-9 w-9"
  )}
  >
@@ -3784,7 +3784,7 @@ function SortableBlock({
  className={cn(
  "admin-draggable group relative will-change-transform transition-all duration-200 ease-out",
  isSpecialModule ? "cursor-default" : "cursor-grab active:cursor-grabbing",
- selected ? "rounded-[8px] ring-4 ring-[#B23C22]/20" : "",
+ selected ? "rounded-[16px] ring-4 ring-[#C0452A]/20" : "",
  blockSizeClassByDevice[device][activeDisplaySize],
  removeFromFlowDuringDrag ? "absolute left-0 top-0 z-20 h-px w-px overflow-hidden opacity-0" : "",
  hideOriginalDuringDrag ? "opacity-0" : isDragging || isDragOverlayActive ? "z-20 opacity-20" : "",
@@ -3795,11 +3795,11 @@ function SortableBlock({
  {...attributes}
  {...listeners}
  >
- <div data-admin-block-surface="true" className="h-full w-full overflow-hidden rounded-[8px]">
+ <div data-admin-block-surface="true" className="h-full w-full overflow-hidden rounded-[16px]">
  {getSpecialModuleType(block) ? (
  <SpecialModulePreview block={block} />
  ) : (
- <BlockCard block={block} disableActions withLayout={false} className="h-full w-full select-none ring-0 group-hover:ring-2 group-hover:ring-[#B23C22]/20" />
+ <BlockCard block={block} disableActions withLayout={false} className="h-full w-full select-none ring-0 group-hover:ring-2 group-hover:ring-[#C0452A]/20" />
  )}
  </div>
  <div className={cn("pointer-events-none absolute inset-0 z-30 transition", device === "mobile" ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>
@@ -3811,7 +3811,7 @@ function SortableBlock({
  onDelete();
  }}
  className={cn(
- "pointer-events-auto absolute grid place-items-center rounded-[4px] border border-[#DDD6C8] bg-[#FCFAF5] shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)] transition hover:border-red-100 hover:bg-red-50",
+ "pointer-events-auto absolute grid place-items-center rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)] transition hover:border-red-100 hover:bg-red-50",
  device === "mobile" ? "-left-2 -top-2 h-[30px] w-[30px]" : "-left-3 -top-3 h-9 w-9"
  )}
  >
@@ -3825,7 +3825,7 @@ function SortableBlock({
  onEdit();
  }}
  className={cn(
- "pointer-events-auto absolute grid place-items-center rounded-[4px] border border-[#DDD6C8] bg-[#FCFAF5] shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)] transition hover:border-[#F4EBE6] hover:bg-[#F4EBE6]",
+ "pointer-events-auto absolute grid place-items-center rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)] transition hover:border-[#FFF0EB] hover:bg-[#FFF0EB]",
  device === "mobile" ? "-right-2 -top-2 h-[30px] w-[30px]" : "-right-3 -top-3 h-9 w-9"
  )}
  >
@@ -3840,7 +3840,7 @@ function SortableBlock({
  event.stopPropagation();
  onSelect();
  }}
- className="absolute -bottom-1 -right-1 z-30 grid h-12 w-12 touch-none cursor-nwse-resize place-items-center rounded-br-[8px] rounded-tl-[8px] bg-[#B23C22] text-white opacity-0 shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)] transition group-hover:opacity-100"
+ className="absolute -bottom-1 -right-1 z-30 grid h-12 w-12 touch-none cursor-nwse-resize place-items-center rounded-br-[8px] rounded-tl-[8px] bg-[#C0452A] text-white opacity-0 shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)] transition group-hover:opacity-100"
  >
  <span className="grid h-7 w-7 place-items-end">
  <span className="h-4 w-4 rounded-br-[5px] border-b-[3px] border-r-[3px] border-current" />
@@ -4056,30 +4056,30 @@ function FloatingToolbar({
 }) {
  const copy = editorCopy[editorLanguage];
  return (
- <div className="admin-floating-toolbar fixed bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-[8px] p-2">
+ <div className="admin-floating-toolbar fixed bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-[16px] p-2">
  <button
  type="button"
  onClick={onToggleStructure}
  className={cn(
- "flex h-10 items-center gap-2 rounded-[6px] px-3 text-xs font-bold transition",
- isStructureOpen ? "admin-floating-toolbar__device--active" : "text-[#6F6A5E] hover:bg-[#FCFAF5]/70"
+ "flex h-10 items-center gap-2 rounded-[12px] px-3 text-xs font-bold transition",
+ isStructureOpen ? "admin-floating-toolbar__device--active" : "text-[#62605B] hover:bg-[#FFFFFF]/70"
  )}
  title={editorLanguage === "zh-CN" ? "页面结构" : "Page structure"}
  >
  <PanelLeft className="h-4 w-4" />
  {editorLanguage === "zh-CN" ? "结构" : "Structure"}
  </button>
- <div className="admin-floating-toolbar__devices flex rounded-[8px] p-1">
+ <div className="admin-floating-toolbar__devices flex rounded-[16px] p-1">
  <button
  type="button"
  disabled={!canEditDesktop}
  onClick={() => onDeviceChange("desktop")}
- className={`grid h-10 w-10 place-items-center rounded-[6px] transition ${
+ className={`grid h-10 w-10 place-items-center rounded-[12px] transition ${
  device === "desktop"
  ? "admin-floating-toolbar__device--active"
  : canEditDesktop
- ? "text-[#6F6A5E] hover:bg-[#FCFAF5]/70"
- : "cursor-not-allowed text-[#DDD6C8]"
+ ? "text-[#62605B] hover:bg-[#FFFFFF]/70"
+ : "cursor-not-allowed text-[#E7E2D9]"
  }`}
  title={canEditDesktop ? copy.desktop : copy.desktopDisabled}
  >
@@ -4088,8 +4088,8 @@ function FloatingToolbar({
  <button
  type="button"
  onClick={() => onDeviceChange("mobile")}
- className={`grid h-10 w-10 place-items-center rounded-[6px] transition ${
- device === "mobile" ? "admin-floating-toolbar__device--active" : "text-[#6F6A5E] hover:bg-[#FCFAF5]/70"
+ className={`grid h-10 w-10 place-items-center rounded-[12px] transition ${
+ device === "mobile" ? "admin-floating-toolbar__device--active" : "text-[#62605B] hover:bg-[#FFFFFF]/70"
  }`}
  title={copy.mobile}
  >
@@ -4106,15 +4106,15 @@ function FloatingToolbar({
 
 function ResizePreview({ activeSize, editorLanguage }: { activeSize: BlockSize; editorLanguage: EditorLanguage }) {
  return (
- <div className="admin-resize-preview fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-4 rounded-[8px] px-6 py-3 backdrop-blur">
+ <div className="admin-resize-preview fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-4 rounded-[16px] px-6 py-3 backdrop-blur">
  {blockSizePresets.map((preset) => (
  <div
  key={preset.size}
  title={getLocalizedBlockSizeLabel(preset.size, editorLanguage)}
- className={`grid h-11 w-11 place-items-center rounded-[5px] border transition [&>span>svg]:h-6 [&>span>svg]:w-6 ${
+ className={`grid h-11 w-11 place-items-center rounded-[10px] border transition [&>span>svg]:h-6 [&>span>svg]:w-6 ${
  activeSize === preset.size
- ? "border-[#B23C22] bg-[#B23C22] text-[#FCFAF5]"
- : "border-transparent bg-[#FCFAF5]/70 text-[#A39C8D]"
+ ? "border-[#C0452A] bg-[#C0452A] text-[#FFFFFF]"
+ : "border-transparent bg-[#FFFFFF]/70 text-[#74716B]"
  }`}
  >
  <span>{preset.icon}</span>
@@ -4152,28 +4152,28 @@ function EditorModal({
  <div
  className={cn(
  "admin-editor-modal__panel flex max-h-[86vh] w-full max-w-3xl flex-col overflow-hidden",
- isDark ? "bg-[#201D18] text-white" : "bg-[#FCFAF5] text-[#201D18]"
+ isDark ? "bg-[#1F2328] text-white" : "bg-[#FFFFFF] text-[#1F2328]"
  )}
  onMouseDown={(event) => event.stopPropagation()}
  >
- <div className={cn("admin-editor-modal__header flex items-center justify-between border-b px-6 py-5", isDark ? "border-white/10" : "border-[#DDD6C8]")}>
+ <div className={cn("admin-editor-modal__header flex items-center justify-between border-b px-6 py-5", isDark ? "border-white/10" : "border-[#E7E2D9]")}>
  <div><p>EDIT CONTENT</p><h3 className="text-xl font-bold tracking-[-0.03em]">{title}</h3></div>
- <button type="button" onClick={onClose} className={cn("admin-editor-modal__close grid h-9 w-9 place-items-center rounded-[4px]", isDark ? "hover:bg-[#FCFAF5]/10" : "hover:bg-[#EDE8DB]")}>
+ <button type="button" onClick={onClose} className={cn("admin-editor-modal__close grid h-9 w-9 place-items-center rounded-[16px]", isDark ? "hover:bg-[#FFFFFF]/10" : "hover:bg-[#F1EEE8]")}>
  <X className="h-4 w-4" />
  </button>
  </div>
  <div className="admin-editor-modal__body overflow-auto p-6">{children}</div>
- <div className={cn("admin-editor-modal__footer flex items-center justify-between gap-3 border-t px-6 py-4", isDark ? "border-white/10" : "border-[#DDD6C8]")}>
+ <div className={cn("admin-editor-modal__footer flex items-center justify-between gap-3 border-t px-6 py-4", isDark ? "border-white/10" : "border-[#E7E2D9]")}>
  <div className="min-w-0">{footerStart}</div>
  <div className="flex justify-end gap-2">
- <Button variant="ghost" onClick={onClose} className={cn(isDark && "text-white hover:bg-[#FCFAF5]/10")}>{copy.cancel}</Button>
+ <Button variant="ghost" onClick={onClose} className={cn(isDark && "text-white hover:bg-[#FFFFFF]/10")}>{copy.cancel}</Button>
  <Button
  onClick={async () => {
  await onSave();
  onClose();
  }}
  disabled={isSaving || !canSave}
- className={cn(isDark ? "rounded-[4px] bg-[#FCFAF5] text-black hover:bg-[#FCFAF5]/90" : "admin-editor-modal__save")}
+ className={cn(isDark ? "rounded-[16px] bg-[#FFFFFF] text-black hover:bg-[#FFFFFF]/90" : "admin-editor-modal__save")}
  >
  {isSaving ? copy.saving : copy.save}
  </Button>
@@ -4201,7 +4201,7 @@ function TagsQuickForm({
  return (
  <div className="grid gap-4">
  <div className="flex items-center justify-between">
- <p className="text-sm text-[#6F6A5E]">{copy.tagsHelp}</p>
+ <p className="text-sm text-[#62605B]">{copy.tagsHelp}</p>
  <Button type="button" variant="secondary" size="sm" onClick={() => onPatch({ tags: [...profile.tags, editorLanguage === "zh-CN" ? "新标签" : "New Tag"] })}>
  <Plus className="h-4 w-4" />
  {copy.addTag}
@@ -4209,7 +4209,7 @@ function TagsQuickForm({
  </div>
  <div className="grid gap-2">
  {profile.tags.map((tag, index) => (
- <div key={`tag-editor-${index}`} className="grid gap-2 rounded-[6px] border border-[#DDD6C8] p-3 sm:grid-cols-[1fr_auto]">
+ <div key={`tag-editor-${index}`} className="grid gap-2 rounded-[12px] border border-[#E7E2D9] p-3 sm:grid-cols-[1fr_auto]">
  <Input value={tag} onChange={(event) => updateTag(index, event.target.value)} />
  <div className="flex gap-1">
  <Button
@@ -4266,9 +4266,9 @@ function SocialLinksQuickForm({
  }
 
  return (
- <div className="grid gap-5 text-[#201D18]">
+ <div className="grid gap-5 text-[#1F2328]">
  <div className="flex flex-wrap items-center justify-between gap-2">
- <p className="text-sm text-[#6F6A5E]">{copy.socialButtonsHelp}</p>
+ <p className="text-sm text-[#62605B]">{copy.socialButtonsHelp}</p>
  <div className="flex flex-wrap items-center gap-2">
  <Button
  type="button"
@@ -4306,7 +4306,7 @@ function SocialLinksQuickForm({
  {orderedLinks.map((link, index) => {
  const isExpanded = expandedLinkIds.has(link.id);
  return (
- <div key={link.id} className="grid rounded-[8px] border border-[#DDD6C8] bg-[#FCFAF5] p-3">
+ <div key={link.id} className="grid rounded-[16px] border border-[#E7E2D9] bg-[#FFFFFF] p-3">
  <div className="flex flex-wrap items-center justify-between gap-2">
  <button
  type="button"
@@ -4321,18 +4321,18 @@ function SocialLinksQuickForm({
  return next;
  })
  }
- className="grid h-9 w-9 shrink-0 place-items-center rounded-[4px] bg-[#F6F3EC] text-[#6F6A5E] transition hover:bg-[#F4EBE6] hover:text-[#7E2A16]"
+ className="grid h-9 w-9 shrink-0 place-items-center rounded-[16px] bg-[#F8F7F4] text-[#62605B] transition hover:bg-[#FFF0EB] hover:text-[#C0452A]"
  aria-label={isExpanded ? (editorLanguage === "zh-CN" ? "折叠社交媒体标签" : "Collapse social link") : (editorLanguage === "zh-CN" ? "展开社交媒体标签" : "Expand social link")}
  >
  <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isExpanded && "rotate-180")} />
  </button>
- <div className="inline-flex min-w-0 flex-1 items-center gap-2 rounded-[5px] text-left">
- <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[4px] bg-[#F4EBE6] text-[#B23C22]">
+ <div className="inline-flex min-w-0 flex-1 items-center gap-2 rounded-[10px] text-left">
+ <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[16px] bg-[#FFF0EB] text-[#C0452A]">
  <SocialIcon name={link.icon} />
  </span>
  <span className="grid min-w-0 gap-0.5">
- <span className="truncate text-sm font-semibold text-[#201D18]">{link.label || copy.newLink}</span>
- <span className="truncate text-xs text-[#6F6A5E]">
+ <span className="truncate text-sm font-semibold text-[#1F2328]">{link.label || copy.newLink}</span>
+ <span className="truncate text-xs text-[#62605B]">
  {link.actionType === "copy" ? link.copyText || copy.blockCopyText : link.href || "link"}
  </span>
  </span>
@@ -4351,7 +4351,7 @@ function SocialLinksQuickForm({
  </div>
  <div className={cn("grid transition-[grid-template-rows] duration-200 ease-out", isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
  <div className="min-h-0 overflow-hidden">
- <div className="mt-3 grid gap-3 border-t border-[#EDE8DB] pt-3">
+ <div className="mt-3 grid gap-3 border-t border-[#F1EEE8] pt-3">
  <div className="grid gap-3 md:grid-cols-2">
  <Field label={editorLanguage === "zh-CN" ? "名称" : "Label"}>
  <Input value={link.label} onChange={(event) => updateSocial(link.id, { label: event.target.value })} />
@@ -4383,10 +4383,10 @@ function SocialLinksQuickForm({
  updateSocial(link.id, { icon });
  }}
  className={cn(
- "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-[4px] border px-3 text-sm transition",
+ "inline-grid min-h-10 grid-cols-[16px_auto] items-center gap-1.5 rounded-[16px] border px-3 text-sm transition",
  link.icon === icon
- ? "border-[#B23C22] bg-[#B23C22] text-[#FCFAF5]"
- : "border-[#DDD6C8] bg-[#FCFAF5] text-[#6F6A5E] hover:border-[#B23C22]/40"
+ ? "border-[#C0452A] bg-[#C0452A] text-[#FFFFFF]"
+ : "border-[#E7E2D9] bg-[#FFFFFF] text-[#62605B] hover:border-[#C0452A]/40"
  )}
  >
  <SocialIcon name={icon} />
@@ -4395,7 +4395,7 @@ function SocialLinksQuickForm({
  ))}
  </div>
  </Field>
- <div className="flex flex-wrap gap-4 text-sm text-[#6F6A5E]">
+ <div className="flex flex-wrap gap-4 text-sm text-[#62605B]">
  <label className="flex items-center gap-2">
  <Checkbox checked={link.isVisible} onChange={(event) => updateSocial(link.id, { isVisible: event.target.checked })} />
  {copy.visible}
@@ -4512,7 +4512,7 @@ function AddBlockDialog({ onAdd, editorLanguage }: { onAdd: (template: BlockTemp
  const copy = editorCopy[editorLanguage];
  return (
  <div className="grid gap-5">
- <div className="rounded-[5px] bg-[#EDE8DB] px-4 py-3 text-sm text-[#6F6A5E]">
+ <div className="rounded-[10px] bg-[#F1EEE8] px-4 py-3 text-sm text-[#62605B]">
  {copy.blockTemplatesNote}
  </div>
  {blockTemplates.map((group) => (
@@ -4520,8 +4520,8 @@ function AddBlockDialog({ onAdd, editorLanguage }: { onAdd: (template: BlockTemp
  <h4 className="font-bold">{getLocalizedTemplateGroup(group.group, editorLanguage)}</h4>
  <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
  {group.items.map((item) => (
- <button key={`${group.group}-${item.label}`} type="button" onClick={() => onAdd(item)} className="grid justify-items-center gap-2 rounded-[6px] p-3 text-center hover:bg-[#F4EBE6]">
- <span className="grid h-12 w-12 place-items-center rounded-[5px] border border-[#DDD6C8] bg-[#FCFAF5] text-[#B23C22] [&>svg]:h-6 [&>svg]:w-6">
+ <button key={`${group.group}-${item.label}`} type="button" onClick={() => onAdd(item)} className="grid justify-items-center gap-2 rounded-[12px] p-3 text-center hover:bg-[#FFF0EB]">
+ <span className="grid h-12 w-12 place-items-center rounded-[10px] border border-[#E7E2D9] bg-[#FFFFFF] text-[#C0452A] [&>svg]:h-6 [&>svg]:w-6">
  {item.icon}
  </span>
  <span className="text-xs font-medium">{getLocalizedTemplateLabel(item, editorLanguage)}</span>
@@ -4916,22 +4916,22 @@ function ProjectSettingsForm({
  ];
 
  return (
- <div className="grid gap-5 text-[#201D18] md:grid-cols-[190px_minmax(0,1fr)]">
- <aside className="grid content-start gap-1 border-b border-[#EDE8DB] pb-3 md:border-b-0 md:border-r md:pb-0 md:pr-3">
+ <div className="grid gap-5 text-[#1F2328] md:grid-cols-[190px_minmax(0,1fr)]">
+ <aside className="grid content-start gap-1 border-b border-[#F1EEE8] pb-3 md:border-b-0 md:border-r md:pb-0 md:pr-3">
  {panels.map((panel) => (
  <button
  key={panel.id}
  type="button"
  onClick={() => setActivePanel(panel.id)}
  className={cn(
- "grid gap-0.5 rounded-[5px] border px-3 py-2 text-left transition",
+ "grid gap-0.5 rounded-[10px] border px-3 py-2 text-left transition",
  activePanel === panel.id
- ? "border-[#E3CFC5] bg-[#F4EBE6] text-[#7E2A16]"
- : "border-transparent text-[#6F6A5E] hover:bg-[#F6F3EC] hover:text-[#201D18]"
+ ? "border-[#F3C8BA] bg-[#FFF0EB] text-[#C0452A]"
+ : "border-transparent text-[#62605B] hover:bg-[#F8F7F4] hover:text-[#1F2328]"
  )}
  >
  <span className="text-sm font-semibold">{panel.label}</span>
- <span className={cn("text-xs", activePanel === panel.id ? "text-[#6F6A5E]" : "text-[#A39C8D]")}>{panel.description}</span>
+ <span className={cn("text-xs", activePanel === panel.id ? "text-[#62605B]" : "text-[#74716B]")}>{panel.description}</span>
  </button>
  ))}
  </aside>
@@ -4951,10 +4951,10 @@ function ProjectSettingsForm({
  </option>
  ))}
  </Select>
- <p className="text-xs font-normal text-[#6F6A5E]">{copy.editorLanguageHelp}</p>
+ <p className="text-xs font-normal text-[#62605B]">{copy.editorLanguageHelp}</p>
  </div>
  </Field>
- <div className="rounded-[5px] border border-red-100 bg-red-50/60 p-3">
+ <div className="rounded-[10px] border border-red-100 bg-red-50/60 p-3">
  <Button type="button" variant="ghost" size="sm" onClick={logoutAdmin} className="text-red-600 hover:bg-red-100 hover:text-red-700">
  <LogOut className="h-4 w-4" />
  {editorLanguage === "zh-CN" ? "退出登录管理端" : "Log Out of Admin"}
@@ -5013,7 +5013,7 @@ function ProjectSettingsForm({
  <section className="grid gap-4">
  <div className="flex items-center justify-between gap-3">
  <div>
- <p className="mt-1 text-sm text-[#6F6A5E]">{copy.variantsHelp}</p>
+ <p className="mt-1 text-sm text-[#62605B]">{copy.variantsHelp}</p>
  </div>
  <Button type="button" variant="secondary" size="sm" onClick={addVariant}>
  <Plus className="h-4 w-4" />
@@ -5021,7 +5021,7 @@ function ProjectSettingsForm({
  </Button>
  </div>
 
- <div className="grid gap-3 rounded-[5px] border border-[#DDD6C8] bg-[#FCFAF5] p-3">
+ <div className="grid gap-3 rounded-[10px] border border-[#E7E2D9] bg-[#FFFFFF] p-3">
  <div className="grid gap-3 md:grid-cols-2">
  <Field label={copy.mainVersion}>
  <Select
@@ -5058,19 +5058,19 @@ function ProjectSettingsForm({
  const isCollapsed = collapsedVariantIds.has(variant.id);
  const allowSeoIndex = getVariantAllowSeoIndex(config, variant.id);
  return (
- <div key={variant.id} className="grid rounded-[5px] border border-[#DDD6C8] p-3">
+ <div key={variant.id} className="grid rounded-[10px] border border-[#E7E2D9] p-3">
  <div className="flex items-center gap-2">
  <button
  type="button"
  onClick={() => toggleVariantCollapsed(variant.id)}
- className="grid h-9 w-9 shrink-0 place-items-center rounded-[4px] bg-[#F6F3EC] text-[#6F6A5E] transition hover:bg-[#F4EBE6] hover:text-[#7E2A16]"
+ className="grid h-9 w-9 shrink-0 place-items-center rounded-[16px] bg-[#F8F7F4] text-[#62605B] transition hover:bg-[#FFF0EB] hover:text-[#C0452A]"
  aria-label={isCollapsed ? copy.variantExpand : copy.variantCollapse}
  >
  <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", !isCollapsed && "rotate-180")} />
  </button>
  <div className="grid min-w-0 flex-1 gap-0.5">
- <p className="truncate text-sm font-semibold text-[#201D18]">{variant.name || copy.newVersion}</p>
- <p className="truncate text-xs text-[#6F6A5E]">
+ <p className="truncate text-sm font-semibold text-[#1F2328]">{variant.name || copy.newVersion}</p>
+ <p className="truncate text-xs text-[#62605B]">
  {copy.variantSummaryAccessCode}: {variant.accessCode.trim() ? `/${variant.accessCode.trim()}` : copy.variantAccessCodeEmpty} · SEO:{" "}
  {allowSeoIndex ? copy.seoAllowed : copy.noSeoIndex}
  </p>
@@ -5081,20 +5081,20 @@ function ProjectSettingsForm({
  size="sm"
  onClick={() => removeVariant(variant.id)}
  disabled={settings.variants.variants.length <= 1}
- className="ml-auto text-red-600 hover:bg-red-50 hover:text-red-700 disabled:text-[#DDD6C8] disabled:hover:bg-transparent"
+ className="ml-auto text-red-600 hover:bg-red-50 hover:text-red-700 disabled:text-[#E7E2D9] disabled:hover:bg-transparent"
  >
  {copy.delete}
  </Button>
  </div>
  <div className={cn("grid transition-[grid-template-rows] duration-200 ease-out", isCollapsed ? "grid-rows-[0fr]" : "grid-rows-[1fr]")}>
  <div className="min-h-0 overflow-hidden">
- <div className="mt-3 grid gap-3 border-t border-[#EDE8DB] pt-3">
+ <div className="mt-3 grid gap-3 border-t border-[#F1EEE8] pt-3">
  <div className="grid gap-2 md:grid-cols-[1fr_0.8fr]">
  <div className="grid gap-1.5">
  <Field
  label={
  <>
- {copy.variantName} <span className="text-xs font-normal text-[#A39C8D]">{copy.variantNameHelp}</span>
+ {copy.variantName} <span className="text-xs font-normal text-[#74716B]">{copy.variantNameHelp}</span>
  </>
  }
  >
@@ -5113,7 +5113,7 @@ function ProjectSettingsForm({
  {accessCodeError ? <p className="text-xs text-red-600">{accessCodeError}</p> : null}
  </div>
  </div>
- <label className="flex w-fit items-center gap-2 rounded-[5px] border border-[#DDD6C8] bg-[#FCFAF5] px-3 py-2 text-sm text-[#6F6A5E]">
+ <label className="flex w-fit items-center gap-2 rounded-[10px] border border-[#E7E2D9] bg-[#FFFFFF] px-3 py-2 text-sm text-[#62605B]">
  <Checkbox
  checked={allowSeoIndex}
  onChange={(event) => updateVariant(variant.id, { allowSeoIndex: event.target.checked })}
@@ -5122,7 +5122,7 @@ function ProjectSettingsForm({
  </label>
  <div className="grid gap-2">
  <div className="flex items-center justify-between gap-3">
- <p className="text-xs font-semibold text-[#6F6A5E]">{copy.variantLanguageList}</p>
+ <p className="text-xs font-semibold text-[#62605B]">{copy.variantLanguageList}</p>
  <Button type="button" variant="secondary" size="sm" onClick={() => openAddVariantLanguage(variant.id)} className="h-8 px-2">
  <Plus className="h-4 w-4" />
  </Button>
@@ -5137,8 +5137,8 @@ function ProjectSettingsForm({
  <div
  key={`${variant.id}:${language.code}`}
  className={cn(
- "inline-flex w-fit max-w-full items-center gap-2 rounded-[4px] border px-3 py-1.5 text-xs",
- isEnabled ? "border-[#E3CFC5] bg-[#F4EBE6] text-[#7E2A16]" : "border-[#DDD6C8] bg-[#F6F3EC] text-[#6F6A5E]"
+ "inline-flex w-fit max-w-full items-center gap-2 rounded-[16px] border px-3 py-1.5 text-xs",
+ isEnabled ? "border-[#F3C8BA] bg-[#FFF0EB] text-[#C0452A]" : "border-[#E7E2D9] bg-[#F8F7F4] text-[#62605B]"
  )}
  >
  <Checkbox
@@ -5152,15 +5152,15 @@ function ProjectSettingsForm({
  className="h-7 min-w-[56px] max-w-[180px] border-transparent bg-transparent px-1 py-0 text-xs"
  style={{ width: `${Math.max(5, Math.min(18, language.label.length + 1))}ch` }}
  />
- <span className="select-none rounded-[4px] bg-[#FCFAF5]/80 px-2 py-0.5 text-[11px] font-semibold text-[#6F6A5E]">
+ <span className="select-none rounded-[16px] bg-[#FFFFFF]/80 px-2 py-0.5 text-[11px] font-semibold text-[#62605B]">
  {language.code}
  </span>
- {isMainLocale ? <span className="rounded-[4px] bg-[#FCFAF5] px-2 py-0.5 text-[11px] text-[#7E2A16]">{copy.mainLanguage}</span> : null}
+ {isMainLocale ? <span className="rounded-[16px] bg-[#FFFFFF] px-2 py-0.5 text-[11px] text-[#C0452A]">{copy.mainLanguage}</span> : null}
  {!isMainLocale ? (
  <button
  type="button"
  onClick={() => setVariantMainLanguage(variant.id, language.code)}
- className="text-[#6F6A5E] hover:text-[#7E2A16]"
+ className="text-[#62605B] hover:text-[#C0452A]"
  aria-label={copy.setMainLanguage.replace("{language}", language.label)}
  >
  <Pin className="h-3 w-3" />
@@ -5235,7 +5235,7 @@ function ProjectSettingsForm({
  </Select>
  </Field>
  </div>
- <div className="flex flex-wrap gap-4 text-sm text-[#6F6A5E]">
+ <div className="flex flex-wrap gap-4 text-sm text-[#62605B]">
  <label className="flex items-center gap-2">
  <Checkbox checked={settings.enableAnimation} onChange={(event) => patchSettings({ enableAnimation: event.target.checked })} />
  {editorLanguage === "zh-CN" ? "动画" : "Animation"}
@@ -5253,10 +5253,10 @@ function ProjectSettingsForm({
  ) : null}
 
  {activePanel === "config" ? (
- <section className="grid gap-3 rounded-[5px] border border-[#DDD6C8] bg-[#FCFAF5] p-4">
+ <section className="grid gap-3 rounded-[10px] border border-[#E7E2D9] bg-[#FFFFFF] p-4">
  <ScopeBadges variantName={activeVariant?.name || activeVariantId} languageName={activeLanguage?.label || activeLocale} editorLanguage={editorLanguage} />
  <div>
- <p className="mt-1 text-sm text-[#6F6A5E]">
+ <p className="mt-1 text-sm text-[#62605B]">
  {copy.configPanelHelp}
  </p>
  </div>
@@ -5421,15 +5421,15 @@ function AddLanguageDialog({
  return (
  <div className="fixed inset-0 z-[70] grid place-items-center bg-black/20 p-4" onMouseDown={onClose}>
  <div
- className="grid w-full max-w-sm gap-4 rounded-[8px] border border-[#DDD6C8] bg-[#F6F3EC] p-5 text-[#201D18] shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)]"
+ className="grid w-full max-w-sm gap-4 rounded-[16px] border border-[#E7E2D9] bg-[#F8F7F4] p-5 text-[#1F2328] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)]"
  onMouseDown={(event) => event.stopPropagation()}
  >
  <div className="flex items-center justify-between gap-3">
  <div>
  <p className="text-sm font-bold">{copy.addLanguage}</p>
- <p className="mt-1 text-xs text-[#6F6A5E]">{copy.languageDialogHelp}</p>
+ <p className="mt-1 text-xs text-[#62605B]">{copy.languageDialogHelp}</p>
  </div>
- <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-[4px] text-[#6F6A5E] hover:bg-[#EDE8DB]">
+ <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-[16px] text-[#62605B] hover:bg-[#F1EEE8]">
  <X className="h-4 w-4" />
  </button>
  </div>
@@ -5502,25 +5502,25 @@ function VariantOverrideDialog({
  return (
  <div className="fixed inset-0 z-[70] grid place-items-center bg-black/20 p-4" onMouseDown={onClose}>
  <div
- className="grid w-full max-w-md gap-4 rounded-[8px] border border-[#DDD6C8] bg-[#F6F3EC] p-5 text-[#201D18] shadow-[0_24px_60px_-30px_rgba(32,29,24,0.35)]"
+ className="grid w-full max-w-md gap-4 rounded-[16px] border border-[#E7E2D9] bg-[#F8F7F4] p-5 text-[#1F2328] shadow-[0_24px_60px_-30px_rgba(31,35,40,0.35)]"
  onMouseDown={(event) => event.stopPropagation()}
  >
  <div className="flex items-center justify-between gap-3">
  <div>
  <p className="text-sm font-bold">{copy.variantOverride}</p>
- <p className="mt-1 text-xs text-[#6F6A5E]">{copy.variantOverrideHelp}</p>
+ <p className="mt-1 text-xs text-[#62605B]">{copy.variantOverrideHelp}</p>
  </div>
- <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-[4px] text-[#6F6A5E] hover:bg-[#EDE8DB]">
+ <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-[16px] text-[#62605B] hover:bg-[#F1EEE8]">
  <X className="h-4 w-4" />
  </button>
  </div>
 
- <div className="rounded-[5px] border border-[#DDD6C8] bg-[#FCFAF5] px-3 py-2 text-xs text-[#6F6A5E]">
+ <div className="rounded-[10px] border border-[#E7E2D9] bg-[#FFFFFF] px-3 py-2 text-xs text-[#62605B]">
  {copy.variantOverrideTarget}
- <span className="ml-2 whitespace-nowrap rounded-[4px] border border-[#E3CFC5] bg-[#F4EBE6] px-2 py-0.5 font-semibold text-[#7E2A16]">
+ <span className="ml-2 whitespace-nowrap rounded-[16px] border border-[#F3C8BA] bg-[#FFF0EB] px-2 py-0.5 font-semibold text-[#C0452A]">
  {targetVariant?.name || draft.targetVariantId}
  </span>
- <span className="ml-2 whitespace-nowrap rounded-[4px] border border-[#E3CFC5] bg-[#FCFAF5] px-2 py-0.5 font-semibold text-[#7E2A16]">
+ <span className="ml-2 whitespace-nowrap rounded-[16px] border border-[#F3C8BA] bg-[#FFFFFF] px-2 py-0.5 font-semibold text-[#C0452A]">
  {targetLanguage?.label || draft.targetLocale}
  </span>
  </div>
@@ -5557,7 +5557,7 @@ function VariantOverrideDialog({
  </Field>
  </div>
 
- <p className="rounded-[5px] border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-700">
+ <p className="rounded-[10px] border border-red-100 bg-red-50 px-3 py-2 text-xs text-red-700">
  {copy.variantOverrideWarning}
  </p>
 
@@ -5577,10 +5577,10 @@ function VariantOverrideDialog({
 function ScopeBadges({ variantName, languageName, editorLanguage }: { variantName: string; languageName: string; editorLanguage: EditorLanguage }) {
  const copy = editorCopy[editorLanguage];
  return (
- <div className="flex flex-wrap items-center gap-2 rounded-[5px] border border-[#DDD6C8] bg-[#FCFAF5] px-3 py-2 text-xs text-[#6F6A5E]">
+ <div className="flex flex-wrap items-center gap-2 rounded-[10px] border border-[#E7E2D9] bg-[#FFFFFF] px-3 py-2 text-xs text-[#62605B]">
  <span>{copy.currentScope}</span>
- <span className="whitespace-nowrap rounded-[4px] border border-[#E3CFC5] bg-[#F4EBE6] px-2.5 py-1 font-semibold text-[#7E2A16]">{variantName}</span>
- <span className="whitespace-nowrap rounded-[4px] border border-[#E3CFC5] bg-[#FCFAF5] px-2.5 py-1 font-semibold text-[#7E2A16]">{languageName}</span>
+ <span className="whitespace-nowrap rounded-[16px] border border-[#F3C8BA] bg-[#FFF0EB] px-2.5 py-1 font-semibold text-[#C0452A]">{variantName}</span>
+ <span className="whitespace-nowrap rounded-[16px] border border-[#F3C8BA] bg-[#FFFFFF] px-2.5 py-1 font-semibold text-[#C0452A]">{languageName}</span>
  </div>
  );
 }

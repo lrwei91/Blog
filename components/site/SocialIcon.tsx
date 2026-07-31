@@ -23,7 +23,7 @@ import type { CSSProperties } from "react";
 
 function BrandGlyph({ children, className, style }: { children: string; className: string; style?: CSSProperties }) {
   return (
-    <span aria-hidden="true" className={`${className} inline-flex items-center justify-center font-serif font-semibold leading-none`} style={style}>
+    <span aria-hidden="true" className={`${className} inline-flex items-center justify-center font-sans font-semibold leading-none`} style={style}>
       {children}
     </span>
   );

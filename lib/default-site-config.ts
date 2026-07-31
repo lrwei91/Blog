@@ -818,14 +818,14 @@ export const defaultSiteConfig: SiteConfig = {
     }
   ],
   theme: {
-    primaryColor: "#b23c22",
-    backgroundColor: "#f6f3ec",
-    cardBackground: "#fcfaf5",
-    textColor: "#201d18",
-    mutedTextColor: "#6f6a5e",
-    borderColor: "#ddd6c8",
-    cardRadius: "md",
-    cardShadow: "none",
+    primaryColor: "#e45435",
+    backgroundColor: "#f8f7f4",
+    cardBackground: "#ffffff",
+    textColor: "#1f2328",
+    mutedTextColor: "#62605b",
+    borderColor: "#e7e2d9",
+    cardRadius: "xl",
+    cardShadow: "soft",
     fontFamily: "system"
   },
   settings: {

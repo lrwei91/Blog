@@ -1,6 +1,18 @@
 import type { ThemeConfig } from "@/types/theme";
 
 export const defaultTheme: ThemeConfig = {
+  primaryColor: "#e45435",
+  backgroundColor: "#f8f7f4",
+  cardBackground: "#ffffff",
+  textColor: "#1f2328",
+  mutedTextColor: "#62605b",
+  borderColor: "#e7e2d9",
+  cardRadius: "xl",
+  cardShadow: "soft",
+  fontFamily: "system"
+};
+
+const legacyPaperInkTheme: ThemeConfig = {
   primaryColor: "#b23c22",
   backgroundColor: "#f6f3ec",
   cardBackground: "#fcfaf5",
@@ -58,9 +70,11 @@ export function getThemeStyleVariables(theme: ThemeConfig) {
 }
 
 export function normalizeThemeConfig(theme: ThemeConfig): ThemeConfig {
-  const isLegacyBlueTheme = Object.entries(legacyBlueTheme).every(
+  const matchesTheme = (candidate: ThemeConfig) => Object.entries(candidate).every(
     ([key, value]) => theme[key as keyof ThemeConfig].toLowerCase() === value.toLowerCase()
   );
 
-  return isLegacyBlueTheme ? { ...defaultTheme } : theme;
+  return matchesTheme(legacyPaperInkTheme) || matchesTheme(legacyBlueTheme)
+    ? { ...defaultTheme }
+    : theme;
 }

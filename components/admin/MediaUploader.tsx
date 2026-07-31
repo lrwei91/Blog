@@ -39,7 +39,7 @@ export function MediaUploader({
  }
 
  return (
- <div className="grid gap-2 rounded-[6px] border border-[#DDD6C8] bg-[#F6F3EC] p-3">
+ <div className="grid gap-2 rounded-[12px] border border-[#E7E2D9] bg-[#F8F7F4] p-3">
  <div className="grid gap-2 sm:grid-cols-[1fr_150px_auto]">
  <input
  type="file"

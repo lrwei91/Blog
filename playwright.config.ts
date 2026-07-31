@@ -15,7 +15,7 @@ export default defineConfig({
     trace: "retain-on-failure"
   },
   webServer: {
-    command: `BIO_E2E_FULL_MODULES=1 npm run dev -- --hostname 127.0.0.1 --port ${port}`,
+    command: `ADMIN_PASSWORD_HASH= ADMIN_PASSWORD=bio-blocks-e2e-admin SESSION_SECRET=bio-blocks-e2e-session-secret-for-playwright BIO_E2E_FULL_MODULES=1 npm run dev -- --hostname 127.0.0.1 --port ${port}`,
     url: baseURL,
     reuseExistingServer: false,
     timeout: 120_000
