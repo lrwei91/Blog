@@ -31,11 +31,15 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
   const theme = config.theme;
   const desktopContentColumns = getPublicDesktopContentColumns(renderModel.orderedContentItems);
   const desktopPageWidth = "960px";
+  const personalProjectsBlock = getPersonalProjectsBlock(renderModel.orderedContentItems);
   const navItems = renderModel.orderedContentItems
     .filter((item): item is Extract<ContentOrderItem, { type: "text-block" }> => item.type === "text-block")
     .filter((item) => item.block.title.trim());
-  const primaryNavItems = navItems.slice(0, 5);
-  const overflowNavItems = navItems.slice(5);
+  const visibleNavItems = personalProjectsBlock
+    ? navItems.filter((item) => item.block.metadata?.sourceSectionId !== "projects")
+    : navItems;
+  const primaryNavItems = visibleNavItems.slice(0, 5);
+  const overflowNavItems = visibleNavItems.slice(5);
   const email = renderModel.profile.visibleModules.contact ? renderModel.profile.email : "";
 
   return (
@@ -55,6 +59,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
         displayName={renderModel.profile.displayName}
         headline={renderModel.profile.headline}
         enableMotion={config.settings.enableAnimation}
+        projectBlock={personalProjectsBlock}
       />
       <div className="public-site__wash" aria-hidden="true" />
 
@@ -65,7 +70,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
             <span className="public-nav__brand-label">个人主页</span>
           </a>
 
-          {navItems.length > 0 ? (
+          {visibleNavItems.length > 0 ? (
             <nav className="public-nav__links" aria-label="页面导航">
               {primaryNavItems.map((item) => (
                 <a key={item.id} href={`#${getSectionAnchorId(item.block)}`} data-section-link>
@@ -113,6 +118,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
           orderedContentItems={renderModel.orderedContentItems}
           desktopContentColumns={desktopContentColumns}
           enableImagePreview={config.settings.enableImagePreview}
+          hideProjects={Boolean(personalProjectsBlock)}
         />
       </div>
 
@@ -137,4 +143,15 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
       <PublicFloatingTools enableShare={config.settings.enablePublicShare} title={config.settings.siteTitle} />
     </main>
   );
+}
+
+function getPersonalProjectsBlock(items: ContentOrderItem[]) {
+  for (const item of items) {
+    if (item.type !== "top-level-blocks") continue;
+    const projectBlock = item.blocks.find((block) =>
+      block.metadata?.sourceSectionId === "projects" || Array.isArray(block.metadata?.projects)
+    );
+    if (projectBlock) return projectBlock;
+  }
+  return undefined;
 }

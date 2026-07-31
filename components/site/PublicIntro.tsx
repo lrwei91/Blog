@@ -1,13 +1,17 @@
 import { ArrowRight } from "lucide-react";
+import type { Block } from "@/types/block";
+import { PersonalProjects } from "@/components/site/PersonalProjects";
 
 export function PublicIntro({
   displayName,
   headline,
-  enableMotion
+  enableMotion,
+  projectBlock
 }: {
   displayName: string;
   headline: string;
   enableMotion: boolean;
+  projectBlock?: Block;
 }) {
   const identity = [displayName.trim(), headline.trim()].filter(Boolean).join(" · ");
 
@@ -60,6 +64,16 @@ export function PublicIntro({
               <img src="/brand-seal.png" alt="" />
             </span>
           </div>
+
+          {projectBlock ? (
+            <aside className="public-intro__projects" data-reveal="panel" aria-label="欢迎页个人项目">
+              <div className="public-intro__projects-heading">
+                <span>PERSONAL PROJECTS</span>
+                <span>个人项目</span>
+              </div>
+              <PersonalProjects block={projectBlock} variant="intro" />
+            </aside>
+          ) : null}
         </div>
 
         <footer className="public-intro__footer">

@@ -68,6 +68,36 @@ test("欢迎页标语保持两行且不产生横向溢出", async ({ page }) => 
   }
 });
 
+test("个人项目展示位于欢迎页右下区域且不在主页重复渲染", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await expectProjectIdentity(page);
+
+  const introProjects = page.locator(".public-intro__projects");
+  await expect(introProjects).toBeVisible();
+  await expect(introProjects.locator(".personal-projects__card")).toHaveCount(3);
+
+  const placement = await page.locator(".public-intro").evaluate((intro) => {
+    const projectDock = intro.querySelector<HTMLElement>(".public-intro__projects");
+    if (!projectDock) return null;
+    const introRect = intro.getBoundingClientRect();
+    const dockRect = projectDock.getBoundingClientRect();
+    return {
+      rightInset: introRect.right - dockRect.right,
+      bottomRatio: (dockRect.bottom - introRect.top) / introRect.height
+    };
+  });
+
+  expect(placement).not.toBeNull();
+  expect(placement!.rightInset).toBeLessThanOrEqual(128);
+  expect(placement!.bottomRatio).toBeGreaterThan(0.65);
+
+  await page.locator(".public-intro__enter").click();
+  await expect(page.locator('.public-content__block-group[data-content-group="projects"]')).toHaveCount(0);
+  await expect(page.locator('.public-nav__links [data-section-link][href="#section-projects"]')).toHaveCount(0);
+});
+
 test("连续动效只在对应区域可见时运行", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");

@@ -14,12 +14,14 @@ export function ContentArea({
   topLevelBlocks = [],
   orderedContentItems,
   desktopContentColumns = 3,
-  enableImagePreview = true
+  enableImagePreview = true,
+  hideProjects = false
 }: {
   topLevelBlocks?: Block[];
   orderedContentItems?: ContentOrderItem[];
   desktopContentColumns?: PublicDesktopContentColumns;
   enableImagePreview?: boolean;
+  hideProjects?: boolean;
 }) {
   const contentItems =
     orderedContentItems ??
@@ -43,6 +45,11 @@ export function ContentArea({
           const isNowGroup = sourceSectionId === "now";
           const isMediaGroup = sourceSectionId === "media";
           const isPhotosGroup = sourceSectionId === "photos";
+          const containsProjectBlock = item.blocks.some((block) =>
+            block.metadata?.sourceSectionId === "projects" || Array.isArray(block.metadata?.projects)
+          );
+
+          if (hideProjects && (isProjectsGroup || containsProjectBlock)) return null;
 
           return (
             <div
@@ -74,6 +81,8 @@ export function ContentArea({
             </div>
           );
         }
+
+        if (hideProjects && getSourceSectionId(item.block) === "projects") return null;
 
         return (
           <BlockCard

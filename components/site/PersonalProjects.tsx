@@ -47,11 +47,11 @@ const projectIcons = {
   data: Dices
 };
 
-export function PersonalProjects({ block }: { block: Block }) {
+export function PersonalProjects({ block, variant = "default" }: { block: Block; variant?: "default" | "intro" }) {
   const projects = getProjects(block);
 
   return (
-    <section className="personal-projects" aria-label="个人项目列表">
+    <section className={`personal-projects${variant === "intro" ? " personal-projects--intro" : ""}`} aria-label="个人项目列表">
       <div className="personal-projects__grid">
         {projects.map((project, index) => {
           const ProjectIcon = projectIcons[project.icon];
