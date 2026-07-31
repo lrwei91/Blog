@@ -63,10 +63,12 @@ export function PersonalProjects({ block, variant = "default" }: { block: Block;
               data-reveal="card"
               style={{ "--reveal-index": index } as CSSProperties}
             >
-              <div className="personal-projects__card-top">
-                <span>{project.eyebrow}</span>
-                <i><ProjectIcon aria-hidden="true" /></i>
-              </div>
+              {variant === "default" ? (
+                <div className="personal-projects__card-top">
+                  <span>{project.eyebrow}</span>
+                  <i><ProjectIcon aria-hidden="true" /></i>
+                </div>
+              ) : null}
               <h3>{project.title}</h3>
               <p>{project.description}</p>
               <div className="personal-projects__card-footer">

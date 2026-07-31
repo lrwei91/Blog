@@ -67,10 +67,6 @@ export function PublicIntro({
 
           {projectBlock ? (
             <aside className="public-intro__projects" data-reveal="panel" aria-label="欢迎页个人项目">
-              <div className="public-intro__projects-heading">
-                <span>PERSONAL PROJECTS</span>
-                <span>个人项目</span>
-              </div>
               <PersonalProjects block={projectBlock} variant="intro" />
             </aside>
           ) : null}

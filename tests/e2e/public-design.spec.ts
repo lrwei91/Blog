@@ -77,6 +77,20 @@ test("个人项目展示位于欢迎页右下区域且不在主页重复渲染",
   const introProjects = page.locator(".public-intro__projects");
   await expect(introProjects).toBeVisible();
   await expect(introProjects.locator(".personal-projects__card")).toHaveCount(3);
+  await expect(introProjects.locator(".personal-projects__card-top")).toHaveCount(0);
+  await expect(introProjects).not.toContainText("PERSONAL PROJECTS");
+  await expect(introProjects).not.toContainText("个人项目");
+
+  const rowLayout = await introProjects.locator(".personal-projects__card").first().evaluate((card) => {
+    const style = getComputedStyle(card);
+    return {
+      display: style.display,
+      columns: style.gridTemplateColumns.split(" ").length,
+      hasDescription: Boolean(card.querySelector("p")),
+      hasLinks: card.querySelectorAll(".personal-projects__link").length > 0
+    };
+  });
+  expect(rowLayout).toEqual({ display: "grid", columns: 3, hasDescription: true, hasLinks: true });
 
   const placement = await page.locator(".public-intro").evaluate((intro) => {
     const projectDock = intro.querySelector<HTMLElement>(".public-intro__projects");
