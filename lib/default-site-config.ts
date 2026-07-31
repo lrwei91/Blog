@@ -839,6 +839,7 @@ export const defaultSiteConfig: SiteConfig = {
     seoCanonicalUrl: "",
     seoOgImage: "",
     seoOgImageAlt: "",
+    introImage: "",
     enableImagePreview: true,
     enableAnimation: true,
     enablePublicShare: true,

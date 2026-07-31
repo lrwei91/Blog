@@ -1,4 +1,4 @@
-export const uploadFolders = ["avatar", "blocks", "gallery", "logos", "qrcode"] as const;
+export const uploadFolders = ["avatar", "blocks", "gallery", "intro", "logos", "qrcode"] as const;
 export type UploadFolder = (typeof uploadFolders)[number];
 
 export const maxUploadSize = 5 * 1024 * 1024;

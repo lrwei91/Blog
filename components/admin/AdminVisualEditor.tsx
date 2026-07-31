@@ -5234,14 +5234,24 @@ function ProjectSettingsForm({
  <option value="2xl">16px</option>
  </Select>
  </Field>
- <Field label={editorLanguage === "zh-CN" ? "卡片阴影" : "Card Shadow"}>
- <Select value={theme.cardShadow} onChange={(event) => patchTheme({ cardShadow: event.target.value as SiteConfig["theme"]["cardShadow"] })}>
- <option value="none">{editorLanguage === "zh-CN" ? "无" : "None"}</option>
- <option value="soft">{editorLanguage === "zh-CN" ? "轻" : "Soft"}</option>
- <option value="medium">{editorLanguage === "zh-CN" ? "中" : "Medium"}</option>
- </Select>
- </Field>
- </div>
+  <Field label={editorLanguage === "zh-CN" ? "卡片阴影" : "Card Shadow"}>
+    <Select value={theme.cardShadow} onChange={(event) => patchTheme({ cardShadow: event.target.value as SiteConfig["theme"]["cardShadow"] })}>
+      <option value="none">{editorLanguage === "zh-CN" ? "无" : "None"}</option>
+      <option value="soft">{editorLanguage === "zh-CN" ? "轻" : "Soft"}</option>
+      <option value="medium">{editorLanguage === "zh-CN" ? "中" : "Medium"}</option>
+    </Select>
+  </Field>
+</div>
+<div className="grid gap-2">
+  <Field label={editorLanguage === "zh-CN" ? "欢迎页图片" : "Intro Image"}>
+    <Input
+      value={settings.introImage ?? ""}
+      placeholder={editorLanguage === "zh-CN" ? "图片地址（可下方上传）" : "Image URL (or upload below)"}
+      onChange={(event) => patchSettings({ introImage: event.target.value })}
+    />
+  </Field>
+  <MediaUploader folder="intro" onUploaded={(url) => patchSettings({ introImage: url })} />
+</div>
  <div className="flex flex-wrap gap-4 text-sm text-[#62605B]">
  <label className="flex items-center gap-2">
  <Checkbox checked={settings.enableAnimation} onChange={(event) => patchSettings({ enableAnimation: event.target.checked })} />

@@ -330,6 +330,7 @@ const settingsSchema = z.object({
   seoCanonicalUrl: z.string().optional().default(""),
   seoOgImage: z.string().optional().default(""),
   seoOgImageAlt: z.string().optional().default(""),
+  introImage: z.string().optional().default(""),
   enableImagePreview: z.boolean(),
   enableAnimation: z.boolean(),
   enablePublicShare: z.boolean(),

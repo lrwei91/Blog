@@ -45,6 +45,7 @@ export type SiteSettings = {
   seoCanonicalUrl?: string;
   seoOgImage?: string;
   seoOgImageAlt?: string;
+  introImage?: string;
   enableImagePreview: boolean;
   enableAnimation: boolean;
   enablePublicShare: boolean;

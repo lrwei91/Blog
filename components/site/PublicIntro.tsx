@@ -6,12 +6,14 @@ export function PublicIntro({
   displayName,
   headline,
   enableMotion,
-  projectBlock
+  projectBlock,
+  introImageUrl
 }: {
   displayName: string;
   headline: string;
   enableMotion: boolean;
   projectBlock?: Block;
+  introImageUrl?: string;
 }) {
   const identity = [displayName.trim(), headline.trim()].filter(Boolean).join(" · ");
 
@@ -53,22 +55,13 @@ export function PublicIntro({
           </div>
 
           <div className="public-intro__visual" aria-hidden="true">
-            <span className="public-intro__visual-grid" />
-            <span className="public-intro__visual-orbit" />
-            <span className="public-intro__visual-dot public-intro__visual-dot--one" />
-            <span className="public-intro__visual-dot public-intro__visual-dot--two" />
-            <div className="public-intro__visual-card">
-              <span className="public-intro__visual-label">QUALITY SYSTEMS</span>
-              <strong>Test.<br />Automate.<br />Ship.</strong>
-              <div>
-                <span>AI QA</span>
-                <span>PLAYWRIGHT</span>
-                <span>QUALITY</span>
-              </div>
-            </div>
-            <span className="public-intro__visual-seal">
-              <img src="/brand-seal.png" alt="" />
-            </span>
+            {introImageUrl ? (
+              <img className="public-intro__visual-image" src={introImageUrl} alt="" />
+            ) : (
+              <span className="public-intro__visual-placeholder">
+                <img src="/brand-seal.png" alt="" />
+              </span>
+            )}
           </div>
         </div>
 

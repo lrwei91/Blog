@@ -61,6 +61,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
         headline={renderModel.profile.headline}
         enableMotion={config.settings.enableAnimation}
         projectBlock={personalProjectsBlock}
+        introImageUrl={config.settings.introImage}
       />
       <div className="public-site__wash" aria-hidden="true" />
 
