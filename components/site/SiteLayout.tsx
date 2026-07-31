@@ -45,6 +45,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
   return (
     <main
       id="top"
+      data-color-scheme={theme.colorScheme ?? "light"}
       style={
         {
           ...getThemeStyleVariables(theme),

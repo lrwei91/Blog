@@ -2,14 +2,15 @@ import type { ThemeConfig } from "@/types/theme";
 
 export const defaultTheme: ThemeConfig = {
   primaryColor: "#e45435",
-  backgroundColor: "#f8f7f4",
+  backgroundColor: "#fafafa",
   cardBackground: "#ffffff",
-  textColor: "#1f2328",
-  mutedTextColor: "#62605b",
-  borderColor: "#e7e2d9",
+  textColor: "#111113",
+  mutedTextColor: "#6e6e73",
+  borderColor: "#e8e8ea",
   cardRadius: "xl",
   cardShadow: "soft",
-  fontFamily: "system"
+  fontFamily: "system",
+  colorScheme: "light"
 };
 
 const legacyPaperInkTheme: ThemeConfig = {
@@ -45,7 +46,7 @@ const radiusByTheme: Record<ThemeConfig["cardRadius"], string> = {
 
 const shadowByTheme: Record<ThemeConfig["cardShadow"], string> = {
   none: "none",
-  soft: "0 16px 36px -28px color-mix(in srgb, var(--site-text) 34%, transparent)",
+  soft: "0 1px 2px color-mix(in srgb, var(--site-text) 5%, transparent), 0 12px 30px -26px color-mix(in srgb, var(--site-text) 22%, transparent)",
   medium: "0 22px 54px -28px color-mix(in srgb, var(--site-text) 46%, transparent)"
 };
 
@@ -71,7 +72,7 @@ export function getThemeStyleVariables(theme: ThemeConfig) {
 
 export function normalizeThemeConfig(theme: ThemeConfig): ThemeConfig {
   const matchesTheme = (candidate: ThemeConfig) => Object.entries(candidate).every(
-    ([key, value]) => theme[key as keyof ThemeConfig].toLowerCase() === value.toLowerCase()
+    ([key, value]) => (theme[key as keyof ThemeConfig] ?? "").toLowerCase() === value.toLowerCase()
   );
 
   return matchesTheme(legacyPaperInkTheme) || matchesTheme(legacyBlueTheme)

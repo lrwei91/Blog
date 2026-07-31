@@ -1611,19 +1611,20 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  className="admin-studio__stage flex justify-center overflow-x-hidden px-3 transition-[padding] duration-200"
  style={{ paddingLeft: isStructureOpen && isStructureDocked ? 328 : undefined }}
  >
- <div
- style={
- {
- ...getThemeStyleVariables(config.theme),
- width: `${canvasWidth}px`,
- zoom: canvasScale
- } as React.CSSProperties & { zoom: number }
- }
- className={cn(
- "admin-studio__canvas grid gap-8 px-5 pb-28 pt-10 md:px-8 md:pt-14",
- editorDevice === "desktop" ? "grid-cols-[320px_minmax(0,1fr)] gap-12" : "grid-cols-1"
- )}
- >
+<div
+  data-color-scheme={config.theme.colorScheme ?? "light"}
+  style={
+    {
+      ...getThemeStyleVariables(config.theme),
+      width: `${canvasWidth}px`,
+      zoom: canvasScale
+    } as React.CSSProperties & { zoom: number }
+  }
+  className={cn(
+    "admin-studio__canvas grid gap-8 px-5 pb-28 pt-10 md:px-8 md:pt-14",
+    editorDevice === "desktop" ? "grid-cols-[320px_minmax(0,1fr)] gap-12" : "grid-cols-1"
+  )}
+>
  <EditableProfile
  profile={config.profile}
  device={editorDevice}
@@ -5193,8 +5194,14 @@ function ProjectSettingsForm({
 
  {activePanel === "appearance" ? (
  <section className="grid gap-3">
- <div className="grid gap-3 md:grid-cols-2">
- <Field label={copy.primaryColor}>
+<div className="grid gap-3 md:grid-cols-2">
+  <Field label={editorLanguage === "zh-CN" ? "外观模式" : "Color Scheme"}>
+    <Select value={theme.colorScheme ?? "light"} onChange={(event) => patchTheme({ colorScheme: event.target.value as SiteConfig["theme"]["colorScheme"] })}>
+      <option value="light">{editorLanguage === "zh-CN" ? "浅色" : "Light"}</option>
+      <option value="dark">{editorLanguage === "zh-CN" ? "深色" : "Dark"}</option>
+    </Select>
+  </Field>
+  <Field label={copy.primaryColor}>
  <Input type="color" value={theme.primaryColor} onChange={(event) => patchTheme({ primaryColor: event.target.value })} />
  </Field>
  <Field label={copy.background}>

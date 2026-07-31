@@ -171,7 +171,7 @@ test.describe("公开页视觉回归", () => {
     });
 
     expect(introContract).toEqual({
-      background: "#f8f7f4",
+      background: "#fafafa",
       card: "#ffffff",
       primary: "#e45435",
       viewportHeightDelta: 0,

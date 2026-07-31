@@ -819,14 +819,15 @@ export const defaultSiteConfig: SiteConfig = {
   ],
   theme: {
     primaryColor: "#e45435",
-    backgroundColor: "#f8f7f4",
+    backgroundColor: "#fafafa",
     cardBackground: "#ffffff",
-    textColor: "#1f2328",
-    mutedTextColor: "#62605b",
-    borderColor: "#e7e2d9",
+    textColor: "#111113",
+    mutedTextColor: "#6e6e73",
+    borderColor: "#e8e8ea",
     cardRadius: "xl",
     cardShadow: "soft",
-    fontFamily: "system"
+    fontFamily: "system",
+    colorScheme: "light"
   },
   settings: {
     projectName: "Bio Template Editor",

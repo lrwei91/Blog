@@ -20,8 +20,8 @@ test("测试账号可进入轻纸墨后台且预览沿用公开页主题", async
     };
   });
 
-  expect(loginContract?.background).toBe("rgb(248, 247, 244)");
-  expect(loginContract?.panelRadius).toBe("16px");
+  expect(loginContract?.background).toBe("rgb(250, 250, 250)");
+  expect(loginContract?.panelRadius).toBe("12px");
   expect(loginContract?.headingFont.replaceAll("sans-serif", "")).not.toMatch(/songti|stsong|serif/i);
 
   await page.locator("#admin-password").fill("bio-blocks-e2e-admin");
@@ -51,9 +51,9 @@ test("测试账号可进入轻纸墨后台且预览沿用公开页主题", async
     };
   });
 
-  expect(editorContract?.background).toBe("rgb(248, 247, 244)");
+  expect(editorContract?.background).toBe("rgb(250, 250, 250)");
   expect(editorContract?.accent).toBe("#e45435");
-  expect(editorContract?.canvasThemeBackground).toContain("#f8f7f4");
-  expect(editorContract?.canvasRadius).toBe("16px");
+  expect(editorContract?.canvasThemeBackground).toContain("#fafafa");
+  expect(editorContract?.canvasRadius).toBe("12px");
   expect(editorContract?.cardRadius).toBe("12px");
 });

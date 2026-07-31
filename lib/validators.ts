@@ -259,7 +259,8 @@ const themeSchema = z.object({
   borderColor: z.string(),
   cardRadius: z.enum(["md", "lg", "xl", "2xl"]),
   cardShadow: z.enum(["none", "soft", "medium"]),
-  fontFamily: z.enum(["system", "rounded", "mono"])
+  fontFamily: z.enum(["system", "rounded", "mono"]),
+  colorScheme: z.enum(["light", "dark"]).default("light")
 });
 
 const languageSettingsSchema = z
