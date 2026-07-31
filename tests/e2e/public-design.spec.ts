@@ -38,6 +38,36 @@ test("欢迎页在禁用 JavaScript 时仍可识别并进入主页", async ({ br
   await context.close();
 });
 
+test("欢迎页标语保持两行且不产生横向溢出", async ({ page }) => {
+  for (const viewport of [
+    { width: 320, height: 720 },
+    { width: 390, height: 844 },
+    { width: 1024, height: 768 },
+    { width: 1440, height: 900 }
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    await expectProjectIdentity(page);
+
+    const result = await page.locator(".public-intro").evaluate((intro) => {
+      const introRect = intro.getBoundingClientRect();
+      const lines = Array.from(intro.querySelectorAll<HTMLElement>(".public-intro__line > span"));
+      return {
+        lineCount: lines.length,
+        overflowingLines: lines.filter((line) => {
+          const rect = line.getBoundingClientRect();
+          return rect.left < introRect.left - 1 || rect.right > introRect.right + 1;
+        }).length,
+        documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth
+      };
+    });
+
+    expect(result.lineCount).toBe(2);
+    expect(result.overflowingLines, `${viewport.width}px 欢迎页标语溢出`).toBe(0);
+    expect(result.documentOverflow, `${viewport.width}px 欢迎页横向溢出`).toBeLessThanOrEqual(1);
+  }
+});
+
 test("连续动效只在对应区域可见时运行", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");

@@ -2532,7 +2532,7 @@ html.site-motion-ready .public-site .photo-lightbox.is-closing .photo-lightbox__
   text-wrap: balance;
 }
 .public-intro__line { display: block; overflow: hidden; padding: 0.04em 0 0.1em; margin-bottom: -0.1em; }
-.public-intro__line > span { display: block; transform: none; }
+.public-intro__line > span { display: block; white-space: nowrap; transform: none; }
 .public-intro[data-motion="true"] .public-intro__line > span {
   animation: public-intro-line-rise 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
