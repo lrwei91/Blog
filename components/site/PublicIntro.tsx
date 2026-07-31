@@ -44,6 +44,12 @@ export function PublicIntro({
               <span><b>ENTER</b><small>进入主页</small></span>
               <ArrowRight aria-hidden="true" />
             </a>
+
+            {projectBlock ? (
+              <aside className="public-intro__projects" data-reveal="panel" aria-label="欢迎页个人项目">
+                <PersonalProjects block={projectBlock} variant="intro" />
+              </aside>
+            ) : null}
           </div>
 
           <div className="public-intro__visual" aria-hidden="true">
@@ -64,12 +70,6 @@ export function PublicIntro({
               <img src="/brand-seal.png" alt="" />
             </span>
           </div>
-
-          {projectBlock ? (
-            <aside className="public-intro__projects" data-reveal="panel" aria-label="欢迎页个人项目">
-              <PersonalProjects block={projectBlock} variant="intro" />
-            </aside>
-          ) : null}
         </div>
 
         <footer className="public-intro__footer">

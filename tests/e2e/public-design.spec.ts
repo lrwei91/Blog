@@ -68,7 +68,7 @@ test("欢迎页标语保持两行且不产生横向溢出", async ({ page }) => 
   }
 });
 
-test("个人项目展示位于欢迎页右下区域且不在主页重复渲染", async ({ page }) => {
+test("个人项目展示位于欢迎页且不在主页重复渲染", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
@@ -79,7 +79,6 @@ test("个人项目展示位于欢迎页右下区域且不在主页重复渲染",
   await expect(introProjects.locator(".personal-projects__card")).toHaveCount(3);
   await expect(introProjects.locator(".personal-projects__card-top")).toHaveCount(0);
   await expect(introProjects).not.toContainText("PERSONAL PROJECTS");
-  await expect(introProjects).not.toContainText("个人项目");
 
   const rowLayout = await introProjects.locator(".personal-projects__card").first().evaluate((card) => {
     const style = getComputedStyle(card);
@@ -98,14 +97,12 @@ test("个人项目展示位于欢迎页右下区域且不在主页重复渲染",
     const introRect = intro.getBoundingClientRect();
     const dockRect = projectDock.getBoundingClientRect();
     return {
-      rightInset: introRect.right - dockRect.right,
       bottomRatio: (dockRect.bottom - introRect.top) / introRect.height
     };
   });
 
   expect(placement).not.toBeNull();
-  expect(placement!.rightInset).toBeLessThanOrEqual(128);
-  expect(placement!.bottomRatio).toBeGreaterThan(0.65);
+  expect(placement!.bottomRatio).toBeGreaterThan(0.4);
 
   await page.locator(".public-intro__enter").click();
   await expect(page.locator('.public-content__block-group[data-content-group="projects"]')).toHaveCount(0);

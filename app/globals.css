@@ -2506,49 +2506,65 @@ html.site-motion-ready .public-site .photo-lightbox.is-closing .photo-lightbox__
 
 .public-intro__layout {
   align-self: center;
-  width: min(100%, 76rem);
+  width: min(100%, 78rem);
   margin-inline: auto;
-  padding-block: clamp(1.75rem, 4vh, 3.5rem);
+  padding-block: clamp(1.5rem, 3.5vh, 3rem);
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(19rem, 0.72fr);
-  column-gap: clamp(2.5rem, 7vw, 7rem);
-  row-gap: clamp(0.75rem, 1.4vw, 1.25rem);
+  grid-template-columns: minmax(0, 1.12fr) minmax(18rem, 0.88fr);
+  column-gap: clamp(2.5rem, 6vw, 6rem);
+  row-gap: clamp(1.5rem, 3vw, 2.5rem);
   align-items: center;
 }
+.public-intro__welcome {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 .public-intro__projects {
-  position: absolute;
+  position: relative;
   z-index: 4;
-  right: 0;
-  bottom: clamp(3.5rem, 6vh, 4.75rem);
-  width: min(calc(100% - 2.5rem), 52rem);
+  width: 100%;
+  margin-top: clamp(1.5rem, 3vh, 2.25rem);
+}
+.public-intro__projects-header {
+  margin-bottom: 0.5rem;
+  color: var(--intro-muted);
+  font-family: var(--font-label), monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 .personal-projects--intro .personal-projects__grid {
   grid-template-columns: minmax(0, 1fr);
   gap: 0.55rem;
 }
 .personal-projects--intro .personal-projects__card {
-  min-height: 4.65rem;
-  padding: 0.8rem 1rem;
+  min-height: 4.4rem;
+  padding: 0.75rem 1rem;
   display: grid;
   grid-template-columns: 24% minmax(0, 1fr) max-content;
   align-items: center;
   gap: 1rem;
+  border-radius: 12px;
   border-color: color-mix(in srgb, var(--intro-accent) 18%, var(--rule));
-  background: color-mix(in srgb, var(--card) 90%, transparent);
-  box-shadow: 0 18px 34px -28px color-mix(in srgb, var(--ink) 68%, transparent);
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  box-shadow: 0 14px 30px -24px color-mix(in srgb, var(--ink) 65%, transparent);
   backdrop-filter: blur(10px);
+  transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out), border-color 220ms ease;
 }
 .personal-projects--intro .personal-projects__card h3 {
   min-width: 0;
   min-height: 0;
   margin: 0;
-  font-size: clamp(1rem, 1.55vw, 1.28rem);
+  font-size: clamp(0.95rem, 1.4vw, 1.18rem);
   line-height: 1.15;
 }
 .personal-projects--intro .personal-projects__card > p {
   min-width: 0;
   margin: 0;
-  font-size: clamp(0.74rem, 0.95vw, 0.86rem);
+  font-size: clamp(0.72rem, 0.9vw, 0.82rem);
   line-height: 1.55;
 }
 .personal-projects--intro .personal-projects__card-footer {
@@ -2566,11 +2582,10 @@ html.site-motion-ready .public-site .photo-lightbox.is-closing .photo-lightbox__
   letter-spacing: 0.08em;
 }
 .personal-projects--intro .personal-projects__link svg { width: 0.74rem; height: 0.74rem; }
-.personal-projects--intro .personal-projects__card:hover { transform: translateX(4px); }
-.public-intro__welcome {
-  min-width: 0;
-  display: grid;
-  justify-items: start;
+.personal-projects--intro .personal-projects__card:hover {
+  transform: translateX(4px);
+  border-color: color-mix(in srgb, var(--intro-accent) 35%, var(--rule));
+  box-shadow: 0 18px 36px -22px color-mix(in srgb, var(--ink) 72%, transparent);
 }
 .public-intro__statement,
 .public-intro__topics { margin: 0; }
