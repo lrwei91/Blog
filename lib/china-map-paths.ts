@@ -1,5 +1,5 @@
 // Generated from Aliyun DataV China administrative boundary GeoJSON (adcode 100000).
-// Coordinates are simplified and projected for this portfolio visualization.
+// Coordinates are simplified and projected for this personal-site visualization.
 export const CHINA_MAP_VIEW_BOX = "0 0 1000 700";
 
 export const chinaProvincePaths = [

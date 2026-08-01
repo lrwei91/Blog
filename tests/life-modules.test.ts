@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildDoubanWatchlistGroups,
+  getMediaShelfPageSize,
   getDoubanWatchlistProgress,
   readDoubanMediaSource,
   readMediaItems,
@@ -63,7 +64,7 @@ describe("life module readers", () => {
       .toEqual(["new", "old", "undated"]);
   });
 
-  it("builds separate watching and wishlist groups with eight-card homepage limits", () => {
+  it("builds complete watching and wishlist groups for presentation-layer paging", () => {
     const watching = Array.from({ length: 9 }, (_, index) => ({
       id: `watching-${index}`,
       category: "movie",
@@ -88,13 +89,11 @@ describe("life module readers", () => {
     expect(groups[0].progress).toBe("active");
     expect(groups.find((group) => group.progress === "active")).toMatchObject({
       label: "在看",
-      items: { length: 9 },
-      visibleItems: { length: 8 }
+      items: { length: 9 }
     });
     expect(groups.find((group) => group.progress === "wishlist")).toMatchObject({
       label: "想看",
-      items: { length: 9 },
-      visibleItems: { length: 8 }
+      items: { length: 9 }
     });
     expect(getDoubanWatchlistProgress({
       id: "manual",
@@ -103,6 +102,14 @@ describe("life module readers", () => {
       status: "在看",
       progress: "wishlist"
     })).toBe("active");
+  });
+
+  it("chooses 4, 2, or 1 media cards from the component width", () => {
+    expect(getMediaShelfPageSize(960)).toBe(4);
+    expect(getMediaShelfPageSize(720)).toBe(4);
+    expect(getMediaShelfPageSize(719)).toBe(2);
+    expect(getMediaShelfPageSize(360)).toBe(2);
+    expect(getMediaShelfPageSize(359)).toBe(1);
   });
 
   it("preserves stable story and photo ids", () => {

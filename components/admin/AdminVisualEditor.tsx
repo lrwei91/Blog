@@ -348,7 +348,7 @@ const editorCanvasWidth: Record<LayoutDevice, number> = {
 
 const desktopBreakpoint = 768;
 const adminEditorVersion = "1.1.0";
-const reservedVariantAccessCodes = new Set(["admin", "api", "icon", "_next", "favicon.ico", "reset"]);
+const reservedVariantAccessCodes = new Set(["admin", "api", "icon", "_next", "favicon.ico", "reset", "profile"]);
 type ResizeMetrics = {
  left: number;
  top: number;

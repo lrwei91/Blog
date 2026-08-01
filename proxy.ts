@@ -7,11 +7,11 @@ import {
 import { signVariantCookie, verifyVariantCookie, getVariantCookieMaxAge } from "@/lib/variant-auth";
 
 export function proxy(request: NextRequest) {
-  if (request.nextUrl.pathname !== "/") {
+  if (request.nextUrl.pathname !== "/" && request.nextUrl.pathname !== "/profile") {
     return NextResponse.next();
   }
 
-  if (request.nextUrl.searchParams.has("reset")) {
+  if (request.nextUrl.pathname === "/" && request.nextUrl.searchParams.has("reset")) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.search = "";
     const response = NextResponse.redirect(redirectUrl);
@@ -20,6 +20,8 @@ export function proxy(request: NextRequest) {
     response.cookies.delete(publicVariantCookieName);
     return response;
   }
+
+  if (request.nextUrl.pathname === "/") return NextResponse.next();
 
   const cookieValue = request.cookies.get(publicVariantCookieName)?.value;
   const verified = verifyVariantCookie(cookieValue);
@@ -53,5 +55,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/"
+  matcher: ["/", "/profile"]
 };

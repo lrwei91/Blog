@@ -4,13 +4,13 @@ Last updated: 2026-07-07
 
 ## Purpose
 
-This project is being prepared as a public personal bio / portfolio template. The goal is to let people fork or clone it, replace the sample content, deploy it on Vercel, and maintain their profile through a visual admin editor.
+This project is a customizable personal-site template with optional resume content. The goal is to let people fork or clone it, replace the sample content, deploy it on Vercel, and maintain their profile through a visual admin editor.
 
-The project should feel like an actual usable personal page, not a marketing landing page for the template itself. The first screen should show the owner profile and content cards.
+The project should feel like an individual, lived-in personal page rather than a formal recruiting portfolio or a marketing landing page for the template itself. `/` is an independent welcome cover; `/profile` contains the owner's profile, interests, projects, and resume material.
 
 ## Product Model
 
-- The public site is a personal homepage.
+- The public site has an independent welcome route and a personal-home route.
 - The admin site is a visual editor for the same homepage.
 - The content source of truth is a single validated `SiteConfig` object.
 - Vercel Blob stores the production config and uploaded images.
@@ -63,18 +63,19 @@ Public routing uses hidden short access codes:
 - `app/[accessCode]/route.ts` also recognizes an enabled main-version locale such as `/en`; it clears any hidden-version session, selects that language, and redirects to `/`.
 - `app/[accessCode]/route.ts` checks whether the path matches an enabled variant access code such as `/u1`.
 - `app/[accessCode]/[locale]/route.ts` selects both a hidden version and one of its enabled languages, such as `/u1/en`.
-- A valid access code writes HTTP-only variant cookies and redirects to `/`, so the visible URL returns to the normal homepage.
+- A valid access code writes HTTP-only variant cookies and redirects to `/`, so visitors still enter through the welcome cover.
 - A hidden access code without a locale resets that hidden version to its own main language.
-- `proxy.ts` decrements the variant view counter on `/`; after 10 homepage visits it clears the variant cookies.
+- `proxy.ts` decrements the variant view counter on `/profile`; opening the welcome cover does not consume a view.
 - `/reset` and `/?reset` clear the public variant cookies immediately and redirect to the main homepage.
-- `app/page.tsx` resolves the active variant from cookies, resolves locale from the visitor language cookie first and then `Accept-Language`, and emits `robots` metadata from the active variant's `allowSeoIndex` setting.
-- The public language switcher is only shown when the active variant has more than one enabled language. It navigates through the explicit locale route and immediately shows a soft, full-screen preparation state in the target language. A short-lived transition cookie keeps that layer mounted across the full-page redirect so the arriving page can fade it out smoothly instead of flashing it away. The server writes `bio_locale` only for a locale that belongs to the active variant's enabled language list; otherwise rendering falls back to browser language or the variant main language. `/reset` clears the variant cookies and this manual language cookie.
+- `lib/public-site-context.ts` resolves the active variant and locale for both public routes and emits route-specific metadata from the active variant's `allowSeoIndex` setting.
+- The public language switcher is only shown on `/profile` when the active variant has more than one enabled language. It writes the selected locale through the public locale API and returns to `/profile`. A short-lived transition cookie keeps the preparation layer mounted across the redirect. The server accepts only locales enabled for the active variant; otherwise rendering falls back to browser language or the variant main language. `/reset` clears the variant cookies and the manual language cookie.
 
-The short access code namespace must not collide with system paths such as `admin`, `api`, `icon`, `_next`, `favicon.ico`, or `reset`. `lib/validators.ts` enforces this before config save.
+The short access code namespace must not collide with system paths such as `admin`, `api`, `icon`, `_next`, `favicon.ico`, `reset`, or `profile`. `lib/validators.ts` enforces this before config save.
 
 ## Main Files
 
-- `app/page.tsx`: public page entry.
+- `app/page.tsx`: independent welcome-page entry.
+- `app/profile/page.tsx`: personal-home entry.
 - `app/[accessCode]/route.ts`: hidden variant access-code entry and redirect.
 - `app/[accessCode]/[locale]/route.ts`: hidden variant plus explicit locale entry and redirect.
 - `app/admin/page.tsx`: protected admin entry.
@@ -83,7 +84,7 @@ The short access code namespace must not collide with system paths such as `admi
 - `components/admin/AdminLoginForm.tsx`: flat admin login surface; it reuses the saved editor language and otherwise follows the browser language.
 - `components/admin/ImageCropUploader.tsx`: shared image upload/crop dialog.
 - `components/admin/BlockForm.tsx`: block editing form.
-- `components/site/SiteLayout.tsx`: public layout shell.
+- `components/site/SiteLayout.tsx`: personal-home layout shell.
 - `components/site/ContentArea.tsx`: ordered public content rendering.
 - `components/blocks/BlockCard.tsx`: main block card renderer.
 - `lib/utils.ts`: render model, ordering helpers, top-level block id, language/variant materialization helpers.
@@ -94,7 +95,7 @@ The short access code namespace must not collide with system paths such as `admi
 
 ## Design Direction
 
-- Quiet, content-first personal page.
+- Individual, content-first personal page with resume material as one part of the story.
 - Dense but approachable admin UI.
 - Avoid large hero marketing sections.
 - Avoid decorative gradient blobs or one-note palettes.

@@ -35,6 +35,10 @@ test("测试账号可进入技术编辑后台且预览沿用公开页主题", as
   await expect(canvas).toBeVisible();
   await expect(profileHero).toBeVisible();
   await expect(page.locator(".admin-floating-toolbar")).toBeVisible();
+  const mediaShelf = page.locator(".admin-studio__canvas .media-shelf");
+  await expect(mediaShelf).toHaveCount(1);
+  await expect(mediaShelf.locator('[role="tab"]')).toHaveCount(2);
+  await expect(mediaShelf).not.toContainText("DOUBAN WATCHLIST");
 
   const editorContract = await studio.evaluate((element) => {
     const canvas = element.querySelector<HTMLElement>(".admin-studio__canvas");

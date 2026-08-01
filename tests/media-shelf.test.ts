@@ -5,7 +5,7 @@ import { MediaShelf } from "@/components/site/MediaShelf";
 import { defaultSiteConfig } from "@/lib/default-site-config";
 
 describe("MediaShelf", () => {
-  it("renders watching as the default tab with eight compact cards and no duplicate title", () => {
+  it("renders watching as the default tab with four paged cards and no duplicate title", () => {
     const block = structuredClone(
       defaultSiteConfig.blocks.find((item) => item.id === "media-shelf")
     );
@@ -43,10 +43,13 @@ describe("MediaShelf", () => {
     expect(html).toContain("在看影片 9");
     expect(html).not.toContain("在看影片 1");
     expect(html).not.toContain("想看影片 9");
-    expect(html.match(/media-shelf__card/g)).toHaveLength(8);
+    expect(html.match(/media-shelf__card/g)).toHaveLength(4);
     expect(html).not.toContain("media-shelf__number");
     expect(html).not.toContain("media-shelf__status");
     expect(html).not.toContain("<h3>我的豆瓣片单</h3>");
-    expect(html).toContain("查看更多");
+    expect(html).toContain('aria-label="下一页"');
+    expect(html).toContain("查看全部");
+    expect(html).not.toContain("DOUBAN WATCHLIST");
+    expect(html).not.toContain("LAST SYNC");
   });
 });

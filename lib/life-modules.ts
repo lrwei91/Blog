@@ -79,10 +79,15 @@ export function buildDoubanWatchlistGroups(items: MediaItem[]) {
     );
     return {
       ...group,
-      items: groupItems,
-      visibleItems: groupItems.slice(0, 8)
+      items: groupItems
     };
   });
+}
+
+export function getMediaShelfPageSize(containerWidth: number) {
+  if (containerWidth < 360) return 1;
+  if (containerWidth < 720) return 2;
+  return 4;
 }
 
 export function readDoubanMediaSource(value: unknown): DoubanMediaSource {

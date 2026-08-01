@@ -6,9 +6,9 @@ This document is written for AI agents that receive this repository and need to 
 
 ## Project Architecture
 
-This is a Next.js personal bio / portfolio template with two main surfaces:
+This is a Next.js personal-site template with two main surfaces:
 
-- Public site: `app/page.tsx`, hidden variant routes under `app/[accessCode]`, and metadata/icon routes.
+- Public site: the welcome route in `app/page.tsx`, the personal home in `app/profile/page.tsx`, hidden variant routes under `app/[accessCode]`, and metadata/icon routes.
 - Admin editor: `app/admin/page.tsx`, `components/admin/AdminVisualEditor.tsx`, and authenticated API routes under `app/api/admin`.
 
 The content source of truth is a validated `SiteConfig` object:

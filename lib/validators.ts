@@ -448,7 +448,7 @@ export const siteConfigSchema = z
     }
   }) as z.ZodType<SiteConfig>;
 
-const reservedAccessCodes = new Set(["admin", "api", "icon", "_next", "favicon.ico", "reset"]);
+const reservedAccessCodes = new Set(["admin", "api", "icon", "_next", "favicon.ico", "reset", "profile"]);
 
 export function validateSiteConfig(data: unknown):
   | { success: true; data: SiteConfig }

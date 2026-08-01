@@ -1,74 +1,59 @@
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import type { Block } from "@/types/block";
-import { PersonalProjects } from "@/components/site/PersonalProjects";
 
 export function PublicIntro({
   displayName,
   headline,
   enableMotion,
-  projectBlock,
   introImageUrl
 }: {
   displayName: string;
   headline: string;
   enableMotion: boolean;
-  projectBlock?: Block;
   introImageUrl?: string;
 }) {
   const identity = [displayName.trim(), headline.trim()].filter(Boolean).join(" · ");
   const heroImage = introImageUrl?.trim() || "/images/hero/qa-workbench-v2.webp";
 
   return (
-    <>
-      <section
-        className="public-intro"
-        data-motion={enableMotion ? "true" : "false"}
-        aria-label="欢迎页"
-      >
-        <div className="public-intro__inner">
-          <header className="public-intro__masthead">
-            <span className="public-intro__mark" aria-hidden="true">
-              <img src="/brand-seal.png" alt="" />
-            </span>
-          </header>
+    <section
+      className="public-intro"
+      data-motion={enableMotion ? "true" : "false"}
+      aria-label="欢迎页"
+    >
+      <div className="public-intro__inner">
+        <header className="public-intro__masthead">
+          <span className="public-intro__mark" aria-hidden="true">
+            <img src="/brand-seal.png" alt="" />
+          </span>
+        </header>
 
-          <div className="public-intro__layout">
-            <div className="public-intro__welcome">
-              <p className="public-intro__statement">
-                <span className="public-intro__line"><span>把复杂的事理清，</span></span>
-                <span className="public-intro__line"><span>把喜欢的事做久。</span></span>
-              </p>
-              {identity ? <p className="public-intro__identity">{identity}</p> : null}
-              <a href="#profile" className="public-intro__enter">
-                <span>查看经历与作品</span>
-                <ArrowRight aria-hidden="true" />
-              </a>
-            </div>
-
-            <figure className="public-intro__visual">
-              <Image
-                className="public-intro__visual-image"
-                src={heroImage}
-                alt="键盘、游戏手柄、笔记本与测试卡片组成的工作台"
-                fill
-                priority
-                sizes="(max-width: 860px) 100vw, 44vw"
-              />
-            </figure>
+        <div className="public-intro__layout">
+          <div className="public-intro__welcome">
+            <h1 className="public-intro__statement">
+              <span className="public-intro__line"><span>把复杂的事理清，</span></span>
+              <span className="public-intro__line"><span>把喜欢的事做久。</span></span>
+            </h1>
+            {identity ? <p className="public-intro__identity">{identity}</p> : null}
+            <Link href="/profile" className="public-intro__enter">
+              <span>进来逛逛</span>
+              <ArrowRight aria-hidden="true" />
+            </Link>
           </div>
-        </div>
-      </section>
 
-      {projectBlock ? (
-        <section className="public-intro-projects" data-reveal="section" aria-labelledby="selected-projects-title">
-          <header className="public-intro-projects__header">
-            <h2 id="selected-projects-title">把实践做成可复用的作品。</h2>
-            <p>从内容数据到桌面工具，每个项目都来自真实问题与持续维护。</p>
-          </header>
-          <PersonalProjects block={projectBlock} variant="intro" />
-        </section>
-      ) : null}
-    </>
+          <figure className="public-intro__visual">
+            <Image
+              className="public-intro__visual-image"
+              src={heroImage}
+              alt="键盘、游戏手柄、笔记本与测试卡片组成的工作台"
+              fill
+              priority
+              sizes="(max-width: 860px) 100vw, 44vw"
+            />
+          </figure>
+        </div>
+      </div>
+    </section>
   );
 }

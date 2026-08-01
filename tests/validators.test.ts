@@ -45,6 +45,21 @@ describe("validateSiteConfig", () => {
     }
   });
 
+  it("reserves the profile route from variant access codes", () => {
+    const bad = structuredClone(defaultSiteConfig);
+    bad.settings.variants.isEnabled = true;
+    bad.settings.variants.variants.push({
+      id: "profile-variant",
+      name: "Profile variant",
+      accessCode: "profile",
+      isEnabled: true,
+      sortOrder: 2
+    });
+    const result = validateSiteConfig(bad);
+    expect(result.success).toBe(false);
+    if (!result.success) expect(result.error).toMatch(/reserved/i);
+  });
+
   it("rejects a config with a block referencing an unknown section", () => {
     const bad = structuredClone(defaultSiteConfig);
     bad.blocks = [

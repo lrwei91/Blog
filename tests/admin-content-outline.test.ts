@@ -34,9 +34,9 @@ describe("admin content outline", () => {
     expect(travel && projects).toBeTruthy();
     if (!travel || !projects) return;
 
-    const moved = reorderContentOutlineGroups(defaultSiteConfig.blocks, projects.id, travel.id, "now");
+    const moved = reorderContentOutlineGroups(defaultSiteConfig.blocks, travel.id, projects.id, "now");
     const nextGroups = buildContentOutlineGroups(moved);
-    expect(nextGroups.findIndex((group) => group.id === projects.id)).toBe(nextGroups.findIndex((group) => group.id === travel.id) - 1);
+    expect(nextGroups.findIndex((group) => group.id === travel.id)).toBe(nextGroups.findIndex((group) => group.id === projects.id) - 1);
     [...moved].sort((a, b) => a.sortOrder - b.sortOrder).forEach((block, index) => expect(block.sortOrder).toBe(index + 1));
   });
 

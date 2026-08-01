@@ -86,7 +86,7 @@ export function BlockForm({
  <Input
  value={block.title}
  onChange={(event) => onPatch({ title: event.target.value })}
- placeholder={editorLanguage === "zh-CN" ? "例如：作品集项目" : "Example: Featured Project"}
+ placeholder={editorLanguage === "zh-CN" ? "例如：个人项目" : "Example: Personal project"}
  />
  </Field>
  <Field label={copy.blockSubtitle}>

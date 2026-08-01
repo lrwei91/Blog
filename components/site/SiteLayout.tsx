@@ -1,4 +1,5 @@
 import { ArrowUpRight, ChevronDown } from "lucide-react";
+import Link from "next/link";
 import type { Block } from "@/types/block";
 import type { SiteConfig, SiteLanguage } from "@/types/site-config";
 import { getSectionAnchorId, type ContentOrderItem } from "@/lib/utils";
@@ -6,7 +7,6 @@ import { ContentArea } from "@/components/site/ContentArea";
 import { ProfilePanel } from "@/components/site/ProfilePanel";
 import { PublicLanguageSwitcher } from "@/components/site/PublicLanguageSwitcher";
 import { PublicSiteEffects } from "@/components/site/PublicSiteEffects";
-import { PublicIntro } from "@/components/site/PublicIntro";
 import { getPublicDesktopContentColumns } from "@/lib/public-content-layout";
 import { PublicFloatingTools } from "@/components/site/PublicFloatingTools";
 import { getThemeStyleVariables } from "@/constants/theme";
@@ -31,13 +31,10 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
   const theme = config.theme;
   const desktopContentColumns = getPublicDesktopContentColumns(renderModel.orderedContentItems);
   const desktopPageWidth = "960px";
-  const personalProjectsBlock = getPersonalProjectsBlock(renderModel.orderedContentItems);
   const navItems = renderModel.orderedContentItems
     .filter((item): item is Extract<ContentOrderItem, { type: "text-block" }> => item.type === "text-block")
     .filter((item) => item.block.title.trim());
-  const visibleNavItems = personalProjectsBlock
-    ? navItems.filter((item) => item.block.metadata?.sourceSectionId !== "projects")
-    : navItems;
+  const visibleNavItems = navItems;
   const primaryNavItems = visibleNavItems.slice(0, 5);
   const overflowNavItems = visibleNavItems.slice(5);
   const email = renderModel.profile.visibleModules.contact ? renderModel.profile.email : "";
@@ -56,22 +53,15 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
       className="public-site min-h-[100dvh] text-[var(--site-text)]"
     >
       <PublicSiteEffects enabled={config.settings.enableAnimation} />
-      <PublicIntro
-        displayName={renderModel.profile.displayName}
-        headline={renderModel.profile.headline}
-        enableMotion={config.settings.enableAnimation}
-        projectBlock={personalProjectsBlock}
-        introImageUrl={config.settings.introImage}
-      />
       <div className="public-site__wash" aria-hidden="true" />
       <div className="public-nav-sentinel" data-public-nav-sentinel aria-hidden="true" />
 
       <header className="public-nav" data-public-nav>
         <div className="public-nav__inner">
-          <a href="#top" className="public-nav__brand" aria-label={`${renderModel.profile.displayName} 首页`}>
+          <Link href="/" className="public-nav__brand" aria-label={`${renderModel.profile.displayName} 欢迎页`}>
             <span className="public-nav__mark" aria-hidden="true"><img src="/brand-seal.png" alt="" /></span>
             <span className="public-nav__brand-label">{renderModel.profile.displayName}</span>
-          </a>
+          </Link>
 
           {visibleNavItems.length > 0 ? (
             <nav className="public-nav__links" aria-label="页面导航">
@@ -101,12 +91,13 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
                 currentLocale={languageSwitcher.currentLocale}
                 languages={languageSwitcher.languages}
                 initialPreparingLocale={languageSwitcher.initialPreparingLocale}
+                returnPath="/profile"
                 className="public-language-switcher"
               />
             ) : null}
             {email ? (
               <a className="public-nav__cta" href={`mailto:${email}`} aria-label={`发送邮件给 ${renderModel.profile.displayName}`}>
-                <span>联系我</span>
+                <span>给我写信</span>
                 <ArrowUpRight aria-hidden="true" />
               </a>
             ) : null}
@@ -121,7 +112,6 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
           orderedContentItems={renderModel.orderedContentItems}
           desktopContentColumns={desktopContentColumns}
           enableImagePreview={config.settings.enableImagePreview}
-          hideProjects={Boolean(personalProjectsBlock)}
         />
       </div>
 
@@ -136,7 +126,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
               <span className="public-nav__mark" aria-hidden="true"><img src="/brand-seal.png" alt="" /></span>
             </a>
             <p className="public-footer__signature">
-              Designed by <span>{renderModel.profile.username || "lrwei91"}</span>
+              由 <span>{renderModel.profile.username || "lrwei91"}</span> 慢慢维护
             </p>
             <p className="public-footer__copyright">© {new Date().getFullYear()}</p>
           </div>
@@ -146,15 +136,4 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
       <PublicFloatingTools enableShare={config.settings.enablePublicShare} title={config.settings.siteTitle} />
     </main>
   );
-}
-
-function getPersonalProjectsBlock(items: ContentOrderItem[]) {
-  for (const item of items) {
-    if (item.type !== "top-level-blocks") continue;
-    const projectBlock = item.blocks.find((block) =>
-      block.metadata?.sourceSectionId === "projects" || Array.isArray(block.metadata?.projects)
-    );
-    if (projectBlock) return projectBlock;
-  }
-  return undefined;
 }

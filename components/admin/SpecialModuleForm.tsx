@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
 import type { EditorLanguage } from "@/components/admin/editor-i18n";
 import { MediaUploader } from "@/components/admin/MediaUploader";
-import { getDoubanWatchlistProgress, readDoubanMediaSource, readMediaItems, readNowStatus, readPhotoStories, sortMediaItemsByMarkedAt } from "@/lib/life-modules";
+import { buildDoubanWatchlistGroups, getDoubanWatchlistProgress, readDoubanMediaSource, readMediaItems, readNowStatus, readPhotoStories, sortMediaItemsByMarkedAt } from "@/lib/life-modules";
 import { CHINA_MAP_VIEW_BOX, chinaProvincePaths } from "@/lib/china-map-paths";
 
 export type TravelLocationEditorItem = {
@@ -227,7 +227,7 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  return (
  <div className="min-h-48 rounded-[16px] border border-[var(--rule)] bg-[var(--card)] p-5">
  <div className="flex items-center justify-between gap-3">
- <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[var(--seal-deep)]"><BookOpen className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">DOUBAN WATCHLIST · {items.length}</span></span>
+ <span className="flex items-center gap-2 text-xs text-[var(--seal-deep)]"><BookOpen className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">我的豆瓣片单，共 {items.length} 条</span></span>
  {source.lastSyncedAt ? <span className="text-[10px] text-[var(--ink-2)]">{formatAdminDate(source.lastSyncedAt)}</span> : null}
  </div>
  <div className="mt-5 grid gap-3 md:grid-cols-4">
@@ -546,6 +546,9 @@ function MediaItemsEditor({
 }) {
  const isZh = editorLanguage === "zh-CN";
  const [isSyncing, setIsSyncing] = useState(false);
+ const watchlistGroups = buildDoubanWatchlistGroups(items);
+ const activeCount = watchlistGroups.find((group) => group.progress === "active")?.items.length ?? 0;
+ const wishlistCount = watchlistGroups.find((group) => group.progress === "wishlist")?.items.length ?? 0;
  const updateItem = (index: number, patch: Partial<MediaItem>) => onChange(items.map((item, itemIndex) => itemIndex === index ? { ...item, ...patch } : item));
 
  async function syncFromDouban() {
@@ -632,11 +635,16 @@ function MediaItemsEditor({
  </div>
  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[var(--ink-2)]">
  <span>{isZh ? "当前条目" : "Items"}：{items.length}</span>
+ <span>{isZh ? "在看" : "Watching"}：{activeCount}</span>
+ <span>{isZh ? "想看" : "Wishlist"}：{wishlistCount}</span>
  <span>{isZh ? "自动抓取" : "Auto sync"}：{formatSyncInterval(source.syncIntervalDays, isZh)}</span>
  {source.lastSyncedAt ? <span>{isZh ? "上次同步" : "Last sync"}：{formatAdminDate(source.lastSyncedAt)}</span> : null}
  {source.failedPages ? <span className="text-amber-700">{source.failedPages} {isZh ? "个分类页暂未读取" : "pages unavailable"}</span> : null}
  {source.profileUrl ? <a href={source.profileUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-[var(--seal-deep)] hover:underline">{isZh ? "打开豆瓣主页" : "Open profile"} <ExternalLink className="h-3 w-3" /></a> : null}
  </div>
+ <p className="text-xs leading-5 text-[var(--ink-2)]">
+ {isZh ? "公开页会根据可用宽度每页展示 4、2 或 1 张封面，其余记录可翻页或查看全部。" : "The public page shows 4, 2, or 1 covers per page based on available width."}
+ </p>
  </div>
 
  <details className="rounded-[12px] border border-[var(--rule)] bg-[var(--card)]">

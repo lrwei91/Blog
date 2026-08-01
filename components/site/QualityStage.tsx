@@ -23,7 +23,7 @@ export function QualityStage({
       <div className="quality-stage__signal">
         <span className="quality-stage__signal-icon" aria-hidden="true"><Quote /></span>
         <span>
-          <b>PERSONAL MOTTO</b>
+          <b>我喜欢的一句话</b>
           <small>春风若有怜花意，可否许我再少年？</small>
         </span>
       </div>

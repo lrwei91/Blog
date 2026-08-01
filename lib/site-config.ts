@@ -4,6 +4,7 @@ import { defaultSiteConfig, getDefaultSiteConfig } from "@/lib/default-site-conf
 import { restoreMissingPersonalProjectLiveLinks } from "@/lib/personal-projects";
 import { normalizeContentFlowConfig } from "@/lib/utils";
 import { normalizeThemeConfig } from "@/constants/theme";
+import { migrateSiteConfigV2 } from "@/lib/site-config-migrations";
 import type { SiteConfig } from "@/types/site-config";
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -82,8 +83,9 @@ export async function getSiteConfig(languageTag?: string | null) {
 }
 
 function normalizeSiteConfig(config: SiteConfig): SiteConfig {
+  const migratedConfig = migrateSiteConfigV2(config);
   const normalizedContentVariants = Object.fromEntries(
-    Object.entries(config.contentVariants ?? {}).map(([key, snapshot]) => [
+    Object.entries(migratedConfig.contentVariants ?? {}).map(([key, snapshot]) => [
       key,
       {
         ...snapshot,
@@ -94,25 +96,25 @@ function normalizeSiteConfig(config: SiteConfig): SiteConfig {
     ])
   );
   const normalizedConfig = normalizeContentFlowConfig({
-    ...config,
-    profile: normalizeProfile(config.profile),
-    blocks: normalizeMediaShelfNames(config.blocks),
-    theme: normalizeThemeConfig(config.theme),
+    ...migratedConfig,
+    profile: normalizeProfile(migratedConfig.profile),
+    blocks: normalizeMediaShelfNames(migratedConfig.blocks),
+    theme: normalizeThemeConfig(migratedConfig.theme),
     settings: {
       ...defaultSiteConfig.settings,
-      ...config.settings,
+      ...migratedConfig.settings,
       languages: {
         ...defaultSiteConfig.settings.languages,
-        ...config.settings.languages,
-        languages: config.settings.languages?.languages?.length
-          ? config.settings.languages.languages
+        ...migratedConfig.settings.languages,
+        languages: migratedConfig.settings.languages?.languages?.length
+          ? migratedConfig.settings.languages.languages
           : defaultSiteConfig.settings.languages.languages
       },
       variants: {
         ...defaultSiteConfig.settings.variants,
-        ...config.settings.variants,
-        variants: config.settings.variants?.variants?.length
-          ? config.settings.variants.variants
+        ...migratedConfig.settings.variants,
+        variants: migratedConfig.settings.variants?.variants?.length
+          ? migratedConfig.settings.variants.variants
           : defaultSiteConfig.settings.variants.variants
       }
     },

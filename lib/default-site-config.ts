@@ -1,9 +1,10 @@
 import type { SiteConfig } from "@/types/site-config";
 import { topLevelBlockSectionId } from "@/lib/utils";
+import { migrateSiteConfigV2 } from "@/lib/site-config-migrations";
 
 const now = "2026-07-03T00:00:00.000Z";
 
-export const defaultSiteConfig: SiteConfig = {
+const legacyDefaultSiteConfig: SiteConfig = {
   version: 1,
   profile: {
     avatarUrl: "/default-avatar.svg",
@@ -658,7 +659,7 @@ export const defaultSiteConfig: SiteConfig = {
       sectionId: topLevelBlockSectionId,
       title: "GitHub",
       subtitle: "",
-      description: "开源项目与作品集",
+      description: "开源项目与长期维护的小工具",
       size: "small-square",
       coverImage: "",
       icon: "github",
@@ -831,7 +832,7 @@ export const defaultSiteConfig: SiteConfig = {
   },
   settings: {
     projectName: "Bio Template Editor",
-    siteTitle: "Lin Rongwei · Portfolio",
+    siteTitle: "Lin Rongwei · Personal Site",
     siteDescription: "Lin Rongwei - QA Engineer (Game / Web Testing · Automation · Version Quality)",
     siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
     seoTitle: "",
@@ -872,6 +873,8 @@ export const defaultSiteConfig: SiteConfig = {
   updatedAt: now,
   revision: 1
 };
+
+export const defaultSiteConfig = migrateSiteConfigV2(legacyDefaultSiteConfig);
 
 export function getDefaultSiteConfig(languageTag?: string | null): SiteConfig {
   const config = structuredClone(defaultSiteConfig);

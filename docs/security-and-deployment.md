@@ -20,7 +20,7 @@ Admin authentication uses:
 
 `ADMIN_PASSWORD_HASH` takes priority over `ADMIN_PASSWORD`. `SESSION_SECRET` should be at least 32 characters when set manually. If it is empty, the app derives the session signing secret from the admin credential, which keeps the no-code Vercel import flow simple. Changing `SESSION_SECRET` invalidates existing admin sessions immediately.
 
-The public variant cookies do not grant permissions. They only select which enabled public version should render on `/`, and they expire by counter after 10 homepage visits.
+The public variant cookies do not grant permissions. They select which enabled public version renders on `/` and `/profile`, and they expire by counter after 10 visits to `/profile`.
 
 ## Server-Only Secrets
 

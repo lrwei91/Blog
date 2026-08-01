@@ -13,6 +13,12 @@ async function expectProjectIdentity(page: Page) {
   await expect(page.locator(".public-intro__identity")).toContainText("林荣威");
 }
 
+async function enterProfile(page: Page) {
+  await page.locator(".public-intro__enter").click();
+  await page.waitForURL(/\/profile$/);
+  await page.locator("#profile").waitFor();
+}
+
 test("欢迎页在禁用 JavaScript 时仍可识别并进入主页", async ({ browser }) => {
   const context = await browser.newContext({
     javaScriptEnabled: false,
@@ -30,8 +36,9 @@ test("欢迎页在禁用 JavaScript 时仍可识别并进入主页", async ({ br
   await expect(page.locator("h1")).toHaveCount(1);
   await expect(page.getByRole("dialog")).toHaveCount(0);
 
-  await page.locator(".public-intro__enter").click();
-  await expect(page).toHaveURL(/#profile$/);
+  await enterProfile(page);
+  await expect(page).toHaveURL(/\/profile$/);
+  await expect(page.locator(".public-intro")).toHaveCount(0);
   await expect(page.locator("#profile-name")).toBeVisible();
   await expect(page.getByRole("link", { name: "发送邮件给 林荣威" })).toBeVisible();
 
@@ -68,56 +75,46 @@ test("欢迎页标语保持两行且不产生横向溢出", async ({ page }) => 
   }
 });
 
-test("个人项目展示位于首屏下方且不在主页重复渲染", async ({ page }) => {
+test("欢迎页保持独立，个人项目位于技能之后和经历之前", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await expectProjectIdentity(page);
 
-  const introProjects = page.locator(".public-intro-projects");
-  await expect(introProjects).toBeVisible();
-  await expect(introProjects.locator(".personal-projects__card")).toHaveCount(3);
-  await expect(introProjects.locator(".personal-projects__card-top")).toHaveCount(0);
-  await expect(introProjects).not.toContainText("PERSONAL PROJECTS");
+  await expect(page.locator(".public-intro-projects")).toHaveCount(0);
+  await expect(page.locator(".personal-projects")).toHaveCount(0);
 
-  const rowLayout = await introProjects.locator(".personal-projects__card").first().evaluate((card) => {
-    const style = getComputedStyle(card);
+  await enterProfile(page);
+  await expect(page.locator('.public-content__block-group[data-content-group="projects"]')).toBeVisible();
+  await expect(page.locator(".personal-projects__card")).toHaveCount(3);
+  await expect(page.locator('.public-nav__links [data-section-link][href="#section-projects"]')).toHaveCount(1);
+
+  const sectionOrder = await page.evaluate(() => {
+    const skills = document.querySelector("#section-skills");
+    const projects = document.querySelector("#section-projects");
+    const experience = document.querySelector("#section-experience");
+    if (!skills || !projects || !experience) return null;
     return {
-      display: style.display,
-      columns: style.gridTemplateColumns.split(" ").length,
-      hasDescription: Boolean(card.querySelector("p")),
-      hasLinks: card.querySelectorAll(".personal-projects__link").length > 0
+      projectsAfterSkills: Boolean(skills.compareDocumentPosition(projects) & Node.DOCUMENT_POSITION_FOLLOWING),
+      experienceAfterProjects: Boolean(projects.compareDocumentPosition(experience) & Node.DOCUMENT_POSITION_FOLLOWING)
     };
   });
-  expect(rowLayout).toEqual({ display: "grid", columns: 3, hasDescription: true, hasLinks: true });
-
-  const placement = await page.evaluate(() => {
-    const intro = document.querySelector<HTMLElement>(".public-intro");
-    const projectDock = document.querySelector<HTMLElement>(".public-intro-projects");
-    if (!intro || !projectDock) return null;
-    return projectDock.getBoundingClientRect().top - intro.getBoundingClientRect().bottom;
-  });
-
-  expect(placement).not.toBeNull();
-  expect(Math.abs(placement!)).toBeLessThanOrEqual(1);
-
-  await page.locator(".public-intro__enter").click();
-  await expect(page.locator('.public-content__block-group[data-content-group="projects"]')).toHaveCount(0);
-  await expect(page.locator('.public-nav__links [data-section-link][href="#section-projects"]')).toHaveCount(0);
+  expect(sectionOrder).toEqual({ projectsAfterSkills: true, experienceAfterProjects: true });
 });
 
 test("关键内容只做一次性揭示且没有持续装饰动画", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
   await expectProjectIdentity(page);
-  const projects = page.locator(".public-intro-projects");
 
   await expect(page.locator("html")).toHaveClass(/site-motion-ready/);
   await expect(page.locator("[data-continuous-motion]")).toHaveCount(0);
-  await projects.scrollIntoViewIfNeeded();
-  await expect(projects).toHaveClass(/is-visible/);
-  await page.locator(".public-intro").scrollIntoViewIfNeeded();
-  await expect(projects).toHaveClass(/is-visible/);
+  await enterProfile(page);
+  const projectCard = page.locator(".personal-projects__card").first();
+  await projectCard.scrollIntoViewIfNeeded();
+  await expect(projectCard).toHaveClass(/is-visible/);
+  await page.locator("#profile").scrollIntoViewIfNeeded();
+  await expect(projectCard).toHaveClass(/is-visible/);
 });
 
 test("Observer 不可用时直接显示静态最终状态", async ({ page }) => {
@@ -129,7 +126,7 @@ test("Observer 不可用时直接显示静态最终状态", async ({ page }) => 
   });
   await page.goto("/");
   await expectProjectIdentity(page);
-  await page.locator(".public-intro__enter").click();
+  await enterProfile(page);
 
   await expect(page.locator("html")).not.toHaveClass(/site-motion-ready/);
   const hiddenRevealItems = await page.locator(".public-site [data-reveal]").evaluateAll((items) =>
@@ -147,7 +144,7 @@ test.describe("公开页视觉回归", () => {
     await expectProjectIdentity(page);
   });
 
-  test("瑞士技术编辑视觉契约使用系统主题、真实主视觉和开放式内容", async ({ page }) => {
+  test("个性化编辑视觉契约使用系统主题、真实主视觉和开放式内容", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
@@ -178,7 +175,7 @@ test.describe("公开页视觉回归", () => {
     });
     expect(introContract!.viewportHeightDelta).toBeLessThanOrEqual(1);
 
-    await page.locator(".public-intro__enter").click();
+    await enterProfile(page);
 
     const visualContract = await page.evaluate(() => {
       const serifFamily = (value: string) => value.split(",").some((entry) => {
@@ -221,7 +218,7 @@ test.describe("公开页视觉回归", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
     await expectProjectIdentity(page);
-    await page.locator(".public-intro__enter").click();
+    await enterProfile(page);
 
     const pageRegions = await page.evaluate(() => {
       const profile = document.querySelector<HTMLElement>(".profile-hero");
@@ -277,8 +274,7 @@ test.describe("公开页视觉回归", () => {
       await page.setViewportSize(viewport);
       await page.goto("/");
       await expectProjectIdentity(page);
-      await page.locator(".public-intro__enter").click();
-      await page.locator("#profile").waitFor();
+      await enterProfile(page);
 
       const result = await page.evaluate(() => {
         const selectors = [
@@ -311,7 +307,7 @@ test.describe("公开页视觉回归", () => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
     await expectProjectIdentity(page);
-    await page.locator(".public-intro__enter").click();
+    await enterProfile(page);
 
     const contrast = await page.locator(".quality-stage__signal b").evaluate((element) => {
       const site = element.closest<HTMLElement>(".public-site");
@@ -351,7 +347,7 @@ test.describe("公开页视觉回归", () => {
     await page.goto("/");
     await expectProjectIdentity(page);
     await expect(page.locator("html")).toHaveClass(/site-motion-ready/);
-    await page.locator(".public-intro__enter").click();
+    await enterProfile(page);
     const triggers = page.locator('[data-action="modal"]');
     expect(await triggers.count()).toBeGreaterThan(0);
     const trigger = triggers.first();
@@ -380,7 +376,7 @@ test.describe("公开页视觉回归", () => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
-    await page.locator(".public-intro__enter").click();
+    await enterProfile(page);
 
     const skills = page.locator('[data-content-group="skills"] .public-block-card');
     expect(await skills.count()).toBeGreaterThan(0);
@@ -405,11 +401,29 @@ test.describe("公开页视觉回归", () => {
     expect(toolLayout.right).toBeGreaterThanOrEqual(8);
   });
 
-  test("导航状态与豆瓣 Tab 按当前内容平滑切换", async ({ page }) => {
+  test("豆瓣片单按组件宽度使用 4、2、1 张分页且减弱动效静态显示", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    for (const item of [
+      { viewport: { width: 320, height: 720 }, pageSize: "1" },
+      { viewport: { width: 390, height: 844 }, pageSize: "1" },
+      { viewport: { width: 768, height: 1024 }, pageSize: "2" },
+      { viewport: { width: 1024, height: 768 }, pageSize: "4" },
+      { viewport: { width: 1440, height: 900 }, pageSize: "4" }
+    ]) {
+      await page.setViewportSize(item.viewport);
+      await page.goto("/profile");
+      const panel = page.locator(".media-shelf__tab-panel");
+      await expect(panel).toHaveAttribute("data-page-size", item.pageSize);
+      await expect(page.locator(".media-shelf__card")).toHaveCount(Number(item.pageSize));
+      expect(await panel.evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
+    }
+  });
+
+  test("导航状态、豆瓣 Tab 和离散分页按当前内容切换", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
-    await page.locator(".public-intro__enter").click();
+    await enterProfile(page);
 
     const firstSectionLink = page.locator(".public-nav__links [data-section-link]").first();
     await firstSectionLink.click();
@@ -419,9 +433,31 @@ test.describe("公开页视觉回归", () => {
     await mediaHeading.scrollIntoViewIfNeeded();
     await expect(page.locator('[data-section-link][href="#section-media"]').first()).toHaveAttribute("aria-current", "location");
     await expect(page.locator('#media-shelf-tab-active')).toHaveAttribute("aria-selected", "true");
-    await expect(page.locator(".media-shelf__card")).toHaveCount(8);
-    await page.locator('#media-shelf-tab-wishlist').click();
+    await expect(page.locator(".media-shelf__card")).toHaveCount(4);
+    await expect(page.locator(".media-shelf__pagination")).toContainText("1 / 3");
+    await page.getByRole("button", { name: "下一页" }).click();
+    await expect(page.locator(".media-shelf__pagination")).toContainText("2 / 3");
+    await page.locator('#media-shelf-tab-active').focus();
+    await page.keyboard.press("ArrowRight");
     await expect(page.locator('#media-shelf-tab-wishlist')).toHaveAttribute("aria-selected", "true");
-    await expect(page.locator(".media-shelf__card")).toHaveCount(8);
+    await expect(page.locator(".media-shelf__card")).toHaveCount(4);
+    await expect(page.locator(".media-shelf__pagination")).toContainText("1 / 3");
+
+    const gridOverflow = await page.locator(".media-shelf__grid").evaluate((grid) => ({
+      overflowX: getComputedStyle(grid).overflowX,
+      scrollDelta: grid.scrollWidth - grid.clientWidth
+    }));
+    expect(gridOverflow.overflowX).not.toBe("auto");
+    expect(gridOverflow.overflowX).not.toBe("scroll");
+    expect(gridOverflow.scrollDelta).toBeLessThanOrEqual(1);
+
+    await page.keyboard.press("ArrowLeft");
+    await expect(page.locator('#media-shelf-tab-active')).toHaveAttribute("aria-selected", "true");
+    const viewAll = page.getByRole("button", { name: "查看全部" });
+    await viewAll.click();
+    await expect(page.getByRole("dialog", { name: "在看的全部记录" })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toBeHidden();
+    await expect(viewAll).toBeFocused();
   });
 });

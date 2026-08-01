@@ -11,6 +11,7 @@ type PublicLanguageSwitcherProps = {
   currentLocale: string;
   languages: SiteLanguage[];
   initialPreparingLocale?: string;
+  returnPath?: string;
   className?: string;
   buttonClassName?: string;
 };
@@ -24,6 +25,7 @@ export function PublicLanguageSwitcher({
   currentLocale,
   languages,
   initialPreparingLocale,
+  returnPath = "/",
   className,
   buttonClassName
 }: PublicLanguageSwitcherProps) {
@@ -97,7 +99,7 @@ export function PublicLanguageSwitcher({
         body: JSON.stringify({ locale })
       });
       if (!response.ok) throw new Error(`Locale switch failed with ${response.status}`);
-      navigationTimerRef.current = window.setTimeout(() => window.location.assign("/"), 180);
+      navigationTimerRef.current = window.setTimeout(() => window.location.assign(returnPath), 180);
     } catch {
       setPreparingTransition(null);
       toast.error("语言切换失败，请重试");

@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowUpRight, BookOpen, Film, Gamepad2, Headphones, List, Sparkles, Star, X } from "lucide-react";
-import { useId, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
+import { ArrowUpRight, BookOpen, ChevronLeft, ChevronRight, Film, Gamepad2, Headphones, List, Sparkles, Star, X } from "lucide-react";
+import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { createPortal } from "react-dom";
 import type { Block } from "@/types/block";
-import { buildDoubanWatchlistGroups, readDoubanMediaSource, readMediaItems } from "@/lib/life-modules";
+import { buildDoubanWatchlistGroups, getMediaShelfPageSize, readDoubanMediaSource, readMediaItems } from "@/lib/life-modules";
 import type { DoubanWatchlistProgress, MediaCategory, MediaItem } from "@/types/life-modules";
 import { useAccessibleDialog } from "@/components/ui/useAccessibleDialog";
 import { useExitTransition } from "@/components/ui/useExitTransition";
@@ -19,31 +19,59 @@ const categoryMeta: Record<MediaCategory, { label: string; icon: typeof Film }> 
 };
 
 export function MediaShelf({ block }: { block: Block }) {
+  const shelfRef = useRef<HTMLElement>(null);
   const items = useMemo(() => readMediaItems(block.metadata?.mediaItems), [block.metadata?.mediaItems]);
   const source = readDoubanMediaSource(block.metadata?.mediaSource);
   const [activeProgress, setActiveProgress] = useState<DoubanWatchlistProgress>("active");
+  const [activePage, setActivePage] = useState(0);
+  const [pageSize, setPageSize] = useState(4);
+  const [transition, setTransition] = useState<"tab" | "forward" | "backward">("tab");
   const [dialogProgress, setDialogProgress] = useState<DoubanWatchlistProgress | null>(null);
   const [dialogContainer, setDialogContainer] = useState<Element | null>(null);
   const groups = useMemo(() => buildDoubanWatchlistGroups(items), [items]);
   const displayedCount = groups.reduce((total, group) => total + group.items.length, 0);
   const activeGroup = groups.find((group) => group.progress === activeProgress) ?? groups[0];
   const dialogGroup = groups.find((group) => group.progress === dialogProgress);
+  const pageCount = Math.max(1, Math.ceil(activeGroup.items.length / pageSize));
+  const safePage = Math.min(activePage, pageCount - 1);
+  const visibleItems = activeGroup.items.slice(safePage * pageSize, (safePage + 1) * pageSize);
+
+  useEffect(() => {
+    const element = shelfRef.current;
+    if (!element || typeof ResizeObserver === "undefined") return;
+
+    const updatePageSize = (width: number) => setPageSize(getMediaShelfPageSize(width));
+    updatePageSize(element.getBoundingClientRect().width);
+    const observer = new ResizeObserver(([entry]) => updatePageSize(entry.contentRect.width));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  function selectProgress(progress: DoubanWatchlistProgress) {
+    if (progress === activeProgress) return;
+    setTransition("tab");
+    setActivePage(0);
+    setActiveProgress(progress);
+  }
+
+  function changePage(nextPage: number) {
+    const clampedPage = Math.max(0, Math.min(nextPage, pageCount - 1));
+    if (clampedPage === safePage) return;
+    setTransition(clampedPage > safePage ? "forward" : "backward");
+    setActivePage(clampedPage);
+  }
 
   return (
-    <section className="media-shelf" aria-label="我的豆瓣片单" data-reveal="panel">
+    <section ref={shelfRef} className="media-shelf" aria-label="我的豆瓣片单" data-reveal="panel">
       <header className="media-shelf__header">
         <div>
-          <p className="media-shelf__eyebrow">
-            <span>DOUBAN WATCHLIST</span>
-            <i aria-hidden="true" />
-            <span>{String(displayedCount).padStart(2, "0")} ENTRIES</span>
-          </p>
-          <p className="media-shelf__intro">正在看的故事与准备打开的下一部，按最近标记时间依次陈列。</p>
+          <p className="media-shelf__intro">最近在看的故事，还有留给下一次的期待。</p>
+          <p className="media-shelf__count">这里收着 {displayedCount} 部片子</p>
         </div>
         <div className="media-shelf__source">
           {source.lastSyncedAt ? (
             <span>
-              <small>LAST SYNC</small>
+              <small>更新于</small>
               <time dateTime={source.lastSyncedAt}>{formatPublicDate(source.lastSyncedAt)}</time>
             </span>
           ) : null}
@@ -55,7 +83,7 @@ export function MediaShelf({ block }: { block: Block }) {
         </div>
       </header>
 
-      <div className="media-shelf__tabs" role="tablist" aria-label="豆瓣片单分类">
+      <div className="media-shelf__tabs" role="tablist" aria-label="豆瓣片单分类" data-active-progress={activeProgress}>
         {groups.map((group) => (
           <button
             id={`media-shelf-tab-${group.progress}`}
@@ -66,7 +94,7 @@ export function MediaShelf({ block }: { block: Block }) {
             aria-controls={`media-shelf-panel-${group.progress}`}
             tabIndex={activeProgress === group.progress ? 0 : -1}
             data-progress={group.progress}
-            onClick={() => setActiveProgress(group.progress)}
+            onClick={() => selectProgress(group.progress)}
             onKeyDown={handleTabKeyDown}
           >
             <span>{group.label}</span>
@@ -76,22 +104,45 @@ export function MediaShelf({ block }: { block: Block }) {
       </div>
 
       <section
-        key={activeGroup.progress}
+        key={`${activeGroup.progress}-${safePage}-${pageSize}`}
         className="media-shelf__tab-panel"
         id={`media-shelf-panel-${activeGroup.progress}`}
         role="tabpanel"
         aria-labelledby={`media-shelf-tab-${activeGroup.progress}`}
+        data-transition={transition}
+        data-page-size={pageSize}
+        data-page-count={pageCount}
       >
         {activeGroup.items.length > 0 ? (
           <>
             <div className="media-shelf__grid">
-              {activeGroup.visibleItems.map((item, index) => (
-                <MediaShelfCard item={item} index={index} key={item.id} />
+              {visibleItems.map((item) => (
+                <MediaShelfCard item={item} key={item.id} />
               ))}
             </div>
-            {activeGroup.items.length > 8 ? (
+            {pageCount > 1 ? (
               <footer className="media-shelf__panel-footer">
+                <div className="media-shelf__pagination" aria-label={`${activeGroup.label}片单翻页`}>
+                  <button
+                    type="button"
+                    onClick={() => changePage(safePage - 1)}
+                    disabled={safePage === 0}
+                    aria-label="上一页"
+                  >
+                    <ChevronLeft aria-hidden="true" />
+                  </button>
+                  <span aria-live="polite">{safePage + 1} / {pageCount}</span>
+                  <button
+                    type="button"
+                    onClick={() => changePage(safePage + 1)}
+                    disabled={safePage === pageCount - 1}
+                    aria-label="下一页"
+                  >
+                    <ChevronRight aria-hidden="true" />
+                  </button>
+                </div>
                 <button
+                  className="media-shelf__view-all"
                   type="button"
                   onClick={(event) => {
                     setDialogContainer(event.currentTarget.closest(".public-site"));
@@ -99,7 +150,7 @@ export function MediaShelf({ block }: { block: Block }) {
                   }}
                 >
                   <List aria-hidden="true" />
-                  查看更多
+                  查看全部
                   <ArrowUpRight aria-hidden="true" />
                 </button>
               </footer>
@@ -112,7 +163,7 @@ export function MediaShelf({ block }: { block: Block }) {
 
       {dialogGroup ? (
         <MediaShelfDialog
-          title={`${dialogGroup.label} · 全部记录`}
+          title={`${dialogGroup.label}的全部记录`}
           items={dialogGroup.items}
           container={dialogContainer}
           onClose={() => setDialogProgress(null)}
@@ -136,7 +187,7 @@ function handleTabKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
   nextTab.click();
 }
 
-function MediaShelfCard({ item, index }: { item: MediaItem; index: number }) {
+function MediaShelfCard({ item }: { item: MediaItem }) {
   const meta = categoryMeta[item.category];
   const Icon = meta.icon;
   const content = (
@@ -155,7 +206,6 @@ function MediaShelfCard({ item, index }: { item: MediaItem; index: number }) {
         )}
       </div>
       <div className="media-shelf__body">
-        <p className="media-shelf__category"><Icon aria-hidden="true" /> {meta.label}</p>
         <h3>{item.title}</h3>
         {item.creator ? <p className="media-shelf__creator">{item.creator}</p> : null}
         <div className="media-shelf__meta">
@@ -165,16 +215,13 @@ function MediaShelfCard({ item, index }: { item: MediaItem; index: number }) {
           {item.markedAt ? <time dateTime={item.markedAt}>{item.markedAt}</time> : null}
         </div>
         {item.note ? <p className="media-shelf__note">{item.note}</p> : null}
-        {item.href ? <span className="media-shelf__link">查看条目 <ArrowUpRight aria-hidden="true" /></span> : null}
+        {item.href ? <span className="media-shelf__link">豆瓣条目 <ArrowUpRight aria-hidden="true" /></span> : null}
       </div>
     </>
   );
 
   return (
-    <article
-      className="media-shelf__card"
-      style={{ "--media-card-index": index } as CSSProperties}
-    >
+    <article className="media-shelf__card">
       {item.href ? (
         <a href={item.href} target="_blank" rel="noreferrer" aria-label={`在豆瓣查看${item.title}`}>
           {content}
@@ -223,7 +270,7 @@ function MediaShelfDialog({
       >
         <header className="media-shelf-dialog__header">
           <div>
-            <p>MEDIA ARCHIVE · {String(items.length).padStart(2, "0")}</p>
+            <p>共 {items.length} 条记录</p>
             <h3 id={titleId}>{title}</h3>
           </div>
           <button ref={closeButtonRef} type="button" onClick={requestClose} aria-label="关闭全部记录">
