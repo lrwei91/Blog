@@ -68,13 +68,13 @@ test("欢迎页标语保持两行且不产生横向溢出", async ({ page }) => 
   }
 });
 
-test("个人项目展示位于欢迎页且不在主页重复渲染", async ({ page }) => {
+test("个人项目展示位于首屏下方且不在主页重复渲染", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   await expectProjectIdentity(page);
 
-  const introProjects = page.locator(".public-intro__projects");
+  const introProjects = page.locator(".public-intro-projects");
   await expect(introProjects).toBeVisible();
   await expect(introProjects.locator(".personal-projects__card")).toHaveCount(3);
   await expect(introProjects.locator(".personal-projects__card-top")).toHaveCount(0);
@@ -91,37 +91,33 @@ test("个人项目展示位于欢迎页且不在主页重复渲染", async ({ pa
   });
   expect(rowLayout).toEqual({ display: "grid", columns: 3, hasDescription: true, hasLinks: true });
 
-  const placement = await page.locator(".public-intro").evaluate((intro) => {
-    const projectDock = intro.querySelector<HTMLElement>(".public-intro__projects");
-    if (!projectDock) return null;
-    const introRect = intro.getBoundingClientRect();
-    const dockRect = projectDock.getBoundingClientRect();
-    return {
-      bottomRatio: (dockRect.bottom - introRect.top) / introRect.height
-    };
+  const placement = await page.evaluate(() => {
+    const intro = document.querySelector<HTMLElement>(".public-intro");
+    const projectDock = document.querySelector<HTMLElement>(".public-intro-projects");
+    if (!intro || !projectDock) return null;
+    return projectDock.getBoundingClientRect().top - intro.getBoundingClientRect().bottom;
   });
 
   expect(placement).not.toBeNull();
-  expect(placement!.bottomRatio).toBeGreaterThan(0.4);
+  expect(Math.abs(placement!)).toBeLessThanOrEqual(1);
 
   await page.locator(".public-intro__enter").click();
   await expect(page.locator('.public-content__block-group[data-content-group="projects"]')).toHaveCount(0);
   await expect(page.locator('.public-nav__links [data-section-link][href="#section-projects"]')).toHaveCount(0);
 });
 
-test("连续动效只在对应区域可见时运行", async ({ page }) => {
+test("关键内容只做一次性揭示且没有持续装饰动画", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
   await expectProjectIdentity(page);
-  const intro = page.locator(".public-intro");
-  const qualityStage = page.locator(".quality-stage");
+  const projects = page.locator(".public-intro-projects");
 
   await expect(page.locator("html")).toHaveClass(/site-motion-ready/);
-  await expect(intro).toHaveClass(/is-motion-active/);
-  await page.locator(".public-intro__enter").click();
-  await expect(page).toHaveURL(/#profile$/);
-  await expect(intro).not.toHaveClass(/is-motion-active/);
-  await expect(qualityStage).toHaveClass(/is-motion-active/);
+  await expect(page.locator("[data-continuous-motion]")).toHaveCount(0);
+  await projects.scrollIntoViewIfNeeded();
+  await expect(projects).toHaveClass(/is-visible/);
+  await page.locator(".public-intro").scrollIntoViewIfNeeded();
+  await expect(projects).toHaveClass(/is-visible/);
 });
 
 test("Observer 不可用时直接显示静态最终状态", async ({ page }) => {
@@ -151,7 +147,7 @@ test.describe("公开页视觉回归", () => {
     await expectProjectIdentity(page);
   });
 
-  test("轻纸墨视觉契约使用亮色、无衬线标题和朱橙白卡", async ({ page }) => {
+  test("瑞士技术编辑视觉契约使用系统主题、真实主视觉和开放式内容", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
@@ -162,21 +158,25 @@ test.describe("公开页视觉回归", () => {
       if (!site) return null;
       const siteStyle = getComputedStyle(site);
       return {
+        scheme: site.getAttribute("data-color-scheme"),
         background: siteStyle.getPropertyValue("--site-bg").trim().toLowerCase(),
         card: siteStyle.getPropertyValue("--site-card").trim().toLowerCase(),
         primary: siteStyle.getPropertyValue("--site-primary").trim().toLowerCase(),
         viewportHeightDelta: Math.abs(intro.getBoundingClientRect().height - window.innerHeight),
-        hasBrightComposition: getComputedStyle(intro).backgroundImage !== "none"
+        hasHeroImage: Boolean(intro.querySelector(".public-intro__visual-image")),
+        sectionEyebrows: document.querySelectorAll(".public-section-heading__label").length
       };
     });
 
-    expect(introContract).toEqual({
-      background: "#fafafa",
-      card: "#ffffff",
+    expect(introContract).toMatchObject({
+      scheme: "system",
+      background: "#f4f5f6",
+      card: "#f9fafb",
       primary: "#e45435",
-      viewportHeightDelta: 0,
-      hasBrightComposition: true
+      hasHeroImage: true,
+      sectionEyebrows: 0
     });
+    expect(introContract!.viewportHeightDelta).toBeLessThanOrEqual(1);
 
     await page.locator(".public-intro__enter").click();
 
@@ -212,8 +212,8 @@ test.describe("公开页视觉回归", () => {
     expect(visualContract.mottoFont.replaceAll("sans-serif", "")).toMatch(/songti|stsong|serif/i);
     expect(visualContract.serifUsers.length).toBeGreaterThan(0);
     expect(visualContract.serifUsers.every(Boolean)).toBe(true);
-    expect(visualContract.cardRadius).toBe("12px");
-    expect(visualContract.cardShadow).not.toBe("none");
+    expect(visualContract.cardRadius).toBe("0px");
+    expect(visualContract.cardShadow).toBe("none");
   });
 
   test("个人信息、章节标题与对应模块共享同一水平边界", async ({ page }) => {

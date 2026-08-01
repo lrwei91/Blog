@@ -17,7 +17,7 @@ describe("theme mapping", () => {
     });
   });
 
-  it("migrates the historical paper-ink theme to the light paper theme", () => {
+  it("migrates the historical paper-ink theme to the current theme", () => {
     expect(normalizeThemeConfig({
       primaryColor: "#B23C22",
       backgroundColor: "#F6F3EC",
@@ -31,7 +31,7 @@ describe("theme mapping", () => {
     })).toEqual(defaultTheme);
   });
 
-  it("migrates the historical blue starter theme to the light paper theme", () => {
+  it("migrates the historical blue starter theme to the current theme", () => {
     expect(normalizeThemeConfig({
       primaryColor: "#1677FF",
       backgroundColor: "#FFFFFF",
@@ -42,6 +42,21 @@ describe("theme mapping", () => {
       cardRadius: "2xl",
       cardShadow: "soft",
       fontFamily: "system"
+    })).toEqual(defaultTheme);
+  });
+
+  it("migrates the previous precision default to the Swiss technical theme", () => {
+    expect(normalizeThemeConfig({
+      primaryColor: "#e45435",
+      backgroundColor: "#fafafa",
+      cardBackground: "#ffffff",
+      textColor: "#111113",
+      mutedTextColor: "#6e6e73",
+      borderColor: "#e8e8ea",
+      cardRadius: "xl",
+      cardShadow: "soft",
+      fontFamily: "system",
+      colorScheme: "light"
     })).toEqual(defaultTheme);
   });
 

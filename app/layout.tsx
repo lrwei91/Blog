@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="zh-CN">
       <body className={`${displayFont.variable} ${labelFont.variable}`}>
         {children}
-        <Toaster richColors position="top-center" />
+        <Toaster richColors theme="system" position="top-center" />
       </body>
     </html>
   );

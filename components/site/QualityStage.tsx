@@ -8,7 +8,7 @@ export function QualityStage({
   showAvatar: boolean;
 }) {
   return (
-    <div className="quality-stage" data-reveal="profile-art" data-continuous-motion>
+    <div className="quality-stage" data-reveal="profile-art">
       <div className="quality-stage__orbit" aria-hidden="true">
         <span className="quality-stage__ring" />
         <div className="quality-stage__portrait">
@@ -17,14 +17,13 @@ export function QualityStage({
           ) : (
             <span>QA</span>
           )}
-          <i />
         </div>
       </div>
 
       <div className="quality-stage__signal">
         <span className="quality-stage__signal-icon" aria-hidden="true"><Quote /></span>
         <span>
-          <b><i /> PERSONAL MOTTO</b>
+          <b>PERSONAL MOTTO</b>
           <small>春风若有怜花意，可否许我再少年？</small>
         </span>
       </div>

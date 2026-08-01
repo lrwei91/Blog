@@ -271,7 +271,6 @@ function SectionTextCard({
  const rawTitleAlign = block.metadata?.titleAlign;
  const titleSize = rawTitleSize === "sm" || rawTitleSize === "lg" ? rawTitleSize : "md";
  const titleAlign = rawTitleAlign === "center" || rawTitleAlign === "right" ? rawTitleAlign : "left";
- const subtitle = block.subtitle || block.description;
  const resolvedSectionNumber = sectionNumber ?? block.sortOrder;
  const sectionAccent = ((resolvedSectionNumber - 1) % 4 + 4) % 4;
 
@@ -288,9 +287,6 @@ function SectionTextCard({
  className
  )}
  >
- <p className="public-section-heading__label">
- <span /> <span className="min-w-0 truncate">{String(resolvedSectionNumber).padStart(2, "0")} / {subtitle || "SELECTED WORK"}</span>
- </p>
  <div className="public-section-heading__title-row">
  <h2 className={cn("font-bold leading-tight", sectionTitleSize[titleSize])}>{block.title.trim()}</h2>
  {block.icon ? <span className="public-section-heading__icon"><BlockIcon name={block.icon} /></span> : null}

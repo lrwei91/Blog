@@ -1,7 +1,20 @@
-# 设计语言现状分析与视觉方向建议
+# 设计语言现状分析与实施记录
 
 > 日期：2026-07-31 · 分析对象：Personal Site Studio（bio-blocks-studio 深度定制）
 > 参照规范：project-standards/design（visual-style / paper-ink 主题配方 / ui-design / motion-and-performance）
+
+## 当前设计语言更新（2026-08-01）
+
+公开页已从轻纸墨卡片风切换为瑞士技术编辑风，原有内容模型、路由、语言切换、后台编辑和模块行为保持不变。
+
+- 旋钮：`DESIGN_VARIANCE 7 / MOTION_INTENSITY 4 / VISUAL_DENSITY 5`
+- 配色：冷银灰、石墨黑与单一朱橙强调；浅色、深色、跟随系统三模式
+- 构图：非对称图文 hero、开放式作品索引、两列能力矩阵、横向片单带、非等列照片画廊
+- 材质：面板 8px、控件 6px、常规内容无阴影，以留白和细线建立层级
+- 动效：IntersectionObserver 驱动揭示和导航状态，禁止逐帧 scroll listener，完整支持 reduced motion
+- 主视觉：`public/images/hero/qa-workbench-v2.webp`，生成式摄影资产，无人物、文字、Logo 或伪造界面
+
+以下内容保留为上一阶段审计和决策记录。
 
 ---
 
@@ -212,4 +225,3 @@
 ### 已知边界
 - 若手工把配置 JSON 改回「历史纸墨九字段完全一致 + colorScheme: dark」，迁移逻辑会忽略 colorScheme 并重置为浅色默认主题；通过后台保存的配置不受影响（保存的是迁移后的新值）
 - 深色下面包屑 sonner Toast 仍为浅色主题（瞬态元素，未处理）
-

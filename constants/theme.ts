@@ -2,6 +2,19 @@ import type { ThemeConfig } from "@/types/theme";
 
 export const defaultTheme: ThemeConfig = {
   primaryColor: "#e45435",
+  backgroundColor: "#f4f5f6",
+  cardBackground: "#f9fafb",
+  textColor: "#16181d",
+  mutedTextColor: "#59616a",
+  borderColor: "#d8dde2",
+  cardRadius: "lg",
+  cardShadow: "none",
+  fontFamily: "system",
+  colorScheme: "system"
+};
+
+const legacyPrecisionTheme: ThemeConfig = {
+  primaryColor: "#e45435",
   backgroundColor: "#fafafa",
   cardBackground: "#ffffff",
   textColor: "#111113",
@@ -75,7 +88,7 @@ export function normalizeThemeConfig(theme: ThemeConfig): ThemeConfig {
     ([key, value]) => (theme[key as keyof ThemeConfig] ?? "").toLowerCase() === value.toLowerCase()
   );
 
-  return matchesTheme(legacyPaperInkTheme) || matchesTheme(legacyBlueTheme)
+  return matchesTheme(legacyPaperInkTheme) || matchesTheme(legacyBlueTheme) || matchesTheme(legacyPrecisionTheme)
     ? { ...defaultTheme }
     : theme;
 }

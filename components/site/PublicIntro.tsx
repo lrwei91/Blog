@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import type { Block } from "@/types/block";
 import { PersonalProjects } from "@/components/site/PersonalProjects";
@@ -16,60 +17,58 @@ export function PublicIntro({
   introImageUrl?: string;
 }) {
   const identity = [displayName.trim(), headline.trim()].filter(Boolean).join(" · ");
+  const heroImage = introImageUrl?.trim() || "/images/hero/qa-workbench-v2.webp";
 
   return (
-    <section
-      className="public-intro"
-      data-motion={enableMotion ? "true" : "false"}
-      data-continuous-motion
-      aria-label="欢迎页"
-    >
-      <div className="public-intro__glow" aria-hidden="true" />
-      <div className="public-intro__ring" aria-hidden="true" />
-      <div className="public-intro__inner">
-        <header className="public-intro__masthead">
-          <span className="public-intro__mark" aria-hidden="true">
-            <img src="/brand-seal.png" alt="" />
-          </span>
-          <span>EST. 2026</span>
-        </header>
+    <>
+      <section
+        className="public-intro"
+        data-motion={enableMotion ? "true" : "false"}
+        aria-label="欢迎页"
+      >
+        <div className="public-intro__inner">
+          <header className="public-intro__masthead">
+            <span className="public-intro__mark" aria-hidden="true">
+              <img src="/brand-seal.png" alt="" />
+            </span>
+          </header>
 
-        <div className="public-intro__layout">
-          <div className="public-intro__welcome">
-            <p className="public-intro__statement" aria-label="把复杂的事理清，把喜欢的事做久。">
-              <span className="public-intro__line" aria-hidden="true"><span>把复杂的事理清，</span></span>
-              <span className="public-intro__line" aria-hidden="true"><span>把喜欢的事做久。</span></span>
-            </p>
-            {identity ? <p className="public-intro__identity">{identity}</p> : null}
-            <p className="public-intro__topics">Testing · AI · Games · Life</p>
-            <a href="#profile" className="public-intro__enter">
-              <span><b>ENTER</b><small>进入主页</small></span>
-              <ArrowRight aria-hidden="true" />
-            </a>
+          <div className="public-intro__layout">
+            <div className="public-intro__welcome">
+              <p className="public-intro__statement">
+                <span className="public-intro__line"><span>把复杂的事理清，</span></span>
+                <span className="public-intro__line"><span>把喜欢的事做久。</span></span>
+              </p>
+              {identity ? <p className="public-intro__identity">{identity}</p> : null}
+              <a href="#profile" className="public-intro__enter">
+                <span>查看经历与作品</span>
+                <ArrowRight aria-hidden="true" />
+              </a>
+            </div>
 
-            {projectBlock ? (
-              <aside className="public-intro__projects" data-reveal="panel" aria-label="欢迎页个人项目">
-                <PersonalProjects block={projectBlock} variant="intro" />
-              </aside>
-            ) : null}
-          </div>
-
-          <div className="public-intro__visual" aria-hidden="true">
-            {introImageUrl ? (
-              <img className="public-intro__visual-image" src={introImageUrl} alt="" />
-            ) : (
-              <span className="public-intro__visual-placeholder">
-                <img src="/brand-seal.png" alt="" />
-              </span>
-            )}
+            <figure className="public-intro__visual">
+              <Image
+                className="public-intro__visual-image"
+                src={heroImage}
+                alt="键盘、游戏手柄、笔记本与测试卡片组成的工作台"
+                fill
+                priority
+                sizes="(max-width: 860px) 100vw, 44vw"
+              />
+            </figure>
           </div>
         </div>
+      </section>
 
-        <footer className="public-intro__footer">
-          <span>PERSONAL ARCHIVE</span>
-          <span>FUZHOU · CN</span>
-        </footer>
-      </div>
-    </section>
+      {projectBlock ? (
+        <section className="public-intro-projects" data-reveal="section" aria-labelledby="selected-projects-title">
+          <header className="public-intro-projects__header">
+            <h2 id="selected-projects-title">把实践做成可复用的作品。</h2>
+            <p>从内容数据到桌面工具，每个项目都来自真实问题与持续维护。</p>
+          </header>
+          <PersonalProjects block={projectBlock} variant="intro" />
+        </section>
+      ) : null}
+    </>
   );
 }

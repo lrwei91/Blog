@@ -8,5 +8,5 @@ export type ThemeConfig = {
   cardRadius: "md" | "lg" | "xl" | "2xl";
   cardShadow: "none" | "soft" | "medium";
   fontFamily: "system" | "rounded" | "mono";
-  colorScheme?: "light" | "dark";
+  colorScheme?: "light" | "dark" | "system";
 };

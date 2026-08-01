@@ -1,6 +1,6 @@
 # 素材清单
 
-更新时间：2026-07-27  
+更新时间：2026-08-01
 适用范围：公开主页、后台和分享元数据
 
 | 素材 | 用途 | 规格与处理 | 回退 |
@@ -10,6 +10,7 @@
 | `assets/source/og.svg` | 社交分享图原稿 | 1200×630；运行 `npm run generate:og` 生成 PNG | 生成失败时保留现有 `public/og.png` |
 | `public/og.png` | 默认 Open Graph / Twitter 图片 | 1200×630、调色 PNG | 自定义 SEO 图片优先 |
 | `public/brand-seal.png` | 导航、欢迎页和后台品牌装饰 | 256×256 透明 PNG | 加载失败不影响文字身份和操作 |
+| `public/images/hero/qa-workbench-v2.webp` | 欢迎页瑞士技术编辑主视觉 | 1200×1500 WebP，约 200KB；内置 imagegen 生成后使用 Sharp 压缩，`next/image` 预载 | 后台自定义 `introImage` 优先 |
 | Lucide 图标 | 界面操作图标 | SVG 组件 | 纯装饰图标使用 `aria-hidden` |
 | Plus Jakarta Sans、JetBrains Mono | UI 与标签字体 | 通过 Next.js 字体流程加载 | `display: swap`，失败时回退系统字体 |
 | 管理员上传图片 | 头像、卡片、照片和媒体封面 | 后台上传并按模块规则裁切 | 信息图片填写替代文本 |

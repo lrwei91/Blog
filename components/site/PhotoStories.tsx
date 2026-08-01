@@ -37,14 +37,14 @@ export function PhotoStories({ block, enablePreview }: { block: Block; enablePre
               <>
                 <div className="photo-stories__cover">
                   {cover ? <img src={cover.url} alt={cover.alt} /> : <span><Images aria-hidden="true" /></span>}
-                  <b><Images aria-hidden="true" /> {story.photos.length}</b>
                 </div>
                 <div className="photo-stories__body">
                   {[story.date, story.location].filter(Boolean).length > 0 ? (
-                    <p>{[story.date, story.location].filter(Boolean).join(" · ")}</p>
+                    <p>{[story.date, story.location].filter(Boolean).join(" / ")}</p>
                   ) : null}
                   <h3>{story.title}</h3>
                   {story.summary ? <span>{story.summary}</span> : null}
+                  <small><Images aria-hidden="true" /> {story.photos.length} 张照片</small>
                   {story.location ? <small><MapPin aria-hidden="true" /> {story.location}</small> : null}
                 </div>
               </>

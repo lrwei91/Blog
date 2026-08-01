@@ -45,7 +45,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
   return (
     <main
       id="top"
-      data-color-scheme={theme.colorScheme ?? "light"}
+      data-color-scheme={theme.colorScheme ?? "system"}
       style={
         {
           ...getThemeStyleVariables(theme),
@@ -53,7 +53,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
           "--site-shell-max-width": desktopPageWidth
         } as React.CSSProperties
       }
-      className="public-site min-h-screen text-[var(--site-text)]"
+      className="public-site min-h-[100dvh] text-[var(--site-text)]"
     >
       <PublicSiteEffects enabled={config.settings.enableAnimation} />
       <PublicIntro
@@ -64,12 +64,13 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
         introImageUrl={config.settings.introImage}
       />
       <div className="public-site__wash" aria-hidden="true" />
+      <div className="public-nav-sentinel" data-public-nav-sentinel aria-hidden="true" />
 
       <header className="public-nav" data-public-nav>
         <div className="public-nav__inner">
           <a href="#top" className="public-nav__brand" aria-label={`${renderModel.profile.displayName} 首页`}>
             <span className="public-nav__mark" aria-hidden="true"><img src="/brand-seal.png" alt="" /></span>
-            <span className="public-nav__brand-label">个人主页</span>
+            <span className="public-nav__brand-label">{renderModel.profile.displayName}</span>
           </a>
 
           {visibleNavItems.length > 0 ? (
@@ -135,7 +136,7 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
               <span className="public-nav__mark" aria-hidden="true"><img src="/brand-seal.png" alt="" /></span>
             </a>
             <p className="public-footer__signature">
-              {"// Designed by "}<span>{renderModel.profile.username || "lrwei91"}</span>
+              Designed by <span>{renderModel.profile.username || "lrwei91"}</span>
             </p>
             <p className="public-footer__copyright">© {new Date().getFullYear()}</p>
           </div>

@@ -260,7 +260,7 @@ const themeSchema = z.object({
   cardRadius: z.enum(["md", "lg", "xl", "2xl"]),
   cardShadow: z.enum(["none", "soft", "medium"]),
   fontFamily: z.enum(["system", "rounded", "mono"]),
-  colorScheme: z.enum(["light", "dark"]).default("light")
+  colorScheme: z.enum(["light", "dark", "system"]).default("system")
 });
 
 const languageSettingsSchema = z

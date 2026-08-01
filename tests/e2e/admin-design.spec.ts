@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("测试账号可进入轻纸墨后台且预览沿用公开页主题", async ({ page }) => {
+test("测试账号可进入技术编辑后台且预览沿用公开页主题", async ({ page }) => {
   await page.goto("/admin/login");
 
   const login = page.locator(".admin-login");
@@ -52,10 +52,10 @@ test("测试账号可进入轻纸墨后台且预览沿用公开页主题", async
     };
   });
 
-  expect(editorContract?.background).toBe("rgb(250, 250, 250)");
+  expect(editorContract?.background).toBe("rgb(244, 245, 246)");
   expect(editorContract?.accent).toBe("#e45435");
-  expect(editorContract?.canvasThemeBackground).toContain("#fafafa");
-  expect(editorContract?.canvasRadius).toBe("12px");
+  expect(editorContract?.canvasThemeBackground).toContain("#f4f5f6");
+  expect(editorContract?.canvasRadius).toBe("8px");
   expect(editorContract?.heroGrid).toContain("px");
   expect(editorContract?.heroPaddingTop).toContain("px");
 });

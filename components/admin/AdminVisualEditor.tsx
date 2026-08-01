@@ -1527,7 +1527,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  }
 
   return (
-  <main className="admin-studio min-h-screen text-[var(--ink)]" data-color-scheme={config.theme.colorScheme ?? "light"}>
+  <main className="admin-studio min-h-[100dvh] text-[var(--ink)]" data-color-scheme={config.theme.colorScheme ?? "system"}>
   <header className="admin-studio__topbar sticky top-0 z-40">
  <div className="mx-auto grid max-w-[1180px] gap-2 px-5 py-3 md:flex md:items-center md:justify-between">
  <div className="flex items-center justify-between gap-3 md:contents">
@@ -1630,7 +1630,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  style={{ paddingLeft: isStructureOpen && isStructureDocked ? 328 : undefined }}
  >
 <div
-  data-color-scheme={config.theme.colorScheme ?? "light"}
+  data-color-scheme={config.theme.colorScheme ?? "system"}
   style={
     {
       ...getThemeStyleVariables(config.theme),
@@ -5298,7 +5298,8 @@ function ProjectSettingsForm({
  <section className="grid grid-cols-1 gap-3">
 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
   <Field label={editorLanguage === "zh-CN" ? "外观模式" : "Color Scheme"}>
-    <Select value={theme.colorScheme ?? "light"} onChange={(event) => patchTheme({ colorScheme: event.target.value as SiteConfig["theme"]["colorScheme"] })}>
+    <Select value={theme.colorScheme ?? "system"} onChange={(event) => patchTheme({ colorScheme: event.target.value as SiteConfig["theme"]["colorScheme"] })}>
+      <option value="system">{editorLanguage === "zh-CN" ? "跟随系统" : "System"}</option>
       <option value="light">{editorLanguage === "zh-CN" ? "浅色" : "Light"}</option>
       <option value="dark">{editorLanguage === "zh-CN" ? "深色" : "Dark"}</option>
     </Select>
