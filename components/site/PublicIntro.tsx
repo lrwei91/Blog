@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
@@ -43,13 +42,14 @@ export function PublicIntro({
           </div>
 
           <figure className="public-intro__visual">
-            <Image
+            <img
               className="public-intro__visual-image"
               src={heroImage}
               alt="键盘、游戏手柄、笔记本与测试卡片组成的工作台"
-              fill
-              priority
-              sizes="(max-width: 860px) 100vw, 44vw"
+              width={1200}
+              height={1500}
+              loading="eager"
+              decoding="async"
             />
           </figure>
         </div>
