@@ -126,6 +126,65 @@ select {
   --cta-bg-hover: color-mix(in srgb, var(--cta-bg) 90%, var(--ink));
 }
 
+/* Shared UI primitives — usable by both the public site and the admin chrome.
+   Color, radius, shadow and border all resolve from the shared tokens above,
+   so a single theme change keeps both surfaces in sync. */
+
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-control, 10px);
+  border: 1px solid transparent;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background 180ms ease, border-color 180ms ease, box-shadow 220ms var(--ease-out), transform 180ms var(--ease-out);
+}
+.ui-btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+.ui-btn > svg { flex-shrink: 0; }
+.ui-btn--primary {
+  background: var(--cta-bg, var(--seal-deep));
+  color: var(--cta-text, #fff);
+  box-shadow: 0 14px 30px -18px color-mix(in srgb, var(--cta-bg, var(--seal-deep)) 80%, transparent);
+}
+.ui-btn--primary:hover:not(:disabled) { background: var(--cta-bg-hover, color-mix(in srgb, var(--seal-deep) 90%, #111)); }
+.ui-btn--secondary {
+  border-color: var(--rule, #e8e8ea);
+  background: var(--card, #fff);
+  color: var(--ink, #111);
+}
+.ui-btn--secondary:hover:not(:disabled) { border-color: var(--ink-2, #6e6e73); background: var(--paper-2, #f2f2f4); }
+
+.ui-input {
+  width: 100%;
+  border: 1px solid var(--rule, #e8e8ea);
+  border-radius: var(--radius-control, 10px);
+  background: var(--card, #fff);
+  color: var(--ink, #111);
+  padding: 0.65rem 0.9rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  outline: none;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+.ui-input::placeholder { color: var(--ink-2, #6e6e73); }
+.ui-input:focus {
+  border-color: var(--cta-bg, var(--seal-deep));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cta-bg, var(--seal-deep)) 15%, transparent);
+}
+
+.ui-label {
+  font-family: var(--font-label, monospace), monospace;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--seal-deep, #c0452a);
+}
+
 /* Admin studio — light visual system (dark ink available via data-color-scheme) */
 
 .admin-studio {
@@ -212,24 +271,6 @@ select {
   outline: 2px solid var(--seal);
   outline-offset: 2px;
 }
-
-.admin-studio button[data-variant="primary"] {
-  border-color: var(--seal);
-  background: var(--seal);
-  color: var(--card);
-  box-shadow: none;
-  font-weight: 600;
-}
-.admin-studio button[data-variant="primary"]:hover { background: var(--seal-deep); border-color: var(--seal-deep); }
-.admin-studio button[data-variant="primary"]:active { transform: translateY(1px); }
-.admin-studio button[data-variant="secondary"] {
-  border-color: var(--ink);
-  background: transparent;
-  color: var(--ink);
-  box-shadow: none;
-  font-weight: 600;
-}
-.admin-studio button[data-variant="secondary"]:hover { background: var(--ink); color: var(--paper); }
 
 .admin-studio input:not([type="checkbox"]):not([type="color"]),
 .admin-studio textarea,
@@ -376,6 +417,7 @@ select {
   --seal-tint: rgba(255, 92, 56, 0.14);
   --tint-border: rgba(255, 92, 56, 0.42);
   --seal-contrast: #17171c;
+  --cta-text: #17171c;
   --shadow-card: 0 10px 30px -18px rgba(0, 0, 0, 0.65), 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-card-hover: 0 22px 48px -24px rgba(0, 0, 0, 0.72), 0 4px 12px rgba(0, 0, 0, 0.42);
   --shadow-pop: 0 28px 72px -32px rgba(0, 0, 0, 0.78), 0 8px 24px rgba(0, 0, 0, 0.45);
@@ -384,6 +426,19 @@ select {
 .admin-studio[data-color-scheme="dark"] .admin-editor-modal { background: rgba(0, 0, 0, 0.64); }
 
 .admin-studio[data-color-scheme="dark"] .admin-structure-panel__search-input { color: var(--ink); }
+
+.admin-studio[data-color-scheme="dark"] .admin-profile-panel__social {
+  border-color: var(--seal-deep);
+  background: var(--seal-deep);
+  color: var(--cta-text);
+  box-shadow: none;
+}
+
+.admin-studio[data-color-scheme="dark"] .admin-profile-panel__social:hover {
+  border-color: color-mix(in srgb, var(--seal-deep) 86%, var(--ink));
+  background: color-mix(in srgb, var(--seal-deep) 86%, var(--ink));
+  color: var(--cta-text);
+}
 
 /* Danger states — semantic override under dark chrome */
 
@@ -2272,7 +2327,7 @@ html.site-motion-ready .public-site .photo-lightbox.is-closing .photo-lightbox__
   border-color: var(--seal-deep);
   border-radius: var(--radius-control);
   background: var(--seal-deep);
-  color: #fff;
+  color: var(--cta-text);
   box-shadow: 0 10px 24px -18px color-mix(in srgb, var(--seal-deep) 78%, transparent);
 }
 
@@ -2280,7 +2335,7 @@ html.site-motion-ready .public-site .photo-lightbox.is-closing .photo-lightbox__
 .profile-module__action:hover {
   border-color: color-mix(in srgb, var(--seal-deep) 86%, var(--ink));
   background: color-mix(in srgb, var(--seal-deep) 86%, var(--ink));
-  color: #fff;
+  color: var(--cta-text);
 }
 
 .public-language-switcher > button {
@@ -2480,7 +2535,7 @@ html.site-motion-ready .public-site .photo-lightbox.is-closing .photo-lightbox__
 .personal-projects__link:hover {
   border-color: var(--seal-deep);
   background: var(--seal-deep);
-  color: #fff;
+  color: var(--cta-text);
 }
 
 .public-dialog__panel,
