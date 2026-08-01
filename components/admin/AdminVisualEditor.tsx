@@ -1640,7 +1640,8 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
   }
   className={cn("admin-studio__canvas grid grid-cols-1 gap-10 px-5 pb-28 pt-10 md:px-8 md:pt-14")}
 >
- <div className="mx-auto grid w-full min-w-0 max-w-[960px] grid-cols-1 gap-10">
+ <div className="public-site__wash" aria-hidden="true" />
+ <div className="admin-studio__canvas-content mx-auto grid w-full min-w-0 max-w-[1040px] grid-cols-1 gap-10">
  <EditableProfile
  profile={config.profile}
  device={editorDevice}

@@ -30,7 +30,7 @@ type SiteLayoutProps = {
 export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayoutProps) {
   const theme = config.theme;
   const desktopContentColumns = getPublicDesktopContentColumns(renderModel.orderedContentItems);
-  const desktopPageWidth = "960px";
+  const desktopPageWidth = "1040px";
   const navItems = renderModel.orderedContentItems
     .filter((item): item is Extract<ContentOrderItem, { type: "text-block" }> => item.type === "text-block")
     .filter((item) => item.block.title.trim());

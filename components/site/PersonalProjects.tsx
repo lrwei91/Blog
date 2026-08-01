@@ -16,7 +16,7 @@ const fallbackProjects: ProjectItem[] = [
   {
     title: "CineScope",
     description: "影视内容聚合展示平台，通过自动化数据管线持续更新分类、评分、票房、热度与预告片数据。",
-    eyebrow: "FILM · 01",
+    eyebrow: "影视与数据",
     href: "https://github.com/lrwei91/CineScope",
     liveHref: "https://lrwei91.github.io/CineScope/#tv_cn",
     icon: "film",
@@ -25,7 +25,7 @@ const fallbackProjects: ProjectItem[] = [
   {
     title: "fund-tracker-desktop",
     description: "Electron 桌面行情与持仓工具，集成指数、自选股、资金流、研究卡、财经快讯和独立持仓浮窗。",
-    eyebrow: "MARKET · 02",
+    eyebrow: "桌面工具",
     href: "https://github.com/lrwei91/fund-tracker-desktop",
     icon: "market",
     tone: "blue"
@@ -33,7 +33,7 @@ const fallbackProjects: ProjectItem[] = [
   {
     title: "Lottery",
     description: "体彩可视化分析与智能预测工具，包含历史走势、Canvas 图表、多策略回测与世界杯预测。",
-    eyebrow: "DATA · 03",
+    eyebrow: "数据实验",
     href: "https://github.com/lrwei91/Lottery",
     liveHref: "https://bet.lrwei91.online/#dlt",
     icon: "data",
@@ -65,7 +65,7 @@ export function PersonalProjects({ block, variant = "default" }: { block: Block;
             >
               {variant === "default" ? (
                 <div className="personal-projects__card-top">
-                  <span>{project.eyebrow}</span>
+                  <span>{formatProjectLabel(project.eyebrow)}</span>
                   <i><ProjectIcon aria-hidden="true" /></i>
                 </div>
               ) : null}
@@ -73,7 +73,7 @@ export function PersonalProjects({ block, variant = "default" }: { block: Block;
               <p>{project.description}</p>
               <div className="personal-projects__card-footer">
                 <a className="personal-projects__link" href={project.href} target="_blank" rel="noreferrer">
-                  <Github aria-hidden="true" /> GITHUB <ArrowUpRight aria-hidden="true" />
+                  <Github aria-hidden="true" /> GitHub <ArrowUpRight aria-hidden="true" />
                 </a>
                 {project.liveHref ? (
                   <a className="personal-projects__link personal-projects__link--live" href={project.liveHref} target="_blank" rel="noreferrer">
@@ -118,4 +118,14 @@ function getProjects(block: Block): ProjectItem[] {
   });
 
   return validProjects;
+}
+
+function formatProjectLabel(value: string) {
+  const label = value.replace(/\s*[·/|-]\s*\d+\s*$/, "").trim();
+  const personalLabels: Record<string, string> = {
+    FILM: "影视与数据",
+    MARKET: "桌面工具",
+    DATA: "数据实验"
+  };
+  return personalLabels[label.toUpperCase()] ?? label;
 }

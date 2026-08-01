@@ -7,11 +7,11 @@
 
 公开页已从单页技术作品集调整为独立欢迎页与个人主页。整体采用个人札记式编辑风，内容模型、语言切换、后台编辑和模块行为保持不变。
 
-- 旋钮：`DESIGN_VARIANCE 7 / MOTION_INTENSITY 6 / VISUAL_DENSITY 4`
+- 旋钮：`DESIGN_VARIANCE 7 / MOTION_INTENSITY 6 / VISUAL_DENSITY 5`
 - 配色：冷银灰、石墨黑与单一朱橙强调；浅色、深色、跟随系统三模式
-- 构图：非对称欢迎封面、开放式项目索引、两列能力矩阵、离散分页片单、非等列照片画廊
-- 材质：面板 8px、控件 6px、常规内容无阴影，以留白和细线建立层级
-- 动效：IntersectionObserver 驱动揭示和导航状态，禁止逐帧 scroll listener，完整支持 reduced motion
+- 构图：非对称欢迎封面、7/5/12 不等宽项目编排、两列能力矩阵、离散分页片单、非等列照片画廊
+- 材质：面板 8px、控件 6px、常规内容无悬浮阴影，以细线、低对比洗色、纸胶带和扁平错位色块建立层级
+- 动效：IntersectionObserver 驱动揭示、章节落笔线和导航状态，禁止逐帧 scroll listener，完整支持 reduced motion
 - 主视觉：`public/images/hero/qa-workbench-v2.webp`，生成式摄影资产，无人物、文字、Logo 或伪造界面
 
 以下内容保留为上一阶段审计和决策记录。

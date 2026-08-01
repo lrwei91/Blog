@@ -192,13 +192,13 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  return (
  <div className="h-full min-h-48 rounded-[16px] border border-[var(--seal-tint)] bg-[var(--paper-2)] p-5">
  <div className="flex items-center justify-between gap-3">
- <span className="flex min-w-0 items-center gap-2 text-xs tracking-[0.16em] text-[var(--ink-2)]"><FolderKanban className="h-4 w-4 shrink-0" /> <span className="truncate">PERSONAL PROJECTS</span></span>
+ <span className="flex min-w-0 items-center gap-2 text-xs tracking-[0.1em] text-[var(--ink-2)]"><FolderKanban className="h-4 w-4 shrink-0" /> <span className="truncate">个人项目</span></span>
  <span className="shrink-0 whitespace-nowrap rounded-[16px] bg-[var(--card)] px-3 py-1 text-xs font-bold text-[var(--ink-2)]">{projects.length} 项</span>
  </div>
  <div className="mt-5 grid gap-3 md:grid-cols-3">
  {projects.length > 0 ? projects.map((project, index) => (
  <div key={`${index}-${project.title}`} className="min-w-0 rounded-[12px] border border-[var(--rule)] bg-[color-mix(in_srgb,var(--card)_70%,transparent)] p-4">
- <p className="truncate text-[10px] tracking-[0.12em] text-[var(--ink-2)]">{project.eyebrow}</p>
+ <p className="truncate text-[10px] tracking-[0.08em] text-[var(--ink-2)]">{formatProjectLabel(project.eyebrow)}</p>
  <h3 className="mt-4 line-clamp-2 min-h-12 text-lg font-bold text-[var(--ink)]">{project.title}</h3>
  <p className="mt-2 line-clamp-2 text-xs leading-5 text-[var(--ink-2)]">{project.description}</p>
  </div>
@@ -212,7 +212,7 @@ export function SpecialModulePreview({ block }: { block: Block }) {
  const status = readNowStatus(block.metadata?.nowStatus);
  return (
  <div className="min-h-48 rounded-[16px] border border-[var(--rule)] bg-[var(--card)] p-6">
- <span className="flex items-center gap-2 text-xs tracking-[0.16em] text-[var(--seal-deep)]"><Sparkles className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">NOW · 此刻</span></span>
+ <span className="flex items-center gap-2 text-xs tracking-[0.08em] text-[var(--seal-deep)]"><Sparkles className="h-4 w-4 shrink-0" /> <span className="whitespace-nowrap">此刻</span></span>
  <h3 className="mt-8 text-2xl font-bold text-[var(--ink)]">{status.headline || "尚未填写近况"}</h3>
  <p className="mt-3 line-clamp-3 text-sm leading-6 text-[var(--ink-2)]">{status.body || "填写后再发布到主页。"}</p>
  <div className="mt-5 flex flex-wrap gap-2">{status.tags.map((tag) => <span key={tag} className="rounded-[16px] bg-[var(--card)] px-3 py-1 text-xs"># {tag}</span>)}</div>
@@ -384,10 +384,10 @@ function TravelLocationCard({
  <Field label={isZh ? "足迹说明" : "Note"} className="md:col-span-2">
  <Input value={location.note} onChange={(event) => onChange({ note: event.target.value })} />
  </Field>
- <Field label={isZh ? "经度（73–135）" : "Longitude (73–135)"}>
+ <Field label={isZh ? "经度（73-135）" : "Longitude (73-135)"}>
  <Input type="number" min="73" max="135" step="0.01" value={location.longitude} onChange={(event) => onChange({ longitude: Number(event.target.value) })} />
  </Field>
- <Field label={isZh ? "纬度（17–54）" : "Latitude (17–54)"}>
+ <Field label={isZh ? "纬度（17-54）" : "Latitude (17-54)"}>
  <Input type="number" min="17" max="54" step="0.01" value={location.latitude} onChange={(event) => onChange({ latitude: Number(event.target.value) })} />
  </Field>
  </div>
@@ -685,7 +685,7 @@ function MediaItemsEditor({
  </Field>
  <Field label={isZh ? "名称" : "Title"}><Input value={item.title} onChange={(event) => updateItem(index, { title: event.target.value })} /></Field>
  <Field label={isZh ? "作者 / 主创（可选）" : "Creator (optional)"}><Input value={item.creator ?? ""} onChange={(event) => updateItem(index, { creator: event.target.value })} /></Field>
- <Field label={isZh ? "评分（0–5，可选）" : "Rating (0–5, optional)"}><Input type="number" min="0" max="5" step="0.1" value={item.rating ?? ""} onChange={(event) => updateItem(index, { rating: event.target.value === "" ? undefined : Number(event.target.value) })} /></Field>
+ <Field label={isZh ? "评分（0-5，可选）" : "Rating (0-5, optional)"}><Input type="number" min="0" max="5" step="0.1" value={item.rating ?? ""} onChange={(event) => updateItem(index, { rating: event.target.value === "" ? undefined : Number(event.target.value) })} /></Field>
  <Field label={isZh ? "外部链接（可选）" : "External URL (optional)"}><Input type="url" value={item.href ?? ""} onChange={(event) => updateItem(index, { href: event.target.value })} placeholder="https://..." /></Field>
  <Field label={isZh ? "短评（可选）" : "Note (optional)"} className="md:col-span-2"><Textarea value={item.note ?? ""} onChange={(event) => updateItem(index, { note: event.target.value })} /></Field>
  <Field label={isZh ? "封面地址（可选）" : "Cover URL (optional)"} className="md:col-span-2"><Input value={item.coverImage ?? ""} onChange={(event) => updateItem(index, { coverImage: event.target.value })} placeholder="https://..." /></Field>
@@ -844,4 +844,14 @@ function readPersonalProjects(value: unknown): PersonalProjectEditorItem[] {
  tone: entry.tone === "mint" || entry.tone === "blue" || entry.tone === "yellow" ? entry.tone : "mint"
  }];
  });
+}
+
+function formatProjectLabel(value: string) {
+ const label = value.replace(/\s*[·/|-]\s*\d+\s*$/, "").trim();
+ const personalLabels: Record<string, string> = {
+ FILM: "影视与数据",
+ MARKET: "桌面工具",
+ DATA: "数据实验"
+ };
+ return personalLabels[label.toUpperCase()] ?? label;
 }

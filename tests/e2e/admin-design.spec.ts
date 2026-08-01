@@ -33,6 +33,7 @@ test("测试账号可进入技术编辑后台且预览沿用公开页主题", as
   const profileHero = page.locator(".admin-studio__canvas .profile-hero");
   await expect(studio).toBeVisible();
   await expect(canvas).toBeVisible();
+  await expect(canvas.locator(":scope > .public-site__wash")).toHaveCount(1);
   await expect(profileHero).toBeVisible();
   await expect(page.locator(".admin-floating-toolbar")).toBeVisible();
   const mediaShelf = page.locator(".admin-studio__canvas .media-shelf");
@@ -46,11 +47,15 @@ test("测试账号可进入技术编辑后台且预览沿用公开页主题", as
     if (!canvas || !hero) return null;
     const style = getComputedStyle(element);
     const canvasStyle = getComputedStyle(canvas);
+    const wash = canvas.querySelector<HTMLElement>(":scope > .public-site__wash");
+    const content = canvas.querySelector<HTMLElement>(":scope > .admin-studio__canvas-content");
     return {
       background: style.backgroundColor,
       accent: style.getPropertyValue("--seal").trim(),
       canvasThemeBackground: canvasStyle.getPropertyValue("--paper").trim(),
       canvasRadius: canvasStyle.borderRadius,
+      ambientWash: wash ? getComputedStyle(wash).display : "missing",
+      contentLayer: content ? getComputedStyle(content).zIndex : "missing",
       heroGrid: getComputedStyle(hero).gridTemplateColumns,
       heroPaddingTop: getComputedStyle(hero).paddingTop
     };
@@ -60,6 +65,8 @@ test("测试账号可进入技术编辑后台且预览沿用公开页主题", as
   expect(editorContract?.accent).toBe("#e45435");
   expect(editorContract?.canvasThemeBackground).toContain("#f4f5f6");
   expect(editorContract?.canvasRadius).toBe("8px");
+  expect(editorContract?.ambientWash).toBe("block");
+  expect(editorContract?.contentLayer).toBe("1");
   expect(editorContract?.heroGrid).toContain("px");
   expect(editorContract?.heroPaddingTop).toContain("px");
 });

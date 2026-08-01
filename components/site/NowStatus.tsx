@@ -8,7 +8,7 @@ export function NowStatus({ block }: { block: Block }) {
 
   return (
     <section className="now-status" aria-label="此刻状态" data-reveal="panel">
-      <div className="now-status__eyebrow"><Sparkles aria-hidden="true" /> NOW · 此刻</div>
+      <div className="now-status__eyebrow"><Sparkles aria-hidden="true" /> 此刻</div>
       {hasContent ? (
         <div className="now-status__layout">
           <div>

@@ -12,7 +12,8 @@ export function PublicIntro({
   enableMotion: boolean;
   introImageUrl?: string;
 }) {
-  const identity = [displayName.trim(), headline.trim()].filter(Boolean).join(" · ");
+  const resolvedName = displayName.trim();
+  const resolvedHeadline = headline.trim();
   const heroImage = introImageUrl?.trim() || "/images/hero/qa-workbench-v2.webp";
 
   return (
@@ -34,7 +35,12 @@ export function PublicIntro({
               <span className="public-intro__line"><span>把复杂的事理清，</span></span>
               <span className="public-intro__line"><span>把喜欢的事做久。</span></span>
             </h1>
-            {identity ? <p className="public-intro__identity">{identity}</p> : null}
+            {resolvedName || resolvedHeadline ? (
+              <p className="public-intro__identity">
+                {resolvedName ? <strong>{resolvedName}</strong> : null}
+                {resolvedHeadline ? <span>{resolvedHeadline}</span> : null}
+              </p>
+            ) : null}
             <Link href="/profile" className="public-intro__enter">
               <span>进来逛逛</span>
               <ArrowRight aria-hidden="true" />

@@ -100,6 +100,17 @@ test("欢迎页保持独立，个人项目位于技能之后和经历之前", as
     };
   });
   expect(sectionOrder).toEqual({ projectsAfterSkills: true, experienceAfterProjects: true });
+
+  const projectComposition = await page.locator(".personal-projects__card").evaluateAll((cards) =>
+    cards.map((card) => {
+      const rect = card.getBoundingClientRect();
+      return { width: rect.width, top: rect.top };
+    })
+  );
+  expect(projectComposition[0].width).toBeGreaterThan(projectComposition[1].width);
+  expect(Math.abs(projectComposition[0].top - projectComposition[1].top)).toBeLessThanOrEqual(1);
+  expect(projectComposition[2].width).toBeGreaterThan(projectComposition[0].width);
+  expect(projectComposition[2].top).toBeGreaterThan(projectComposition[0].top);
 });
 
 test("关键内容只做一次性揭示且没有持续装饰动画", async ({ page }) => {
@@ -161,6 +172,8 @@ test.describe("公开页视觉回归", () => {
         primary: siteStyle.getPropertyValue("--site-primary").trim().toLowerCase(),
         viewportHeightDelta: Math.abs(intro.getBoundingClientRect().height - window.innerHeight),
         hasHeroImage: Boolean(intro.querySelector(".public-intro__visual-image")),
+        ambientWash: getComputedStyle(document.querySelector<HTMLElement>(".public-site__wash")!).display,
+        imageTape: getComputedStyle(intro.querySelector<HTMLElement>(".public-intro__visual")!, "::before").content,
         sectionEyebrows: document.querySelectorAll(".public-section-heading__label").length
       };
     });
@@ -171,6 +184,8 @@ test.describe("公开页视觉回归", () => {
       card: "#f9fafb",
       primary: "#e45435",
       hasHeroImage: true,
+      ambientWash: "block",
+      imageTape: '\"\"',
       sectionEyebrows: 0
     });
     expect(introContract!.viewportHeightDelta).toBeLessThanOrEqual(1);

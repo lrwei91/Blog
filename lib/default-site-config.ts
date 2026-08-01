@@ -515,7 +515,7 @@ const legacyDefaultSiteConfig: SiteConfig = {
           {
             title: "CineScope",
             description: "影视内容聚合展示平台，通过自动化数据管线持续更新分类、评分、票房、热度与预告片数据。",
-            eyebrow: "FILM · 01",
+            eyebrow: "影视与数据",
             href: "https://github.com/lrwei91/CineScope",
             liveHref: "https://lrwei91.github.io/CineScope/#tv_cn",
             icon: "film",
@@ -524,7 +524,7 @@ const legacyDefaultSiteConfig: SiteConfig = {
           {
             title: "fund-tracker-desktop",
             description: "Electron 桌面行情与持仓工具，集成指数、自选股、资金流、研究卡、财经快讯和独立持仓浮窗。",
-            eyebrow: "MARKET · 02",
+            eyebrow: "桌面工具",
             href: "https://github.com/lrwei91/fund-tracker-desktop",
             icon: "market",
             tone: "blue"
@@ -532,7 +532,7 @@ const legacyDefaultSiteConfig: SiteConfig = {
           {
             title: "Lottery",
             description: "体彩可视化分析与智能预测工具，包含历史走势、Canvas 图表、多策略回测与世界杯预测。",
-            eyebrow: "DATA · 03",
+            eyebrow: "数据实验",
             href: "https://github.com/lrwei91/Lottery",
             liveHref: "https://bet.lrwei91.online/#dlt",
             icon: "data",

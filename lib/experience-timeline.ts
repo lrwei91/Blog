@@ -28,7 +28,7 @@ export function getExperienceTimelineMeta(block: Block, now = new Date()): Exper
     period,
     startLabel: dates?.startLabel ?? "任职",
     endLabel: dates?.endLabel ?? "时间",
-    tenure: configuredTenure || badgeTenure || dates?.tenure || "—",
+    tenure: configuredTenure || badgeTenure || dates?.tenure || "-",
     companyLogo
   };
 }

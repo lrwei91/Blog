@@ -24,6 +24,7 @@ export default async function HomePage() {
       className="public-site public-site--welcome min-h-[100dvh] text-[var(--site-text)]"
     >
       <PublicSiteEffects enabled={config.settings.enableAnimation} />
+      <div className="public-site__wash" aria-hidden="true" />
       <PublicIntro
         displayName={config.profile.displayName}
         headline={config.profile.headline}
