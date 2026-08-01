@@ -1959,26 +1959,26 @@ button.photo-stories__card { width: 100%; font: inherit; cursor: zoom-in; }
 .public-dialog__result p { margin: 0; color: var(--ink-2); font-size: 0.9rem; line-height: 1.75; }
 
 .public-footer { position: relative; z-index: 1; border-top: 1px solid var(--rule); background: var(--paper); }
-.public-footer__inner { width: min(100%, calc(var(--site-shell-max-width) + 2 * clamp(1.25rem, 4vw, 3rem))); margin-inline: auto; padding: clamp(4.5rem, 8vw, 6.5rem) clamp(1.25rem, 4vw, 3rem) clamp(2.5rem, 5vw, 3.75rem); }
+.public-footer__inner { width: min(100%, calc(var(--site-shell-max-width) + 2 * clamp(1.25rem, 4vw, 3rem))); margin-inline: auto; padding: clamp(3rem, 6vw, 4.5rem) clamp(1.25rem, 4vw, 3rem) clamp(2rem, 3vw, 2.75rem); }
 .public-footer__statement {
   max-width: 16ch;
   margin: 0 auto;
   color: var(--ink);
   font-family: inherit;
-  font-size: clamp(2.4rem, 5.4vw, 4.6rem);
+  font-size: clamp(2rem, 4vw, 3.5rem);
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.16;
   letter-spacing: 0;
   text-align: center;
   text-wrap: balance;
 }
 .public-footer__statement span { border-bottom: 1px solid var(--seal); }
-.public-footer__meta { margin-top: clamp(4rem, 7vw, 6rem); padding-top: 1.5rem; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 2rem; border-top: 1px solid var(--rule); }
+.public-footer__meta { margin-top: clamp(2.5rem, 4vw, 4rem); padding-top: 1rem; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.5rem; border-top: 1px solid var(--rule); }
 .public-footer__meta p { margin: 0; }
 .public-footer__brand { justify-self: start; }
 .public-footer__signature { justify-self: center; color: var(--ink-2); font-size: 0.68rem; font-weight: 500; letter-spacing: 0.12em; white-space: nowrap; }
 .public-footer__signature span { color: var(--seal-deep); font-family: inherit; }
-.public-footer__copyright { justify-self: end; color: var(--text-subtle); font-size: 0.625rem; letter-spacing: 0.12em; }
+.public-footer__copyright { justify-self: end; color: var(--text-subtle); font-size: 0.625rem; letter-spacing: 0.12em; white-space: nowrap; }
 
 html.site-motion-ready .public-site [data-reveal] {
   opacity: 0;
@@ -2544,7 +2544,7 @@ html.site-motion-ready .public-site .photo-lightbox.is-closing .photo-lightbox__
 }
 
 .public-footer__statement {
-  font-size: clamp(2.25rem, 5vw, 4.25rem);
+  font-size: clamp(2rem, 4vw, 3.5rem);
 }
 
 .public-footer__statement span {
@@ -4015,6 +4015,47 @@ html.site-motion-ready .public-site [data-reveal="section"].is-visible::before {
   .public-content__block-group { margin-bottom: 4.25rem; }
   .public-section-heading__title-row h2 { font-size: clamp(2rem, 10vw, 2.8rem); }
   .quality-stage__portrait { box-shadow: 7px 7px 0 color-mix(in srgb, var(--seal) 8%, transparent); }
+  .public-footer__inner {
+    padding-top: 2.75rem;
+    padding-bottom: 2rem;
+  }
+  .public-footer__statement {
+    max-width: 100%;
+    font-size: clamp(1.9rem, 8.5vw, 2.2rem);
+    line-height: 1.12;
+  }
+  .public-footer__meta {
+    margin-top: 2.25rem;
+    padding-top: 0.9rem;
+    padding-right: 3rem;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.55rem;
+  }
+  .public-footer__signature {
+    grid-column: auto;
+    grid-row: auto;
+    min-width: 0;
+    justify-self: center;
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+  }
+  .public-footer__copyright {
+    grid-column: auto;
+    grid-row: auto;
+    justify-self: end;
+    font-size: 0.56rem;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  /* Keep the projects section single-column on phones, including the 12-column desktop composition. */
+  .personal-projects:not(.personal-projects--intro) .personal-projects__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .personal-projects:not(.personal-projects--intro) .personal-projects__card:nth-child(3n + 1),
+  .personal-projects:not(.personal-projects--intro) .personal-projects__card:nth-child(3n + 2),
+  .personal-projects:not(.personal-projects--intro) .personal-projects__card:nth-child(3n + 3) {
+    grid-column: 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

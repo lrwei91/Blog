@@ -58,9 +58,9 @@ export function SiteLayout({ config, renderModel, languageSwitcher }: SiteLayout
 
       <header className="public-nav" data-public-nav>
         <div className="public-nav__inner">
-          <Link href="/" className="public-nav__brand" aria-label={`${renderModel.profile.displayName} 欢迎页`}>
+          <Link href="/" className="public-nav__brand" aria-label="个人主页">
             <span className="public-nav__mark" aria-hidden="true"><img src="/brand-seal.png" alt="" /></span>
-            <span className="public-nav__brand-label">{renderModel.profile.displayName}</span>
+            <span className="public-nav__brand-label">个人主页</span>
           </Link>
 
           {visibleNavItems.length > 0 ? (

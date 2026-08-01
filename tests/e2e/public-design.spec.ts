@@ -113,6 +113,88 @@ test("欢迎页保持独立，个人项目位于技能之后和经历之前", as
   expect(projectComposition[2].top).toBeGreaterThan(projectComposition[0].top);
 });
 
+test("移动端个人项目卡片按单列上下排列", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await expectProjectIdentity(page);
+  await enterProfile(page);
+
+  const projectComposition = await page.locator(".personal-projects__card").evaluateAll((cards) => {
+    const rects = cards.map((card) => {
+      const rect = card.getBoundingClientRect();
+      return { width: rect.width, top: rect.top };
+    });
+    return {
+      widths: rects.map((rect) => rect.width),
+      tops: rects.map((rect) => rect.top)
+    };
+  });
+
+  const widthRange = Math.max(...projectComposition.widths) - Math.min(...projectComposition.widths);
+  const isStrictlyStacked = projectComposition.tops.every((top, index, tops) => index === 0 || top > tops[index - 1]);
+  expect(widthRange, "移动端个人项目卡片宽度不一致").toBeLessThanOrEqual(1);
+  expect(isStrictlyStacked, "移动端个人项目卡片仍然横向并排").toBe(true);
+});
+
+test("手机和桌面页脚标语收紧且底部信息保持一行", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+
+  for (const viewport of [
+    { width: 390, height: 844, maxFontSize: 34, maxStatementHeight: 82 },
+    { width: 1440, height: 900, maxFontSize: 60, maxStatementHeight: 145 }
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    await expectProjectIdentity(page);
+    await enterProfile(page);
+    await page.locator(".public-footer").scrollIntoViewIfNeeded();
+
+    const footerMetrics = await page.locator(".public-footer").evaluate((footer) => {
+      const statement = footer.querySelector<HTMLElement>(".public-footer__statement");
+      const copyright = footer.querySelector<HTMLElement>(".public-footer__copyright")?.getBoundingClientRect();
+      const floatingTools = document.querySelector<HTMLElement>(".public-floating-tools")?.getBoundingClientRect();
+      const items = [".public-footer__brand", ".public-footer__signature", ".public-footer__copyright"]
+        .map((selector) => footer.querySelector<HTMLElement>(selector))
+        .filter((item): item is HTMLElement => Boolean(item));
+      const statementStyle = statement ? getComputedStyle(statement) : null;
+      const statementRect = statement?.getBoundingClientRect();
+      const itemCenters = items.map((item) => {
+        const rect = item.getBoundingClientRect();
+        return rect.top + rect.height / 2;
+      });
+
+      return {
+        statementHeight: statementRect?.height ?? 0,
+        statementFontSize: statementStyle ? Number.parseFloat(statementStyle.fontSize) : 0,
+        itemCenterRange: itemCenters.length > 0 ? Math.max(...itemCenters) - Math.min(...itemCenters) : Number.POSITIVE_INFINITY,
+        floatingToolsOverlap: Boolean(
+          copyright && floatingTools &&
+          copyright.left < floatingTools.right &&
+          copyright.right > floatingTools.left &&
+          copyright.top < floatingTools.bottom &&
+          copyright.bottom > floatingTools.top
+        )
+      };
+    });
+
+    expect(footerMetrics.statementFontSize, `${viewport.width}px 页脚标语字号仍然过大`).toBeLessThanOrEqual(viewport.maxFontSize);
+    expect(footerMetrics.statementHeight, `${viewport.width}px 页脚标语占用高度仍然过大`).toBeLessThan(viewport.maxStatementHeight);
+    expect(footerMetrics.itemCenterRange, `${viewport.width}px 页脚底部信息仍然分成两行`).toBeLessThanOrEqual(1);
+    if (viewport.width <= 640) {
+      expect(footerMetrics.floatingToolsOverlap, "手机页脚版权被悬浮工具遮挡").toBe(false);
+    }
+  }
+});
+
+test("公开页左上角品牌显示个人主页", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await expectProjectIdentity(page);
+  await enterProfile(page);
+  await expect(page.locator(".public-nav__brand-label")).toHaveText("个人主页");
+});
+
 test("关键内容只做一次性揭示且没有持续装饰动画", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
