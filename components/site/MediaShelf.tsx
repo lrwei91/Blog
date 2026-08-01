@@ -115,46 +115,54 @@ export function MediaShelf({ block }: { block: Block }) {
       >
         {activeGroup.items.length > 0 ? (
           <>
-            <div className="media-shelf__grid">
-              {visibleItems.map((item) => (
-                <MediaShelfCard item={item} key={item.id} />
-              ))}
-            </div>
-            {pageCount > 1 ? (
-              <footer className="media-shelf__panel-footer">
-                <div className="media-shelf__pagination" aria-label={`${activeGroup.label}片单翻页`}>
-                  <button
-                    type="button"
-                    onClick={() => changePage(safePage - 1)}
-                    disabled={safePage === 0}
-                    aria-label="上一页"
-                  >
-                    <ChevronLeft aria-hidden="true" />
-                  </button>
-                  <span aria-live="polite">{safePage + 1} / {pageCount}</span>
-                  <button
-                    type="button"
-                    onClick={() => changePage(safePage + 1)}
-                    disabled={safePage === pageCount - 1}
-                    aria-label="下一页"
-                  >
-                    <ChevronRight aria-hidden="true" />
-                  </button>
-                </div>
+            <div className="media-shelf__track" data-has-pagination={pageCount > 1 ? "true" : "false"}>
+              {pageCount > 1 ? (
                 <button
-                  className="media-shelf__view-all"
+                  className="media-shelf__page-control media-shelf__page-control--previous"
                   type="button"
-                  onClick={(event) => {
-                    setDialogContainer(event.currentTarget.closest(".public-site"));
-                    setDialogProgress(activeGroup.progress);
-                  }}
+                  onClick={() => changePage(safePage - 1)}
+                  disabled={safePage === 0}
+                  aria-label="上一页"
                 >
-                  <List aria-hidden="true" />
-                  查看全部
-                  <ArrowUpRight aria-hidden="true" />
+                  <ChevronLeft aria-hidden="true" />
                 </button>
-              </footer>
-            ) : null}
+              ) : null}
+              <div className="media-shelf__grid">
+                {visibleItems.map((item) => (
+                  <MediaShelfCard item={item} key={item.id} />
+                ))}
+              </div>
+              {pageCount > 1 ? (
+                <button
+                  className="media-shelf__page-control media-shelf__page-control--next"
+                  type="button"
+                  onClick={() => changePage(safePage + 1)}
+                  disabled={safePage === pageCount - 1}
+                  aria-label="下一页"
+                >
+                  <ChevronRight aria-hidden="true" />
+                </button>
+              ) : null}
+            </div>
+            <footer className="media-shelf__panel-footer">
+              {pageCount > 1 ? (
+                <span className="media-shelf__page-status" aria-live="polite">
+                  {safePage + 1} / {pageCount}
+                </span>
+              ) : <span aria-hidden="true" />}
+              <button
+                className="media-shelf__view-all"
+                type="button"
+                onClick={(event) => {
+                  setDialogContainer(event.currentTarget.closest(".public-site"));
+                  setDialogProgress(activeGroup.progress);
+                }}
+              >
+                <List aria-hidden="true" />
+                查看全部
+                <ArrowUpRight aria-hidden="true" />
+              </button>
+            </footer>
           </>
         ) : (
           <p className="life-module-empty">这个分类暂时没有记录。</p>

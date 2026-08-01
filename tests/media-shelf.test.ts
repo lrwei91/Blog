@@ -48,6 +48,9 @@ describe("MediaShelf", () => {
     expect(html).not.toContain("media-shelf__status");
     expect(html).not.toContain("<h3>我的豆瓣片单</h3>");
     expect(html).toContain('aria-label="下一页"');
+    expect(html).toContain("media-shelf__page-control--previous");
+    expect(html).toContain("media-shelf__page-status");
+    expect(html).not.toContain("media-shelf__pagination");
     expect(html).toContain("查看全部");
     expect(html).not.toContain("DOUBAN WATCHLIST");
     expect(html).not.toContain("LAST SYNC");

@@ -22,6 +22,15 @@ export function PublicIntro({
       data-motion={enableMotion ? "true" : "false"}
       aria-label="欢迎页"
     >
+      <div
+        className="public-intro__ornaments"
+        aria-hidden="true"
+        {...(enableMotion ? { "data-continuous-motion": "" } : {})}
+      >
+        <span className="public-intro__orbit" />
+        <span className="public-intro__paper-slip" />
+      </div>
+
       <div className="public-intro__inner">
         <header className="public-intro__masthead">
           <span className="public-intro__mark" aria-hidden="true">

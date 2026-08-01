@@ -195,19 +195,27 @@ test("公开页左上角品牌显示个人主页", async ({ page }) => {
   await expect(page.locator(".public-nav__brand-label")).toHaveText("个人主页");
 });
 
-test("关键内容只做一次性揭示且没有持续装饰动画", async ({ page }) => {
+test("关键内容一次性揭示且欢迎页装饰动效受可见性控制", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
   await expectProjectIdentity(page);
 
   await expect(page.locator("html")).toHaveClass(/site-motion-ready/);
-  await expect(page.locator("[data-continuous-motion]")).toHaveCount(0);
+  const ambientMotion = page.locator("[data-continuous-motion]");
+  await expect(ambientMotion).toHaveCount(1);
+  await expect(ambientMotion).toHaveClass(/is-motion-active/);
   await enterProfile(page);
   const projectCard = page.locator(".personal-projects__card").first();
   await projectCard.scrollIntoViewIfNeeded();
   await expect(projectCard).toHaveClass(/is-visible/);
   await page.locator("#profile").scrollIntoViewIfNeeded();
   await expect(projectCard).toHaveClass(/is-visible/);
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const reducedMotionOrnaments = page.locator(".public-intro__ornaments");
+  await expect(reducedMotionOrnaments).not.toHaveClass(/is-motion-active/);
+  expect(await page.locator(".public-intro__orbit").evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
 });
 
 test("Observer 不可用时直接显示静态最终状态", async ({ page }) => {
@@ -531,14 +539,38 @@ test.describe("公开页视觉回归", () => {
     await expect(page.locator('[data-section-link][href="#section-media"]').first()).toHaveAttribute("aria-current", "location");
     await expect(page.locator('#media-shelf-tab-active')).toHaveAttribute("aria-selected", "true");
     await expect(page.locator(".media-shelf__card")).toHaveCount(4);
-    await expect(page.locator(".media-shelf__pagination")).toContainText("1 / 3");
+    await expect(page.locator(".media-shelf__page-status")).toContainText("1 / 3");
     await page.getByRole("button", { name: "下一页" }).click();
-    await expect(page.locator(".media-shelf__pagination")).toContainText("2 / 3");
+    await expect(page.locator(".media-shelf__page-status")).toContainText("2 / 3");
     await page.locator('#media-shelf-tab-active').focus();
     await page.keyboard.press("ArrowRight");
     await expect(page.locator('#media-shelf-tab-wishlist')).toHaveAttribute("aria-selected", "true");
     await expect(page.locator(".media-shelf__card")).toHaveCount(4);
-    await expect(page.locator(".media-shelf__pagination")).toContainText("1 / 3");
+    await expect(page.locator(".media-shelf__page-status")).toContainText("1 / 3");
+
+    const shelfLayout = await page.locator(".media-shelf").evaluate((shelf) => {
+      const cards = Array.from(shelf.querySelectorAll<HTMLElement>(".media-shelf__card"));
+      const previous = shelf.querySelector<HTMLElement>(".media-shelf__page-control--previous")!;
+      const next = shelf.querySelector<HTMLElement>(".media-shelf__page-control--next")!;
+      const status = shelf.querySelector<HTMLElement>(".media-shelf__page-status")!;
+      const viewAllButton = shelf.querySelector<HTMLElement>(".media-shelf__view-all")!;
+      const firstCard = cards[0].getBoundingClientRect();
+      const lastCard = cards[cards.length - 1].getBoundingClientRect();
+      const previousRect = previous.getBoundingClientRect();
+      const nextRect = next.getBoundingClientRect();
+      const statusRect = status.getBoundingClientRect();
+      const viewAllRect = viewAllButton.getBoundingClientRect();
+      return {
+        borderBottomWidth: getComputedStyle(shelf).borderBottomWidth,
+        previousOffset: Math.abs(previousRect.left + previousRect.width / 2 - firstCard.left),
+        nextOffset: Math.abs(nextRect.left + nextRect.width / 2 - lastCard.right),
+        footerCenterOffset: Math.abs(statusRect.top + statusRect.height / 2 - (viewAllRect.top + viewAllRect.height / 2))
+      };
+    });
+    expect(shelfLayout.borderBottomWidth).toBe("0px");
+    expect(shelfLayout.previousOffset).toBeLessThanOrEqual(2);
+    expect(shelfLayout.nextOffset).toBeLessThanOrEqual(2);
+    expect(shelfLayout.footerCenterOffset).toBeLessThanOrEqual(2);
 
     const gridOverflow = await page.locator(".media-shelf__grid").evaluate((grid) => ({
       overflowX: getComputedStyle(grid).overflowX,
