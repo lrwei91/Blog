@@ -116,6 +116,7 @@ import { PersonalProjects } from "@/components/site/PersonalProjects";
 import { NowStatus } from "@/components/site/NowStatus";
 import { MediaShelf } from "@/components/site/MediaShelf";
 import { PhotoStories } from "@/components/site/PhotoStories";
+import { QualityStage } from "@/components/site/QualityStage";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
 import { MediaUploader } from "@/components/admin/MediaUploader";
@@ -526,6 +527,17 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  () => renderModel.orderedContentItems,
  [renderModel]
  );
+ const textBlockSectionNumberById = useMemo(() => {
+ const map = new Map<string, number>();
+ let count = 0;
+ for (const item of renderModel.orderedContentItems) {
+ if (item.type === "text-block") {
+ count += 1;
+ map.set(item.block.id, count);
+ }
+ }
+ return map;
+ }, [renderModel]);
  const activeTextPreviewContentIndex =
  activeDragBlock && isSectionTextBlock(activeDragBlock) && dragPreviewPlacement?.blockId === activeDragBlock.id
  ? dragPreviewPlacement.targetContentIndex
@@ -1626,11 +1638,9 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
       zoom: canvasScale
     } as React.CSSProperties & { zoom: number }
   }
-  className={cn(
-    "admin-studio__canvas grid gap-8 px-5 pb-28 pt-10 md:px-8 md:pt-14",
-    editorDevice === "desktop" ? "grid-cols-[320px_minmax(0,1fr)] gap-12" : "grid-cols-1"
-  )}
+  className={cn("admin-studio__canvas grid grid-cols-1 gap-10 px-5 pb-28 pt-10 md:px-8 md:pt-14")}
 >
+ <div className="mx-auto grid w-full min-w-0 max-w-[960px] grid-cols-1 gap-10">
  <EditableProfile
  profile={config.profile}
  device={editorDevice}
@@ -1842,6 +1852,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  <SortableTextBlock
  key={item.id}
  block={item.block}
+ sectionNumber={textBlockSectionNumberById.get(item.block.id)}
  device={editorDevice}
  isDragOverlayActive={activeDragBlockId === item.block.id}
  disableSortableTransform={activeDragBlockId !== null}
@@ -1870,6 +1881,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  })()}
  </SortableContext>
  </section>
+ </div>
  </div>
  </div>
  <DragOverlay
@@ -2016,13 +2028,133 @@ function EditableProfile({
  onEditTags: () => void;
  onEditSocial: () => void;
 }) {
- const copy = editorCopy[editorLanguage];
+ const showAvatar = profile.moduleOrder.includes("avatar") && profile.visibleModules.avatar;
+ const visibleModules = profile.moduleOrder.filter((module) => module !== "avatar" && profile.visibleModules[module]);
+ const adminAffordanceClass =
+ device === "desktop" ? "opacity-0 transition group-hover/row:opacity-100" : "opacity-100";
+
  return (
- <aside className={cn("admin-profile-panel", device === "desktop" && "sticky top-24 self-start")}>
- <div className="admin-profile-panel__card grid w-full gap-5 rounded-[16px] p-6 text-left">
- <span className="group/avatar relative w-fit">
- <img src={profile.avatarUrl || "/default-avatar.svg"} alt="" className="h-36 w-36 rounded-[16px] object-cover" />
- <div className="absolute right-1 top-1 opacity-0 transition group-hover/avatar:opacity-100">
+ <section id="profile" className="profile-hero" aria-labelledby="profile-name">
+ <div className="profile-hero__content" data-reveal="profile-copy">
+ <div className="profile-hero__modules">
+ {visibleModules.includes("name") ? (
+ <div className="profile-module profile-module--name" data-profile-module="name">
+ <h1 id="profile-name">
+ <InlineProfileText
+ value={profile.displayName}
+ className="rounded-[10px] px-1 hover:bg-[var(--rule)]"
+ inputClassName="text-4xl font-bold"
+ onChange={(displayName) => onPatch({ displayName })}
+ />
+ </h1>
+ {!isPlaceholderHandle(profile.username) ? (
+ <InlineProfileText
+ value={`@${profile.username ?? ""}`}
+ className="rounded-full px-2 py-1 text-[0.72rem] font-bold tracking-[0.1em] text-[var(--seal-deep)] hover:bg-[var(--rule)]"
+ inputClassName="text-sm"
+ onChange={(username) => onPatch({ username: username.replace(/^@/, "") })}
+ />
+ ) : null}
+ </div>
+ ) : null}
+ {visibleModules.includes("headline") ? (
+ <div className="profile-module profile-module--headline" data-profile-module="headline">
+ <InlineProfileText
+ value={profile.headline}
+ multiline
+ className="whitespace-pre-wrap rounded-[10px] px-1 hover:bg-[var(--rule)]"
+ inputClassName="min-h-20 text-base font-medium leading-6"
+ onChange={(headline) => onPatch({ headline })}
+ />
+ </div>
+ ) : null}
+ {visibleModules.includes("bio") ? (
+ <div className="profile-module profile-module--bio" data-profile-module="bio">
+ <InlineProfileText
+ value={profile.bio}
+ multiline
+ className="whitespace-pre-wrap rounded-[10px] px-1 hover:bg-[var(--rule)]"
+ inputClassName="min-h-20 text-sm leading-7"
+ onChange={(bio) => onPatch({ bio })}
+ />
+ </div>
+ ) : null}
+ {visibleModules.includes("tags") ? (
+ <div className="profile-module profile-module--tags group/row" data-profile-module="tags">
+ {profile.tags.map((tag) => (
+ <span key={tag}>{tag}</span>
+ ))}
+ <button
+ type="button"
+ onClick={onEditTags}
+ className={cn(
+ "inline-flex items-center gap-1.5 whitespace-nowrap rounded-[3px] border border-dashed border-[var(--rule)] px-3 py-1.5 text-[0.64rem] font-medium uppercase tracking-[0.12em] text-[var(--ink-2)] transition hover:border-[var(--seal)] hover:text-[var(--seal-deep)]",
+ adminAffordanceClass
+ )}
+ >
+ <Pencil className="h-3 w-3" />
+ {editorLanguage === "zh-CN" ? "编辑标签" : "Edit Tags"}
+ </button>
+ </div>
+ ) : null}
+ {visibleModules.includes("location") ? (
+ <div className="profile-module profile-module--location" data-profile-module="location">
+ <MapPin className="h-4 w-4" />
+ <InlineProfileText
+ value={profile.location ?? ""}
+ placeholder={editorLanguage === "zh-CN" ? "添加位置" : "Add location"}
+ className="rounded-[10px] px-1 text-[var(--ink)] hover:bg-[var(--rule)]"
+ onChange={(location) => onPatch({ location })}
+ />
+ </div>
+ ) : null}
+ {visibleModules.includes("socialLinks") ? (
+ <div className="profile-module profile-module--social group/row" data-profile-module="socialLinks">
+ {[...profile.socialLinks]
+ .filter((link) => link.isVisible)
+ .sort(bySortOrder)
+ .map((link) => (
+ <button
+ key={link.id}
+ type="button"
+ onClick={(event) => {
+ event.preventDefault();
+ onEditSocial();
+ }}
+ className="profile-module__action"
+ >
+ <SocialIcon name={link.icon} />
+ <span className="truncate">{link.label}</span>
+ </button>
+ ))}
+ <button
+ type="button"
+ onClick={onEditSocial}
+ className={cn("profile-module__action border-dashed", adminAffordanceClass)}
+ >
+ <Plus className="h-3.5 w-3.5" />
+ {editorLanguage === "zh-CN" ? "社交按钮" : "Social Buttons"}
+ </button>
+ </div>
+ ) : null}
+ {visibleModules.includes("contact") && profile.email && profile.email !== "example@example.com" ? (
+ <button
+ type="button"
+ onClick={() => void copyProfileEmail(profile.email ?? "")}
+ className="profile-module profile-module--contact profile-module__action"
+ data-profile-module="contact"
+ >
+ <Mail className="h-4 w-4" />
+ <span className="truncate">{profile.email}</span>
+ <Copy className="h-3.5 w-3.5" />
+ </button>
+ ) : null}
+ </div>
+ </div>
+ <div className="group/avatar relative">
+ <QualityStage avatarUrl={profile.avatarUrl} showAvatar={showAvatar} />
+ {showAvatar ? (
+ <div className="absolute right-2 top-0 z-10 opacity-0 transition group-hover/avatar:opacity-100">
  <ImageCropUploader
  folder="avatar"
  value=""
@@ -2034,71 +2166,23 @@ function EditableProfile({
  onUploaded={(url) => onPatch({ avatarUrl: url })}
  />
  </div>
- </span>
- <div className="grid grid-cols-1 gap-3">
- <InlineProfileText
- value={profile.displayName}
- className="rounded-[10px] px-1 text-3xl font-bold leading-tight tracking-[-0.04em] hover:bg-[var(--rule)]"
- inputClassName="text-3xl font-bold"
- onChange={(displayName) => onPatch({ displayName })}
- />
- <InlineProfileText
- value={profile.headline}
- multiline
- className="rounded-[10px] px-1 text-base font-bold leading-6 hover:bg-[var(--rule)]"
- inputClassName="min-h-20 text-base font-medium leading-6"
- onChange={(headline) => onPatch({ headline })}
- />
- <div className="text-base leading-6">
- <InlineProfileText
- value={profile.bio}
- multiline
- className="rounded-[10px] px-1 text-sm leading-7 text-[var(--ink-2)] hover:bg-[var(--rule)]"
- onChange={(bio) => onPatch({ bio })}
- />
+ ) : null}
  </div>
- <InlineProfileText
- value={profile.location ?? ""}
- placeholder={editorLanguage === "zh-CN" ? "添加位置" : "Add location"}
- className="inline-flex w-fit rounded-[10px] px-1 text-sm text-[var(--ink-2)] hover:bg-[var(--rule)]"
- onChange={(location) => onPatch({ location })}
- prefix={<MapPin className="h-4 w-4" />}
- />
- <div className="flex flex-wrap gap-2">
- {profile.tags.map((tag) => (
- <span key={tag} className="admin-profile-panel__chip whitespace-nowrap rounded-[16px] px-3 py-1.5 text-sm">
- {tag}
- </span>
- ))}
- </div>
- <button type="button" onClick={onEditTags} className="admin-profile-panel__add w-fit rounded-[16px] border border-dashed px-3 py-1.5 text-sm font-bold">
- <Pencil className="mr-1 inline h-3.5 w-3.5" />
- {editorLanguage === "zh-CN" ? `修改或添加${copy.tag}` : `Edit or Add ${copy.tag}`}
- </button>
- <div className="flex flex-wrap gap-2">
- {[...profile.socialLinks]
- .filter((link) => link.isVisible)
- .sort(bySortOrder)
- .map((link) => (
- <button
- key={link.id}
- type="button"
- onClick={onEditSocial}
- className="admin-profile-panel__social inline-flex items-center gap-2 whitespace-nowrap rounded-[16px] border px-3 py-2 text-sm font-bold transition"
- >
- <SocialIcon name={link.icon} />
- {link.label}
- </button>
- ))}
- <button type="button" onClick={onEditSocial} className="admin-profile-panel__add inline-flex items-center gap-2 whitespace-nowrap rounded-[16px] border border-dashed px-3 py-2 text-sm font-bold">
- <Plus className="h-3.5 w-3.5" />
- {editorLanguage === "zh-CN" ? "社交按钮" : "Social Buttons"}
- </button>
- </div>
- </div>
- </div>
- </aside>
+ </section>
  );
+}
+
+function isPlaceholderHandle(value?: string) {
+ return value?.trim().replace(/^@/, "").toLowerCase() === "your-handle";
+}
+
+async function copyProfileEmail(email: string) {
+ try {
+ await navigator.clipboard.writeText(email);
+ toast.success("邮箱地址已复制");
+ } catch {
+ toast.error("复制失败，请手动复制");
+ }
 }
 
 function InlineProfileText({
@@ -3575,6 +3659,7 @@ function withoutBlockPlacementForDevice(block: Block, device: LayoutDevice): Blo
 
 function SortableTextBlock({
  block,
+ sectionNumber,
  device,
  isDragOverlayActive,
  disableSortableTransform,
@@ -3586,6 +3671,7 @@ function SortableTextBlock({
  disableDrag
 }: {
  block: Block;
+ sectionNumber?: number;
  device: LayoutDevice;
  isDragOverlayActive: boolean;
  disableSortableTransform: boolean;
@@ -3622,7 +3708,7 @@ function SortableTextBlock({
  >
  <div className="rounded-[16px] p-2 transition-all duration-200 ease-out group-hover:bg-[color-mix(in_srgb,var(--rule)_70%,transparent)]">
  <div className="transition-transform duration-200 ease-out group-hover:scale-[0.97]">
- <BlockCard block={block} disableActions withLayout={false} className="min-h-0" />
+ <BlockCard block={block} disableActions withLayout={false} sectionNumber={sectionNumber} className="min-h-0" />
  </div>
  </div>
  <div className={cn("pointer-events-none absolute inset-0 z-30 transition", device === "mobile" ? "opacity-100" : "opacity-0 group-hover:opacity-100")}>

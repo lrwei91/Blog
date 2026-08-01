@@ -30,16 +30,16 @@ test("测试账号可进入轻纸墨后台且预览沿用公开页主题", async
 
   const studio = page.locator(".admin-studio");
   const canvas = page.locator(".admin-studio__canvas");
-  const profileCard = page.locator(".admin-profile-panel__card");
+  const profileHero = page.locator(".admin-studio__canvas .profile-hero");
   await expect(studio).toBeVisible();
   await expect(canvas).toBeVisible();
-  await expect(profileCard).toBeVisible();
+  await expect(profileHero).toBeVisible();
   await expect(page.locator(".admin-floating-toolbar")).toBeVisible();
 
   const editorContract = await studio.evaluate((element) => {
     const canvas = element.querySelector<HTMLElement>(".admin-studio__canvas");
-    const card = element.querySelector<HTMLElement>(".admin-profile-panel__card");
-    if (!canvas || !card) return null;
+    const hero = element.querySelector<HTMLElement>(".admin-studio__canvas .profile-hero");
+    if (!canvas || !hero) return null;
     const style = getComputedStyle(element);
     const canvasStyle = getComputedStyle(canvas);
     return {
@@ -47,7 +47,8 @@ test("测试账号可进入轻纸墨后台且预览沿用公开页主题", async
       accent: style.getPropertyValue("--seal").trim(),
       canvasThemeBackground: canvasStyle.getPropertyValue("--paper").trim(),
       canvasRadius: canvasStyle.borderRadius,
-      cardRadius: getComputedStyle(card).borderRadius
+      heroGrid: getComputedStyle(hero).gridTemplateColumns,
+      heroPaddingTop: getComputedStyle(hero).paddingTop
     };
   });
 
@@ -55,5 +56,6 @@ test("测试账号可进入轻纸墨后台且预览沿用公开页主题", async
   expect(editorContract?.accent).toBe("#e45435");
   expect(editorContract?.canvasThemeBackground).toContain("#fafafa");
   expect(editorContract?.canvasRadius).toBe("12px");
-  expect(editorContract?.cardRadius).toBe("12px");
+  expect(editorContract?.heroGrid).toContain("px");
+  expect(editorContract?.heroPaddingTop).toContain("px");
 });
