@@ -1153,7 +1153,8 @@ body:has(.public-site[data-color-scheme="dark"]) {
   background: var(--rule);
 }
 
-.public-site .experience-timeline__card {
+.public-site .experience-timeline__card,
+.admin-studio .experience-timeline__card {
   --block-accent: var(--timeline-tone);
   --block-accent-deep: var(--timeline-deep);
   min-height: 15rem;
@@ -1168,12 +1169,14 @@ body:has(.public-site[data-color-scheme="dark"]) {
   border-radius: var(--radius-card);
 }
 
-.public-site .experience-timeline__card[data-has-company-logo="false"] {
+.public-site .experience-timeline__card[data-has-company-logo="false"],
+.admin-studio .experience-timeline__card[data-has-company-logo="false"] {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: clamp(1.25rem, 2vw, 2rem);
 }
 
-.public-site .experience-timeline__card:hover {
+.public-site .experience-timeline__card:hover,
+.admin-studio .experience-timeline__card:hover {
   border-color: var(--ink);
 }
 
@@ -2118,7 +2121,8 @@ html.site-motion-ready .public-site .photo-lightbox.is-closing .photo-lightbox__
   .experience-timeline__node small { font-size: 0.625rem; line-height: 1.4; }
   .experience-timeline__node > i { width: 0.9rem; }
   .experience-timeline__line { min-height: 2rem; margin-left: 0.22rem; }
-  .public-site .experience-timeline__card {
+  .public-site .experience-timeline__card,
+  .admin-studio .experience-timeline__card {
     min-height: 14rem;
     margin-bottom: 1.25rem;
     grid-template-columns: minmax(0, 1fr);
@@ -2385,6 +2389,7 @@ html.site-motion-ready .public-site .photo-lightbox.is-closing .photo-lightbox__
 
 .public-site .public-block-card,
 .public-site .experience-timeline__card,
+.admin-studio .experience-timeline__card,
 .personal-projects__card,
 .now-status,
 .media-shelf,
@@ -2399,6 +2404,7 @@ html.site-motion-ready .public-site .photo-lightbox.is-closing .photo-lightbox__
 
 .public-site .public-block-card:hover,
 .public-site .experience-timeline__card:hover,
+.admin-studio .experience-timeline__card:hover,
 .personal-projects__card:hover,
 .media-shelf__card:hover,
 .photo-stories__card:hover {
@@ -2550,6 +2556,7 @@ html.site-motion-ready .public-site .photo-lightbox.is-closing .photo-lightbox__
 
   .public-site .experience-timeline__card,
   .public-site .public-block-card,
+  .admin-studio .experience-timeline__card,
   .personal-projects__card,
   .now-status,
   .media-shelf,

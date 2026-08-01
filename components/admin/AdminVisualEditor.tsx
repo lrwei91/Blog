@@ -108,8 +108,14 @@ import {
 import { BlockCard } from "@/components/blocks/BlockCard";
 import { BlockIcon, getBlockIconColor } from "@/components/blocks/BlockIcon";
 import { BlockForm } from "@/components/admin/BlockForm";
-import { getSpecialModuleType, SpecialModuleForm, SpecialModulePreview, type SpecialModuleType } from "@/components/admin/SpecialModuleForm";
-import { ExperienceModuleForm, ExperienceModulePreview } from "@/components/admin/ExperienceModuleForm";
+import { getSpecialModuleType, SpecialModuleForm, type SpecialModuleType } from "@/components/admin/SpecialModuleForm";
+import { ExperienceModuleForm } from "@/components/admin/ExperienceModuleForm";
+import { ExperienceTimeline } from "@/components/site/ExperienceTimeline";
+import { TravelFootprint } from "@/components/site/TravelFootprint";
+import { PersonalProjects } from "@/components/site/PersonalProjects";
+import { NowStatus } from "@/components/site/NowStatus";
+import { MediaShelf } from "@/components/site/MediaShelf";
+import { PhotoStories } from "@/components/site/PhotoStories";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/field";
 import { MediaUploader } from "@/components/admin/MediaUploader";
@@ -3284,7 +3290,7 @@ function EditableExperienceModule({
  )}
  onClick={onSelect}
  >
- <ExperienceModulePreview blocks={blocks} />
+ <ExperienceTimeline blocks={blocks} />
  <div className="pointer-events-none absolute inset-0 z-30 opacity-0 transition group-hover:opacity-100">
  <button
  type="button"
@@ -3653,6 +3659,16 @@ function SortableTextBlock({
  );
 }
 
+function FrontModulePreview({ block }: { block: Block }) {
+  const moduleType = getSpecialModuleType(block);
+  if (moduleType === "travel") return <TravelFootprint block={block} />;
+  if (moduleType === "projects") return <PersonalProjects block={block} />;
+  if (moduleType === "now") return <NowStatus block={block} />;
+  if (moduleType === "media") return <MediaShelf block={block} />;
+  if (moduleType === "photos") return <PhotoStories block={block} enablePreview={false} />;
+  return null;
+}
+
 function SortableBlock({
  block,
  displaySize,
@@ -3799,7 +3815,7 @@ function SortableBlock({
  >
  <div data-admin-block-surface="true" className="h-full w-full overflow-hidden rounded-[16px]">
  {getSpecialModuleType(block) ? (
- <SpecialModulePreview block={block} />
+ <FrontModulePreview block={block} />
  ) : (
  <BlockCard block={block} disableActions withLayout={false} className="h-full w-full select-none ring-0 group-hover:ring-2 group-hover:ring-[color-mix(in_srgb,var(--seal-deep)_20%,transparent)]" />
  )}
