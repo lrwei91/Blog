@@ -538,39 +538,58 @@ test.describe("公开页视觉回归", () => {
     await mediaHeading.scrollIntoViewIfNeeded();
     await expect(page.locator('[data-section-link][href="#section-media"]').first()).toHaveAttribute("aria-current", "location");
     await expect(page.locator('#media-shelf-tab-active')).toHaveAttribute("aria-selected", "true");
+    await expect(page.locator(".media-shelf__tabs small")).toHaveCount(0);
+    await expect(page.getByRole("link", { name: /豆瓣主页/ })).toHaveCount(0);
+    await expect(page.locator(".media-shelf__link")).toHaveCount(0);
     await expect(page.locator(".media-shelf__card")).toHaveCount(4);
     await expect(page.locator(".media-shelf__page-status")).toContainText("1 / 3");
+    await expect(page.getByRole("button", { name: "上一页" })).toHaveCount(0);
     await page.getByRole("button", { name: "下一页" }).click();
     await expect(page.locator(".media-shelf__page-status")).toContainText("2 / 3");
-    await page.locator('#media-shelf-tab-active').focus();
-    await page.keyboard.press("ArrowRight");
-    await expect(page.locator('#media-shelf-tab-wishlist')).toHaveAttribute("aria-selected", "true");
-    await expect(page.locator(".media-shelf__card")).toHaveCount(4);
-    await expect(page.locator(".media-shelf__page-status")).toContainText("1 / 3");
+    await expect(page.getByRole("button", { name: "上一页" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "下一页" })).toBeVisible();
 
     const shelfLayout = await page.locator(".media-shelf").evaluate((shelf) => {
       const cards = Array.from(shelf.querySelectorAll<HTMLElement>(".media-shelf__card"));
       const previous = shelf.querySelector<HTMLElement>(".media-shelf__page-control--previous")!;
       const next = shelf.querySelector<HTMLElement>(".media-shelf__page-control--next")!;
-      const status = shelf.querySelector<HTMLElement>(".media-shelf__page-status")!;
+      const tabs = shelf.querySelector<HTMLElement>(".media-shelf__tabs")!;
       const viewAllButton = shelf.querySelector<HTMLElement>(".media-shelf__view-all")!;
       const firstCard = cards[0].getBoundingClientRect();
       const lastCard = cards[cards.length - 1].getBoundingClientRect();
       const previousRect = previous.getBoundingClientRect();
       const nextRect = next.getBoundingClientRect();
-      const statusRect = status.getBoundingClientRect();
+      const tabsRect = tabs.getBoundingClientRect();
       const viewAllRect = viewAllButton.getBoundingClientRect();
+      const titleTops = cards.map((card) => card.querySelector("h3")!.getBoundingClientRect().top);
+      const metaTops = cards.map((card) => card.querySelector(".media-shelf__meta")!.getBoundingClientRect().top);
       return {
         borderBottomWidth: getComputedStyle(shelf).borderBottomWidth,
         previousOffset: Math.abs(previousRect.left + previousRect.width / 2 - firstCard.left),
         nextOffset: Math.abs(nextRect.left + nextRect.width / 2 - lastCard.right),
-        footerCenterOffset: Math.abs(statusRect.top + statusRect.height / 2 - (viewAllRect.top + viewAllRect.height / 2))
+        toolbarCenterOffset: Math.abs(tabsRect.top + tabsRect.height / 2 - (viewAllRect.top + viewAllRect.height / 2)),
+        titleTopRange: Math.max(...titleTops) - Math.min(...titleTops),
+        metaTopRange: Math.max(...metaTops) - Math.min(...metaTops)
       };
     });
     expect(shelfLayout.borderBottomWidth).toBe("0px");
     expect(shelfLayout.previousOffset).toBeLessThanOrEqual(2);
     expect(shelfLayout.nextOffset).toBeLessThanOrEqual(2);
-    expect(shelfLayout.footerCenterOffset).toBeLessThanOrEqual(2);
+    expect(shelfLayout.toolbarCenterOffset).toBeLessThanOrEqual(2);
+    expect(shelfLayout.titleTopRange).toBeLessThanOrEqual(1);
+    expect(shelfLayout.metaTopRange).toBeLessThanOrEqual(1);
+
+    await page.locator('#media-shelf-tab-active').focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(page.locator('#media-shelf-tab-wishlist')).toHaveAttribute("aria-selected", "true");
+    await expect(page.locator(".media-shelf__card")).toHaveCount(4);
+    await expect(page.locator(".media-shelf__page-status")).toContainText("1 / 3");
+    await expect(page.getByRole("button", { name: "上一页" })).toHaveCount(0);
+    await page.getByRole("button", { name: "下一页" }).click();
+    await page.getByRole("button", { name: "下一页" }).click();
+    await expect(page.locator(".media-shelf__page-status")).toContainText("3 / 3");
+    await expect(page.getByRole("button", { name: "下一页" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "上一页" })).toBeVisible();
 
     const gridOverflow = await page.locator(".media-shelf__grid").evaluate((grid) => ({
       overflowX: getComputedStyle(grid).overflowX,
@@ -580,6 +599,7 @@ test.describe("公开页视觉回归", () => {
     expect(gridOverflow.overflowX).not.toBe("scroll");
     expect(gridOverflow.scrollDelta).toBeLessThanOrEqual(1);
 
+    await page.locator('#media-shelf-tab-wishlist').focus();
     await page.keyboard.press("ArrowLeft");
     await expect(page.locator('#media-shelf-tab-active')).toHaveAttribute("aria-selected", "true");
     const viewAll = page.getByRole("button", { name: "查看全部" });

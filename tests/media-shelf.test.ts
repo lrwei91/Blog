@@ -18,6 +18,7 @@ describe("MediaShelf", () => {
           title: `在看影片 ${index + 1}`,
           status: "在看",
           progress: "active",
+          rating: index === 8 ? 8.5 : undefined,
           markedAt: `2026-07-${String(index + 1).padStart(2, "0")}`
         })),
         ...Array.from({ length: 9 }, (_, index) => ({
@@ -48,10 +49,14 @@ describe("MediaShelf", () => {
     expect(html).not.toContain("media-shelf__status");
     expect(html).not.toContain("<h3>我的豆瓣片单</h3>");
     expect(html).toContain('aria-label="下一页"');
-    expect(html).toContain("media-shelf__page-control--previous");
+    expect(html).not.toContain('aria-label="上一页"');
     expect(html).toContain("media-shelf__page-status");
     expect(html).not.toContain("media-shelf__pagination");
+    expect(html).toContain('data-has-ratings="true"');
     expect(html).toContain("查看全部");
+    expect(html).not.toContain("豆瓣主页");
+    expect(html).not.toContain("豆瓣条目");
+    expect(html).not.toMatch(/<small>0[09]<\/small>/);
     expect(html).not.toContain("DOUBAN WATCHLIST");
     expect(html).not.toContain("LAST SYNC");
   });

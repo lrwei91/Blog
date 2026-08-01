@@ -35,6 +35,7 @@ export function MediaShelf({ block }: { block: Block }) {
   const pageCount = Math.max(1, Math.ceil(activeGroup.items.length / pageSize));
   const safePage = Math.min(activePage, pageCount - 1);
   const visibleItems = activeGroup.items.slice(safePage * pageSize, (safePage + 1) * pageSize);
+  const activeGroupHasRatings = activeGroup.items.some((item) => typeof item.rating === "number");
 
   useEffect(() => {
     const element = shelfRef.current;
@@ -68,39 +69,49 @@ export function MediaShelf({ block }: { block: Block }) {
           <p className="media-shelf__intro">最近在看的故事，还有留给下一次的期待。</p>
           <p className="media-shelf__count">这里收着 {displayedCount} 部片子</p>
         </div>
-        <div className="media-shelf__source">
-          {source.lastSyncedAt ? (
+        {source.lastSyncedAt ? (
+          <div className="media-shelf__source">
             <span>
               <small>更新于</small>
               <time dateTime={source.lastSyncedAt}>{formatPublicDate(source.lastSyncedAt)}</time>
             </span>
-          ) : null}
-          {source.profileUrl ? (
-            <a href={source.profileUrl} target="_blank" rel="noreferrer">
-              豆瓣主页 <ArrowUpRight aria-hidden="true" />
-            </a>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
       </header>
 
-      <div className="media-shelf__tabs" role="tablist" aria-label="豆瓣片单分类" data-active-progress={activeProgress}>
-        {groups.map((group) => (
+      <div className="media-shelf__toolbar">
+        <div className="media-shelf__tabs" role="tablist" aria-label="豆瓣片单分类" data-active-progress={activeProgress}>
+          {groups.map((group) => (
+            <button
+              id={`media-shelf-tab-${group.progress}`}
+              key={group.progress}
+              type="button"
+              role="tab"
+              aria-selected={activeProgress === group.progress}
+              aria-controls={`media-shelf-panel-${group.progress}`}
+              tabIndex={activeProgress === group.progress ? 0 : -1}
+              data-progress={group.progress}
+              onClick={() => selectProgress(group.progress)}
+              onKeyDown={handleTabKeyDown}
+            >
+              {group.label}
+            </button>
+          ))}
+        </div>
+        {activeGroup.items.length > 0 ? (
           <button
-            id={`media-shelf-tab-${group.progress}`}
-            key={group.progress}
+            className="media-shelf__view-all"
             type="button"
-            role="tab"
-            aria-selected={activeProgress === group.progress}
-            aria-controls={`media-shelf-panel-${group.progress}`}
-            tabIndex={activeProgress === group.progress ? 0 : -1}
-            data-progress={group.progress}
-            onClick={() => selectProgress(group.progress)}
-            onKeyDown={handleTabKeyDown}
+            onClick={(event) => {
+              setDialogContainer(event.currentTarget.closest(".public-site"));
+              setDialogProgress(activeGroup.progress);
+            }}
           >
-            <span>{group.label}</span>
-            <small>{String(group.items.length).padStart(2, "0")}</small>
+            <List aria-hidden="true" />
+            查看全部
+            <ArrowUpRight aria-hidden="true" />
           </button>
-        ))}
+        ) : null}
       </div>
 
       <section
@@ -116,53 +127,39 @@ export function MediaShelf({ block }: { block: Block }) {
         {activeGroup.items.length > 0 ? (
           <>
             <div className="media-shelf__track" data-has-pagination={pageCount > 1 ? "true" : "false"}>
-              {pageCount > 1 ? (
+              {pageCount > 1 && safePage > 0 ? (
                 <button
                   className="media-shelf__page-control media-shelf__page-control--previous"
                   type="button"
                   onClick={() => changePage(safePage - 1)}
-                  disabled={safePage === 0}
                   aria-label="上一页"
                 >
                   <ChevronLeft aria-hidden="true" />
                 </button>
               ) : null}
-              <div className="media-shelf__grid">
+              <div className="media-shelf__grid" data-has-ratings={activeGroupHasRatings ? "true" : "false"}>
                 {visibleItems.map((item) => (
                   <MediaShelfCard item={item} key={item.id} />
                 ))}
               </div>
-              {pageCount > 1 ? (
+              {pageCount > 1 && safePage < pageCount - 1 ? (
                 <button
                   className="media-shelf__page-control media-shelf__page-control--next"
                   type="button"
                   onClick={() => changePage(safePage + 1)}
-                  disabled={safePage === pageCount - 1}
                   aria-label="下一页"
                 >
                   <ChevronRight aria-hidden="true" />
                 </button>
               ) : null}
             </div>
-            <footer className="media-shelf__panel-footer">
-              {pageCount > 1 ? (
+            {pageCount > 1 ? (
+              <div className="media-shelf__page-indicator">
                 <span className="media-shelf__page-status" aria-live="polite">
                   {safePage + 1} / {pageCount}
                 </span>
-              ) : <span aria-hidden="true" />}
-              <button
-                className="media-shelf__view-all"
-                type="button"
-                onClick={(event) => {
-                  setDialogContainer(event.currentTarget.closest(".public-site"));
-                  setDialogProgress(activeGroup.progress);
-                }}
-              >
-                <List aria-hidden="true" />
-                查看全部
-                <ArrowUpRight aria-hidden="true" />
-              </button>
-            </footer>
+              </div>
+            ) : null}
           </>
         ) : (
           <p className="life-module-empty">这个分类暂时没有记录。</p>
@@ -223,7 +220,6 @@ function MediaShelfCard({ item }: { item: MediaItem }) {
           {item.markedAt ? <time dateTime={item.markedAt}>{item.markedAt}</time> : null}
         </div>
         {item.note ? <p className="media-shelf__note">{item.note}</p> : null}
-        {item.href ? <span className="media-shelf__link">豆瓣条目 <ArrowUpRight aria-hidden="true" /></span> : null}
       </div>
     </>
   );
