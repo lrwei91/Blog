@@ -200,7 +200,7 @@ function createMediaItem(
     id: `douban-${spec.category}-${subject.id}`,
     category: spec.category,
     title: subject.title,
-    creator: summarizeIntro(intro),
+    creator: summarizeIntro(intro, spec.category),
     coverImage: remoteCover ? `/api/douban/image?url=${encodeURIComponent(remoteCover)}` : undefined,
     status: spec.status,
     rating: ratingMatch ? Number(ratingMatch[1]) : undefined,
@@ -237,12 +237,15 @@ function normalizeImageUrl(value: string) {
   return /^https:\/\//.test(value) ? value : "";
 }
 
-function summarizeIntro(value: string) {
+function summarizeIntro(value: string, category: MediaCategory) {
   if (!value) return undefined;
   const parts = value
     .split("/")
     .map((part) => part.trim())
-    .filter(Boolean)
-    .slice(0, 3);
+    .filter(Boolean);
+  if (category === "movie" && /^\d{4}(?:-\d{1,2}){0,2}(?:\([^)]*\))?$/u.test(parts[0] ?? "")) {
+    parts.shift();
+  }
+  parts.splice(category === "movie" ? 2 : 3);
   return parts.join(" · ").slice(0, 120) || undefined;
 }

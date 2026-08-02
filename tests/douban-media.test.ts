@@ -46,6 +46,7 @@ describe("Douban media sync", () => {
       category: "movie",
       status: "在看",
       progress: "active",
+      creator: "主演甲 · 主演乙",
       rating: 4,
       markedAt: "2026-07-30",
       source: "douban",

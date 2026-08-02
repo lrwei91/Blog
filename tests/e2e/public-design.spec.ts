@@ -541,11 +541,11 @@ test.describe("公开页视觉回归", () => {
     await expect(page.locator(".media-shelf__tabs small")).toHaveCount(0);
     await expect(page.getByRole("link", { name: /豆瓣主页/ })).toHaveCount(0);
     await expect(page.locator(".media-shelf__link")).toHaveCount(0);
+    await expect(page.locator(".media-shelf__count")).toHaveCount(0);
+    await expect(page.locator(".media-shelf__page-status")).toHaveCount(0);
     await expect(page.locator(".media-shelf__card")).toHaveCount(4);
-    await expect(page.locator(".media-shelf__page-status")).toContainText("1 / 3");
     await expect(page.getByRole("button", { name: "上一页" })).toHaveCount(0);
     await page.getByRole("button", { name: "下一页" }).click();
-    await expect(page.locator(".media-shelf__page-status")).toContainText("2 / 3");
     await expect(page.getByRole("button", { name: "上一页" })).toBeVisible();
     await expect(page.getByRole("button", { name: "下一页" })).toBeVisible();
 
@@ -583,11 +583,9 @@ test.describe("公开页视觉回归", () => {
     await page.keyboard.press("ArrowRight");
     await expect(page.locator('#media-shelf-tab-wishlist')).toHaveAttribute("aria-selected", "true");
     await expect(page.locator(".media-shelf__card")).toHaveCount(4);
-    await expect(page.locator(".media-shelf__page-status")).toContainText("1 / 3");
     await expect(page.getByRole("button", { name: "上一页" })).toHaveCount(0);
     await page.getByRole("button", { name: "下一页" }).click();
     await page.getByRole("button", { name: "下一页" }).click();
-    await expect(page.locator(".media-shelf__page-status")).toContainText("3 / 3");
     await expect(page.getByRole("button", { name: "下一页" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "上一页" })).toBeVisible();
 

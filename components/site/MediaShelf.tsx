@@ -29,7 +29,6 @@ export function MediaShelf({ block }: { block: Block }) {
   const [dialogProgress, setDialogProgress] = useState<DoubanWatchlistProgress | null>(null);
   const [dialogContainer, setDialogContainer] = useState<Element | null>(null);
   const groups = useMemo(() => buildDoubanWatchlistGroups(items), [items]);
-  const displayedCount = groups.reduce((total, group) => total + group.items.length, 0);
   const activeGroup = groups.find((group) => group.progress === activeProgress) ?? groups[0];
   const dialogGroup = groups.find((group) => group.progress === dialogProgress);
   const pageCount = Math.max(1, Math.ceil(activeGroup.items.length / pageSize));
@@ -67,7 +66,6 @@ export function MediaShelf({ block }: { block: Block }) {
       <header className="media-shelf__header">
         <div>
           <p className="media-shelf__intro">最近在看的故事，还有留给下一次的期待。</p>
-          <p className="media-shelf__count">这里收着 {displayedCount} 部片子</p>
         </div>
         {source.lastSyncedAt ? (
           <div className="media-shelf__source">
@@ -153,13 +151,6 @@ export function MediaShelf({ block }: { block: Block }) {
                 </button>
               ) : null}
             </div>
-            {pageCount > 1 ? (
-              <div className="media-shelf__page-indicator">
-                <span className="media-shelf__page-status" aria-live="polite">
-                  {safePage + 1} / {pageCount}
-                </span>
-              </div>
-            ) : null}
           </>
         ) : (
           <p className="life-module-empty">这个分类暂时没有记录。</p>
@@ -195,6 +186,7 @@ function handleTabKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
 function MediaShelfCard({ item }: { item: MediaItem }) {
   const meta = categoryMeta[item.category];
   const Icon = meta.icon;
+  const creator = formatMediaCreator(item);
   const content = (
     <>
       <div className="media-shelf__visual">
@@ -212,7 +204,7 @@ function MediaShelfCard({ item }: { item: MediaItem }) {
       </div>
       <div className="media-shelf__body">
         <h3>{item.title}</h3>
-        {item.creator ? <p className="media-shelf__creator">{item.creator}</p> : null}
+        {creator ? <p className="media-shelf__creator">{creator}</p> : null}
         <div className="media-shelf__meta">
           {typeof item.rating === "number" ? (
             <span className="media-shelf__rating"><Star aria-hidden="true" /> {item.rating.toFixed(1)}</span>
@@ -285,13 +277,14 @@ function MediaShelfDialog({
           {items.map((item, index) => {
             const meta = categoryMeta[item.category];
             const Icon = meta.icon;
+            const creator = formatMediaCreator(item);
             const content = (
               <>
                 <span className="media-shelf-dialog__number">{String(index + 1).padStart(2, "0")}</span>
                 <span className="media-shelf-dialog__main">
                   <small><Icon aria-hidden="true" /> {meta.label} · {item.status}</small>
                   <strong>{item.title}</strong>
-                  {item.creator ? <em>{item.creator}</em> : null}
+                  {creator ? <em>{creator}</em> : null}
                 </span>
                 <span className="media-shelf-dialog__meta">
                   {typeof item.rating === "number" ? <b><Star aria-hidden="true" /> {item.rating.toFixed(1)}</b> : null}
@@ -328,4 +321,12 @@ function formatPublicDate(value: string) {
     day: "2-digit",
     timeZone: "Asia/Shanghai"
   }).format(date);
+}
+
+function formatMediaCreator(item: MediaItem) {
+  const creator = item.creator?.trim();
+  if (!creator || item.category !== "movie") return creator;
+  const parts = creator.split(/\s*[·/]\s*/u).filter(Boolean);
+  if (/^\d{4}(?:-\d{1,2}){0,2}(?:\([^)]*\))?$/u.test(parts[0] ?? "")) parts.shift();
+  return parts.join(" · ") || undefined;
 }
