@@ -108,4 +108,17 @@ describe("Douban media sync", () => {
       syncDoubanMedia("https://www.douban.com/people/lrwei91/", fetcher)
     ).rejects.toThrow(/保留上次同步内容/);
   });
+
+  it("rejects a populated partial response so missing pages cannot delete saved items", async () => {
+    const fetcher = (async (input: RequestInfo | URL) => {
+      if (String(input).includes("/wish?")) {
+        throw new Error("temporary upstream failure");
+      }
+      return new Response(movieItemHtml, { status: 200 });
+    }) as typeof fetch;
+
+    await expect(
+      syncDoubanMedia("https://www.douban.com/people/lrwei91/", fetcher)
+    ).rejects.toThrow(/保留上次同步内容/);
+  });
 });

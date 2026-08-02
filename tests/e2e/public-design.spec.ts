@@ -543,9 +543,11 @@ test.describe("公开页视觉回归", () => {
     await expect(page.locator(".media-shelf__link")).toHaveCount(0);
     await expect(page.locator(".media-shelf__count")).toHaveCount(0);
     await expect(page.locator(".media-shelf__page-status")).toHaveCount(0);
+    await expect(page.locator(".media-shelf__page-announcement")).toContainText("第 1 页，共 3 页");
     await expect(page.locator(".media-shelf__card")).toHaveCount(4);
     await expect(page.getByRole("button", { name: "上一页" })).toHaveCount(0);
     await page.getByRole("button", { name: "下一页" }).click();
+    await expect(page.locator(".media-shelf__page-announcement")).toContainText("第 2 页，共 3 页");
     await expect(page.getByRole("button", { name: "上一页" })).toBeVisible();
     await expect(page.getByRole("button", { name: "下一页" })).toBeVisible();
 

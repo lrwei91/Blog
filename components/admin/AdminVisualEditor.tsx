@@ -433,6 +433,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  );
  const [isDirty, setIsDirty] = useState(false);
  const [isSaving, setIsSaving] = useState(false);
+ const editVersionRef = useRef(0);
  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
  const [isStructureOpen, setIsStructureOpen] = useState(() => {
  if (typeof window === "undefined") return false;
@@ -657,6 +658,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  }
 
  function update(next: SiteConfig) {
+ editVersionRef.current += 1;
  setConfig(normalizeContentFlowConfig(next));
  setIsDirty(true);
  }
@@ -706,6 +708,7 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  }
 
  function updateBaseConfig(next: SiteConfig) {
+ editVersionRef.current += 1;
  setBaseConfig(normalizeContentFlowConfig(next));
  setIsDirty(true);
  }
@@ -1507,23 +1510,43 @@ export function AdminVisualEditor({ initialConfig, initialLanguage }: { initialC
  return;
  }
 
+ const submittedEditVersion = editVersionRef.current;
  setIsSaving(true);
+
+ try {
  const response = await fetch("/api/admin/config", {
  method: "PUT",
  headers: { "Content-Type": "application/json" },
- body: JSON.stringify(result.data)
+ body: JSON.stringify({
+ ...result.data,
+ expectedRevision: result.data.revision ?? 0
+ })
  });
- const body = (await response.json().catch(() => null)) as { error?: string; updatedAt?: string } | null;
- setIsSaving(false);
+ const body = (await response.json().catch(() => null)) as {
+ error?: string;
+ updatedAt?: string;
+ revision?: number;
+ } | null;
 
  if (!response.ok) {
  toast.error(copy.saveFailed, { description: body?.error ?? "Unknown error" });
  return;
  }
 
- setBaseConfig((current) => ({ ...current, updatedAt: body?.updatedAt ?? new Date().toISOString() }));
+ setBaseConfig((current) => ({
+ ...current,
+ updatedAt: body?.updatedAt ?? current.updatedAt,
+ revision: body?.revision ?? current.revision
+ }));
+ if (editVersionRef.current === submittedEditVersion) {
  setIsDirty(false);
+ }
  toast.success(copy.saveSuccess);
+ } catch {
+ toast.error(copy.saveFailed, { description: "Network request failed" });
+ } finally {
+ setIsSaving(false);
+ }
  }
 
   return (

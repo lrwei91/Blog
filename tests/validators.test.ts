@@ -8,6 +8,13 @@ describe("validateSiteConfig", () => {
     expect(result.success).toBe(true);
   });
 
+  it("rejects a malformed access-code hash", () => {
+    const config = structuredClone(defaultSiteConfig);
+    config.settings.variants.variants[0].accessCodeHash = "bad";
+
+    expect(validateSiteConfig(config).success).toBe(false);
+  });
+
   it("applies defaults for missing optional seo fields", () => {
     const minimal = structuredClone(defaultSiteConfig);
     delete (minimal.settings as Record<string, unknown>).seoOgImageAlt;

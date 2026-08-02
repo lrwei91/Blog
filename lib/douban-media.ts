@@ -50,13 +50,13 @@ export async function syncDoubanMedia(
   if (successfulPages.length === 0) {
     throw new Error("豆瓣公开页暂时无法访问，请稍后重试");
   }
+  if (successfulPages.length < settled.length) {
+    throw new Error("豆瓣公开页只返回了部分结果，已保留上次同步内容，请稍后重试");
+  }
 
   const items = sortMediaItemsByMarkedAt(
     successfulPages.flatMap((result) => result.value)
   );
-  if (items.length === 0 && successfulPages.length < settled.length) {
-    throw new Error("豆瓣公开页只返回了部分结果，已保留上次同步内容，请稍后重试");
-  }
   const syncedAt = new Date().toISOString();
 
   return {

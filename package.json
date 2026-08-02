@@ -20,7 +20,7 @@
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "lucide-react": "^0.468.0",
-    "next": "16.2.10",
+    "next": "16.2.12",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sonner": "^1.7.1",
@@ -36,14 +36,21 @@
     "@types/react-dom": "^18.3.5",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.39.2",
-    "eslint-config-next": "16.2.10",
-    "postcss": "8.5.16",
-    "sharp": "^0.34.5",
+    "eslint-config-next": "16.2.12",
+    "postcss": "8.5.25",
+    "sharp": "0.35.3",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2",
     "vitest": "^3.0.0"
   },
   "overrides": {
-    "postcss": "8.5.16"
+    "postcss": "8.5.25",
+    "sharp": "0.35.3",
+    "minimatch@3.1.5": {
+      "brace-expansion": "1.1.18"
+    },
+    "minimatch@10.2.5": {
+      "brace-expansion": "5.0.9"
+    }
   }
 }

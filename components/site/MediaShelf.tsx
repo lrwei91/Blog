@@ -122,6 +122,11 @@ export function MediaShelf({ block }: { block: Block }) {
         data-page-size={pageSize}
         data-page-count={pageCount}
       >
+        {pageCount > 1 ? (
+          <span className="media-shelf__page-announcement sr-only" aria-live="polite">
+            第 {safePage + 1} 页，共 {pageCount} 页
+          </span>
+        ) : null}
         {activeGroup.items.length > 0 ? (
           <>
             <div className="media-shelf__track" data-has-pagination={pageCount > 1 ? "true" : "false"}>

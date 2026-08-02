@@ -98,6 +98,7 @@ export function matchAccessCode(input: string, variant: { accessCode: string; ac
 
   // 新模式：哈希比对
   if (variant.accessCodeHash) {
+    if (!/^[a-f0-9]{64}$/u.test(variant.accessCodeHash)) return false
     return timingSafeEqual(
       Buffer.from(variant.accessCodeHash),
       Buffer.from(hashAccessCode(normalizedInput))

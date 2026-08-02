@@ -17,7 +17,7 @@ export default defineConfig({
   webServer: {
     command: `ADMIN_PASSWORD_HASH= ADMIN_PASSWORD=bio-blocks-e2e-admin SESSION_SECRET=bio-blocks-e2e-session-secret-for-playwright BIO_E2E_FULL_MODULES=1 npm run dev -- --hostname 127.0.0.1 --port ${port}`,
     url: baseURL,
-    reuseExistingServer: false,
+    reuseExistingServer: !process.env.CI,
     timeout: 120_000
   },
   projects: [

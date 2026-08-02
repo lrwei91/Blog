@@ -294,7 +294,7 @@ const variantSettingsSchema = z
           id: z.string().min(1),
           name: z.string().min(1),
           accessCode: z.string(),
-          accessCodeHash: z.string().optional(),
+          accessCodeHash: z.string().regex(/^[a-f0-9]{64}$/, "Access code hash must be a SHA-256 hex value").optional(),
           isEnabled: z.boolean(),
           allowSeoIndex: z.boolean().optional(),
           sortOrder: z.number().int().nonnegative(),

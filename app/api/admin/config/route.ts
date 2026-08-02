@@ -23,27 +23,16 @@ export async function GET(request: Request) {
  * config snapshots that predate the revision field).
  */
 async function resolveCurrentRevision(): Promise<number> {
-  let current: { revision?: number } | null = null;
-
-  try {
-    current = await readConfigFromBlob();
-  } catch {
-    current = null;
-  }
-
-  if (!current) {
-    try {
-      current = await readConfigFromLocal();
-    } catch {
-      current = null;
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const current = await readConfigFromBlob();
+    if (!current) {
+      throw new Error("Blob config is not initialized");
     }
+    return current.revision ?? 0;
   }
 
-  if (!current) {
-    current = defaultSiteConfig;
-  }
-
-  return current.revision ?? 0;
+  const current = await readConfigFromLocal();
+  return current?.revision ?? defaultSiteConfig.revision ?? 0;
 }
 
 export async function PUT(request: Request) {
@@ -58,10 +47,21 @@ export async function PUT(request: Request) {
   }
 
   // ── Optimistic concurrency control via revision ──────────────────────
-  const expectedRevision = typeof body?.expectedRevision === "number" ? body.expectedRevision : null;
-  const currentRevision = await resolveCurrentRevision();
+  const expectedRevision = typeof body?.expectedRevision === "number" && Number.isInteger(body.expectedRevision) && body.expectedRevision >= 0
+    ? body.expectedRevision
+    : null;
+  if (expectedRevision === null) {
+    return NextResponse.json({ error: "Expected revision is required" }, { status: 400 });
+  }
+  let currentRevision: number;
+  try {
+    currentRevision = await resolveCurrentRevision();
+  } catch (error) {
+    console.error("Failed to resolve the current config revision", error);
+    return NextResponse.json({ error: "Current config is unavailable" }, { status: 503 });
+  }
 
-  if (expectedRevision !== null && expectedRevision !== currentRevision) {
+  if (expectedRevision !== currentRevision) {
     return NextResponse.json(
       { error: "Config revision conflict", currentRevision },
       { status: 409 }

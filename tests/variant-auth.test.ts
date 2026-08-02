@@ -82,4 +82,8 @@ describe("hashAccessCode / matchAccessCode", () => {
     expect(matchAccessCode("", { accessCode: "" })).toBe(false);
     expect(matchAccessCode("  ", { accessCode: "" })).toBe(false);
   });
+
+  it("rejects a malformed stored hash without throwing", () => {
+    expect(matchAccessCode("resume", { accessCode: "", accessCodeHash: "bad" })).toBe(false);
+  });
 });

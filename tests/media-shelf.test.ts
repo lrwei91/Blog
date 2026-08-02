@@ -52,6 +52,8 @@ describe("MediaShelf", () => {
     expect(html).toContain('aria-label="下一页"');
     expect(html).not.toContain('aria-label="上一页"');
     expect(html).not.toContain("media-shelf__page-status");
+    expect(html).toContain("media-shelf__page-announcement");
+    expect(html).toContain("第 1 页，共 3 页");
     expect(html).not.toContain("media-shelf__pagination");
     expect(html).toContain('data-has-ratings="true"');
     expect(html).toContain("查看全部");
